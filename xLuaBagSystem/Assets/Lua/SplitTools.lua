@@ -17,11 +17,3 @@ function string.split(input, delimiter)
     table.insert(arr, string.sub(input, pos))
     return arr
 end
-
-
-
-
-
-
-
-

@@ -9,6 +9,7 @@ public class Main : MonoBehaviour
     {
         LuaMgr.GetInstance().Init();
         LuaMgr.GetInstance().DoLuaFile("Main");
+        
     }
 
     // Update is called once per frame
