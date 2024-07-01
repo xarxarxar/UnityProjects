@@ -9,3 +9,7 @@ require("ItemData")--初始化道具表信息
 --2.网络游戏从服务器读取
 require("PlayerData")
 PlayerData:Init()
+
+
+require("MainPanel")
+MainPanel:ShowMe()

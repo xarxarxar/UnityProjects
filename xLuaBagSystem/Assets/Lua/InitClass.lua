@@ -23,5 +23,8 @@ Text = UI.Text
 Toggle = UI.Toggle
 ScrollRect = UI.ScrollRect
 
+--找到项目的Canvas
+Canvas = GameObject.Find("Canvas").transform
+
 --自己写的C#脚本
 ABMgr = CS.ABMgr.GetInstance()--直接得到AB包资源管理器的单例对象

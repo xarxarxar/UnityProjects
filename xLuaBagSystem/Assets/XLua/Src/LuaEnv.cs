@@ -431,7 +431,7 @@ namespace XLua
 #endif
                 object err = translator.GetObject(L, -1);
                 LuaAPI.lua_settop(L, oldTop);
-
+            
                 // A pre-wrapped exception - just rethrow it (stack trace of InnerException will be preserved)
                 Exception ex = err as Exception;
                 if (ex != null) throw ex;
