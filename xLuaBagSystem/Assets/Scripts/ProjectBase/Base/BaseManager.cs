@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 //1.C#中 泛型的知识
@@ -10,9 +11,11 @@ public class BaseManager<T> where T:new()
 
     public static T GetInstance()
     {
+        
         if (instance == null)
             instance = new T();
         return instance;
+        
     }
 }
 
