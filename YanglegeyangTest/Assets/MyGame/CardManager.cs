@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEditor.Progress;
 
 public class CardManager : MonoBehaviour
 {
@@ -26,7 +27,7 @@ public class CardManager : MonoBehaviour
         {
             GenerateUpAndDownList(allCards[i]);
         }
-
+        RandomItem(3);
     }
 
     // Update is called once per frame
@@ -89,7 +90,6 @@ public class CardManager : MonoBehaviour
 
     public  bool IsClickable(Card oneCard)
     {
-        Debug.Log("检测");
         // 获取 oneCard 的 RectTransform
         RectTransform oneCardTransform = oneCard.gameObject.GetComponent<RectTransform>();
         Rect oneCardRect = oneCardTransform.rect;
@@ -101,6 +101,7 @@ public class CardManager : MonoBehaviour
 
         for (int i = 0; i < oneCard.upCards.Count; i++)
         {
+            if (oneCard.upCards[i].isUsed) continue;
             // 获取其他卡片的 RectTransform
             RectTransform otherTransform = oneCard.upCards[i].gameObject.GetComponent<RectTransform>();
             Rect otherRect = otherTransform.rect;
@@ -141,6 +142,30 @@ public class CardManager : MonoBehaviour
         }
     }
 
+    List<ItemContent> RandomItem(int count)
+    {
+        LootBox lootBox = new LootBox();
+        lootBox.AddItem(new ItemContent("a",1));
+        lootBox.AddItem(new ItemContent("b",2));
+        lootBox.AddItem(new ItemContent("c",3));
+        lootBox.AddItem(new ItemContent("d",4));
+        lootBox.AddItem(new ItemContent("e",5));
+        lootBox.AddItem(new ItemContent("f",60));
+        lootBox.AddItem(new ItemContent("g",70));
+        lootBox.AddItem(new ItemContent("h",80));
+        lootBox.AddItem(new ItemContent("i",90));
+        lootBox.AddItem(new ItemContent("j",100));
+
+        List<ItemContent> outs= new List<ItemContent>();
+        for (int i = 0; i < count; i++) 
+        {
+            ItemContent randomItem = lootBox.GetRandomItem();
+            Debug.Log(randomItem.Name);
+            outs.Add(randomItem);
+            lootBox.RemoveItem(randomItem);
+        }
+        return outs;
+    }
 
     IEnumerator TestClick()
     {

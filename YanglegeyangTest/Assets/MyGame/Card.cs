@@ -9,8 +9,9 @@ public class Card : MonoBehaviour
     public List<Card> upCards=new List<Card>();
     public List<Card> downCards=new List<Card>();
     public int level = 0;
-    public  bool isclickable;
-
+    public bool isclickable = true;
+    public bool isUsed=false;
+    public int type;
     public event Action<Card> clicked;
 
     public bool Isclickable {
@@ -36,11 +37,14 @@ public class Card : MonoBehaviour
 
     public void Click()
     {
-        gameObject.SetActive(false);
+        if (!isclickable) return;
+        isUsed = true;
+        //gameObject.SetActive(false);
         for (int i = 0; i < downCards.Count; i++)
         {
             CardManager.instance.IsClickable(downCards[i]);
         }
+        CardMove.Instance.MoveCard(this);
         
     }
 }
