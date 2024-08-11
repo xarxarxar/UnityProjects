@@ -24,6 +24,17 @@ public class Card_event : MonoBehaviour
         //为卡牌添加点击事件
         GetComponent<UnityEngine.UI.Button>().onClick.AddListener(move_to);
     }
+    // Start is called before the first frame update
+    void Start()
+    {
+        
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
 
     public void move_to()
     {

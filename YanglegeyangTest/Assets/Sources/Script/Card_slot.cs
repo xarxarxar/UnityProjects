@@ -14,7 +14,15 @@ public class card_slot : MonoBehaviour
     public GameObject[] all_cards;
     public GameObject game_over_ui;
     public TMP_Text gameover_text;
+    private void Awake()
+    {
 
+    }
+    // Start is called before the first frame update
+    void Start()
+    {
+        
+    }
 
     // Update is called once per frame
     [System.Obsolete]
