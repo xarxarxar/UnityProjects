@@ -12,7 +12,7 @@ public class Card : MonoBehaviour
     public List<Card> downCards = new List<Card>();//被该卡牌覆盖住的卡牌
 
     public int level = 0;//该卡牌所在的层级
-    public bool isclickable = true;//该卡牌是否可以点击
+    public bool isclickable = false;//该卡牌是否可以点击
     public bool isUsed = false;//该卡牌是否已经被点击过，也就是说该卡牌在下方的卡牌槽里，或者在去槽里的路上
 
     public string  type;//该卡牌上承载的类型，一样类型的就可以消除，之后替换成Item类
@@ -25,27 +25,23 @@ public class Card : MonoBehaviour
         get => isclickable;
         set
         {
-            isclickable = value;
-            if (isclickable)
+            if (isclickable!=value)
             {
-                ChangeButtonState(isclickable);
+                ChangeButtonState(value);
             }
+            isclickable = value;
         }
     }
 
     // Start is called before the first frame update
-    void Start()
+   
+    private void OnEnable()
     {
         thisButton = GetComponent<Button>();
         thisButton.onClick.AddListener(Click);//为此卡牌添加点击事件
         thisButton.interactable = isclickable;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     //将卡牌的可点击状态改变
     void ChangeButtonState(bool isclicked)
@@ -68,5 +64,7 @@ public class Card : MonoBehaviour
             CardManager.instance.JudgeClickable(downCards[i]);//
         }
         CardManager.instance.MoveCard(this);
+
+        ResourceManager.instance.clickAudioSource.PlayOneShot(ResourceManager.instance.clickAudio);
     }
 }

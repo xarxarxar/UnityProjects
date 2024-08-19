@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,8 +10,8 @@ public class CardManager : MonoBehaviour
     //管理场景中的所有卡牌
     public static CardManager instance;//单例
     public List<Card> allCards = new List<Card>();//在场景中的所有卡牌，不包括卡槽内
-    public GameObject allCardsParentsPrefab;//所有卡牌的父物体的Prefab
-    private GameObject allCardsParentsGameobject;//所有卡牌的父物体的实例
+    public GameObject allCardsParentsGameobject;//所有卡牌的父物体的实例
+    public GameObject singalCardsParentsGameobject;//单个卡牌的prefab
 
     public List<Card> slotCards = new List<Card>();//卡槽中已经有的牌
     public List<GameObject> slots = new List<GameObject>();//七个卡槽的位置
@@ -24,6 +25,9 @@ public class CardManager : MonoBehaviour
     public bool isFailed = false;//是否已经失败
 
     public bool isSeccess = false;
+
+    public event Action failedEvent;//失败触发事件
+    public event Action successEvent;//成功触发事件
     private void Awake()//设置单例
     {
         instance = this;
@@ -33,15 +37,18 @@ public class CardManager : MonoBehaviour
     {
         isFailed = false;
         isSeccess=false;
+        layoutGroup.GetComponent<RectTransform>().sizeDelta = new Vector2(ResolutionManager.CardLength*7, ResolutionManager.CardLength);
         InitializeCard();//初始化卡片
         for (int i = 0; i < allCards.Count; i++)//为场景中的所有卡牌生成覆盖和被覆盖的卡牌列表
         {
             GenerateUpAndDownList(allCards[i]);
+            JudgeClickable(allCards[i]);
         }
     }
 
     private void OnDisable()
     {
+
         //销毁卡槽中的所有卡牌
         for (int i = 0;i< layoutGroup.transform.childCount; i++)
         {
@@ -166,12 +173,14 @@ public class CardManager : MonoBehaviour
         placeholder.transform.SetParent(layoutGroup.transform);
         placeholder.transform.SetSiblingIndex(oneCardIndex);
         placeholder.GetComponent<SlotCard>().type = oneCard.type;
+        placeholder.GetComponent<RectTransform>().sizeDelta= oneCard.GetComponent<RectTransform>().sizeDelta;
         //判断是否失败
         List<GameObject> sameCards = JudgeSameCard();
         //如果已经失败了的话，就将场景中所有物体都设置为不可点击
         if (layoutGroup.transform.childCount >= 7 && sameCards.Count==0)//失败
         {
             isFailed=true;
+            failedEvent?.Invoke();
         }
 
         // 2. 强制刷新布局，获取占位符的位置
@@ -195,6 +204,7 @@ public class CardManager : MonoBehaviour
                 {
                     isSeccess = true;
                     Debug.Log("成功啦");
+                    successEvent?.Invoke();
                 }
             }
         });
@@ -254,16 +264,40 @@ public class CardManager : MonoBehaviour
 
     void InitializeCard()
     {
-        allCardsParentsGameobject= Instantiate(allCardsParentsPrefab, transform);//生成卡牌
+
+        for(int i = 0; i < 49; i++)
+        {
+            GameObject singalCard= Instantiate(singalCardsParentsGameobject, allCardsParentsGameobject.transform);
+            float cardWidth = ResolutionManager.CardLength;
+            RectTransform rectTransform = singalCard.GetComponent<RectTransform>();
+            rectTransform.sizeDelta = new Vector2(cardWidth, cardWidth);
+            rectTransform.anchoredPosition=new Vector2(-3* cardWidth,3* cardWidth) + new Vector2(i%7, -i/7)* cardWidth;//设置位置
+            singalCard.GetComponent<Card>().level = 0;
+        }
+
+        for (int i = 0; i < 21; i++)
+        {
+            GameObject singalCard = Instantiate(singalCardsParentsGameobject, allCardsParentsGameobject.transform);
+            float cardWidth = ResolutionManager.CardLength;
+            RectTransform rectTransform = singalCard.GetComponent<RectTransform>();
+            rectTransform.sizeDelta = new Vector2(cardWidth, cardWidth);
+            rectTransform.anchoredPosition = new Vector2(-2.5f * cardWidth, 2.5f * cardWidth) + new Vector2(i % 5, -i / 5) * cardWidth;//设置位置
+            singalCard.GetComponent<Card>().level = 1;
+        }
+
+
+
         //添加所有卡牌到卡牌列表中
-        for(int i = 0; i < allCardsParentsGameobject.transform.childCount; i++)
+        for (int i = 0; i < allCardsParentsGameobject.transform.childCount; i++)
         {
             allCards.Add(allCardsParentsGameobject.transform.GetChild(i).GetComponent<Card>());
         }
 
+
         List<ItemContent> itemContents = RandomItem(10);//选取十个元素
 
         List<ItemContent> totalItems = new List<ItemContent>();//场景中所有的item，供card选择
+
         for (int i = 0; i< itemContents.Count; i++)
         {
             for (int j = 0; j < allCards.Count/10; j++)
@@ -275,7 +309,7 @@ public class CardManager : MonoBehaviour
         //为场景卡片填充元素
         for(int i = 0;i< allCards.Count; i++)
         {
-            int index=Random.Range(0, totalItems.Count);
+            int index=UnityEngine. Random.Range(0, totalItems.Count);
             allCards[i].type = totalItems[index].Name;
             allCards[i].GetComponent<Image>().sprite= totalItems[index].cardSprite;
             totalItems.RemoveAt(index);
