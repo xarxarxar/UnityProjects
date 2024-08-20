@@ -42,45 +42,45 @@ public class CallWechat : MonoBehaviour
                     env = "test01cloud-8g9b0glp7aab2737",
                     traceUser = false
                 });
-                WX.cloud.CallFunction(new CallFunctionParam()
-                {
-                    name = "download-file",  // 替换为你获取玩家数据的云函数名称
-                    data = "{\"player_data\":0}",  //下载的时候 这里的 data 需要随便传一个 json，否则会报错,  // 你可以根据需要传递参数
+                //WX.cloud.CallFunction(new CallFunctionParam()
+                //{
+                //    name = "download-file",  // 替换为你获取玩家数据的云函数名称
+                //    data = "{\"player_data\":0}",  //下载的时候 这里的 data 需要随便传一个 json，否则会报错,  // 你可以根据需要传递参数
 
-                    success = (res) =>
-                    {
-                        Debug.Log("GetCardData success");
-                        WX.ShowModal(new ShowModalOption
-                        {
-                            title = "标题",
-                            content = res.ToString(),
-                            success = (res) =>
-                            {
-                                if (res.confirm)
-                                {
-                                    Debug.Log("点击了确定按钮");
-                                    WX.ShowToast(new ShowToastOption
-                                    {
-                                        title = "消息提示框"
-                                    });
-                                }
-                                else if (res.cancel)
-                                {
-                                    Debug.Log("点击了取消按钮");
-                                }
-                            }
-                        });
-                    },
-                    fail = (res) =>
-                    {
-                        Debug.LogError("GetCardData failed: " + res.errMsg);
-                    },
-                    complete = (res) =>
-                    {
-                        Debug.Log("GetCardData complete");
-                    }
-                });
-                
+                //    success = (res) =>
+                //    {
+                //        Debug.Log("GetCardData success");
+                //        WX.ShowModal(new ShowModalOption
+                //        {
+                //            title = "标题",
+                //            content = res.ToString(),
+                //            success = (res) =>
+                //            {
+                //                if (res.confirm)
+                //                {
+                //                    Debug.Log("点击了确定按钮");
+                //                    WX.ShowToast(new ShowToastOption
+                //                    {
+                //                        title = "消息提示框"
+                //                    });
+                //                }
+                //                else if (res.cancel)
+                //                {
+                //                    Debug.Log("点击了取消按钮");
+                //                }
+                //            }
+                //        });
+                //    },
+                //    fail = (res) =>
+                //    {
+                //        Debug.LogError("GetCardData failed: " + res.errMsg);
+                //    },
+                //    complete = (res) =>
+                //    {
+                //        Debug.Log("GetCardData complete");
+                //    }
+                //});
+
                 //Debug.Log(code);
 
 
@@ -107,11 +107,27 @@ public class CallWechat : MonoBehaviour
                 //        }
                 //    });
                 //});
+
+                ShowShareMenuOption ssmo = new ShowShareMenuOption();
+                ssmo.menus = new string[] { "shareAppMessage", "shareTimeline" };
+                //WX.ShowShareMenu(ssmo); // 这个是控制右上角三个点是否可以点击的方法，并不是主动分享给好友的方法！！！
+
+                // 这个才是主动拉起分享给通讯录的方法！！！
+                WX.ShareAppMessage(new ShareAppMessageOption());
+
+                //检测小游戏从台后转到台前调用的方法，可以在分享结束之后调用该方法
+                WX.OnShow((res) =>
+                {
+                    Debug.Log("i  m back");
+                });
+
                 CallSetUserData(thisUserData);
+                
             }
         );
 
            }
+
 
     private void CallSetUserData(UserData gameUserData)
     {
