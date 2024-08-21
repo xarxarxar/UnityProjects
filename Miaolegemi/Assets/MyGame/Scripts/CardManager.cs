@@ -13,11 +13,10 @@ public class CardManager : MonoBehaviour
     public GameObject allCardsParentsGameobject;//所有卡牌的父物体的实例
     public GameObject singalCardsParentsGameobject;//单个卡牌的prefab
 
-    public List<Card> slotCards = new List<Card>();//卡槽中已经有的牌
-    public List<GameObject> slots = new List<GameObject>();//七个卡槽的位置
-
     public HorizontalLayoutGroup layoutGroup;//卡槽中的横向排版组件
     public GameObject seizeCard;//卡槽中用来占位的临时卡牌，透明的
+
+    public GameObject backButton;//返回按钮
 
     //从数据库中获取的所有卡牌，暂时用list代替
     public List<ItemContent> allItems= new List<ItemContent>();
@@ -37,7 +36,10 @@ public class CardManager : MonoBehaviour
     {
         isFailed = false;
         isSeccess=false;
-        layoutGroup.GetComponent<RectTransform>().sizeDelta = new Vector2(ResolutionManager.CardLength*7, ResolutionManager.CardLength);
+        backButton.GetComponent<RectTransform>().sizeDelta = new Vector2(ResolutionManager.CardLength , ResolutionManager.CardLength);
+        backButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.5f*ResolutionManager.CardLength , -0.5f*ResolutionManager.CardLength);
+        //设置卡槽的长宽
+        layoutGroup.GetComponent<RectTransform>().sizeDelta = new Vector2(ResolutionManager.CardLength*7+10, ResolutionManager.CardLength + 10);
         InitializeCard();//初始化卡片
         for (int i = 0; i < allCards.Count; i++)//为场景中的所有卡牌生成覆盖和被覆盖的卡牌列表
         {
@@ -275,7 +277,7 @@ public class CardManager : MonoBehaviour
             singalCard.GetComponent<Card>().level = 0;
         }
 
-        for (int i = 0; i < 21; i++)
+        for (int i = 0; i < 11; i++)
         {
             GameObject singalCard = Instantiate(singalCardsParentsGameobject, allCardsParentsGameobject.transform);
             float cardWidth = ResolutionManager.CardLength;
