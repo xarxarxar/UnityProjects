@@ -3922,6 +3922,7 @@ GameObject:
   - component: {fileID: 2137997084}
   - component: {fileID: 2137997086}
   - component: {fileID: 2137997085}
+  - component: {fileID: 2137997089}
   - component: {fileID: 2137997087}
   - component: {fileID: 2137997088}
   m_Layer: 5
@@ -4006,6 +4007,7 @@ MonoBehaviour:
   allCards: []
   allCardsParentsGameobject: {fileID: 2842997933288957353}
   singalCardsParentsGameobject: {fileID: 2655968850509730258, guid: e6c5cdaf100bb334bab375232180ed5a, type: 3}
+  slotLength: 7
   layoutGroup: {fileID: 607164255}
   seizeCard: {fileID: 3896469492832396976, guid: 578c3f426d9203e469f9f86f012c42fb, type: 3}
   backButton: {fileID: 754655783}
@@ -4138,6 +4140,18 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &2137997089
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2137997083}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6c83aac7b18de443a2d009f68e8119e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2842997933288957353
 GameObject:
   m_ObjectHideFlags: 0

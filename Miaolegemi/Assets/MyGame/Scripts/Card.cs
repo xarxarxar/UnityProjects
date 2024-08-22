@@ -35,12 +35,14 @@ public class Card : MonoBehaviour
 
     // Start is called before the first frame update
    
-    private void OnEnable()
+    public void OnEnable()
     {
+        Debug.Log("初始化卡牌");
         thisButton = GetComponent<Button>();
         thisButton.onClick.AddListener(Click);//为此卡牌添加点击事件
         thisButton.interactable = isclickable;
     }
+
 
 
     //将卡牌的可点击状态改变

@@ -13,6 +13,7 @@ public class CardManager : MonoBehaviour
     public GameObject allCardsParentsGameobject;//所有卡牌的父物体的实例
     public GameObject singalCardsParentsGameobject;//单个卡牌的prefab
 
+    public int slotLength=7;//判定失败的卡槽个数
     public HorizontalLayoutGroup layoutGroup;//卡槽中的横向排版组件
     public GameObject seizeCard;//卡槽中用来占位的临时卡牌，透明的
 
@@ -61,8 +62,12 @@ public class CardManager : MonoBehaviour
     }
 
     //为某张卡牌生成覆盖和被覆盖的卡牌列表
-    void GenerateUpAndDownList(Card oneCard)
+    public void GenerateUpAndDownList(Card oneCard)
     {
+        //先清空两个数组
+        oneCard.downCards.Clear();
+        oneCard.upCards.Clear();
+
         // 获取 oneCard 的 RectTransform
         RectTransform oneCardTransform = oneCard.gameObject.GetComponent<RectTransform>();
 
@@ -162,7 +167,7 @@ public class CardManager : MonoBehaviour
     //点击卡牌的时候，将那张卡牌移动到卡槽中相应的位置，并且更新卡槽中其他卡槽的位置
     public void MoveCard(Card oneCard)
     {
-        // 将 childObject 设置为父物体的最后一个子物体
+        // 将 childObject 设置为父物体的最后一个子物体,防止在移动过程中被别的卡牌遮挡，没有其他用途
         oneCard.transform.SetSiblingIndex(oneCard.transform.parent.childCount - 1);
         // 实例化Image并设置初始位置
         GameObject newImage = oneCard.gameObject;
@@ -179,7 +184,7 @@ public class CardManager : MonoBehaviour
         //判断是否失败
         List<GameObject> sameCards = JudgeSameCard();
         //如果已经失败了的话，就将场景中所有物体都设置为不可点击
-        if (layoutGroup.transform.childCount >= 7 && sameCards.Count==0)//失败
+        if (layoutGroup.transform.childCount >= slotLength && sameCards.Count==0)//失败
         {
             isFailed=true;
             failedEvent?.Invoke();
