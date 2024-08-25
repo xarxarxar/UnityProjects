@@ -37,7 +37,6 @@ public class Card : MonoBehaviour
    
     public void OnEnable()
     {
-        Debug.Log("初始化卡牌");
         thisButton = GetComponent<Button>();
         thisButton.onClick.AddListener(Click);//为此卡牌添加点击事件
         thisButton.interactable = isclickable;

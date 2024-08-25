@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using WeChatWASM;
 
 public class CardManager : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class CardManager : MonoBehaviour
     public List<Card> allCards = new List<Card>();//在场景中的所有卡牌，不包括卡槽内
     public GameObject allCardsParentsGameobject;//所有卡牌的父物体的实例
     public GameObject singalCardsParentsGameobject;//单个卡牌的prefab
+    List<ItemContent> itemContents = new List<ItemContent>();
+    public int currentDiffu = 60;
 
     public int slotLength=7;//判定失败的卡槽个数
     public HorizontalLayoutGroup layoutGroup;//卡槽中的横向排版组件
@@ -35,6 +38,11 @@ public class CardManager : MonoBehaviour
 
     private void OnEnable()
     {
+        ButtonManager.instance.addSlotButton.interactable = true;
+        ButtonManager.instance.reliveButton.interactable = true;
+        ButtonManager.instance.shuffleButton.interactable = true;
+        allItems=CallWechat.instance.allItems;
+
         isFailed = false;
         isSeccess=false;
         backButton.GetComponent<RectTransform>().sizeDelta = new Vector2(ResolutionManager.CardLength , ResolutionManager.CardLength);
@@ -49,6 +57,7 @@ public class CardManager : MonoBehaviour
         }
     }
 
+
     private void OnDisable()
     {
 
@@ -57,7 +66,12 @@ public class CardManager : MonoBehaviour
         {
             Destroy(layoutGroup.transform.GetChild(i).gameObject);
         }
-        Destroy(allCardsParentsGameobject);//销毁这个prefab
+        // 遍历所有子物体
+        foreach (Transform child in allCardsParentsGameobject.transform)
+        {
+            Destroy(child.gameObject); // 销毁每个子物体
+        }
+        //Destroy(allCardsParentsGameobject);//销毁这个prefab
         allCards.Clear();//清空这个列表
     }
 
@@ -207,12 +221,37 @@ public class CardManager : MonoBehaviour
             for (int i = 0; i < sameCards.Count; i++)
             {
                 Destroy(sameCards[i]);
-                if (allCards.Count == 0)
+            }
+            if (allCards.Count == 0)
+            {
+                isSeccess = true;
+                Debug.Log("成功啦");
+                successEvent?.Invoke();
+
+                //上传到云数据库
+                for (int j = 0; j < itemContents.Count; j++)
                 {
-                    isSeccess = true;
-                    Debug.Log("成功啦");
-                    successEvent?.Invoke();
+                    for (int k = 0; k < CallWechat.instance.thisUserData.cardData.Count; k++)
+                    {
+                        //已经拥有该卡牌
+                        if (CallWechat.instance.thisUserData.cardData[k].OwnCard == 1)
+                        {
+                            continue;
+                        }
+                        //否则就增加
+                        if (CallWechat.instance.thisUserData.cardData[k].CardName == itemContents[j].Name)
+                        {
+                            CallWechat.instance.thisUserData.cardData[k].Count += currentDiffu / 10;
+                        }
+                        //如果碎片数量超过可以拥有的数量，则已经拥有
+                        if (CallWechat.instance.thisUserData.cardData[k].Count >= CallWechat.instance.thisUserData.cardData[k].Level * 100)
+                        {
+                            CallWechat.instance.thisUserData.cardData[k].OwnCard = 1;
+                        }
+                    }
                 }
+                CallWechat.instance.CallSetUserData(CallWechat.instance.thisUserData);
+
             }
         });
     }
@@ -301,17 +340,20 @@ public class CardManager : MonoBehaviour
         }
 
 
-        List<ItemContent> itemContents = RandomItem(10);//选取十个元素
+        itemContents = RandomItem(10);//选取十个元素
 
         List<ItemContent> totalItems = new List<ItemContent>();//场景中所有的item，供card选择
 
         for (int i = 0; i< itemContents.Count; i++)
         {
-            for (int j = 0; j < allCards.Count/10; j++)
+            for (int j = 0; j < currentDiffu / 10; j++)
             {
                 totalItems.Add(itemContents[i]);
             }
         }
+
+        Debug.Log($"itemContents is {itemContents.Count},totalItems is {totalItems.Count}");
+
 
         //为场景卡片填充元素
         for(int i = 0;i< allCards.Count; i++)
@@ -320,7 +362,17 @@ public class CardManager : MonoBehaviour
             allCards[i].type = totalItems[index].Name;
             allCards[i].GetComponent<Image>().sprite= totalItems[index].cardSprite;
             totalItems.RemoveAt(index);
+
+            //填充卡片字典，到时候该字典要从网络获取
+            if (!ResourceManager.instance.imageDict.ContainsKey(allCards[i].type))
+            {
+                ResourceManager.instance.imageDict.Add(allCards[i].type, allCards[i].GetComponent<Image>().sprite);
+            }
         }
+
+
+
+
     }
 
 

@@ -9,6 +9,8 @@ public class ResourceManager : MonoBehaviour
 
     public List<Sprite> imageSprite=new List<Sprite>();
 
+    public SerializableDictionary<string,Sprite> imageDict= new SerializableDictionary<string,Sprite>();
+
     public List<AudioClip> clickAudioList=new List<AudioClip>();
     public AudioClip clickAudio;
     public AudioSource clickAudioSource;

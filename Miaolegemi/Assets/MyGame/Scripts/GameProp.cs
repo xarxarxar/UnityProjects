@@ -10,7 +10,25 @@ using TMPro;
 /// 游戏道具的实现方法
 /// </summary>
 public class GameProp : MonoBehaviour
-{
+{   
+    public static GameProp instance;
+
+    public int addSlotCount = 2;//可以增加卡槽的次数 
+    public int shuffleCount = 2;//可以洗牌的次数
+    public int reliveCount = 1;//可以复活的次数
+
+    private void Awake()
+    {
+        instance = this;
+    }
+
+    private void OnEnable()
+    {
+        addSlotCount = 2;
+        shuffleCount = 2;
+        reliveCount = 1;
+    }
+
     //public GameObject transparentSlots;//透明的用来存放复活时的卡牌的卡槽
     private void Update()
     {
@@ -41,28 +59,29 @@ public class GameProp : MonoBehaviour
     //洗牌
     public void Shuffle()
     {
-        List<GameObject> cardGameObjects = new List<GameObject>();
+        List<string> cardTypeList = new List<string>();
         //遍历场景内所有卡牌
         for(int i = 0; i < CardManager.instance.allCards.Count; i++)
         {
-            cardGameObjects.Add(CardManager.instance.allCards[i].gameObject);
+            cardTypeList.Add(CardManager.instance.allCards[i].type);
         }
 
         //洗牌,从allSprites随机选取sprite赋给相应的Image组件
         // 洗牌逻辑
         for (int i = 0; i < CardManager.instance.allCards.Count; i++)
         {
+            //Debug.Log(cardGameObjects.Count);
             // 随机从allSprites列表中抽取一个sprite
-            int randomIndex = Random.Range(0, cardGameObjects.Count);
-            GameObject selectedObject = cardGameObjects[randomIndex];
+            int randomIndex = Random.Range(0, cardTypeList.Count);
+            string selectedCardType = cardTypeList[randomIndex];
 
             // 将选中的sprite赋值给相应卡牌的Image组件
-            CardManager.instance.allCards[i].GetComponent<Image>().sprite = selectedObject.GetComponent<Image>().sprite;
-            CardManager.instance.allCards[i].GetComponent<Card>().type = selectedObject.GetComponent<Card>().type;
+            CardManager.instance.allCards[i].GetComponent<Image>().sprite = ResourceManager.instance.imageDict[selectedCardType];
+            CardManager.instance.allCards[i].GetComponent<Card>().type = selectedCardType;
 
 
             // 从allSprites列表中移除已分配的sprite
-            cardGameObjects.RemoveAt(randomIndex);
+            cardTypeList.RemoveAt(randomIndex);
 
             // 获取当前卡牌的RectTransform
             RectTransform cardRect = CardManager.instance.allCards[i].GetComponent<RectTransform>();
@@ -80,8 +99,6 @@ public class GameProp : MonoBehaviour
     //将卡槽内所有卡片转移到外部来
     public void TransferCards()
     {
-
-        
 
         RectTransform slotRect = CardManager.instance.layoutGroup.GetComponent<RectTransform>();//获取卡槽
 
@@ -130,8 +147,16 @@ public class GameProp : MonoBehaviour
                .Join(slotRect.GetComponent<Image>().DOFade(0f, 0.5f)) // 透明度变为 0
                .OnComplete(() =>
         {
+            Destroy(slotRect.GetComponent<HorizontalLayoutGroup>()); 
             copySlot.SetActive(true);
             copySlot.transform.DOScale(Vector3.one, 0.5f);
+            Debug.Log(slotRect.childCount);
+            while (slotRect.childCount > 0)
+            {
+                slotRect.GetChild(0).SetParent(CardManager.instance.allCardsParentsGameobject.transform);
+            }
+            
+            Destroy(slotRect.gameObject);
         });
 
         

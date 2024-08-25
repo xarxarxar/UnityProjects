@@ -59,7 +59,6 @@ public class ItemContent
     public string Name="";
     public int Weight=0;
     public Sprite cardSprite = null;
-
 }
 
 public class GenerateCard

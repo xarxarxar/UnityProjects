@@ -5,10 +5,20 @@ using UnityEngine;
 using WeChatWASM;
 using System.Threading.Tasks;
 using Unity.VisualScripting;
+using UnityEngine.UI;
 
 public class CallWechat : MonoBehaviour
 {
     public static CallWechat instance;
+
+    public UserData thisUserData = new UserData();
+
+    public Text AvatarText;     
+    public Text NickNameText;     
+
+    //从数据库中获取的所有卡牌，暂时用list代替
+    public List<ItemContent> allItems = new List<ItemContent>();
+
     private void Awake()
     {
         instance = this;
@@ -21,16 +31,18 @@ public class CallWechat : MonoBehaviour
             UserName = "def",
             UserID = "456",
             UserScore = 20,
-            testName = 50,
             cardData = new List<CardData>
             {
-                new CardData("def", "猫咪碎片1", 30, 3, 0),
-                new CardData("def", "猫咪碎片2", 30, 3, 0),
-                new CardData("def", "猫咪碎片3", 30, 3, 0),
-                new CardData("def", "猫咪碎片4", 30, 3, 0),
-                new CardData("def", "猫咪碎片5", 30, 3, 0),
-                new CardData("def", "猫咪碎片6", 30, 3, 0),
-                new CardData("def", "猫咪碎片7", 30, 3, 0)
+                new CardData("1", 0, 3, 0),
+                new CardData("2", 0, 3, 0),
+                new CardData("3", 0, 3, 0),
+                new CardData("4", 0, 2, 0),
+                new CardData("5", 0, 2, 0),
+                new CardData("6", 0, 2, 0),
+                new CardData("7", 0, 2, 0),
+                new CardData("8", 0, 1, 0),
+                new CardData("9", 0, 1, 0),
+                new CardData("10", 0, 1, 0),
             }
         };
 
@@ -122,14 +134,13 @@ public class CallWechat : MonoBehaviour
                 });
 
                 CallSetUserData(thisUserData);
-                
             }
         );
 
            }
 
 
-    private void CallSetUserData(UserData gameUserData)
+    public void CallSetUserData(UserData gameUserData)
     {
         Debug.Log("CallSetUserData");
         WX.cloud.CallFunction(new CallFunctionParam()
@@ -191,5 +202,116 @@ public class CallWechat : MonoBehaviour
                 Debug.Log("GetCardData complete");
             }
         });
+    }
+
+    public void GetRankInfo(Action<RankInfo> successAction)
+    {
+
+        // 调用云函数 "TestCloudFunction02" (假设这是你之前定义的获取玩家数据的云函数名称)
+        WX.cloud.CallFunction(new CallFunctionParam()
+        {
+            name = "get-rankinfo",  // 替换为你获取玩家数据的云函数名称
+            data = "{\"player_data\":0}",  //下载的时候 这里的 data 需要随便传一个 json，否则会报错,  // 你可以根据需要传递参数
+
+            success = (res) =>
+            {
+                // 解析从云函数返回的结果
+                if (res.result != null)
+                {
+                    Debug.Log(res.result);
+                    // 将 JSON 转换为 UserData 对象
+                    RankInfo rankInfo = JsonUtility.FromJson<RankInfo>(res.result.ToString());
+                    Debug.Log(rankInfo.data[0].gamedata.UserName);
+                    // 调用传入的成功回调函数，传递 userData
+                    successAction?.Invoke(rankInfo);
+                }
+            },
+            fail = (res) =>
+            {
+                Debug.LogError("GetRankInfo failed: " + res.errMsg);
+            },
+            complete = (res) =>
+            {
+                Debug.Log("GetRankInfo complete");
+            }
+        });
+    }
+
+    //获取用户的微信ID和头像,未授权时调用
+    public void GetUserWechatIDandAvatar()
+    {
+        //创建让用户点击授权的按钮
+        WXUserInfoButton btn = WX.CreateUserInfoButton(0, 0, Screen.width, Screen.height, "zh_CN", false);
+        btn.Show();
+        btn.OnTap((res) =>
+        {
+            Debug.Log("click userinfo btn: " + JsonUtility.ToJson(res, true));
+            if (res.errCode == 0)
+            {
+                // 用户已允许获取个人信息，返回的 res.userInfo 即为用户信息
+                Debug.Log("userinfo: " + JsonUtility.ToJson(res.userInfo, true));
+                // 将用户信息存入成员变量，以待后用
+               WXUserInfo userInfo = res.userInfo;
+                // 展示，只是为了测试看到
+                AvatarText.text = res.userInfo.avatarUrl;
+                NickNameText.text = res.userInfo.nickName;
+                Debug.Log($"头像链接为{res.userInfo.avatarUrl}，昵称为{res.userInfo.nickName}");
+                //this.ShowUserInfo(res.userInfo.avatarUrl, res.userInfo.nickName);
+            }
+            else
+            {
+                Debug.Log("用户拒绝获取个人信息");
+            }
+            // 最后隐藏授权区域，防止阻塞游戏继续
+            btn.Hide();
+            Debug.Log("已隐藏热区");
+        });
+    }
+
+
+    /// <summary>
+    /// 调用Api获取用户信息，已授权之后调用
+    /// </summary>
+    public  void GetUserInfo()
+    {
+        WX.GetUserInfo(new GetUserInfoOption()
+        {
+            lang = "zh_CN",
+            success = (res) =>
+            {
+                Debug.Log("获取用户信息成功(API): " + JsonUtility.ToJson(res.userInfo, true));
+                // 将用户信息存入成员变量，或存入云端，方便后续使用
+                WXUserInfo userInfo = this.ConvertUserInfo(res.userInfo);
+
+                // 展示，只是为了测试看到
+                AvatarText.text = res.userInfo.avatarUrl;
+                NickNameText.text = res.userInfo.nickName;
+                //this.ShowUserInfo(res.userInfo.avatarUrl, res.userInfo.nickName);
+            },
+            fail = (err) =>
+            {
+                Debug.Log("获取用户信息失败(API): " + JsonUtility.ToJson(err, true));
+            }
+        });
+    }
+
+    /// <summary>
+    /// 将UserInfo对象转为WXUserInfo
+    /// ps: 不知为何，相同结构要搞两个对象
+    /// </summary>
+    /// <param name="userInfo"></param>
+    /// <returns></returns>
+    WXUserInfo ConvertUserInfo(UserInfo userInfo)
+    {
+        return new WXUserInfo()
+        {
+            nickName = userInfo.nickName,
+            avatarUrl = userInfo.avatarUrl,
+            country = userInfo.country,
+            province = userInfo.province,
+            city = userInfo.city,
+            language = userInfo.language,
+            gender = (int)userInfo.gender
+        };
     }
 }

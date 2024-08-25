@@ -20,6 +20,7 @@ public class CutScene : MonoBehaviour
     }
     void MoveImageAcrossScreen(float screenHeight, RectTransform imageRectTransform)
     {
+        
         // 计算目标位置（屏幕右侧外部的位置）
         float targetY = screenHeight;
 
@@ -31,8 +32,11 @@ public class CutScene : MonoBehaviour
 
         // 添加移动的动画
         sequence.Append(// 使用 DOTween 从左侧移动到右侧
-        imageRectTransform.DOAnchorPosY(targetY, 1.0f).SetEase(Ease.InSine)
-            .OnComplete(() => { gameObject.SetActive(false); }));  // 一定时间内完成动画，使用Ease.InOutQuad缓动);
+        imageRectTransform.DOScale(Vector3.zero, 1.0f).SetEase(Ease.InSine).OnComplete(() =>
+        {
+            imageRectTransform.localScale = Vector3.one; // 将大小恢复为1
+            gameObject.SetActive(false); // 隐藏UI元素
+        }));  // 一定时间内完成动画，使用Ease.InOutQuad缓动);
 
         // 启动动画序列
         sequence.Play();
