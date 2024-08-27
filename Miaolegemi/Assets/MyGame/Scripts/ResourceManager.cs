@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.Networking;
+using System;
 
 public class ResourceManager : MonoBehaviour
 {
@@ -61,5 +64,28 @@ public class ResourceManager : MonoBehaviour
         // 确保在编辑器中也能触发
         // 直接调用 OnEnumChanged 来查看效果
         OnEnumChanged((int)_myClickAudio);
+    }
+
+    
+
+    public void LoadImageFromUrl(string url, Action<Texture2D> success)
+    {
+        StartCoroutine(DownloadImage(url, success));
+    }
+
+     IEnumerator DownloadImage(string url,Action<Texture2D> success)
+    {
+        UnityWebRequest request = UnityWebRequestTexture.GetTexture(url);
+        yield return request.SendWebRequest();
+
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            Texture2D texture = DownloadHandlerTexture.GetContent(request);
+            success?.Invoke(texture);
+        }
+        else
+        {
+            Debug.LogError("Image download failed: " + request.error);
+        }
     }
 }

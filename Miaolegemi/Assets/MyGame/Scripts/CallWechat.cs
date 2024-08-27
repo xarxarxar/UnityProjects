@@ -13,8 +13,9 @@ public class CallWechat : MonoBehaviour
 
     public UserData thisUserData = new UserData();
 
-    public Text AvatarText;     
-    public Text NickNameText;     
+    public Text AvatarText; 
+    public Image AvatarImage;//头像图片
+    public Text NickNameText;//昵称文本组件     
 
     //从数据库中获取的所有卡牌，暂时用list代替
     public List<ItemContent> allItems = new List<ItemContent>();
@@ -284,7 +285,11 @@ public class CallWechat : MonoBehaviour
                 WXUserInfo userInfo = this.ConvertUserInfo(res.userInfo);
 
                 // 展示，只是为了测试看到
-                AvatarText.text = res.userInfo.avatarUrl;
+                ResourceManager.instance.LoadImageFromUrl(res.userInfo.avatarUrl, (texture2D) => {
+                    {
+                        Sprite sprite = Sprite.Create(texture2D, new Rect(0, 0, texture2D.width, texture2D.height), new Vector2(0.5f, 0.5f));
+                        AvatarImage.sprite = sprite;
+                    } });
                 NickNameText.text = res.userInfo.nickName;
                 //this.ShowUserInfo(res.userInfo.avatarUrl, res.userInfo.nickName);
             },
