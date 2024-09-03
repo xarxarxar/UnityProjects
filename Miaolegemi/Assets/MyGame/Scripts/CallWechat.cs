@@ -27,10 +27,10 @@ public class CallWechat : MonoBehaviour
 
     private void Start()
     {
-        UserData thisUserData = new UserData
+        thisUserData = new UserData
         {
-            UserName = "def",
-            UserID = "456",
+            UserNickName = "def",
+            AvatarURL = "123",
             UserScore = 20,
             cardData = new List<CardData>
             {
@@ -55,6 +55,8 @@ public class CallWechat : MonoBehaviour
                     env = "test01cloud-8g9b0glp7aab2737",
                     traceUser = false
                 });
+
+                CreateUserData(thisUserData);//在云数据库中创建元素
                 //WX.cloud.CallFunction(new CallFunctionParam()
                 //{
                 //    name = "download-file",  // 替换为你获取玩家数据的云函数名称
@@ -134,19 +136,50 @@ public class CallWechat : MonoBehaviour
                     Debug.Log("i  m back");
                 });
 
-                CallSetUserData(thisUserData);
+                //CallSetUserData(thisUserData);
+                GetCardData((res) => { });//从数据库获取用户信息，包括游戏信息
+
+                GetUserInfo();//用户授权获取昵称和头像信息
+
+                
             }
         );
 
            }
 
+    //在数据库中创建userdata，如果已有的话就不创建
+    public void CreateUserData(UserData gameUserData)
+    {
+        WX.cloud.CallFunction(new CallFunctionParam()
+        {
+            name = "create_userdata",
+            //用户数据类转为json，测试时我试过传空串会导致云函数报错，原因不明，懂得大佬可以评论区教教我哈哈
+            data = JsonUtility.ToJson(gameUserData),
+
+            success = (res) =>
+            {
+                Debug.Log("create UserData success");
+            },
+            fail = (res) =>
+            {
+                Debug.Log("fail");
+                //Debug.Log(res.errMsg);
+            },
+            complete = (res) =>
+            {
+                Debug.Log("complete");
+                //Debug.Log(res.result);
+            }
+        });
+    }
 
     public void CallSetUserData(UserData gameUserData)
     {
         Debug.Log("CallSetUserData");
         WX.cloud.CallFunction(new CallFunctionParam()
         {
-            name = "TestCloudFunction01",
+            name = "upload-userdata",
+            //name = "TestCloudFunction01",
             //用户数据类转为json，测试时我试过传空串会导致云函数报错，原因不明，懂得大佬可以评论区教教我哈哈
             data = JsonUtility.ToJson(gameUserData),
 
@@ -186,10 +219,17 @@ public class CallWechat : MonoBehaviour
                 // 解析从云函数返回的结果
                 if (res.result != null)
                 {
-                    Debug.Log(res.result);
                     // 将 JSON 转换为 UserData 对象
                     userData = JsonUtility.FromJson<OnlineUserdata>(res.result.ToString());
-                    Debug.Log(userData.data.UserName);
+
+                    Debug.Log($"userData is {userData.data.cardData}");
+                    thisUserData.UserScore = userData.data.UserScore;
+                    thisUserData.cardData = userData.data.cardData;
+
+                    for (int i = 0; i < thisUserData.cardData.Count; i++)
+                    {
+                        Debug.Log(thisUserData.cardData[i].Count);
+                    }
                     // 调用传入的成功回调函数，传递 userData
                     successAction?.Invoke(userData);
                 }
@@ -253,6 +293,11 @@ public class CallWechat : MonoBehaviour
                 Debug.Log("userinfo: " + JsonUtility.ToJson(res.userInfo, true));
                 // 将用户信息存入成员变量，以待后用
                WXUserInfo userInfo = res.userInfo;
+                thisUserData.UserNickName = res.userInfo.nickName;
+                thisUserData.AvatarURL = res.userInfo.avatarUrl;
+
+                //CallSetUserData(thisUserData);//上传数据
+
                 // 展示，只是为了测试看到
                 AvatarText.text = res.userInfo.avatarUrl;
                 NickNameText.text = res.userInfo.nickName;
@@ -283,7 +328,11 @@ public class CallWechat : MonoBehaviour
                 Debug.Log("获取用户信息成功(API): " + JsonUtility.ToJson(res.userInfo, true));
                 // 将用户信息存入成员变量，或存入云端，方便后续使用
                 WXUserInfo userInfo = this.ConvertUserInfo(res.userInfo);
-
+                thisUserData.UserNickName = res.userInfo.nickName;
+                thisUserData.AvatarURL = res.userInfo.avatarUrl;
+                //CallSetUserData(thisUserData);//上传数据
+                Debug.Log($"UserNickName IS {thisUserData.UserNickName},AvatarURL IS {thisUserData.AvatarURL}，" +
+                    $"carddata count is {thisUserData.cardData.Count}");
                 // 展示，只是为了测试看到
                 ResourceManager.instance.LoadImageFromUrl(res.userInfo.avatarUrl, (texture2D) => {
                     {

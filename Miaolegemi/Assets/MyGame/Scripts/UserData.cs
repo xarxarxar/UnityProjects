@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class UserData 
 {
-    public string UserName;
-    public string UserID;
+    public string UserNickName;
+    public string AvatarURL;
     public int UserScore;
     public List<CardData> cardData =new List<CardData>();
     public UserData()
@@ -38,8 +38,8 @@ public class OnlineUserdata
 [System.Serializable]
 public class Data
 {
-    public string UserName;
-    public string UserID;
+    public string UserNickName;
+    public string AvatarURL;
     public int UserScore;
     public List<CardData> cardData = new List<CardData>();
     public myUserInfo userInfo;

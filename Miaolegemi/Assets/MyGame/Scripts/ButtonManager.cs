@@ -111,7 +111,7 @@ public class ButtonManager : MonoBehaviour
     {
         CallWechat.instance.GetRankInfo(RankUser);//获取排名信息
         //CallWechat.instance.GetUserWechatIDandAvatar();
-        CallWechat.instance.GetUserInfo();
+        //CallWechat.instance.GetUserInfo();
     }
     public void RankUser(RankInfo rankInfo)//排名
     {

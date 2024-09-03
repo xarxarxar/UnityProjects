@@ -32,8 +32,8 @@ public class CollectionManager : MonoBehaviour
     //获取该玩家信息成功之后调用的函数
     private void GetUserdataSuccess(OnlineUserdata userdata)
     {
-        CallWechat.instance.thisUserData.UserName = userdata.data.UserName;
-        CallWechat.instance.thisUserData.UserID = userdata.data.UserID;
+        CallWechat.instance.thisUserData.UserNickName = userdata.data.UserNickName;
+        CallWechat.instance.thisUserData.AvatarURL = userdata.data.AvatarURL;
         CallWechat.instance.thisUserData.UserScore = userdata.data.UserScore;
         CallWechat.instance.thisUserData.cardData = userdata.data.cardData;
         for (int i = 0; i < CallWechat.instance.thisUserData.cardData.Count; i++)

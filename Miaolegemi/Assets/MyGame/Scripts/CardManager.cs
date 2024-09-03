@@ -38,6 +38,13 @@ public class CardManager : MonoBehaviour
 
     private void OnEnable()
     {
+        for (int k = 0; k < CallWechat.instance.thisUserData.cardData.Count; k++)
+        {
+            Debug.Log($"CardName is {CallWechat.instance.thisUserData.cardData[k].CardName},count is {CallWechat.instance.thisUserData.cardData[k].Count}");
+            //否则就增加
+        }
+
+
         ButtonManager.instance.addSlotButton.interactable = true;
         ButtonManager.instance.reliveButton.interactable = true;
         ButtonManager.instance.shuffleButton.interactable = true;
@@ -60,7 +67,7 @@ public class CardManager : MonoBehaviour
 
     private void OnDisable()
     {
-
+        Debug.Log($"CallWechat.instance.thisUserData.cardData.Count is {CallWechat.instance.thisUserData.cardData.Count}");
         //销毁卡槽中的所有卡牌
         for (int i = 0;i< layoutGroup.transform.childCount; i++)
         {
@@ -250,6 +257,7 @@ public class CardManager : MonoBehaviour
                         }
                     }
                 }
+                
                 CallWechat.instance.CallSetUserData(CallWechat.instance.thisUserData);
 
             }
@@ -351,8 +359,6 @@ public class CardManager : MonoBehaviour
                 totalItems.Add(itemContents[i]);
             }
         }
-
-        Debug.Log($"itemContents is {itemContents.Count},totalItems is {totalItems.Count}");
 
 
         //为场景卡片填充元素
