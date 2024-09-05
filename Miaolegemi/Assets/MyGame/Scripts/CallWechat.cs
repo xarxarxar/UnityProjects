@@ -55,8 +55,8 @@ public class CallWechat : MonoBehaviour
                     env = "test01cloud-8g9b0glp7aab2737",
                     traceUser = false
                 });
-
-                CreateUserData(thisUserData);//在云数据库中创建元素
+                GetUserInfo();//用户授权获取昵称和头像信息
+                
                 //WX.cloud.CallFunction(new CallFunctionParam()
                 //{
                 //    name = "download-file",  // 替换为你获取玩家数据的云函数名称
@@ -137,10 +137,6 @@ public class CallWechat : MonoBehaviour
                 });
 
                 //CallSetUserData(thisUserData);
-                GetCardData((res) => { });//从数据库获取用户信息，包括游戏信息
-
-                GetUserInfo();//用户授权获取昵称和头像信息
-
                 
             }
         );
@@ -159,16 +155,15 @@ public class CallWechat : MonoBehaviour
             success = (res) =>
             {
                 Debug.Log("create UserData success");
+                GetCardData((res) => { });//从数据库获取用户信息，包括游戏信息
             },
             fail = (res) =>
             {
                 Debug.Log("fail");
-                //Debug.Log(res.errMsg);
             },
             complete = (res) =>
             {
                 Debug.Log("complete");
-                //Debug.Log(res.result);
             }
         });
     }
@@ -186,17 +181,14 @@ public class CallWechat : MonoBehaviour
             success = (res) =>
             {
                 Debug.Log("CallSetUserData success");
-                //Debug.Log(res.result);
             },
             fail = (res) =>
             {
                 Debug.Log("fail");
-                //Debug.Log(res.errMsg);
             },
             complete = (res) =>
             {
                 Debug.Log("complete");
-                //Debug.Log(res.result);
             }
         });
     }
@@ -262,7 +254,7 @@ public class CallWechat : MonoBehaviour
                     Debug.Log(res.result);
                     // 将 JSON 转换为 UserData 对象
                     RankInfo rankInfo = JsonUtility.FromJson<RankInfo>(res.result.ToString());
-                    Debug.Log(rankInfo.data[0].gamedata.UserName);
+                    Debug.Log(rankInfo.data[0].gamedata.UserNickName);
                     // 调用传入的成功回调函数，传递 userData
                     successAction?.Invoke(rankInfo);
                 }
@@ -330,9 +322,7 @@ public class CallWechat : MonoBehaviour
                 WXUserInfo userInfo = this.ConvertUserInfo(res.userInfo);
                 thisUserData.UserNickName = res.userInfo.nickName;
                 thisUserData.AvatarURL = res.userInfo.avatarUrl;
-                //CallSetUserData(thisUserData);//上传数据
-                Debug.Log($"UserNickName IS {thisUserData.UserNickName},AvatarURL IS {thisUserData.AvatarURL}，" +
-                    $"carddata count is {thisUserData.cardData.Count}");
+
                 // 展示，只是为了测试看到
                 ResourceManager.instance.LoadImageFromUrl(res.userInfo.avatarUrl, (texture2D) => {
                     {
@@ -340,6 +330,7 @@ public class CallWechat : MonoBehaviour
                         AvatarImage.sprite = sprite;
                     } });
                 NickNameText.text = res.userInfo.nickName;
+                CreateUserData(thisUserData);//在云数据库中创建元素
                 //this.ShowUserInfo(res.userInfo.avatarUrl, res.userInfo.nickName);
             },
             fail = (err) =>

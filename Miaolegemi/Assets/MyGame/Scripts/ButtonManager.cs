@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -46,6 +48,7 @@ public class ButtonManager : MonoBehaviour
         tipPanel.SetActive(true);
     }
 
+
     public void ConfrimGiveUp()//确认放弃按钮
     {
         tipPanel.SetActive(false);
@@ -54,18 +57,17 @@ public class ButtonManager : MonoBehaviour
         gameScene.SetActive(false);
         startScene.SetActive(true);
     }
-
     public void ContinueButton()//继续挑战按钮
     {
         tipPanel.SetActive(false);
     }
-
     public void BackToStart()//从仓库界面返回开始界面
     {
         collectScene.SetActive(false);
         startScene.SetActive(true) ;
     }
 
+    [Header("道具按钮")]
     public  Button addSlotButton;
     public  Button shuffleButton;
     public  Button reliveButton;
@@ -80,9 +82,6 @@ public class ButtonManager : MonoBehaviour
             addSlotButton.interactable = false;
         }
     }
-
-    
-
     //洗牌按钮
     public void ShuffleButton()
     {
@@ -94,7 +93,6 @@ public class ButtonManager : MonoBehaviour
             shuffleButton.interactable = false;
         }
     }
-
     //复活按钮
     public void ReliveButton()
     {
@@ -107,9 +105,14 @@ public class ButtonManager : MonoBehaviour
         }
     }
 
+    [Header("排名按钮")]
+    public GameObject RankInfoPanel;//排名面板
+    public GameObject RankInfoPrefab;//排名条预制体
+    public Transform RanInfoParent;//排名条父物体
     public void GetRankButton()
     {
-        CallWechat.instance.GetRankInfo(RankUser);//获取排名信息
+        RankInfoPanel.SetActive(true);//打开排名面板
+        //CallWechat.instance.GetRankInfo(RankUser);//获取排名信息
         //CallWechat.instance.GetUserWechatIDandAvatar();
         //CallWechat.instance.GetUserInfo();
     }
@@ -117,9 +120,39 @@ public class ButtonManager : MonoBehaviour
     {
         for (int i = 0; i < rankInfo.data.Count; i++)
         {
-            Debug.Log(rankInfo.data[i].openid);
-            Debug.Log(rankInfo.data[i].gamedata.UserName);
+            int currentIndex = i;  // 将 i 值保存到局部变量
+
+            Debug.Log("RankUser:"+rankInfo.data[currentIndex].gamedata.AvatarURL);
+            Debug.Log("RankUser:"+rankInfo.data[currentIndex].gamedata.UserNickName);
+
+            GameObject tmpRank = Instantiate(RankInfoPrefab, RanInfoParent);
+            tmpRank.transform.Find("RankText").GetComponent<Text>().text = (currentIndex + 1).ToString();
+
+            Debug.Log("RankUser01:" + rankInfo.data[currentIndex].gamedata.AvatarURL);
+            Debug.Log("RankUser01:" + rankInfo.data[currentIndex].gamedata.UserNickName);
+
+            ResourceManager.instance.LoadImageFromUrl(rankInfo.data[currentIndex].gamedata.AvatarURL, (texture2D) => {
+                Sprite sprite = Sprite.Create(texture2D, new Rect(0, 0, texture2D.width, texture2D.height), new Vector2(0.5f, 0.5f));
+                tmpRank.transform.Find("AvatarImage").GetComponent<Image>().sprite = sprite;
+            });
+            Debug.Log("RankUser02:" + rankInfo.data[currentIndex].gamedata.AvatarURL);
+            Debug.Log("RankUser02:" + rankInfo.data[currentIndex].gamedata.UserNickName);
+            tmpRank.transform.Find("NickNameTMP").GetComponent<TextMeshProUGUI>().text = rankInfo.data[currentIndex].gamedata.UserNickName;
+
+            int ownCount = 0;
+            for (int j = 0; j < rankInfo.data[currentIndex].gamedata.cardData.Count; j++)
+            {
+                if (rankInfo.data[currentIndex].gamedata.cardData[j].OwnCard == 1) ownCount += 1;
+            }
+            tmpRank.transform.Find("UserCollectionText").GetComponent<Text>().text = $"收藏{ownCount}个";
+            
         }
+    }
+
+    //关闭排行面板按钮
+    public void CloseRankPanelButton()
+    {
+        RankInfoPanel.SetActive(false);
     }
 }
 
@@ -141,8 +174,8 @@ public class RankUser
 [System.Serializable]
 public class GameData
 {
-    public string UserID;
-    public string UserName;
+    public string AvatarURL;
+    public string UserNickName;
     public int UserScore;
     public List<CardData> cardData;
     public myUserInfo userInfo;
