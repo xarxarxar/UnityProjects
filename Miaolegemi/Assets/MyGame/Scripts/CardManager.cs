@@ -29,8 +29,8 @@ public class CardManager : MonoBehaviour
 
     public bool isSeccess = false;
 
-    public event Action failedEvent;//失败触发事件
-    public event Action successEvent;//成功触发事件
+    public static event Action failedEvent;//失败触发事件
+    public static event Action successEvent;//成功触发事件
     private void Awake()//设置单例
     {
         instance = this;
@@ -38,13 +38,6 @@ public class CardManager : MonoBehaviour
 
     private void OnEnable()
     {
-        for (int k = 0; k < CallWechat.instance.thisUserData.cardData.Count; k++)
-        {
-            Debug.Log($"CardName is {CallWechat.instance.thisUserData.cardData[k].CardName},count is {CallWechat.instance.thisUserData.cardData[k].Count}");
-            //否则就增加
-        }
-
-
         ButtonManager.instance.addSlotButton.interactable = true;
         ButtonManager.instance.reliveButton.interactable = true;
         ButtonManager.instance.shuffleButton.interactable = true;
@@ -329,7 +322,7 @@ public class CardManager : MonoBehaviour
             singalCard.GetComponent<Card>().level = 0;
         }
 
-        for (int i = 0; i < 11; i++)
+        for (int i = 0; i < currentDiffu-49; i++)
         {
             GameObject singalCard = Instantiate(singalCardsParentsGameobject, allCardsParentsGameobject.transform);
             float cardWidth = ResolutionManager.CardLength;

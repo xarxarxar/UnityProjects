@@ -154,6 +154,16 @@ public class ButtonManager : MonoBehaviour
     {
         RankInfoPanel.SetActive(false);
     }
+
+    [Header("排名按钮")]
+    public GameObject SuccessPanel;//成功面板
+    //成功之后的面板里的确定按钮
+    public void SuccessConfirmButton()
+    {
+        SuccessPanel.SetActive(false);
+        gameScene.SetActive(false);
+        startScene.SetActive(true);
+    }
 }
 
 [System.Serializable]

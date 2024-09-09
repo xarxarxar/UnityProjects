@@ -18,9 +18,4 @@ public class LayoutManager : MonoBehaviour
         gridLayoutGroup.spacing = new Vector2(xSpace,0);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

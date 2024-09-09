@@ -7,17 +7,6 @@ using WeChatWASM;
 
 public class GetInfo : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     // 异步函数，获取玩家数据
     public async void GetCardData(Action<UserData> successAction)

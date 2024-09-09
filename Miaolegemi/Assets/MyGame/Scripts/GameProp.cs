@@ -29,22 +29,6 @@ public class GameProp : MonoBehaviour
         reliveCount = 1;
     }
 
-    //public GameObject transparentSlots;//透明的用来存放复活时的卡牌的卡槽
-    private void Update()
-    {
-        if (Input.GetKeyUp(KeyCode.Escape))
-        {
-            AddSlot();
-        }
-        if (Input.GetKeyUp(KeyCode.Space))
-        {
-            Shuffle();
-        }
-        if (Input.GetKeyUp(KeyCode.A))
-        {
-            TransferCards();
-        }
-    }
     //增加一格卡槽
     public void AddSlot()
     {
@@ -52,8 +36,9 @@ public class GameProp : MonoBehaviour
         if (CardManager.instance.slotLength >= 9) return;
         CardManager.instance.slotLength += 1;
         CardManager.instance.isFailed = false;
-        CardManager.instance.layoutGroup.GetComponent<RectTransform>().sizeDelta = new Vector2(ResolutionManager.CardLength * CardManager.instance.slotLength + 10, ResolutionManager.CardLength + 10);
-        
+        CardManager.instance.layoutGroup.GetComponent<RectTransform>().sizeDelta = 
+            new Vector2(ResolutionManager.CardLength * CardManager.instance.slotLength + 10, 
+            ResolutionManager.CardLength + 10);
     }
 
     //洗牌
