@@ -20,7 +20,7 @@ public class ResourceManager : MonoBehaviour
     private void Awake()
     {
         instance = this;
-        clickAudio = clickAudioList[0];
+        //clickAudio = clickAudioList[0];
     }
 
     // 定义一个枚举
