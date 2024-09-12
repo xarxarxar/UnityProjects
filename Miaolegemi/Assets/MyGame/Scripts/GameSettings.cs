@@ -1,5 +1,30 @@
 using System;
 
+/// <summary>
+/// bgm音乐类型
+/// </summary>
+public enum BackgroundMusicType
+{
+    MainMenu,
+    Gameplay,
+    Victory,
+    Defeat
+}
+
+/// <summary>
+/// 音效类型
+/// </summary>
+public enum SoundEffectType
+{
+    ButtonClick,
+    Jump,
+    Explosion,
+    CoinCollect
+}
+
+/// <summary>
+/// 游戏的设置，例如音量大小，音效大小等等
+/// </summary>
 [Serializable]
 public class GameSettings
 {

@@ -1,18 +1,23 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance;
 
     [Header("Audio Sources")]
-    public AudioSource backgroundMusicSource;
-    public AudioSource soundEffectSource;
+    private AudioSource backgroundMusicSource;
+    private AudioSource soundEffectSource;
 
     [Header("Audio Clips")]
-    public AudioClip[] backgroundMusicClips;
-    public AudioClip[] soundEffectClips;
+    public List<AudioClip> backgroundMusicClips=new List<AudioClip>();
+    public List<AudioClip> soundEffectClips=new List<AudioClip>();
 
-    // 引用 GameSettings 类
+    // 用于存储音频剪辑的字典
+    private Dictionary<BackgroundMusicType, AudioClip> backgroundMusicMap;
+    private Dictionary<SoundEffectType, AudioClip> soundEffectMap;
+
+    // 游戏设置引用
     private GameSettings gameSettings;
 
     private void Awake()
@@ -23,9 +28,12 @@ public class AudioManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject); // 在加载新场景时不销毁此对象
 
-            // 初始化 GameSettings
+            // 初始化游戏设置
             gameSettings = new GameSettings();
             gameSettings.LoadSettings(); // 从某种存储中加载设置
+
+            // 初始化音频剪辑映射
+            InitializeAudioMaps();
 
             // 设置初始音量
             SetVolume(gameSettings.MusicVolume, gameSettings.SFXVolume);
@@ -34,22 +42,58 @@ public class AudioManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        // 获取 Main Camera 上的所有 AudioSource 组件
+        AudioSource[] audioSources = Camera.main.GetComponents<AudioSource>();
+
+        if (audioSources.Length >= 2)
+        {
+            // 将第一个 AudioSource 设置为 backgroundMusicSource
+            backgroundMusicSource = audioSources[0];
+
+            // 将第二个 AudioSource 设置为 soundEffectSource
+            soundEffectSource = audioSources[1];
+        }
+        else
+        {
+            Debug.LogError("Main Camera 上没有足够的 AudioSource 组件。");
+        }
+    }
+
+    private void InitializeAudioMaps()
+    {
+        backgroundMusicMap = new Dictionary<BackgroundMusicType, AudioClip>
+        {
+            { BackgroundMusicType.MainMenu, backgroundMusicClips[0] },
+            { BackgroundMusicType.Gameplay, backgroundMusicClips[1] },
+            { BackgroundMusicType.Victory, backgroundMusicClips[2] },
+            { BackgroundMusicType.Defeat, backgroundMusicClips[3] }
+        };
+
+        soundEffectMap = new Dictionary<SoundEffectType, AudioClip>
+        {
+            { SoundEffectType.ButtonClick, soundEffectClips[0] },
+            { SoundEffectType.Jump, soundEffectClips[1] },
+            { SoundEffectType.Explosion, soundEffectClips[2] },
+            { SoundEffectType.CoinCollect, soundEffectClips[3] }
+        };
     }
 
     /// <summary>
     /// 播放背景音乐
     /// </summary>
-    /// <param name="clipIndex">背景音乐剪辑的索引</param>
-    public void PlayBackgroundMusic(int clipIndex)
+    /// <param name="musicType">背景音乐的类型</param>
+    public void PlayBackgroundMusic(BackgroundMusicType musicType)
     {
-        if (clipIndex < 0 || clipIndex >= backgroundMusicClips.Length)
+        if (backgroundMusicMap.TryGetValue(musicType, out AudioClip clip))
         {
-            Debug.LogWarning("无效的背景音乐索引！");
-            return;
+            backgroundMusicSource.clip = clip;
+            backgroundMusicSource.Play();
         }
-
-        backgroundMusicSource.clip = backgroundMusicClips[clipIndex];
-        backgroundMusicSource.Play();
+        else
+        {
+            Debug.LogWarning("无效的背景音乐类型！");
+        }
     }
 
     /// <summary>
@@ -63,16 +107,17 @@ public class AudioManager : MonoBehaviour
     /// <summary>
     /// 播放音效
     /// </summary>
-    /// <param name="clipIndex">音效剪辑的索引</param>
-    public void PlaySoundEffect(int clipIndex)
+    /// <param name="sfxType">音效的类型</param>
+    public void PlaySoundEffect(SoundEffectType sfxType)
     {
-        if (clipIndex < 0 || clipIndex >= soundEffectClips.Length)
+        if (soundEffectMap.TryGetValue(sfxType, out AudioClip clip))
         {
-            Debug.LogWarning("无效的音效索引！");
-            return;
+            soundEffectSource.PlayOneShot(clip);
         }
-
-        soundEffectSource.PlayOneShot(soundEffectClips[clipIndex]);
+        else
+        {
+            Debug.LogWarning("无效的音效类型！");
+        }
     }
 
     /// <summary>
