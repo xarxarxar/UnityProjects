@@ -28,6 +28,26 @@ public class AudioManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject); // 在加载新场景时不销毁此对象
 
+
+            // 获取 Main Camera 上的所有 AudioSource 组件
+            AudioSource[] audioSources = Camera.main.GetComponents<AudioSource>();
+
+            Debug.Log($"AudioSource length is {audioSources.Length}");
+            if (audioSources.Length >= 2)
+            {
+                // 将第一个 AudioSource 设置为 backgroundMusicSource
+                backgroundMusicSource = audioSources[0];
+
+                // 将第二个 AudioSource 设置为 soundEffectSource
+                soundEffectSource = audioSources[1];
+            }
+            else
+            {
+                Debug.LogError("Main Camera 上没有足够的 AudioSource 组件。");
+            }
+
+
+
             // 初始化游戏设置
             gameSettings = new GameSettings();
             gameSettings.LoadSettings(); // 从某种存储中加载设置
@@ -43,21 +63,7 @@ public class AudioManager : MonoBehaviour
             Destroy(gameObject);
         }
 
-        // 获取 Main Camera 上的所有 AudioSource 组件
-        AudioSource[] audioSources = Camera.main.GetComponents<AudioSource>();
-
-        if (audioSources.Length >= 2)
-        {
-            // 将第一个 AudioSource 设置为 backgroundMusicSource
-            backgroundMusicSource = audioSources[0];
-
-            // 将第二个 AudioSource 设置为 soundEffectSource
-            soundEffectSource = audioSources[1];
-        }
-        else
-        {
-            Debug.LogError("Main Camera 上没有足够的 AudioSource 组件。");
-        }
+        
     }
 
     private void InitializeAudioMaps()
@@ -72,10 +78,10 @@ public class AudioManager : MonoBehaviour
 
         soundEffectMap = new Dictionary<SoundEffectType, AudioClip>
         {
-            { SoundEffectType.ButtonClick, soundEffectClips[0] },
-            { SoundEffectType.Jump, soundEffectClips[1] },
-            { SoundEffectType.Explosion, soundEffectClips[2] },
-            { SoundEffectType.CoinCollect, soundEffectClips[3] }
+            { SoundEffectType.ClickButton, soundEffectClips[0] },
+            { SoundEffectType.ClickCard, soundEffectClips[1] },
+            { SoundEffectType.ComposeCard, soundEffectClips[2] },
+            { SoundEffectType.SwitchPage, soundEffectClips[3] }
         };
     }
 

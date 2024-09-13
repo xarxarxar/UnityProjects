@@ -16,10 +16,10 @@ public enum BackgroundMusicType
 /// </summary>
 public enum SoundEffectType
 {
-    ButtonClick,
-    Jump,
-    Explosion,
-    CoinCollect
+    ClickButton,//µã»÷°´Å¥
+    ClickCard,//µã»÷¿¨ÅÆ
+    ComposeCard,//¿¨ÅÆºÏ³É
+    SwitchPage//ÇÐ»»Ò³Ãæ
 }
 
 /// <summary>

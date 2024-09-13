@@ -66,6 +66,6 @@ public class Card : MonoBehaviour
         }
         CardManager.instance.MoveCard(this);
 
-        ResourceManager.instance.clickAudioSource.PlayOneShot(ResourceManager.instance.clickAudio);
+        AudioManager.Instance.PlaySoundEffect(SoundEffectType.ClickCard);//²¥·Åµã»÷¿¨Æ¬ÒôÐ§
     }
 }

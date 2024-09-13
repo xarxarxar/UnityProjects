@@ -60,7 +60,6 @@ public class CardManager : MonoBehaviour
 
     private void OnDisable()
     {
-        Debug.Log($"CallWechat.instance.thisUserData.cardData.Count is {CallWechat.instance.thisUserData.cardData.Count}");
         //销毁卡槽中的所有卡牌
         for (int i = 0;i< layoutGroup.transform.childCount; i++)
         {
