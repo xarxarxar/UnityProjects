@@ -200,6 +200,7 @@ public class CardManager : MonoBehaviour
         if (layoutGroup.transform.childCount >= slotLength && sameCards.Count==0)//Ê§°Ü
         {
             isFailed=true;
+            AudioManager.Instance.PlaySoundEffect(SoundEffectType.Defeat);
             failedEvent?.Invoke();
         }
 
@@ -219,11 +220,13 @@ public class CardManager : MonoBehaviour
             Destroy(oneCard.gameObject);
             for (int i = 0; i < sameCards.Count; i++)
             {
+                AudioManager.Instance.PlaySoundEffect(SoundEffectType.ComposeCard);
                 Destroy(sameCards[i]);
             }
             if (allCards.Count == 0)
             {
                 isSeccess = true;
+                AudioManager.Instance.PlaySoundEffect(SoundEffectType.Victory);
                 Debug.Log("³É¹¦À²");
                 successEvent?.Invoke();
 

@@ -1153,7 +1153,9 @@ MonoBehaviour:
   - {fileID: 8300000, guid: d3ca88a71c6d56742a2b9ff37866730a, type: 3}
   - {fileID: 8300000, guid: d46323e22e74e46baa241cbf48c85671, type: 3}
   - {fileID: 8300000, guid: 753aac6eff583f042be3500fd13beb5f, type: 3}
+  - {fileID: 8300000, guid: 29bde6326b4c34ad8a12da475f79b50a, type: 3}
   - {fileID: 8300000, guid: aefff84a12c287b4a8012f4034d9f224, type: 3}
+  - {fileID: 8300000, guid: 12f1a5cc53c0f6a4ea699679e7cdf414, type: 3}
 --- !u!1 &461941875
 GameObject:
   m_ObjectHideFlags: 0
@@ -4191,6 +4193,7 @@ GameObject:
   - component: {fileID: 1243334305}
   - component: {fileID: 1243334304}
   - component: {fileID: 1243334303}
+  - component: {fileID: 1243334309}
   - component: {fileID: 1243334306}
   - component: {fileID: 1243334307}
   - component: {fileID: 1243334308}
@@ -4407,7 +4410,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -4420,9 +4423,9 @@ AudioSource:
   MaxDistance: 500
   Pan2D: 0
   rolloffMode: 0
-  BypassEffects: 0
-  BypassListenerEffects: 0
-  BypassReverbZones: 0
+  BypassEffects: 1
+  BypassListenerEffects: 1
+  BypassReverbZones: 1
   rolloffCustomCurve:
     serializedVersion: 2
     m_Curve:
@@ -4588,6 +4591,18 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1243334309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1243334302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c7bc1eecaea80447bf361b5d96d057b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1299765615
 GameObject:
   m_ObjectHideFlags: 0

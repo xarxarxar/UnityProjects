@@ -7,8 +7,7 @@ public enum BackgroundMusicType
 {
     MainMenu,
     Gameplay,
-    Victory,
-    Defeat
+    
 }
 
 /// <summary>
@@ -19,7 +18,9 @@ public enum SoundEffectType
     ClickButton,//µã»÷°´Å¥
     ClickCard,//µã»÷¿¨ÅÆ
     ComposeCard,//¿¨ÅÆºÏ³É
-    SwitchPage//ÇÐ»»Ò³Ãæ
+    SwitchPage,//ÇÐ»»Ò³Ãæ
+    Victory,//³É¹¦
+    Defeat//Ê§°Ü
 }
 
 /// <summary>
