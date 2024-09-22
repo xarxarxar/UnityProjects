@@ -48,6 +48,7 @@ public class Card : MonoBehaviour
     void ChangeButtonState(bool isclicked)
     {
         thisButton.interactable = isclicked;
+        transform.Find("Mask").gameObject.SetActive(!isclicked);
     }
 
     //该卡牌的点击方法
@@ -67,5 +68,23 @@ public class Card : MonoBehaviour
         CardManager.instance.MoveCard(this);
 
         AudioManager.Instance.PlaySoundEffect(SoundEffectType.ClickCard);//播放点击卡片音效
+    }
+
+    /// <summary>
+    /// 设置该卡牌的sprite
+    /// </summary>
+    /// <param name="sprite">需要设置的sprite</param>
+    public void SetCardSprite(Sprite sprite)
+    {
+        transform.Find("Sprite").GetComponent<Image>().sprite = sprite;
+    }
+
+    /// <summary>
+    /// 获取这张卡片的sprite
+    /// </summary>
+    /// <returns></returns>
+    public Sprite GetCardSprite()
+    {
+        return transform.Find("Sprite").GetComponent<Image>().sprite;
     }
 }

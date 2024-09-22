@@ -193,6 +193,7 @@ public class CardManager : MonoBehaviour
         placeholder.transform.SetParent(layoutGroup.transform);
         placeholder.transform.SetSiblingIndex(oneCardIndex);
         placeholder.GetComponent<SlotCard>().type = oneCard.type;
+        placeholder.GetComponent<SlotCard>().HideSlotCard();
         placeholder.GetComponent<RectTransform>().sizeDelta= oneCard.GetComponent<RectTransform>().sizeDelta;
         //判断是否失败
         List<GameObject> sameCards = JudgeSameCard();
@@ -213,13 +214,15 @@ public class CardManager : MonoBehaviour
         newImageRect.DOMove(targetPosition, 0.5f).SetEase(Ease.InOutQuad).OnComplete(() =>
         {
             //// 动画完成后，将onecard的信息复制过去，并删除oneCard
-            placeholder.GetComponent<Image>().sprite=oneCard.GetComponent<Image>().sprite;
-            placeholder.GetComponent<Image>().color=new Color32(255,255,255,255);
-            
+            placeholder.GetComponent<SlotCard>().SetSlotCardSprite(oneCard.GetCardSprite());
+            //placeholder.GetComponent<Image>().color=new Color32(255,255,255,255);
+            placeholder.GetComponent<SlotCard>().ShowSlotCard();
             allCards.Remove(oneCard);
             Destroy(oneCard.gameObject);
+            
             for (int i = 0; i < sameCards.Count; i++)
             {
+                Debug.Log("删除");
                 AudioManager.Instance.PlaySoundEffect(SoundEffectType.ComposeCard);
                 Destroy(sameCards[i]);
             }
@@ -269,7 +272,9 @@ public class CardManager : MonoBehaviour
             if (layoutGroup.transform.GetChild(i).GetComponent<SlotCard>().type 
                 == layoutGroup.transform.GetChild(i -1).GetComponent<SlotCard>().type)//卡牌的类型相同
             {
+                
                 sameCount++;
+                Debug.Log($"samecount is {sameCount}");
                 if (sameCount == 3)
                 {
                     GameObject card1 = layoutGroup.transform.GetChild(i).gameObject;
@@ -361,13 +366,14 @@ public class CardManager : MonoBehaviour
         {
             int index=UnityEngine. Random.Range(0, totalItems.Count);
             allCards[i].type = totalItems[index].Name;
-            allCards[i].GetComponent<Image>().sprite= totalItems[index].cardSprite;
+            //allCards[i].transform.GetChild(allCards[i].transform.childCount-1).GetComponent<Image>().sprite= totalItems[index].cardSprite;
+            allCards[i].SetCardSprite(totalItems[index].cardSprite);
             totalItems.RemoveAt(index);
 
             //填充卡片字典，到时候该字典要从网络获取
             if (!ResourceManager.instance.imageDict.ContainsKey(allCards[i].type))
             {
-                ResourceManager.instance.imageDict.Add(allCards[i].type, allCards[i].GetComponent<Image>().sprite);
+                ResourceManager.instance.imageDict.Add(allCards[i].type, allCards[i].GetCardSprite());
             }
         }
 
