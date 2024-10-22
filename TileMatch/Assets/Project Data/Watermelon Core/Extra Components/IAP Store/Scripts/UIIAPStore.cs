@@ -8,82 +8,91 @@ namespace Watermelon.IAPStore
 {
     public class UIIAPStore : UIPage
     {
-        [SerializeField] VerticalLayoutGroup layout;
-        [SerializeField] RectTransform safeAreaTransform;
-        [SerializeField] RectTransform content;
-        [SerializeField] Button closeButton;
-        [SerializeField] CurrencyUIPanelSimple coinsUI;
+        [SerializeField] VerticalLayoutGroup layout; // ÓÃÓÚÅÅÁĞÉÌÆ·µÄ´¹Ö±²¼¾Ö×é
+        [SerializeField] RectTransform safeAreaTransform; // °²È«ÇøÓòµÄ¾ØĞÎ±ä»»£¬ÊÊÅä²»Í¬Éè±¸µÄ±ßÔµ
+        [SerializeField] RectTransform content; // ´æ·ÅÉÌÆ·µÄÄÚÈİÇøÓò
+        [SerializeField] Button closeButton; // ¹Ø±ÕÉÌµêµÄ°´Å¥
+        [SerializeField] CurrencyUIPanelSimple coinsUI; // ÏÔÊ¾Íæ¼Ò½ğ±ÒµÄ UI Ãæ°å
 
-        private TweenCase[] appearTweenCases;
+        private TweenCase[] appearTweenCases; // ´æ´¢³öÏÖ¶¯»­µÄ Tween ¶ÔÏó
 
-        public static bool IsStoreAvailable { get; private set; } = false;
+        public static bool IsStoreAvailable { get; private set; } = false; // ´æ´¢ÉÌµêÊÇ·ñ¿ÉÓÃµÄ×´Ì¬
 
-        private List<IIAPStoreOffer> offers = new List<IIAPStoreOffer>();
+        private List<IIAPStoreOffer> offers = new List<IIAPStoreOffer>(); // ´æ´¢ÉÌµêÖĞµÄÉÌÆ·
 
         private void Awake()
         {
-            content.GetComponentsInChildren(offers);
-            closeButton.onClick.AddListener(OnCloseButtonClicked);
+            // »ñÈ¡×Ó¶ÔÏóÖĞµÄËùÓĞ IIAPStoreOffer ½Ó¿ÚÊµÏÖ
+            content.GetComponentsInChildren(offers);//ÕâÖÖ·½Ê½½«»áÌî³ä offers ÁĞ±í£¬¶ø²»ÊÇ·µ»ØĞÂµÄÊı×é»òÁĞ±í¡£ÕâÖÖ·½·¨²»»á·µ»ØÖµ£¬¶øÊÇ½«ÕÒµ½µÄ×é¼şÌí¼Óµ½´«ÈëµÄ List ÖĞ¡£
+            closeButton.onClick.AddListener(OnCloseButtonClicked); // °ó¶¨¹Ø±Õ°´Å¥µÄµã»÷ÊÂ¼ş
         }
 
         public override void Initialise()
         {
+            // ¶©ÔÄ¹ºÂòÄ£¿é³õÊ¼»¯µÄÊÂ¼ş
             IAPManager.SubscribeOnPurchaseModuleInitted(InitOffers);
 
+            // ×¢²á°²È«ÇøÓò¾ØĞÎ±ä»»
             NotchSaveArea.RegisterRectTransform(safeAreaTransform);
 
+            // ³õÊ¼»¯½ğ±Ò UI
             coinsUI.Initialise();
         }
 
         private void InitOffers()
         {
+            // ³õÊ¼»¯Ã¿¸öÉÌÆ·
             foreach (var offer in offers)
             {
                 offer.Init();
             }
 
-            IsStoreAvailable = true;
+            IsStoreAvailable = true; // ÉèÖÃÉÌµêÎª¿ÉÓÃ
 
+            // ÔÚÏÂÒ»Ö¡¼ÆËãÄÚÈİÇøÓòµÄ¸ß¶È
             Tween.NextFrame(() => {
-
-                float height = layout.padding.top + layout.padding.bottom;
+                float height = layout.padding.top + layout.padding.bottom; // ¼ÆËã×Ü¸ß¶È£¬°üÀ¨ÉÏ±ß¾àºÍÏÂ±ß¾à
 
                 for (int i = 0; i < offers.Count; i++)
                 {
                     var offer = offers[i];
-                    if (offer.GameObject.activeSelf)
+                    if (offer.GameObject.activeSelf) // ½ö¼ÆËã¿É¼ûÉÌÆ·µÄ¸ß¶È
                     {
-                        height += offer.Height;
-                        if(i != offers.Count - 1) height += layout.spacing;
+                        height += offer.Height; // Ôö¼ÓÉÌÆ·¸ß¶È
+                        if (i != offers.Count - 1) height += layout.spacing; // ÔÚÉÌÆ·¼äÔö¼Ó¼ä¾à
                     }
                 }
 
+                // ÉèÖÃÄÚÈİÇøÓòµÄ¸ß¶È
                 content.sizeDelta = content.sizeDelta.SetY(height + 200);
             });
         }
 
         public override void PlayHideAnimation()
         {
+            // µ±ÉÌµêÒş²ØÊ±£¬Í¨ÖªÒ³Ãæ¹Ø±Õ
             UIController.OnPageClosed(this);
         }
 
         public override void PlayShowAnimation()
         {
-            appearTweenCases.KillActive();
+            appearTweenCases.KillActive(); // ÖÕÖ¹ÈÎºÎÕıÔÚ½øĞĞµÄ¶¯»­
 
             appearTweenCases = new TweenCase[offers.Count];
             for (int i = 0; i < offers.Count; i++)
             {
                 Transform offerTransform = offers[i].GameObject.transform;
-                offerTransform.transform.localScale = Vector3.zero;
-                appearTweenCases[i] = offerTransform.transform.DOScale(1.0f, 0.3f, i * 0.05f).SetEasing(Ease.Type.CircOut);
+                offerTransform.transform.localScale = Vector3.zero; // ³õÊ¼»¯Ëõ·ÅÎªÁã
+                appearTweenCases[i] = offerTransform.transform.DOScale(1.0f, 0.3f, i * 0.05f).SetEasing(Ease.Type.CircOut); // Ê¹ÓÃ Tween ¶¯»­·Å´óÉÌÆ·
             }
 
+            // ¹Ø±Õ°´Å¥µÄËõ·Å¶¯»­
             closeButton.transform.localScale = Vector3.zero;
             closeButton.transform.DOScale(1.0f, 0.3f, 0.2f).SetEasing(Ease.Type.BackOut);
 
-            content.anchoredPosition = Vector2.zero;
+            content.anchoredPosition = Vector2.zero; // ÖØÖÃÄÚÈİÇøÓòÎ»ÖÃ
 
+            // ¶¯»­Íê³Éºó£¬Í¨ÖªÒ³ÃæÒÑ´ò¿ª
             appearTweenCases[^1].OnComplete(() =>
             {
                 UIController.OnPageOpened(this);
@@ -92,20 +101,23 @@ namespace Watermelon.IAPStore
 
         public void Hide()
         {
-            appearTweenCases.KillActive();
+            appearTweenCases.KillActive(); // ÖÕÖ¹ÈÎºÎÕıÔÚ½øĞĞµÄ¶¯»­
 
+            // Òş²Ø IAP Store Ò³Ãæ
             UIController.HidePage<UIIAPStore>();
         }
 
         private void OnCloseButtonClicked()
         {
-            AudioController.PlaySound(AudioController.Sounds.buttonSound);
+            AudioController.PlaySound(AudioController.Sounds.buttonSound); // ²¥·Å°´Å¥µã»÷ÒôĞ§
 
+            // Òş²Ø IAP Store Ò³Ãæ
             UIController.HidePage<UIIAPStore>();
         }
 
         public void SpawnCurrencyCloud(RectTransform spawnRectTransform, CurrencyType currencyType, int amount, SimpleCallback completeCallback = null)
         {
+            // Éú³É»õ±ÒÔÆÌØĞ§
             FloatingCloud.SpawnCurrency(currencyType.ToString(), spawnRectTransform, coinsUI.RectTransform, amount, null, completeCallback);
         }
     }
@@ -115,13 +127,13 @@ namespace Watermelon.IAPStore
 // IAP Store v1.2
 // -----------------
 
-// Changelog
+// ¸üĞÂÈÕÖ¾
 // v 1.2
-// • Added mobile notch offset support
-// • Added free timer money offer
-// • Added ad money offer
+// ? Ìí¼ÓÁËÒÆ¶¯Éè±¸µÄ°¼¿ÚÆ«ÒÆÖ§³Ö
+// ? Ìí¼ÓÁËÃâ·Ñ¼ÆÊ±½ğ±Ò½±Àø
+// ? Ìí¼ÓÁË¹ã¸æ½ğ±Ò½±Àø
 // v 1.1
-// • Added offers interface
-// • Offers prefabs renamed
+// ? Ìí¼ÓÁËÉÌÆ·½Ó¿Ú
+// ? ÉÌÆ·Ô¤ÖÆ¼şÖØÃüÃû
 // v 1.0
-// • Basic logic
+// ? »ù±¾Âß¼­

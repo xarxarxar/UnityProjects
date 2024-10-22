@@ -12,10 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15ddb41bf72d53a48a6bdc593d706f94, type: 3}
   m_Name: Ads Settings
   m_EditorClassIdentifier: 
-  bannerType: 1
-  interstitialType: 1
-  rewardedVideoType: 1
+  bannerType: 0
+  interstitialType: 0
+  rewardedVideoType: 0
   adMobContainer:
+    androidAppId: 
+    iosAppId: 
     androidBannerID: ca-app-pub-3940256099942544/6300978111
     iOSBannerID: ca-app-pub-3940256099942544/2934735716
     androidInterstitialID: ca-app-pub-3940256099942544/1033173712
@@ -24,8 +26,7 @@ MonoBehaviour:
     iOSRewardedVideoID: ca-app-pub-3940256099942544/1712485313
     bannerType: 0
     bannerPosition: 0
-    androidAppId: 
-    iosAppId: 
+    testDevicesIDs: []
   unityAdsContainer:
     androidAppID: 3325459
     iOSAppID: 3325458
@@ -36,12 +37,17 @@ MonoBehaviour:
     androidRewardedVideoID: rewarded
     iOSRewardedVideoID: rewarded
     bannerPosition: 4
+  ironSourceContainer:
+    androidAppKey: 85460dcd
+    iOSAppKey: 8545d445
+    bannerPosition: 0
+    bannerType: 0
   dummyContainer:
     bannerPosition: 0
   testMode: 1
   systemLogs: 0
-  insterstitialFirstStartDelay: 60
-  insterstitialStartDelay: 40
+  interstitialFirstStartDelay: 40
+  interstitialStartDelay: 40
   interstitialShowingDelay: 40
   autoShowInterstitial: 0
   isGDPREnabled: 1

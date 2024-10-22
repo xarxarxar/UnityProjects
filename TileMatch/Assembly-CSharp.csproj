@@ -137,6 +137,7 @@
     <Compile Include="Assets\Project Data\Watermelon Core\Modules\Advertisement\GDPR\GDPRPanel.cs" />
     <Compile Include="Assets\Project Data\Watermelon Core\Extra Components\Settings Panel\Scripts\Animation\SettingsScaleAnimation.cs" />
     <Compile Include="Assets\Project Data\Watermelon Core\Modules\UI Manager\UIController.cs" />
+    <Compile Include="Assets\MyGame\Script\CallWechat.cs" />
     <Compile Include="Assets\Project Data\Game\Scripts\Level\Level Field\LevelElement.cs" />
     <Compile Include="Assets\Project Data\Watermelon Core\Modules\Audio Controller\MD_Sounds.cs" />
     <Compile Include="Assets\Project Data\Game\Scripts\Level\Dock\IDockElement.cs" />
@@ -301,6 +302,7 @@
     <Compile Include="Assets\Project Data\Game\Scripts\UI\UIMainMenu.cs" />
     <Compile Include="Assets\Project Data\Watermelon Core\Scripts\UI\Custom UI Particle\UIParticleSettings.cs" />
     <Compile Include="Assets\Project Data\Watermelon Core\Extra Components\Settings Panel\Scripts\Animation\SettingsAnimation.cs" />
+    <Compile Include="Assets\MyGame\TestWXFont.cs" />
     <Compile Include="Assets\Project Data\Watermelon Core\Extended Editor\Attributes\ExtendedEditorAttribute.cs" />
     <Compile Include="Assets\Project Data\Watermelon Core\Modules\UI Manager\Helpers\RaycastGraphics.cs" />
     <Compile Include="Assets\Project Data\Game\Scripts\UI\UIMainMenuButton.cs" />
@@ -743,24 +745,24 @@
       <HintPath>D:\UnityHub\UnityEditors\Install\2022.3.41f1\Editor\Data\Managed\UnityEngine\UnityEditor.UnityConnectModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="wx-runtime-editor">
+      <HintPath>Assets\WX-WASM-SDK-V2\Runtime\Plugins\wx-runtime-editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Unity.Collections.LowLevel.ILSupport">
       <HintPath>Library\PackageCache\com.unity.collections@1.2.4\Unity.Collections.LowLevel.ILSupport\Unity.Collections.LowLevel.ILSupport.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.VisualScripting.Antlr3.Runtime">
-      <HintPath>Library\PackageCache\com.unity.visualscripting@1.9.4\Runtime\VisualScripting.Flow\Dependencies\NCalc\Unity.VisualScripting.Antlr3.Runtime.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="LitJson">
-      <HintPath>Assets\WX-WASM-SDK-V2\Runtime\Plugins\LitJson.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.FontABTool">
       <HintPath>Assets\WX-WASM-SDK-V2\Runtime\Plugins\Unity.FontABTool.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="wx-runtime-editor">
-      <HintPath>Assets\WX-WASM-SDK-V2\Runtime\Plugins\wx-runtime-editor.dll</HintPath>
+    <Reference Include="LitJson">
+      <HintPath>Assets\WX-WASM-SDK-V2\Runtime\Plugins\LitJson.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.VisualScripting.Antlr3.Runtime">
+      <HintPath>Library\PackageCache\com.unity.visualscripting@1.9.4\Runtime\VisualScripting.Flow\Dependencies\NCalc\Unity.VisualScripting.Antlr3.Runtime.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="netstandard">

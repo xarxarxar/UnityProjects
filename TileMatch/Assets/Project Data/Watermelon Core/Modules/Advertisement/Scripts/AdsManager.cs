@@ -7,14 +7,15 @@ using System.Collections;
 
 namespace Watermelon
 {
+    // 定义不同的广告模块，包含Google AdMob、Unity Ads和IronSource
     [Define("MODULE_ADMOB", "GoogleMobileAds.Editor.GoogleMobileAdsSettings", new string[] { "Assets/GoogleMobileAds/GoogleMobileAds.dll" })]
     [Define("MODULE_UNITYADS", "UnityEngine.Advertisements.Advertisement", new string[] { "Packages/com.unity.ads/Runtime/Advertisement/Advertisement.cs" })]
     [Define("MODULE_IRONSOURCE", "IronSource", new string[] { "Assets/IronSource/Scripts/IronSource.cs", "Assets/LevelPlay/Runtime/IronSource.cs" })]
     public static class AdsManager
     {
-        private const int INIT_ATTEMPTS_AMOUNT = 30;
+        private const int INIT_ATTEMPTS_AMOUNT = 30;// 初始化尝试次数
 
-        public const ProductKeyType NO_ADS_PRODUCT_KEY = ProductKeyType.NoAds;
+        public const ProductKeyType NO_ADS_PRODUCT_KEY = ProductKeyType.NoAds;// 无广告产品的键
 
         private const string FIRST_LAUNCH_PREFS = "FIRST_LAUNCH";
 

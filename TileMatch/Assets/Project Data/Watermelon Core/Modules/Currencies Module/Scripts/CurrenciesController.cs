@@ -4,121 +4,145 @@ using UnityEngine;
 
 namespace Watermelon
 {
+    // ¹ÜÀíÓÎÏ·ÄÚ»õ±ÒµÄ¿ØÖÆÆ÷
     public class CurrenciesController : MonoBehaviour
     {
+        // µ¥ÀıÄ£Ê½µÄÊµÀı
         private static CurrenciesController currenciesController;
 
+        // »õ±ÒÊı¾İ¿â£¬´æ´¢ËùÓĞ¿ÉÓÃ»õ±ÒµÄĞÅÏ¢
         [SerializeField] CurrenciesDatabase currenciesDatabase;
         public CurrenciesDatabase CurrenciesDatabase => currenciesDatabase;
 
+        // ´æ´¢ËùÓĞ»õ±ÒµÄÊı×é
         private static Currency[] currencies;
         public static Currency[] Currencies => currencies;
 
+        // »õ±ÒÀàĞÍÓëÆäË÷ÒıµÄÓ³Éä
         private static Dictionary<CurrencyType, int> currenciesLink;
 
+        // ³õÊ¼»¯±êÖ¾
         private static bool isInitialised;
+
+        // Ä£¿é³õÊ¼»¯Íê³ÉµÄ»Øµ÷ÊÂ¼ş
         private static event SimpleCallback onModuleInitialised;
 
+        // ³õÊ¼»¯º¯Êı
         public virtual void Initialise()
         {
+            // Èç¹ûÒÑ¾­³õÊ¼»¯¹ı£¬Ôò·µ»Ø
             if (isInitialised) return;
 
+            // ÉèÖÃµ¥ÀıÊµÀı
             currenciesController = this;
 
-            // Initialsie database
+            // ³õÊ¼»¯»õ±ÒÊı¾İ¿â
             currenciesDatabase.Initialise();
 
-            // Store active currencies
+            // ´æ´¢»î¶¯»õ±Ò
             currencies = currenciesDatabase.Currencies;
 
-            // Link currencies by the type
+            // ¸ù¾İ»õ±ÒÀàĞÍÁ´½Ó»õ±ÒÓëÆäË÷Òı
             currenciesLink = new Dictionary<CurrencyType, int>();
             for (int i = 0; i < currencies.Length; i++)
             {
+                // Èç¹û¸ÃÀàĞÍ»õ±ÒÉĞÎ´Ìí¼Ó£¬½øĞĞÌí¼Ó
                 if (!currenciesLink.ContainsKey(currencies[i].CurrencyType))
                 {
                     currenciesLink.Add(currencies[i].CurrencyType, i);
                 }
                 else
                 {
-                    Debug.LogError(string.Format("[Currency Syste]: Currency with type {0} added to database twice!", currencies[i].CurrencyType));
+                    Debug.LogError(string.Format("[»õ±ÒÏµÍ³]: ÀàĞÍÎª {0} µÄ»õ±ÒÔÚÊı¾İ¿âÖĞÖØ¸´Ìí¼Ó!", currencies[i].CurrencyType));
                 }
 
+                // »ñÈ¡±£´æµÄ»õ±Ò×´Ì¬
                 Currency.Save save = SaveController.GetSaveObject<Currency.Save>("currency" + ":" + (int)currencies[i].CurrencyType);
-                if(save.Amount == -1)
+                if (save.Amount == -1)
                     save.Amount = currencies[i].DefaultAmount;
 
+                // ÉèÖÃ»õ±ÒµÄ±£´æ×´Ì¬
                 currencies[i].SetSave(save);
             }
 
+            // ±ê¼Ç³õÊ¼»¯Íê³É
             isInitialised = true;
 
+            // µ÷ÓÃ³õÊ¼»¯Íê³ÉµÄ»Øµ÷ÊÂ¼ş
             onModuleInitialised?.Invoke();
             onModuleInitialised = null;
         }
 
+        // ¼ì²éÖ¸¶¨ÀàĞÍ»õ±ÒµÄÊıÁ¿ÊÇ·ñ×ã¹»
         public static bool HasAmount(CurrencyType currencyType, int amount)
         {
             return currencies[currenciesLink[currencyType]].Amount >= amount;
         }
 
+        // »ñÈ¡Ö¸¶¨ÀàĞÍµÄ»õ±ÒÊıÁ¿
         public static int Get(CurrencyType currencyType)
         {
             return currencies[currenciesLink[currencyType]].Amount;
         }
 
+        // »ñÈ¡Ö¸¶¨ÀàĞÍµÄ»õ±Ò¶ÔÏó
         public static Currency GetCurrency(CurrencyType currencyType)
         {
             return currencies[currenciesLink[currencyType]];
         }
 
+        // ÉèÖÃÖ¸¶¨ÀàĞÍµÄ»õ±ÒÊıÁ¿
         public static void Set(CurrencyType currencyType, int amount)
         {
             Currency currency = currencies[currenciesLink[currencyType]];
 
             currency.Amount = amount;
 
-            // Change save state to required
+            // ±ê¼Ç±£´æ×´Ì¬ÎªĞèÒª±£´æ
             SaveController.MarkAsSaveIsRequired();
 
-            // Invoke currency change event
+            // µ÷ÓÃ»õ±Ò±ä¸üÊÂ¼ş
             currency.InvokeChangeEvent(0);
         }
 
+        // Ôö¼ÓÖ¸¶¨ÀàĞÍµÄ»õ±ÒÊıÁ¿
         public static void Add(CurrencyType currencyType, int amount)
         {
             Currency currency = currencies[currenciesLink[currencyType]];
 
             currency.Amount += amount;
 
-            // Change save state to required
+            // ±ê¼Ç±£´æ×´Ì¬ÎªĞèÒª±£´æ
             SaveController.MarkAsSaveIsRequired();
 
-            // Invoke currency change event;
+            // µ÷ÓÃ»õ±Ò±ä¸üÊÂ¼ş;
             currency.InvokeChangeEvent(amount);
         }
 
+        // ¼õÉÙÖ¸¶¨ÀàĞÍµÄ»õ±ÒÊıÁ¿
         public static void Substract(CurrencyType currencyType, int amount)
         {
             Currency currency = currencies[currenciesLink[currencyType]];
 
             currency.Amount -= amount;
 
-            // Change save state to required
+            // ±ê¼Ç±£´æ×´Ì¬ÎªĞèÒª±£´æ
             SaveController.MarkAsSaveIsRequired();
 
-            // Invoke currency change event
+            // µ÷ÓÃ»õ±Ò±ä¸üÊÂ¼ş
             currency.InvokeChangeEvent(-amount);
         }
 
+        // ¶©ÔÄÈ«¾Ö»õ±Ò±ä¸ü»Øµ÷
         public static void SubscribeGlobalCallback(CurrencyChangeDelegate currencyChange)
         {
-            for(int i = 0; i < currencies.Length; i++)
+            for (int i = 0; i < currencies.Length; i++)
             {
                 currencies[i].OnCurrencyChanged += currencyChange;
             }
         }
 
+        // È¡Ïû¶©ÔÄÈ«¾Ö»õ±Ò±ä¸ü»Øµ÷
         public static void UnsubscribeGlobalCallback(CurrencyChangeDelegate currencyChange)
         {
             for (int i = 0; i < currencies.Length; i++)
@@ -127,6 +151,7 @@ namespace Watermelon
             }
         }
 
+        // ¸ù¾İÄ£¿é³õÊ¼»¯×´Ì¬µ÷ÓÃ»ò¶©ÔÄ»Øµ÷
         public static void InvokeOrSubcrtibe(SimpleCallback callback)
         {
             if (isInitialised)
@@ -140,15 +165,15 @@ namespace Watermelon
         }
     }
 
+    // »õ±Ò±ä¸üµÄÎ¯ÍĞ¶¨Òå
     public delegate void CurrencyChangeDelegate(Currency currency, int difference);
 }
 
 // -----------------
 // Currencies v1.1
 // -----------------
-
-// Changelog
+// ¸üĞÂÈÕÖ¾
 // v 1.1
-// • Added manageable default amount
+// ? Ôö¼Ó¿É¹ÜÀíµÄÄ¬ÈÏÊıÁ¿
 // v 1.0
-// • Basic logic
+// ? »ù±¾Âß¼­

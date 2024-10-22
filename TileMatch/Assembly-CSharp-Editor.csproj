@@ -522,6 +522,10 @@
       <HintPath>D:\UnityHub\UnityEditors\Install\2022.3.41f1\Editor\Data\PlaybackEngines\WindowsStandaloneSupport\UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="wx-runtime-editor">
+      <HintPath>Assets\WX-WASM-SDK-V2\Runtime\Plugins\wx-runtime-editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Unity.VisualScripting.YamlDotNet">
       <HintPath>Library\PackageCache\com.unity.visualscripting@1.9.4\Editor\VisualScripting.Core\Dependencies\YamlDotNet\Unity.VisualScripting.YamlDotNet.dll</HintPath>
       <Private>False</Private>
@@ -530,8 +534,16 @@
       <HintPath>Library\PackageCache\com.unity.collections@1.2.4\Unity.Collections.LowLevel.ILSupport\Unity.Collections.LowLevel.ILSupport.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Unity.FontABTool">
+      <HintPath>Assets\WX-WASM-SDK-V2\Runtime\Plugins\Unity.FontABTool.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="unityplastic">
       <HintPath>Library\PackageCache\com.unity.collab-proxy@2.5.2\Lib\Editor\PlasticSCM\unityplastic.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="LitJson">
+      <HintPath>Assets\WX-WASM-SDK-V2\Runtime\Plugins\LitJson.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.Plastic.Antlr3.Runtime">
@@ -552,6 +564,10 @@
     </Reference>
     <Reference Include="Unity.VisualScripting.Antlr3.Runtime">
       <HintPath>Library\PackageCache\com.unity.visualscripting@1.9.4\Runtime\VisualScripting.Flow\Dependencies\NCalc\Unity.VisualScripting.Antlr3.Runtime.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="wx-editor">
+      <HintPath>Assets\WX-WASM-SDK-V2\Editor\wx-editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.VisualScripting.TextureAssets">
@@ -1247,6 +1263,14 @@
     <ProjectReference Include="Assembly-CSharp.csproj">
       <Project>{50030532-5293-0B98-E17D-CBDCC2FEB51E}</Project>
       <Name>Assembly-CSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="Wx.csproj">
+      <Project>{093B7DA3-BA89-8326-CF73-EB66ED2609B6}</Project>
+      <Name>Wx</Name>
+    </ProjectReference>
+    <ProjectReference Include="WxEditor.csproj">
+      <Project>{34DB063A-ED9C-DDAF-38E8-A5C491081B5E}</Project>
+      <Name>WxEditor</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
