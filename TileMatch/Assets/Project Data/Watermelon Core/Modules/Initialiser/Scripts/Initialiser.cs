@@ -63,7 +63,7 @@ namespace Watermelon
         {
             Initialise(true); // 默认加载场景
 
-            CallWechat.Init();//初始化微信调用
+            
         }
 
         // 初始化方法，根据参数决定加载方式
@@ -76,8 +76,11 @@ namespace Watermelon
                 // 根据参数加载场景或进行简单加载
                 if (loadingScene)
                 {
-                    GameLoading.LoadGameScene(); // 加载游戏场景
-                }
+                    // 加载游戏场景
+                    GameLoading.LoadGameScene(() => {
+                        CallWechat.Init();//初始化微信调用
+                        }); 
+                    }
                 else
                 {
                     GameLoading.SimpleLoad(); // 进行简单加载
