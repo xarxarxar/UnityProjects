@@ -9,7 +9,7 @@ namespace Watermelon
     [RequireComponent(typeof(TextMeshProUGUI))]
     public class UILevelNumberText : MonoBehaviour
     {
-        private const string LEVEL_LABEL = "LEVEL {0}";
+        private const string LEVEL_LABEL = "¹Ø¿¨ {0}";
         private static UILevelNumberText instance;
 
         [SerializeField] UIScaleAnimation uIScalableObject;

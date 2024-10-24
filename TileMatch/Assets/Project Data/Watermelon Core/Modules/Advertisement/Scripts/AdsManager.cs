@@ -148,7 +148,7 @@ namespace Watermelon
                     InitialiseModules(loadOnStart);
                 };
 
-                GameLoading.AddTask(gdprLoadingTask);
+                //GameLoading.AddTask(gdprLoadingTask);//不要在游戏初始化的时候进行GDPR
 
                 return;
             }

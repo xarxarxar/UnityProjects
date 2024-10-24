@@ -74,7 +74,7 @@ namespace Watermelon
             livesIndicatorScalable.Show();
 
             UILevelNumberText.Show();
-            playButtonText.text = "LEVEL " + (LevelController.MaxReachedLevelIndex + 1);
+            playButtonText.text = "¹Ø¿¨ " + (LevelController.MaxReachedLevelIndex + 1);
 
             showHideStoreAdButtonDelayTweenCase = Tween.DelayedCall(0.12f, delegate
             {

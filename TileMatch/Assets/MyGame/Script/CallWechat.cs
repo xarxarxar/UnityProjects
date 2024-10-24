@@ -29,9 +29,12 @@ public class CallWechat : MonoBehaviour
             wxFont = font;
             //更换微信字体
             TextMeshProUGUI[] allTexts = Resources.FindObjectsOfTypeAll<TextMeshProUGUI>();
+            // 创建字体资产
+            TMP_FontAsset wxFontAsset = TMP_FontAsset.CreateFontAsset(font);
+
             for (int i = 0; i < allTexts.Length; i++)
             {
-                allTexts[i].font = TMP_FontAsset.CreateFontAsset(font);
+                allTexts[i].font = wxFontAsset;
             }
         });
     }

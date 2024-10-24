@@ -33,6 +33,7 @@ namespace Watermelon
         // Awake方法，在对象激活时调用
         public void Awake()
         {
+            
             screenSettings.Initialise(); // 初始化屏幕设置
 
             // 检查是否已初始化，确保只执行一次
@@ -55,15 +56,16 @@ namespace Watermelon
                 DontDestroyOnLoad(gameObject); // 在场景切换时保持该对象存在
 
                 initSettings.Initialise(this); // 调用初始化设置的方法
+                
             }
         }
 
         // Start方法，在Awake之后调用
         public void Start()
         {
+            Debug.Log("start初始时间" + Time.time);
             Initialise(true); // 默认加载场景
-
-            
+            Debug.Log("start完成时间" + Time.time);
         }
 
         // 初始化方法，根据参数决定加载方式
@@ -77,10 +79,11 @@ namespace Watermelon
                 if (loadingScene)
                 {
                     // 加载游戏场景
-                    GameLoading.LoadGameScene(() => {
+                    GameLoading.LoadGameScene(() =>
+                    {
                         CallWechat.Init();//初始化微信调用
-                        }); 
-                    }
+                    });
+                }
                 else
                 {
                     GameLoading.SimpleLoad(); // 进行简单加载

@@ -12,7 +12,7 @@ namespace Watermelon
         [Tooltip("In seconds")]public int oneLifeRestorationDuration = 1200;
 
         [Space]
-        public string fullText = "FULL!";
+        public string fullText = "ÒÑÂú!";
         public string timespanFormat = "{0:mm\\:ss}";
         public string longTimespanFormat = "{0:hh\\:mm\\:ss}";
     }

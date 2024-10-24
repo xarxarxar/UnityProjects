@@ -24,45 +24,45 @@ namespace Watermelon
         [Header("Step I")]
         [SerializeField] LevelData firstLevelData;
         [SerializeField] PreloadedLevelData firstPreloadedLevelData;
-        [SerializeField] string firstStepTitle = "Welcome";
-        [SerializeField] string firstStepMessage = "Clear the game field";
+        [SerializeField] string firstStepTitle = "欢迎!";
+        [SerializeField] string firstStepMessage = "清除所有方块";
 
         [Header("Step II")]
-        [SerializeField] string secondStepTitle = "Great";
-        [SerializeField] string secondStepMessage = "Let's merge 3 other tiles";
+        [SerializeField] string secondStepTitle = "很棒!";
+        [SerializeField] string secondStepMessage = "再消除三个方块";
 
         [Header("Step III")]
         [SerializeField] LevelData thirdLevelData;
         [SerializeField] PreloadedLevelData thirdPreloadedLevelData;
-        [SerializeField] string thirdStepTitle = "Unlock tile";
-        [SerializeField] string thirdStepMessage = "On the lower layer";
+        [SerializeField] string thirdStepTitle = "清除上层方块";
+        [SerializeField] string thirdStepMessage = "解锁下层方块";
 
         [Header("Step IV")]
-        [SerializeField] string fourthStepTitle = "Great";
+        [SerializeField] string fourthStepTitle = "漂亮!";
         [SerializeField] string fourthStepMessage = "";
 
         [Header("Step V")]
-        [SerializeField] string fifthStepTitle = "Use a hint";
-        [SerializeField] string fifthStepMessage = "If you get stuck";
+        [SerializeField] string fifthStepTitle = "使用提示道具";
+        [SerializeField] string fifthStepMessage = "";
 
         [Header("Step VI")]
-        [SerializeField] string sixthStepTitle = "Shuffle";
-        [SerializeField] string sixthStepMessage = "If it's impossible to make more moves";
+        [SerializeField] string sixthStepTitle = "使用洗牌道具";
+        [SerializeField] string sixthStepMessage = "";
 
         [Header("Step VII")]
-        [SerializeField] string seventhStepTitle = "Great!";
-        [SerializeField] string seventhStepMessage = "Let's finish the level!";
+        [SerializeField] string seventhStepTitle = "很好!";
+        [SerializeField] string seventhStepMessage = "一起完成这个关卡";
 
         [Header("Step IIX")]
-        [SerializeField] string eighthStepTitle = "Undo";
-        [SerializeField] string eighthStepMessage = "If you did the wrong move";
+        [SerializeField] string eighthStepTitle = "使用撤回道具";
+        [SerializeField] string eighthStepMessage = "";
 
         [Header("Step IX")]
-        [SerializeField] string ninthStepTitle = "Great!";
-        [SerializeField] string ninthStepMessage = "Complete the level to continue";
+        [SerializeField] string ninthStepTitle = "";
+        [SerializeField] string ninthStepMessage = "完成剩下的关卡";
 
         [Header("Finish")]
-        [SerializeField] string finishTitle = "Good job!";
+        [SerializeField] string finishTitle = "完美!";
 
         private bool isActive;
         public override bool IsActive => isActive;
