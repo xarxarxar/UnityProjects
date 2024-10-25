@@ -15,6 +15,11 @@ namespace Watermelon.IAPStore
         [Space]
         [SerializeField] TMP_Text priceText; // 显示售价的文本组件
 
+
+        [Space]
+        [SerializeField] string description="强制进行一次消除"; // 显示描述的文本
+        [SerializeField] TMP_Text descriptionText; // 显示描述的文本组件
+
         [Space]
         [SerializeField] Button button; // 领取金币的按钮
 
@@ -39,6 +44,8 @@ namespace Watermelon.IAPStore
             button.onClick.AddListener(OnAdButtonClicked);
 
             priceText.text= price.ToString();
+
+            descriptionText.text= description.ToString();
 
         }
 

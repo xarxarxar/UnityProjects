@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using Watermelon;
 using UnityEngine.UI;
+using Unity.VisualScripting;
 
 namespace Watermelon.IAPStore
 {
@@ -13,6 +14,10 @@ namespace Watermelon.IAPStore
 
         [Space]
         [SerializeField] TMP_Text priceText; // 显示售价的文本组件
+
+        [Space]
+        [SerializeField] string description = "撤回一步操作"; // 显示描述的文本
+        [SerializeField] TMP_Text descriptionText; // 显示描述的文本组件
 
         [Space]
         [SerializeField] Button button; // 领取金币的按钮
@@ -38,7 +43,8 @@ namespace Watermelon.IAPStore
             button.onClick.AddListener(OnAdButtonClicked);
 
             priceText.text = price.ToString();
-            Debug.Log("购买undo");
+
+            descriptionText.text = description.ToString();
         }
 
         // 按钮点击事件处理

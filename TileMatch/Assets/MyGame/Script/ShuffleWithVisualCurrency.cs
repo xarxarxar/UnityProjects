@@ -15,6 +15,10 @@ namespace Watermelon.IAPStore
         [SerializeField] TMP_Text priceText; // 显示售价的文本组件
 
         [Space]
+        [SerializeField] string description = "进行一次洗牌"; // 显示描述的文本
+        [SerializeField] TMP_Text descriptionText; // 显示描述的文本组件
+
+        [Space]
         [SerializeField] Button button; // 领取金币的按钮
 
         [Space]
@@ -39,6 +43,7 @@ namespace Watermelon.IAPStore
 
             priceText.text = price.ToString();
 
+            descriptionText.text = description.ToString();
         }
 
         // 按钮点击事件处理
