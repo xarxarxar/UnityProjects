@@ -14,7 +14,7 @@ namespace Watermelon
 
         [SerializeField] Image backgroundImage;
 
-        [SerializeField] Button button;
+        [SerializeField] public  Button button;
         [SerializeField] Button closeButton;
 
         [SerializeField] TMP_Text livesAmountText;
@@ -38,7 +38,7 @@ namespace Watermelon
             backColor = backgroundImage.color;
             showPos = panel.anchoredPosition;
 
-            button.onClick.AddListener(OnButtonClick);
+            //button.onClick.AddListener(OnButtonClick);
             closeButton.onClick.AddListener(Hide);
         }
 
@@ -79,21 +79,23 @@ namespace Watermelon
 
         public void OnButtonClick()
         {
-            AdsManager.ShowRewardBasedVideo(success =>
-            {
-                if (success)
-                {
-                    LivesManager.AddLife();
+            //AdsManager.ShowRewardBasedVideo(success =>
+            //{
+            //    if (success)
+            //    {
+            //        LivesManager.AddLife();
 
-                    if (lifeRecievedAudio != null)
-                        AudioController.PlaySound(lifeRecievedAudio);
+            //        if (lifeRecievedAudio != null)
+            //            AudioController.PlaySound(lifeRecievedAudio);
 
-                    OnPanelClosedCallback?.Invoke(true);
-                    OnPanelClosedCallback = null;
-                }
+            //        OnPanelClosedCallback?.Invoke(true);
+            //        OnPanelClosedCallback = null;
+            //    }
 
-                Hide();
-            });
+            //    Hide();
+            //});
+
+
         }
 
         public void SetLivesCount(int count)

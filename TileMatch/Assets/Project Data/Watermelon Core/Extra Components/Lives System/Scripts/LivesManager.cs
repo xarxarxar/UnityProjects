@@ -27,7 +27,7 @@ namespace Watermelon
         private static List<AddLivesPanel> addLivesPanels = new List<AddLivesPanel>(); // 所有添加生命的面板列表
 
         // 判断当前生命数是否达到最大生命值
-        public static bool IsMaxLives => Lives == instance.data.maxLivesCount;
+        public static bool IsMaxLives => Lives == instance.data.customedMaxLivesCount;
 
         private void Awake()
         {
@@ -49,7 +49,7 @@ namespace Watermelon
                 // 如果玩家有无限生命，启动无限生命的倒计时
                 Tween.InvokeCoroutine(InfiniteLivesCoroutine());
             }
-            else if (Lives < data.maxLivesCount)
+            else if (Lives < data.customedMaxLivesCount)
             {
                 // 如果生命值小于最大生命值，启动恢复生命的倒计时
                 livesCoroutine = Tween.InvokeCoroutine(LivesCoroutine());
@@ -161,7 +161,7 @@ namespace Watermelon
         /// </summary>
         public static void AddLife()
         {
-            if (Lives < instance.data.maxLivesCount)
+            if (Lives < instance.data.customedMaxLivesCount)
                 Lives++; // 生命数加一
         }
 
@@ -186,7 +186,7 @@ namespace Watermelon
 
             save.infiniteLives = false; // 无限生命结束
 
-            SetLifes(data.maxLivesCount); // 设置生命数为最大值
+            SetLifes(data.customedMaxLivesCount); // 设置生命数为最大值
 
             // 更新所有指示器和面板的满生命状态
             foreach (var indicator in indicators)
@@ -208,7 +208,7 @@ namespace Watermelon
         private IEnumerator LivesCoroutine()
         {
             var wait = new WaitForSeconds(0.25f); // 每0.25秒检查一次
-            while (Lives < data.maxLivesCount) // 当生命数未达到最大值
+            while (Lives < data.customedMaxLivesCount) // 当生命数未达到最大值
             {
                 var oneLifeSpan = TimeSpan.FromSeconds(data.oneLifeRestorationDuration);
                 var timespan = DateTime.Now - LivesDate; // 计算上次生命减少到现在的时间
@@ -254,11 +254,6 @@ namespace Watermelon
         /// <param name="seconds"></param>
         public static  void RemoveOneLifeTime(int seconds)
         {
-            //保证最小时间间隔在五分钟
-            if(OneLifeInterval < 300+seconds)
-            {
-                return;
-            }
             OneLifeInterval -= seconds;
             instance.data.oneLifeRestorationDuration-=seconds;
         }
@@ -268,8 +263,25 @@ namespace Watermelon
         /// </summary>
         public static  void AddMaxLife()
         {
-            instance.data.maxLivesCount++;
+            instance.data.customedMaxLivesCount++;
         }
+
+        /// <summary>
+        /// 获取当前的时间恢复间隔，20241026添加
+        /// </summary>
+        public static int CurrentLiveInterval()
+        {
+            return instance.data.oneLifeRestorationDuration;
+        }
+
+        /// <summary>
+        /// 获取当前的最大生命值，20241026添加
+        /// </summary>
+        public static int CurrentMaxLiveCount()
+        {
+            return instance.data.customedMaxLivesCount;
+        }
+
         /// <summary>
         /// 启动无限生命，持续指定的秒数。
         /// </summary>
@@ -286,7 +298,7 @@ namespace Watermelon
             save.infiniteLives = true; // 设置为无限生命
             save.date = DateTime.Now + TimeSpan.FromSeconds(duration); // 设置无限生命的结束时间
 
-            SetLifes(data.maxLivesCount); // 设置生命数为最大值
+            SetLifes(data.customedMaxLivesCount); // 设置生命数为最大值
 
             if (livesCoroutine != null)
             {
@@ -314,6 +326,8 @@ namespace Watermelon
                     firstTime = false;
 
                     livesCount = data.maxLivesCount; // 初始化为最大生命数
+                    data.customedMaxLivesCount = data.maxLivesCount;//初始化默认的最大生命值
+                    data.oneLifeRestorationDuration = data.defaultLifeRestorationDuration;//初始化默认的体力恢复间隔
                     date = DateTime.Now; // 记录当前时间
                 }
                 else
@@ -322,19 +336,19 @@ namespace Watermelon
 
                     if (infiniteLives)
                     {
-                        livesCount = data.maxLivesCount; // 如果是无限生命状态，设置生命数为最大值
+                        livesCount = data.customedMaxLivesCount; // 如果是无限生命状态，设置生命数为最大值
 
                         if (DateTime.Now >= date) infiniteLives = false; // 检查无限生命是否已过期
                     }
 
-                    if (livesCount < data.maxLivesCount)
+                    if (livesCount < data.customedMaxLivesCount)
                     {
                         var timeDif = DateTime.Now - date; // 计算恢复时间差
 
                         var oneLifeSpan = TimeSpan.FromSeconds(data.oneLifeRestorationDuration); // 每条生命恢复需要的时间
 
                         // 持续恢复生命，直到恢复满或者没有足够的时间差
-                        while (timeDif >= oneLifeSpan && livesCount < data.maxLivesCount)
+                        while (timeDif >= oneLifeSpan && livesCount < data.customedMaxLivesCount)
                         {
                             timeDif -= oneLifeSpan;
                             date += oneLifeSpan;

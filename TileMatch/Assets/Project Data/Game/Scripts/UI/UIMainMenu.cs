@@ -56,6 +56,7 @@ namespace Watermelon
             noAdsButton.Button.onClick.AddListener(NoAdButton);
             coinsPanel.AddButton.onClick.AddListener(AddCoinsButton);
             playButton.onClick.AddListener(PlayButton);
+            addLivesPanel.button.onClick.AddListener(IAPStoreButton);
 
             NotchSaveArea.RegisterRectTransform(safeAreaRectTransform);
         }

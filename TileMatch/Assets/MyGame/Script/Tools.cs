@@ -15,9 +15,6 @@ public class Tools : MonoBehaviour
         // 复制UI物体
         GameObject newObject = Instantiate(targetObject, targetObject.transform.position, Quaternion.identity, targetObject.transform.parent);
 
-        // 设置新物体的父物体与原物体一致
-        //newObject.transform.SetParent(targetObject.transform.parent);
-
         // 获取新物体的RectTransform
         RectTransform rectTransform = newObject.GetComponent<RectTransform>();
 
@@ -25,20 +22,17 @@ public class Tools : MonoBehaviour
         float currentPosX = rectTransform.anchoredPosition.x;
         float targetPosX = -540f;  // 目标PosX
 
-        // 设置目标宽度和高度（缩小到0）
-        Vector2 targetSize = Vector2.zero;
+        // 设置目标缩放（缩小到0）
+        Vector3 targetScale = Vector3.zero;
 
-        // 获取当前的宽度和高度
-        Vector2 currentSize = rectTransform.sizeDelta;
-
-        // 创建 DOTween 动画
+        // 创建 DOTween 动画序列
         Sequence sequence = DOTween.Sequence();
 
         // 修改PosX
         sequence.Append(DOTween.To(() => currentPosX, x => rectTransform.anchoredPosition = new Vector2(x, rectTransform.anchoredPosition.y), targetPosX, duration));
 
-        // 同时缩小宽度和高度
-        sequence.Join(DOTween.To(() => currentSize, size => rectTransform.sizeDelta = size, targetSize, duration));
+        // 同时缩小 `localScale`
+        sequence.Join(rectTransform.DOScale(targetScale, duration));
 
         // 动画完成后销毁物体并调用回调函数
         sequence.OnComplete(() =>
@@ -47,6 +41,7 @@ public class Tools : MonoBehaviour
             callback?.Invoke();  // 如果回调函数不为空，调用回调
         });
     }
+
 
 
     // 函数参数：

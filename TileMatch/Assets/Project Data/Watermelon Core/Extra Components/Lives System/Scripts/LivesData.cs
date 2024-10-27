@@ -9,8 +9,9 @@ namespace Watermelon
     public class LivesData : ScriptableObject
     {
         public int maxLivesCount = 5;
+        public int customedMaxLivesCount = 5;
         [Tooltip("In seconds")]public int oneLifeRestorationDuration = 1200;
-
+        public int defaultLifeRestorationDuration = 1200;
         [Space]
         public string fullText = "ÒÑÂú!";
         public string timespanFormat = "{0:mm\\:ss}";

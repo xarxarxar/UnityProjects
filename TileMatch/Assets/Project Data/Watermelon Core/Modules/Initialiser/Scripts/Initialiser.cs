@@ -63,9 +63,7 @@ namespace Watermelon
         // Start方法，在Awake之后调用
         public void Start()
         {
-            Debug.Log("start初始时间" + Time.time);
             Initialise(true); // 默认加载场景
-            Debug.Log("start完成时间" + Time.time);
         }
 
         // 初始化方法，根据参数决定加载方式

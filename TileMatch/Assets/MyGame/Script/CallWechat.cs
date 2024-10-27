@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using WeChatWASM;
 
 public class CallWechat : MonoBehaviour
@@ -37,6 +38,29 @@ public class CallWechat : MonoBehaviour
                 allTexts[i].font = wxFontAsset;
             }
         });
+
+        //ShareApp(() => { Debug.Log("回到前台"); });
     }
+
+
+
+    public  static void ShareApp(UnityAction callback)
+    {
+        // 主动拉起分享给通讯录的方法
+        WX.ShareAppMessage(new ShareAppMessageOption());
+        System.Action<OnShowListenerResult> res = null;
+        res = (result) =>
+        {
+            // 先执行传入的回调
+            callback();
+
+            // 再取消 OnShow 监听
+            WX.OffShow(res);
+        };
+
+        // 设置 OnShow 监听
+        WX.OnShow(res);
+    }
+
 
 }

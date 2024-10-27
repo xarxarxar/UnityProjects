@@ -68,10 +68,10 @@ namespace Watermelon
             livesCountText.text = count.ToString(); // 更新生命数量文本
 
             // 如果生命数小于最大值，且addLivesPanel存在，则显示添加按钮
-            addButton.gameObject.SetActive(count != Data.maxLivesCount && addLivesPanel != null);
+            addButton.gameObject.SetActive(count != Data.customedMaxLivesCount && addLivesPanel != null);
 
             // 如果生命数达到最大值，显示“满生命”状态
-            if (count == Data.maxLivesCount)
+            if (count == Data.customedMaxLivesCount)
             {
                 FullText(); // 调用FullText方法设置显示文本
             }
@@ -142,5 +142,7 @@ namespace Watermelon
         {
             LivesManager.RemoveIndicator(this); // 移除当前生命指示器
         }
+
+
     }
 }

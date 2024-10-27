@@ -62,12 +62,13 @@ namespace Watermelon.IAPStore
             if (timer > duration) // 如果计时结束
             {
                 button.enabled = true; // 启用按钮
+                button.interactable = true;
                 timerText.text = "免费!"; // 显示"免费获取"文本
             }
             else // 如果计时未结束
             {
                 button.enabled = false; // 禁用按钮
-
+                button.interactable = false;
                 var timeLeft = duration - timer; // 计算剩余时间
 
                 // 格式化剩余时间并更新显示

@@ -1,5 +1,6 @@
 #if UNITY_WEBGL || WEIXINMINIGAME || UNITY_EDITOR
 using System;
+using UnityEngine.Events;
 
 namespace WeChatWASM
 {
@@ -3979,7 +3980,6 @@ namespace WeChatWASM
         {
             return WXSDKManagerHandler.Instance.CreateVideoDecoder();
         }
-
     }
 }
 #endif

@@ -20,7 +20,7 @@ namespace Watermelon.IAPStore
         [SerializeField] TMP_Text descriptionText; // 显示描述的文本组件
 
         [Space]
-        [SerializeField] Button button; // 领取金币的按钮
+        [SerializeField] Button button; // 购买的按钮
 
         [Space]
         [SerializeField] GameObject imageObject; // 商品的图片
