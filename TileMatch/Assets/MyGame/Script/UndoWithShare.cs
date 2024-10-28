@@ -91,12 +91,14 @@ namespace Watermelon.IAPStore
         // 按钮点击事件处理
         private void OnAdButtonClicked()
         {
+            AudioController.PlaySound(AudioController.Sounds.buttonSound);
             CallWechat.ShareApp(() =>
             {
                 // 更新保存的计时器开始时间
                 save.Value = DateTime.Now.ToBinary();
                 timerStartTime = DateTime.Now;
                 PUController.AddPowerUp(PUType.Undo, 1);//添加一个“提示”道具的事例
+                AudioController.PlaySound(AudioController.Sounds.buySuccess);
             });
         }
     }

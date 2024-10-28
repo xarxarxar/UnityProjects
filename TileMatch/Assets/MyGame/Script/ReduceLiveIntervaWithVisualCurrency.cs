@@ -73,6 +73,7 @@ namespace Watermelon.IAPStore
         //示例
         private void ReduceLiveInterval()
         {
+            AudioController.PlaySound(AudioController.Sounds.buttonSound);
             //货币足够的情况下才能购买
             if (CurrenciesController.HasAmount(CurrencyType.Coins, price))
             {
@@ -80,10 +81,11 @@ namespace Watermelon.IAPStore
                 CurrenciesController.Substract(CurrencyType.Coins, price);
                 LivesManager.RemoveOneLifeTime(timeReduce);//减少时间恢复间隔
                 Tools.MoveAndShrinkUI(imageObject, 0.5f, () =>{});
+                AudioController.PlaySound(AudioController.Sounds.buySuccess);
             }
             else
             {
-                Tools.BlinkRedThreeTimes(priceText, 1);//文字闪烁提示货币不足
+                Tools.BlinkRedThreeTimes(priceText, 0.5f);//文字闪烁提示货币不足
             }
 
 

@@ -19,6 +19,9 @@ namespace Watermelon.IAPStore
         [SerializeField] int timerDurationInMinutes; // 计时器的持续时间（分钟）
 
         [Space]
+        [SerializeField] TMP_Text lifeText; // 显示爱心值的组件
+
+        [Space]
         [SerializeField] Button button; // 领取金币的按钮
 
         public GameObject GameObject => gameObject; // 获取当前游戏对象
@@ -90,12 +93,20 @@ namespace Watermelon.IAPStore
         // 按钮点击事件处理
         private void OnAdButtonClicked()
         {
+            AudioController.PlaySound(AudioController.Sounds.buttonSound);
+            //如果爱心值已满
+            if (LivesManager.IsMaxLives)
+            {
+                Tools.BlinkRedThreeTimes(lifeText, 0.5f);//文字闪烁提示爱心已满
+                return;
+            }
             CallWechat.ShareApp(() =>
             {
                 // 更新保存的计时器开始时间
                 save.Value = DateTime.Now.ToBinary();
                 timerStartTime = DateTime.Now;
                 LivesManager.AddLife();//添加一颗爱心
+                AudioController.PlaySound(AudioController.Sounds.getLife);
             });
         }
     }

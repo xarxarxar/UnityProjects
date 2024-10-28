@@ -27,7 +27,7 @@ namespace Watermelon
         private static List<AddLivesPanel> addLivesPanels = new List<AddLivesPanel>(); // 所有添加生命的面板列表
 
         // 判断当前生命数是否达到最大生命值
-        public static bool IsMaxLives => Lives == instance.data.customedMaxLivesCount;
+        public static bool IsMaxLives => Lives >= instance.data.customedMaxLivesCount;
 
         private void Awake()
         {
@@ -281,6 +281,7 @@ namespace Watermelon
         {
             return instance.data.customedMaxLivesCount;
         }
+
 
         /// <summary>
         /// 启动无限生命，持续指定的秒数。
