@@ -78,13 +78,13 @@ checkVersion().then((enable) => {
                 textConfig: {
                     firstStartText: '首次加载请耐心等待',
                     downloadingText: ['正在加载资源'],
-                    compilingText: '编译中',
-                    initText: '初始化中',
-                    completeText: '开始游戏',
+                    compilingText: '“提示”道具够多就一定可以通关',
+                    initText: '碰！碰！碰！',
+                    completeText: '喵喵喵',
                     textDuration: 1500,
                     // 文字样式
                     style: {
-                        bottom: 64,
+                        bottom: 164,
                         height: 24,
                         width: 240,
                         lineHeight: 24,
@@ -98,7 +98,7 @@ checkVersion().then((enable) => {
                         width: 240,
                         height: 24,
                         padding: 2,
-                        bottom: 64,
+                        bottom: 164,
                         backgroundColor: '#07C160',
                     },
                 },
