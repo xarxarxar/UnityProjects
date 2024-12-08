@@ -222,7 +222,10 @@ namespace Watermelon
 
                 // Play appear sound
                 if (floatingCloudData.AppearAudioClip != null)
+                {
                     AudioController.PlaySound(floatingCloudData.AppearAudioClip);
+                }
+                    
 
                 float cloudRadius = floatingCloudData.CloudRadius;
                 Vector3 centerPoint = rectTransform.position;
@@ -231,6 +234,8 @@ namespace Watermelon
 
                 float defaultPitch = 0.9f;
                 bool currencyHittedTarget = false;
+                bool soundPlayed = false; // 用于记录声音是否已经播放过
+
                 for (int i = 0; i < elementsAmount; i++)
                 {
                     GameObject elementObject = floatingCloudData.Pool.GetPooledObject();
@@ -281,7 +286,16 @@ namespace Watermelon
                                 {
                                     // Play collect sound
                                     if (floatingCloudData.CollectAudioClip != null)
-                                        AudioController.PlaySound(floatingCloudData.CollectAudioClip, pitch: defaultPitch);
+                                    {
+                                        if (!soundPlayed)
+                                        {
+                                            Debug.Log("收集金币的sound");
+                                            AudioController.PlaySound(floatingCloudData.CollectAudioClip, pitch: defaultPitch);
+                                            soundPlayed = true;
+                                        }
+                                       
+                                    }
+                                        
 
                                     defaultPitch += 0.01f;
 

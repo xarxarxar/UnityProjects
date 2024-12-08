@@ -24,6 +24,7 @@ namespace Watermelon
         [SerializeField] CurrencyUIPanelSimple coinsPanel;
         [SerializeField] UIScaleAnimation livesIndicatorScalable;
         [SerializeField] AddLivesPanel addLivesPanel;
+        [SerializeField] AddLivesPanel GameOverAddLivesPanel;
 
         [Space]
         [SerializeField] UIMainMenuButton iapStoreButton;
@@ -57,6 +58,7 @@ namespace Watermelon
             coinsPanel.AddButton.onClick.AddListener(AddCoinsButton);
             playButton.onClick.AddListener(PlayButton);
             addLivesPanel.button.onClick.AddListener(IAPStoreButton);
+            GameOverAddLivesPanel.button.onClick.AddListener(IAPStoreButton);
 
             NotchSaveArea.RegisterRectTransform(safeAreaRectTransform);
         }
@@ -239,9 +241,10 @@ namespace Watermelon
 
         private void IAPStoreButton()
         {
+            Debug.Log("111");
             if (UIController.GetPage<UIIAPStore>().IsPageDisplayed)
                 return;
-
+            Debug.Log("222");
             UILevelNumberText.Hide(true);
 
             UIController.HidePage<UIMainMenu>();

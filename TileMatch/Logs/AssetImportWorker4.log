@@ -1,0 +1,1921 @@
+Using pre-set license
+Built from '2022.3/staging' branch; Version is '2022.3.41f1 (0f988161febf) revision 1022081'; Using compiler version '192829333'; Build Type 'Release'
+OS: 'Windows 10  (10.0.19045) 64bit Professional' Language: 'zh' Physical Memory: 32577 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1, IsPro: 1
+
+COMMAND LINE ARGUMENTS:
+D:\UnityHub\UnityEditors\Install\2022.3.41f1\Editor\Unity.exe
+-adb2
+-batchMode
+-noUpm
+-name
+AssetImportWorker4
+-projectPath
+D:/UnityHub/UnityProjects/TileMatch
+-logFile
+Logs/AssetImportWorker4.log
+-srvPort
+7720
+Successfully changed project path to: D:/UnityHub/UnityProjects/TileMatch
+D:/UnityHub/UnityProjects/TileMatch
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gfx=262144"
+Player connection [2776]  Target information:
+
+Player connection [2776]  * "[IP] 192.168.1.11 [Port] 0 [Flags] 2 [Guid] 3120313481 [EditorId] 3120313481 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-DBTF552) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [2776] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [2776] Host joined alternative multi-casting on [225.0.0.222:34997]...
+[PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+Refreshing native plugins compatible for Editor in 29.96 ms, found 11 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Initialize engine version: 2022.3.41f1 (0f988161febf)
+[Subsystems] Discovering subsystems at path D:/UnityHub/UnityEditors/Install/2022.3.41f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path D:/UnityHub/UnityProjects/TileMatch/Assets
+GfxDevice: creating device client; threaded=0; jobified=0
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce RTX 4060 Ti (ID=0x2803)
+    Vendor:   NVIDIA
+    VRAM:     7949 MB
+    Driver:   32.0.15.6094
+Initialize mono
+Mono path[0] = 'D:/UnityHub/UnityEditors/Install/2022.3.41f1/Editor/Data/Managed'
+Mono path[1] = 'D:/UnityHub/UnityEditors/Install/2022.3.41f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'D:/UnityHub/UnityEditors/Install/2022.3.41f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56412
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: D:/UnityHub/UnityEditors/Install/2022.3.41f1/Editor/Data/PlaybackEngines/WebGLSupport/UnityEditor.WebGL.Extensions.dll
+Register platform support module: D:/UnityHub/UnityEditors/Install/2022.3.41f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.003303 seconds.
+- Loaded All Assemblies, in  0.256 seconds
+Native extension for WindowsStandalone target not found
+Native extension for WebGL target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.341 seconds
+Domain Reload Profiling: 597ms
+	BeginReloadAssembly (70ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (0ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (1ms)
+	RebuildCommonClasses (24ms)
+	RebuildNativeTypeToScriptingClass (7ms)
+	initialDomainReloadingComplete (32ms)
+	LoadAllAssembliesAndSetupDomain (123ms)
+		LoadAssemblies (70ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (122ms)
+			TypeCache.Refresh (121ms)
+				TypeCache.ScanAssembly (109ms)
+			ScanForSourceGeneratedMonoScriptInfo (0ms)
+			ResolveRequiredComponents (0ms)
+	FinalizeReload (342ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (285ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (10ms)
+			SetLoadedEditorAssemblies (6ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (3ms)
+			ProcessInitializeOnLoadAttributes (199ms)
+			ProcessInitializeOnLoadMethodAttributes (67ms)
+			AfterProcessingInitializeOnLoad (0ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (0ms)
+========================================================================
+Worker process is ready to serve import requests
+Caller must complete domain reload
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.874 seconds
+Native extension for WindowsStandalone target not found
+Native extension for WebGL target not found
+Package Manager log level set to [2]
+[Package Manager] Server::EnsureServerProcessIsRunning -- launch failed, reason: Unity was launched with the -noUpm command-line argument
+[Package Manager] UpmClient::Send -- Unable to send message (not connected to UPM process).
+[Package Manager] Cannot connect to Unity Package Manager local server
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.143 seconds
+Domain Reload Profiling: 2017ms
+	BeginReloadAssembly (204ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (8ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (26ms)
+	RebuildCommonClasses (53ms)
+	RebuildNativeTypeToScriptingClass (21ms)
+	initialDomainReloadingComplete (80ms)
+	LoadAllAssembliesAndSetupDomain (514ms)
+		LoadAssemblies (426ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (206ms)
+			TypeCache.Refresh (173ms)
+				TypeCache.ScanAssembly (156ms)
+			ScanForSourceGeneratedMonoScriptInfo (24ms)
+			ResolveRequiredComponents (8ms)
+	FinalizeReload (1144ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (949ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (9ms)
+			SetLoadedEditorAssemblies (6ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (138ms)
+			ProcessInitializeOnLoadAttributes (692ms)
+			ProcessInitializeOnLoadMethodAttributes (100ms)
+			AfterProcessingInitializeOnLoad (4ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (14ms)
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.06 seconds
+Refreshing native plugins compatible for Editor in 6.19 ms, found 11 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 4526 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 39 unused Assets / (61.1 KB). Loaded Objects now: 5007.
+Memory consumption went from 157.6 MB to 157.6 MB.
+Total: 3.550100 ms (FindLiveObjects: 0.220700 ms CreateObjectMapping: 0.129900 ms MarkObjects: 3.091300 ms  DeleteObjects: 0.107000 ms)
+
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:CustomObjectIndexerAttribute: 9a22284fe3817be447336de3de66b15e -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:SearchIndexIgnoredProperties: e643bd26f0fe6173181afceb89e7c659 -> 
+  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+========================================================================
+Received Import Request.
+  Time since last request: 167188.446908 seconds.
+  path: Assets/Project Data/Game/Prefabs/Particles/Link Shatter.prefab
+  artifactKey: Guid(ed73f4b8361a7a64b9d9ba565e8614d7) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Prefabs/Particles/Link Shatter.prefab using Guid(ed73f4b8361a7a64b9d9ba565e8614d7) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '1ed55ce660ce079c78248334de404d01') in 0.208698 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 6
+========================================================================
+Received Import Request.
+  Time since last request: 0.000291 seconds.
+  path: Assets/Project Data/Content/LevelSystem/Levels/Level_164.asset
+  artifactKey: Guid(e8bb37e58a353ac41a97f08542e937e9) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Content/LevelSystem/Levels/Level_164.asset using Guid(e8bb37e58a353ac41a97f08542e937e9) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '2ba2bdc563f9dad22896947e4d4ea547') in 0.023020 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/Project Data/Content/LevelSystem/Levels/Level_145.asset
+  artifactKey: Guid(985687071127ad34fb4737fd29de0683) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Content/LevelSystem/Levels/Level_145.asset using Guid(985687071127ad34fb4737fd29de0683) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'd7dc6a8c0e029091c2e1e3bc25ac4668') in 0.007062 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/Project Data/Game/Scripts/Power Ups/PUCustomUIBehavior.cs
+  artifactKey: Guid(39833c7c2194b9241b91d25ffd691970) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Scripts/Power Ups/PUCustomUIBehavior.cs using Guid(39833c7c2194b9241b91d25ffd691970) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '7ebf65bdd49cef21eaca559aa72fa414') in 0.006785 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/Project Data/Content/LevelSystem/Levels/Level_143.asset
+  artifactKey: Guid(825ee8873f56a4b4c8b22f6ca0b7e7c5) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Content/LevelSystem/Levels/Level_143.asset using Guid(825ee8873f56a4b4c8b22f6ca0b7e7c5) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '56c396572f1a08ca82b3bc14b5467470') in 0.005901 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Icons/icon_menu.png
+  artifactKey: Guid(1a6540ccf2d6b04479038830cd88526c) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Icons/icon_menu.png using Guid(1a6540ccf2d6b04479038830cd88526c) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'd3a22bf1c9aea756c8e6881419d22ee0') in 0.110474 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000020 seconds.
+  path: Assets/Project Data/Game/Images/Tiles/tile_c1_t2.png
+  artifactKey: Guid(83266f65b9ae73540ad847429ef8317e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Images/Tiles/tile_c1_t2.png using Guid(83266f65b9ae73540ad847429ef8317e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '8d88912cff0caaa02b2863f6efa05bf6') in 0.074943 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000133 seconds.
+  path: Assets/Project Data/Game/Prefabs/Tiles/Tile C2T1.prefab
+  artifactKey: Guid(a5da90b5ef01cb849a2c381316c4bc23) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Prefabs/Tiles/Tile C2T1.prefab using Guid(a5da90b5ef01cb849a2c381316c4bc23) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '379fbf8d3b36fcf55d9b79c398fa3191') in 0.031140 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 34
+========================================================================
+Received Import Request.
+  Time since last request: 0.000235 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Icons/icon_leaderboard.png
+  artifactKey: Guid(c6907def285802c40a864a08d712646d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Icons/icon_leaderboard.png using Guid(c6907def285802c40a864a08d712646d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '6ac9c3e8ba8c17a19e85aa057a951fbe') in 0.017513 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Icons/icon_helpbox.png
+  artifactKey: Guid(29ea3de3c437436459d2a0dd7f36f3df) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Icons/icon_helpbox.png using Guid(29ea3de3c437436459d2a0dd7f36f3df) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '78123f91fe7e85891f484d31956254dc') in 0.016015 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000044 seconds.
+  path: Assets/Project Data/Game/Prefabs/Tiles/Tile C4T12 7.prefab
+  artifactKey: Guid(df9a323047528454e9af160a95dd1727) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Prefabs/Tiles/Tile C4T12 7.prefab using Guid(df9a323047528454e9af160a95dd1727) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '35b221b48e003d250168665b2a292ef6') in 0.033899 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 34
+========================================================================
+Received Import Request.
+  Time since last request: 0.000020 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Editor/EditorCoroutines.cs
+  artifactKey: Guid(742481411f04032419895c3938aedd1e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Editor/EditorCoroutines.cs using Guid(742481411f04032419895c3938aedd1e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '89811fbaf76cfcb2ac4373272a6f5027') in 0.006465 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Attributes/PropertyValidatorAttribute.cs
+  artifactKey: Guid(3958da9eed583924ab98344818824440) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Attributes/PropertyValidatorAttribute.cs using Guid(3958da9eed583924ab98344818824440) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'e5adda4d985edce505f18c7bbf53ec9d') in 0.008956 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/Project Data/Game/Scripts/Level/TileData.cs
+  artifactKey: Guid(499c46b07bcb16c4d99d0e341a0ca977) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Scripts/Level/TileData.cs using Guid(499c46b07bcb16c4d99d0e341a0ca977) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'a0c7996d90d9abf11f7e7a4e76094d86') in 0.005656 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/Project Data/Game/Prefabs/Tiles/Tile Base.prefab
+  artifactKey: Guid(09b0f45e5d025574ba074594d6c8cce6) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Prefabs/Tiles/Tile Base.prefab using Guid(09b0f45e5d025574ba074594d6c8cce6) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '5504e0bc7dab204fa64126a6113f5913') in 0.012774 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 18
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/Project Data/Game/Images/Tiles/tile_c3_t4.png
+  artifactKey: Guid(1c53589a26cad0d4c95ea1bb4847c168) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Images/Tiles/tile_c3_t4.png using Guid(1c53589a26cad0d4c95ea1bb4847c168) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '53ccd1254ddb57591a3edaadb25d8dfd') in 0.020740 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/Project Data/Game/Materials/Particles/pop.mat
+  artifactKey: Guid(ea696a4cf4fe1924796b308e4791aaf7) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Materials/Particles/pop.mat using Guid(ea696a4cf4fe1924796b308e4791aaf7) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '835ef8bdab2c7beb3bc079ea038cbfe3') in 0.208492 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 0.000030 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Sprites/button_02_active.png
+  artifactKey: Guid(3a1daead246078c47843f837a61d6e08) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Sprites/button_02_active.png using Guid(3a1daead246078c47843f837a61d6e08) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'a80b80a7f790c9698ab37e5067e1d79f') in 0.049993 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000037 seconds.
+  path: Assets/Project Data/Watermelon Core/Scripts/UI/SmartToggle.cs
+  artifactKey: Guid(2df88aae4c961294cb86050073d78411) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Scripts/UI/SmartToggle.cs using Guid(2df88aae4c961294cb86050073d78411) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'b9f03164a860448741a595d7f0d36f1f') in 0.009140 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/WX-WASM-SDK-V2/Editor/TextureEditor/Release/System.Numerics.Vectors.dll
+  artifactKey: Guid(a121dac91684848888ae8e527a7e9394) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/WX-WASM-SDK-V2/Editor/TextureEditor/Release/System.Numerics.Vectors.dll using Guid(a121dac91684848888ae8e527a7e9394) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '0f3f72c26078223cb549fe6fd370b5b4') in 0.008393 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Sprites/button_03_active.png
+  artifactKey: Guid(b32662b398501474a882724be001090e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Sprites/button_03_active.png using Guid(b32662b398501474a882724be001090e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'e6eee9161c45a186899098b1575449c1') in 0.029663 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000017 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Sprites/bottom_panel_dark.png
+  artifactKey: Guid(87ed01e0905efce408eb99123ae6a16b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Sprites/bottom_panel_dark.png using Guid(87ed01e0905efce408eb99123ae6a16b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'ef9b02ed59ce7efdf4fd4c6bce9358c0') in 0.037797 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/WX-WASM-SDK-V2/Editor/Brotli/win_x86_64/libbrotlienc.dll
+  artifactKey: Guid(b18f4be17de93e246a9af4379ecb2650) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/WX-WASM-SDK-V2/Editor/Brotli/win_x86_64/libbrotlienc.dll using Guid(b18f4be17de93e246a9af4379ecb2650) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'fe068b88f0304ebafa094e98bc07f643') in 0.005630 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Sprites/box_title_selected.png
+  artifactKey: Guid(059002d31bd42ff4ba7c237befda9336) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Sprites/box_title_selected.png using Guid(059002d31bd42ff4ba7c237befda9336) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'f3adff2498ef5596a8c0bca6f2cf3692') in 0.041739 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000049 seconds.
+  path: Assets/Project Data/Watermelon Core/Extra Components/Vibration/Vibration.cs
+  artifactKey: Guid(c5f2f986b6afa5348972712d71951051) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extra Components/Vibration/Vibration.cs using Guid(c5f2f986b6afa5348972712d71951051) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '0cfa022eb28d8f028f4d8159ddc7df03') in 0.008496 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000017 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/UI Manager/UIController.cs
+  artifactKey: Guid(092bd395c86601a43b31ee8533d48f11) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/UI Manager/UIController.cs using Guid(092bd395c86601a43b31ee8533d48f11) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'e9a82e82206c9050b7c3de6ba46d9d73') in 0.006053 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000064 seconds.
+  path: Assets/WX-WASM-SDK-V2/Editor/Brotli/win_x86_64/msvcp140.dll
+  artifactKey: Guid(482c84c1110074e5295b51734fa3053b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/WX-WASM-SDK-V2/Editor/Brotli/win_x86_64/msvcp140.dll using Guid(482c84c1110074e5295b51734fa3053b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '34c18a758e1d77660ab12782cee98d3d') in 0.006624 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Sprites/button_05.png
+  artifactKey: Guid(e83d7ad0023ebbf46bb20bfba846db75) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Sprites/button_05.png using Guid(e83d7ad0023ebbf46bb20bfba846db75) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'e2fc0fa835ff187f7d45565ed6fa8cf6') in 0.028309 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/Project Data/Watermelon Core/Scripts/Utils/IOUtils.cs
+  artifactKey: Guid(7b3f51a8c76cdfd45870f072d23e4f22) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Scripts/Utils/IOUtils.cs using Guid(7b3f51a8c76cdfd45870f072d23e4f22) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'b4bef0a4c33027cebb6eb1a042ed4647') in 0.005302 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Setup Guide/SetupTabAttribute.cs
+  artifactKey: Guid(248146995aad1314294c1aaa4f9222a2) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Setup Guide/SetupTabAttribute.cs using Guid(248146995aad1314294c1aaa4f9222a2) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'a6cd35e508aea6065d1ba9e2a1fceafb') in 0.005505 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Sprites/button_04.png
+  artifactKey: Guid(65c809a42ada755459aa8a1106fefb85) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Sprites/button_04.png using Guid(65c809a42ada755459aa8a1106fefb85) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '1cb130bd1b3ba5458f92ab7494ad9238') in 0.017211 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/WX-WASM-SDK-V2/Editor/Brotli/win_x86_64/brotli.exe
+  artifactKey: Guid(14077bb4dfcdf487aa222261b4719a0e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/WX-WASM-SDK-V2/Editor/Brotli/win_x86_64/brotli.exe using Guid(14077bb4dfcdf487aa222261b4719a0e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '071cbc276d6b6ab30d64c4c1ae8f7cd6') in 0.003559 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000027 seconds.
+  path: Assets/WX-WASM-SDK-V2/Editor/TextureEditor/Node/astcenc-neon
+  artifactKey: Guid(b8d17f3584abd400cb2a7b53d6cb59cf) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/WX-WASM-SDK-V2/Editor/TextureEditor/Node/astcenc-neon using Guid(b8d17f3584abd400cb2a7b53d6cb59cf) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '1e3a39ca32fbed6c8c07637092fdc6c5') in 0.004480 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000017 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Sprites/scrollview_thumb.png
+  artifactKey: Guid(566e5a38e9c2c214c98eacf96abfb7be) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Sprites/scrollview_thumb.png using Guid(566e5a38e9c2c214c98eacf96abfb7be) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'cb70c406accd441ba916bee9e6dcf682') in 0.032883 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000172 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Sprites/button_01.png
+  artifactKey: Guid(beeb829d6b057a1469264c90814d371c) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Sprites/button_01.png using Guid(beeb829d6b057a1469264c90814d371c) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '77448f099650f053cadb1f0871c73d67') in 0.018550 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000020 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Pool Manager/Pool.cs
+  artifactKey: Guid(4458b59631f48d940bfed4f1e044afa3) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Pool Manager/Pool.cs using Guid(4458b59631f48d940bfed4f1e044afa3) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '8732ce3c42728f3ea53576abc790f0d0') in 0.005247 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000017 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Audio Controller/MD_Sounds.cs
+  artifactKey: Guid(147fec28016bc2843b381831156a46ff) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Audio Controller/MD_Sounds.cs using Guid(147fec28016bc2843b381831156a46ff) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '64a1d846dbff573cafed98bc0998f317') in 0.005466 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000020 seconds.
+  path: Assets/WX-WASM-SDK-V2/Editor/TextureEditor/Release/System.Buffers.xml
+  artifactKey: Guid(3e638173a276543a5b7f11c2942ce871) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/WX-WASM-SDK-V2/Editor/TextureEditor/Release/System.Buffers.xml using Guid(3e638173a276543a5b7f11c2942ce871) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '715489736f9e90b91a93e86c2aa3d977') in 0.004549 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/WX-WASM-SDK-V2/Editor/TextureEditor/Node/astcenc-sse4.1.exe
+  artifactKey: Guid(e0d60c769ddf340d8bd8197a3cd3dc5c) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/WX-WASM-SDK-V2/Editor/TextureEditor/Node/astcenc-sse4.1.exe using Guid(e0d60c769ddf340d8bd8197a3cd3dc5c) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '01f3252eae9343e54233b21eb6d7d1b7') in 0.003727 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000017 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Sprites/box_title_normal_dark.png
+  artifactKey: Guid(86e8bc6a9de8279479d95a8ad0547596) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Sprites/box_title_normal_dark.png using Guid(86e8bc6a9de8279479d95a8ad0547596) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'fb2c3940c545f69d9aea46e9ef266479') in 0.041271 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000192 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Pool Manager/PooledObjectSettings.cs
+  artifactKey: Guid(8c7910d92e971f54db5c31be492510de) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Pool Manager/PooledObjectSettings.cs using Guid(8c7910d92e971f54db5c31be492510de) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '0d7d10b1824a142a68015b102d1d31ce') in 0.005991 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000021 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Sprites/button_01_dark_active.png
+  artifactKey: Guid(3ba9c46b5e90c2841b7ca1eb7b060db2) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Sprites/button_01_dark_active.png using Guid(3ba9c46b5e90c2841b7ca1eb7b060db2) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'f35e314ec9ded271d946990c6e9902b6') in 0.021942 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/Project Data/Watermelon Core/Scripts/Utils/DuoTypes.cs
+  artifactKey: Guid(c776860be0f89ff4b94da4240a398393) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Scripts/Utils/DuoTypes.cs using Guid(c776860be0f89ff4b94da4240a398393) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'b3d0b6fb6d17964ca67e6143ad8db707') in 0.005090 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000017 seconds.
+  path: Assets/WX-WASM-SDK-V2/Editor/TextureEditor/Release/WXTextureTools.exe.config
+  artifactKey: Guid(052e6c0044ac84706b48255eb83cc5d1) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/WX-WASM-SDK-V2/Editor/TextureEditor/Release/WXTextureTools.exe.config using Guid(052e6c0044ac84706b48255eb83cc5d1) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '3679d50238d98411d4c4278b45deb947') in 0.005823 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000017 seconds.
+  path: Assets/WX-WASM-SDK-V2/Editor/TextureEditor/Release/SixLabors.ImageSharp.xml
+  artifactKey: Guid(7f0de3fbaf2b948239e9b1f4338444fb) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/WX-WASM-SDK-V2/Editor/TextureEditor/Release/SixLabors.ImageSharp.xml using Guid(7f0de3fbaf2b948239e9b1f4338444fb) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'f194cccb8ce6708bd0df07c51bc3dd92') in 0.082174 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000029 seconds.
+  path: Assets/Project Data/Game/Images/Backgrounds/back_1.png
+  artifactKey: Guid(841b9c1ca0abf804f9106f76b28088fc) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Images/Backgrounds/back_1.png using Guid(841b9c1ca0abf804f9106f76b28088fc) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '59094b83d61b8c77f1d9b31555fe2a52') in 0.112623 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000314 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Editor/WatermelonEditor.cs
+  artifactKey: Guid(f0e62209d1218a6448f35fad484847ba) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Editor/WatermelonEditor.cs using Guid(f0e62209d1218a6448f35fad484847ba) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'fe498cd2f008ab8699bd80cb2d4ecbd9') in 0.006316 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000036 seconds.
+  path: Assets/Project Data/Content/LevelSystem/Levels/Level_208.asset
+  artifactKey: Guid(5a01581a3de8bd2458c5b9d9da2efe69) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Content/LevelSystem/Levels/Level_208.asset using Guid(5a01581a3de8bd2458c5b9d9da2efe69) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '2ffb60867cfa00ee38b5522729d9a9f9') in 0.007674 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/WX-WASM-SDK-V2/Editor/Brotli/linux_x86_64/brotli
+  artifactKey: Guid(c7d34b53fefa24bf5b0ce2914fc60ad8) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/WX-WASM-SDK-V2/Editor/Brotli/linux_x86_64/brotli using Guid(c7d34b53fefa24bf5b0ce2914fc60ad8) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '0e6d5ec380fe155c45aef5f93dafc747') in 0.004007 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Sprites/box_title_normal.png
+  artifactKey: Guid(419824062a7ed774d8d11178a948c29f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Sprites/box_title_normal.png using Guid(419824062a7ed774d8d11178a948c29f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '471883f1c55295bce3da522cafebc2bb') in 0.031457 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000265 seconds.
+  path: Assets/Project Data/Content/LevelSystem/Levels/Level_223.asset
+  artifactKey: Guid(7b282a2e3598b76429d021957946b809) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Content/LevelSystem/Levels/Level_223.asset using Guid(7b282a2e3598b76429d021957946b809) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'a6d0ecaa7ccda6d0d3dfe75b08549917') in 0.007813 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000017 seconds.
+  path: Assets/Project Data/Game/Prefabs/Map/Chunk_2.prefab
+  artifactKey: Guid(b1ef9760574c4fe4e8cd5dc6ce60143a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Prefabs/Map/Chunk_2.prefab using Guid(b1ef9760574c4fe4e8cd5dc6ce60143a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '1f6b521e1776a905afeda994064450aa') in 0.117357 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 337
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/Plugins/Demigiant/DOTween/Editor/Imgs/Header.jpg
+  artifactKey: Guid(78a59ca99f8987941adb61f9e14a06a7) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Plugins/Demigiant/DOTween/Editor/Imgs/Header.jpg using Guid(78a59ca99f8987941adb61f9e14a06a7) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'ab9c744349f394ee3c7bf22d3d5eb93f') in 0.035158 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000307 seconds.
+  path: Assets/Project Data/Game/Images/Base/Misc/universal_back.png
+  artifactKey: Guid(bd0bb2ebf32d8c142802818c66c4592e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Images/Base/Misc/universal_back.png using Guid(bd0bb2ebf32d8c142802818c66c4592e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '7bc96d4cc10def0d3bf2de235f8f6b0b') in 0.025505 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000154 seconds.
+  path: Assets/Project Data/Game/Scripts/Level/Dock/IDockElement.cs
+  artifactKey: Guid(e68170a23666c8c419270826831bb9c8) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Scripts/Level/Dock/IDockElement.cs using Guid(e68170a23666c8c419270826831bb9c8) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '5b0350a5d3bd86e7dcfa7c08b7087768') in 0.005622 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000017 seconds.
+  path: Assets/Project Data/Game/Images/Base/Store/background_gradient_store.png
+  artifactKey: Guid(bcb3485bc794e8040b3f9475cb8f8c7d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Images/Base/Store/background_gradient_store.png using Guid(bcb3485bc794e8040b3f9475cb8f8c7d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'f51e7364edfce2f10d6046772d39e965') in 0.023751 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/Plugins/Demigiant/DOTween/Editor/Imgs/Footer_dark.png
+  artifactKey: Guid(519694efe2bb2914788b151fbd8c01f4) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Plugins/Demigiant/DOTween/Editor/Imgs/Footer_dark.png using Guid(519694efe2bb2914788b151fbd8c01f4) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '341c5a22ae86739666d299eaead6d48a') in 0.019800 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000020 seconds.
+  path: Assets/Project Data/Game/Prefabs/UI/Canvas/UI Game Over.prefab
+  artifactKey: Guid(8d03459103882dd4d97ac0242d87f2ab) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Prefabs/UI/Canvas/UI Game Over.prefab using Guid(8d03459103882dd4d97ac0242d87f2ab) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'e389cc26d3a2c26f1d334aa897101acf') in 0.076312 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 194
+========================================================================
+Received Import Request.
+  Time since last request: 0.000021 seconds.
+  path: Assets/Project Data/Game/Prefabs/UI/IAP Store/UI IAP Store.prefab
+  artifactKey: Guid(a6a57bc430670554483b9c3ee65a7f34) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Prefabs/UI/IAP Store/UI IAP Store.prefab using Guid(a6a57bc430670554483b9c3ee65a7f34) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '0fba45f503aeda7171a4c710ad968b3d') in 0.050023 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 450
+========================================================================
+Received Import Request.
+  Time since last request: 0.000021 seconds.
+  path: Assets/WX-WASM-SDK-V2/Runtime/wechat-default/unity-sdk/resType.js
+  artifactKey: Guid(cfcdd546b700155e56cc2afcaa07350c) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/WX-WASM-SDK-V2/Runtime/wechat-default/unity-sdk/resType.js using Guid(cfcdd546b700155e56cc2afcaa07350c) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'efec71fc0a5fbf163751c7c1ae6d6934') in 0.004047 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/Project Data/Game/Images/Base/Store/ic_coins_pack_3.png
+  artifactKey: Guid(8453a3416047bb447add08ac5ce7be02) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Images/Base/Store/ic_coins_pack_3.png using Guid(8453a3416047bb447add08ac5ce7be02) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '811b2f0d34dec653bf36abc335eb5cae') in 0.022911 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000028 seconds.
+  path: Assets/Plugins/Demigiant/DOTween/Editor/Imgs/DOTweenMiniIcon.png
+  artifactKey: Guid(61521df2e071645488ba3d05e49289ae) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Plugins/Demigiant/DOTween/Editor/Imgs/DOTweenMiniIcon.png using Guid(61521df2e071645488ba3d05e49289ae) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'ecc1bf96bc75438e018b40e9d3d87d08') in 0.020012 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/Project Data/Game/Prefabs/Tiles/Effects/Unknown Effect.prefab
+  artifactKey: Guid(0c5538f95b0d01e45aad9171dca64717) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Prefabs/Tiles/Effects/Unknown Effect.prefab using Guid(0c5538f95b0d01e45aad9171dca64717) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '8401f47003c735371e4b8b051e5b7c4c') in 0.009632 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 6
+========================================================================
+Received Import Request.
+  Time since last request: 0.000016 seconds.
+  path: Assets/Project Data/Game/Images/Base/Misc/square.png
+  artifactKey: Guid(b2cd59f01127dbe46b6ef55574585e4b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Images/Base/Misc/square.png using Guid(b2cd59f01127dbe46b6ef55574585e4b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '0f6684e3a62379846b7b028476a091de') in 0.022051 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/Project Data/Game/Images/Base/Store/panel_yellow_white.png
+  artifactKey: Guid(265296c2ef0fb0148a7f06f5dd271ba4) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Images/Base/Store/panel_yellow_white.png using Guid(265296c2ef0fb0148a7f06f5dd271ba4) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '254a7faf8663df3acfae1a0226b884d5') in 0.021988 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/Project Data/Game/Scripts/Level/Editor/EditorSceneController.cs
+  artifactKey: Guid(0c6153169db10914987638af7f10df72) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Scripts/Level/Editor/EditorSceneController.cs using Guid(0c6153169db10914987638af7f10df72) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '68bf9405b08628f9a79a5eff681605f8') in 0.007233 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/Project Data/Game/Images/Base/Store/comingsoon.png
+  artifactKey: Guid(d088c4549ad829e46ab72337d1794a0b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Images/Base/Store/comingsoon.png using Guid(d088c4549ad829e46ab72337d1794a0b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '1b87b98aa42786da30048579c14d749a') in 0.024243 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/WX-WASM-SDK-V2/Runtime/wechat-default/unity-sdk/upload-file.js
+  artifactKey: Guid(4113e56ad4acab776f82de9ca331cce4) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/WX-WASM-SDK-V2/Runtime/wechat-default/unity-sdk/upload-file.js using Guid(4113e56ad4acab776f82de9ca331cce4) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '925912e5be88c96afa8471a14c035794') in 0.004129 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/Project Data/Game/Fonts/FredokaOne/Fredoka One 120/FredokaOne 120 Outline.asset
+  artifactKey: Guid(365114ea63910134eb86691b0abd4d3b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Fonts/FredokaOne/Fredoka One 120/FredokaOne 120 Outline.asset using Guid(365114ea63910134eb86691b0abd4d3b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '00c8fdb01bdd378d8b67f5c576ed9e45') in 0.170546 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 6
+========================================================================
+Received Import Request.
+  Time since last request: 0.000033 seconds.
+  path: Assets/Project Data/Watermelon Core/Extra Components/Level Map/Scripts/MapChunkBehavior.cs
+  artifactKey: Guid(16dd19d084d464a49a63dd3046776ff4) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extra Components/Level Map/Scripts/MapChunkBehavior.cs using Guid(16dd19d084d464a49a63dd3046776ff4) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'c1aaa61415f386079119610866590aa4') in 0.006554 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000234 seconds.
+  path: Assets/Project Data/Watermelon Core/Extra Components/Level Map/Materials/Map Wall Universal.mat
+  artifactKey: Guid(f0e199e387980eb4cae43c35c5401805) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extra Components/Level Map/Materials/Map Wall Universal.mat using Guid(f0e199e387980eb4cae43c35c5401805) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '0678fcfe753e7a7cfe605e880071660f') in 0.034563 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000107 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Attributes/DrawerAttributes/ShowNonSerializedFieldAttribute.cs
+  artifactKey: Guid(73ca0d89e0e454547a220f669f8602d3) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Attributes/DrawerAttributes/ShowNonSerializedFieldAttribute.cs using Guid(73ca0d89e0e454547a220f669f8602d3) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'a21c00d047b7de971bc3a1fd5d5f96b0') in 0.007670 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000024 seconds.
+  path: Assets/Project Data/Watermelon Core/Extra Components/Power Ups System/Scripts/PUDatabase.cs
+  artifactKey: Guid(206010011bb0ecf4e9293ac9627ea1bf) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extra Components/Power Ups System/Scripts/PUDatabase.cs using Guid(206010011bb0ecf4e9293ac9627ea1bf) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '883c634fed3cdead8dd6de6f2b7c6476') in 0.007107 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000021 seconds.
+  path: Assets/Project Data/Watermelon Core/Extra Components/IAP Module/Scripts/IAPItem.cs
+  artifactKey: Guid(f1ee9d174a3ac0e48a74a182cf8e5eea) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extra Components/IAP Module/Scripts/IAPItem.cs using Guid(f1ee9d174a3ac0e48a74a182cf8e5eea) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'a63b691da66f84eb25efdb4f5b64570d') in 0.005435 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Modules/Core Organizer/Core Organizer.cs
+  artifactKey: Guid(b2edfaf6db3b0474b8d7bec745b54b1f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Modules/Core Organizer/Core Organizer.cs using Guid(b2edfaf6db3b0474b8d7bec745b54b1f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '2568f400b4f8a314274e55461ccb1105') in 0.006529 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000020 seconds.
+  path: Assets/Project Data/Watermelon Core/Extra Components/Level Map/Scripts/MD_MapLinker.cs
+  artifactKey: Guid(24da84b0de2746741b96f80700270ac9) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extra Components/Level Map/Scripts/MD_MapLinker.cs using Guid(24da84b0de2746741b96f80700270ac9) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '4489af01d004ba7fef6a8b13ac499623') in 0.005790 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000021 seconds.
+  path: Assets/Project Data/Watermelon Core/Extra Components/IAP Store/Scripts/IAPStoreData.cs
+  artifactKey: Guid(d1c517233eb48cb4694a6f7d6e6032ed) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extra Components/IAP Store/Scripts/IAPStoreData.cs using Guid(d1c517233eb48cb4694a6f7d6e6032ed) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '55dad51364beccc09009c5589ffecb13') in 0.006644 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000020 seconds.
+  path: Assets/Project Data/Watermelon Core/Extra Components/Level Map/Prefabs/[Example] Map Level.prefab
+  artifactKey: Guid(a545dc05b48f0714cac7c396c21533ff) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extra Components/Level Map/Prefabs/[Example] Map Level.prefab using Guid(a545dc05b48f0714cac7c396c21533ff) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'f1794968531fcea8f5095c7e67076a96') in 0.057666 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 34
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/Project Data/Game/Images/Base/General UI/ic_store.png
+  artifactKey: Guid(5509d351514b11a4bb9b48d1e9a671b6) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Images/Base/General UI/ic_store.png using Guid(5509d351514b11a4bb9b48d1e9a671b6) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '556919a02637e2c81cb0175927a26fcb') in 0.020693 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000531 seconds.
+  path: Assets/Project Data/Watermelon Core/Extra Components/Floating Text/Behaviours/FloatingTextHitBehaviour.cs
+  artifactKey: Guid(25d4cf1a36d9ea949a7085f4ed48b236) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extra Components/Floating Text/Behaviours/FloatingTextHitBehaviour.cs using Guid(25d4cf1a36d9ea949a7085f4ed48b236) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '5357983674ba51fdb6363f8dc9a50b24') in 0.006083 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/Project Data/Watermelon Core/Extra Components/Power Ups System/Scripts/PUUIController.cs
+  artifactKey: Guid(820c41f2e12064046b802c09bec8f965) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extra Components/Power Ups System/Scripts/PUUIController.cs using Guid(820c41f2e12064046b802c09bec8f965) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '2b97fee44c3a85c3796074ef19e648e1') in 0.006421 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000014 seconds.
+  path: Assets/Project Data/Game/Images/Base/Store/item_background.png
+  artifactKey: Guid(a080fdd4446f73749b5e4bcf94e488dd) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Images/Base/Store/item_background.png using Guid(a080fdd4446f73749b5e4bcf94e488dd) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'f3c3b209287612eb4f970ae71598fe7d') in 0.024055 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000020 seconds.
+  path: Assets/Project Data/Game/Images/Base/General UI/grad_shine_square.png
+  artifactKey: Guid(ba52fc1f81927a940a9bea65231b5c04) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Images/Base/General UI/grad_shine_square.png using Guid(ba52fc1f81927a940a9bea65231b5c04) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '76cf22639b36781963d9330135bb6306') in 0.023644 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000157 seconds.
+  path: Assets/Project Data/Game/Scripts/Level/LevelData/CellData.cs
+  artifactKey: Guid(ff1615f2adabfd141b554e29f4672324) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Scripts/Level/LevelData/CellData.cs using Guid(ff1615f2adabfd141b554e29f4672324) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'f24ae7855e1804113047a35d6ac172e2') in 0.005747 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000024 seconds.
+  path: Assets/Project Data/Game/Scripts/Level/Spawn Animations/SimpleSpawnAnimation.cs
+  artifactKey: Guid(702941f3fe0413d429247b1f672ab39e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Scripts/Level/Spawn Animations/SimpleSpawnAnimation.cs using Guid(702941f3fe0413d429247b1f672ab39e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '0334bf5768858b439c6c953deac895f4') in 0.007058 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/Project Data/Game/Images/Tiles/Special/tile_ice_1.png
+  artifactKey: Guid(94e721134b73f434994d746dad7067fd) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Images/Tiles/Special/tile_ice_1.png using Guid(94e721134b73f434994d746dad7067fd) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '4c3121395b2a745f78570fa494c3db6c') in 0.026842 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/Project Data/Watermelon Core/Extra Components/Particle System/Editor/ParticlesControllerEditor.cs
+  artifactKey: Guid(60b29246aa14c004bb6337c1e71c589a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extra Components/Particle System/Editor/ParticlesControllerEditor.cs using Guid(60b29246aa14c004bb6337c1e71c589a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '67607ff9873626c5096cfaa057ce240c') in 0.008549 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/Project Data/Watermelon Core/Extra Components/IAP Module/Animations/Loading.anim
+  artifactKey: Guid(f7adbd0f056fe1e468b45b85ebedaf7e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extra Components/IAP Module/Animations/Loading.anim using Guid(f7adbd0f056fe1e468b45b85ebedaf7e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'c4f4fb5d109432c95d8074f111b2da63') in 0.018254 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/Project Data/Game/Images/Base/General UI/ic_plus.png
+  artifactKey: Guid(0147d9ec7c18d7048b49fe0c92bf0206) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Images/Base/General UI/ic_plus.png using Guid(0147d9ec7c18d7048b49fe0c92bf0206) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '9153388d29113aaa44229cf492bc8e90') in 0.020158 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000020 seconds.
+  path: Assets/Project Data/Game/Images/Base/General UI/circle_frame_medium.png
+  artifactKey: Guid(3d891cdd8781d82478437248c0be2f05) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Images/Base/General UI/circle_frame_medium.png using Guid(3d891cdd8781d82478437248c0be2f05) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '00dbbce261cc0736b0bfddf2cc922d7e') in 0.021720 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/Project Data/Game/Scripts/Level/Dock/SlotCase.cs
+  artifactKey: Guid(8d08440beaa84284cb3a52fbd1c1c2f6) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Scripts/Level/Dock/SlotCase.cs using Guid(8d08440beaa84284cb3a52fbd1c1c2f6) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'cdedc671969725e86ec741336a1ea576') in 0.005255 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/Project Data/Game/Scripts/Level/LevelData/LevelData.cs
+  artifactKey: Guid(4e068d4b61b94914da390f6ae91e0b2b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Scripts/Level/LevelData/LevelData.cs using Guid(4e068d4b61b94914da390f6ae91e0b2b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'dba6553e7dd9c9697c695d99d759c800') in 0.008733 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000021 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Editor/Utility/PropertyUtility.cs
+  artifactKey: Guid(2c9af68325b7f714b8c093958cfaac9d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Editor/Utility/PropertyUtility.cs using Guid(2c9af68325b7f714b8c093958cfaac9d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'ba80b9fa3b54248c13443bfa356299fe') in 0.005707 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000020 seconds.
+  path: Assets/Project Data/Watermelon Core/Extra Components/IAP Module/Scripts/MD_ProductKeyType.cs
+  artifactKey: Guid(3a943a5c3c3a9354ab56a921cbc72a00) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extra Components/IAP Module/Scripts/MD_ProductKeyType.cs using Guid(3a943a5c3c3a9354ab56a921cbc72a00) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '768473da2121d80924c208b5e85e9bb1') in 0.005434 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000017 seconds.
+  path: Assets/WX-WASM-SDK-V2/Runtime/wechat-default/plugins/check-update.js
+  artifactKey: Guid(b2f277527f24b913e7191f7a03bfda7d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/WX-WASM-SDK-V2/Runtime/wechat-default/plugins/check-update.js using Guid(b2f277527f24b913e7191f7a03bfda7d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'a208d282aca14b41706d0a9fcd3b69bc') in 0.003616 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/Project Data/Watermelon Core/Extra Components/IAP Store/Prefabs/Money For Ads Pack.prefab
+  artifactKey: Guid(965b9155ba818334891a4d214fb8fabc) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extra Components/IAP Store/Prefabs/Money For Ads Pack.prefab using Guid(965b9155ba818334891a4d214fb8fabc) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'cd87c24082c8a44426f45878eb726e1e') in 0.036338 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 38
+========================================================================
+Received Import Request.
+  Time since last request: 0.000195 seconds.
+  path: Assets/Project Data/Watermelon Core/Extra Components/IAP Module/Example/IAPModuleExample.unity
+  artifactKey: Guid(1fa0af1cfa177214190feceacdb69e68) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extra Components/IAP Module/Example/IAPModuleExample.unity using Guid(1fa0af1cfa177214190feceacdb69e68) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '8e44c61085b82d1dab89f97775458672') in 0.005618 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/Project Data/Watermelon Core/Extra Components/Settings Panel/Content/Settings Position Animation.asset
+  artifactKey: Guid(f44113aca7d605c428d4047dba01a5d9) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extra Components/Settings Panel/Content/Settings Position Animation.asset using Guid(f44113aca7d605c428d4047dba01a5d9) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '1a74c7b56291764d1eca7292003746ef') in 0.008946 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/Project Data/Watermelon Core/Extra Components/IAP Store/Prefabs/Offer Starter Pack.prefab
+  artifactKey: Guid(7be49478fdd5cd640ad78b3627cc5101) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extra Components/IAP Store/Prefabs/Offer Starter Pack.prefab using Guid(7be49478fdd5cd640ad78b3627cc5101) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '827fd4c6e5cfb0ad0c94cb5c4bb7c488') in 0.035180 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 111
+========================================================================
+Received Import Request.
+  Time since last request: 0.000024 seconds.
+  path: Assets/Project Data/Game/Fonts/FredokaOne/FredokaOne 50/FredokaOne 50 Outline.asset
+  artifactKey: Guid(c2ee9bf6e65695d48ba9d4b5a346538f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Fonts/FredokaOne/FredokaOne 50/FredokaOne 50 Outline.asset using Guid(c2ee9bf6e65695d48ba9d4b5a346538f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '3ca4113215c548c12dc131c7fefc9f49') in 0.030600 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 6
+========================================================================
+Received Import Request.
+  Time since last request: 0.000285 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Attributes/DecoratorAttributes/LineSpacerAttribute.cs
+  artifactKey: Guid(10213be509a70374d83ac06f6081d6ca) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Attributes/DecoratorAttributes/LineSpacerAttribute.cs using Guid(10213be509a70374d83ac06f6081d6ca) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '68c983686ec90c5db4dc00ddd89f2e15') in 0.008554 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/Project Data/Game/Scripts/Power Ups/Data/PUHintBehavior.cs
+  artifactKey: Guid(007184ebd4330de48a4c13f641d2da4e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Scripts/Power Ups/Data/PUHintBehavior.cs using Guid(007184ebd4330de48a4c13f641d2da4e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'db9b23062efe8076f7e2f5bcac9026bb') in 0.006133 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/Project Data/Game/Fonts/FredokaOne/Fredoka One 120/FredokaOne 120 Outline Texture.png
+  artifactKey: Guid(536ad241b0a8cb349a9904d5f1fa3a60) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Fonts/FredokaOne/Fredoka One 120/FredokaOne 120 Outline Texture.png using Guid(536ad241b0a8cb349a9904d5f1fa3a60) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'd228a0accc5d6f9cf0876ee489999881') in 0.025721 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000406 seconds.
+  path: Assets/Project Data/Game/Prefabs/Tiles/Tile C4T10.prefab
+  artifactKey: Guid(61e3d2774e553cc4c8d074e14865b09b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Prefabs/Tiles/Tile C4T10.prefab using Guid(61e3d2774e553cc4c8d074e14865b09b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'c9b721361773ce8b9ae02f2e9b1b3999') in 0.015104 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 34
+========================================================================
+Received Import Request.
+  Time since last request: 0.000021 seconds.
+  path: Assets/Project Data/Watermelon Core/Scripts/UI/Custom UI Particle/UIParticle.cs
+  artifactKey: Guid(d418feb2315d40c4080674cf56f7604f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Scripts/UI/Custom UI Particle/UIParticle.cs using Guid(d418feb2315d40c4080674cf56f7604f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '3935ed42e750a513d4575995f6ef6eea') in 0.006547 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000035 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Currencies Module/Prefabs/Currency Panel.prefab
+  artifactKey: Guid(429e229e2320c8a478e507886ac880f8) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Currencies Module/Prefabs/Currency Panel.prefab using Guid(429e229e2320c8a478e507886ac880f8) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '789850bd07a33acd7049d36dc912834c') in 0.040815 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 22
+========================================================================
+Received Import Request.
+  Time since last request: 0.000247 seconds.
+  path: Assets/WX-WASM-SDK-V2/Runtime/wechat-default/unity-sdk/audio/unity-audio.js
+  artifactKey: Guid(e3304f73e6fd57ceed8d59be6fefc04a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/WX-WASM-SDK-V2/Runtime/wechat-default/unity-sdk/audio/unity-audio.js using Guid(e3304f73e6fd57ceed8d59be6fefc04a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'db49b8e6d221609e3648c06da9e94538') in 0.004433 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000021 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Save Module/Simple Save/SimpleBoolSave.cs
+  artifactKey: Guid(58248a992c5043748968f7ba3343cebb) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Save Module/Simple Save/SimpleBoolSave.cs using Guid(58248a992c5043748968f7ba3343cebb) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '16c566a02c981c51c05f7317588e4094') in 0.007425 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Save Module/Simple Save/SimpleFloatSave.cs
+  artifactKey: Guid(884d02a3d3485a441af08636a36ffdc6) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Save Module/Simple Save/SimpleFloatSave.cs using Guid(884d02a3d3485a441af08636a36ffdc6) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '011ba0bbf9200d055503b634f53328d7') in 0.006789 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000021 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/UI Manager/World Space UI/WorldSpaceButton.cs
+  artifactKey: Guid(61b917b1e5caf7844819a49be075e6a6) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/UI Manager/World Space UI/WorldSpaceButton.cs using Guid(61b917b1e5caf7844819a49be075e6a6) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '43f7df070e7dd1fe3cb521edada0abf0') in 0.007343 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000049 seconds.
+  path: Assets/WX-WASM-SDK-V2/Runtime/wechat-default/unity-sdk/font/read-metrics.js
+  artifactKey: Guid(f880f376a130f0bcb740b0607ef4e9c2) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/WX-WASM-SDK-V2/Runtime/wechat-default/unity-sdk/font/read-metrics.js using Guid(f880f376a130f0bcb740b0607ef4e9c2) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '69e18199548a3da5b3d7781c218f6bc5') in 0.004778 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Define Manager/Editor/DefinesWindow.cs
+  artifactKey: Guid(1f0d322667bfe7c4eb2c099ff39cd768) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Define Manager/Editor/DefinesWindow.cs using Guid(1f0d322667bfe7c4eb2c099ff39cd768) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '35aabc334dd11ad03c5ff53a3aa8d83b') in 0.009534 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/WX-WASM-SDK-V2/Runtime/wechat-default/unity-sdk/mobileKeyboard/index.js
+  artifactKey: Guid(0ba9a2529e567edb67dd295f6e2828e0) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/WX-WASM-SDK-V2/Runtime/wechat-default/unity-sdk/mobileKeyboard/index.js using Guid(0ba9a2529e567edb67dd295f6e2828e0) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '04d9296294f54c4ece813e702cd8333f') in 0.004271 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000020 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Tween/DoTween/DoScaleTween.cs
+  artifactKey: Guid(e96c8bd6799262c4a88438e3f6e1562f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Tween/DoTween/DoScaleTween.cs using Guid(e96c8bd6799262c4a88438e3f6e1562f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'a302bceb2efa47e273b1698ea6a63c11') in 0.006374 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Initialiser/Scripts/InitModule.cs
+  artifactKey: Guid(13a82377ab53eb64a909e51e15c2b6f2) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Initialiser/Scripts/InitModule.cs using Guid(13a82377ab53eb64a909e51e15c2b6f2) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '018b6112bbb07e3787735cb33e8bbe18') in 0.006684 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Tween/Easing/AnimationCurveEasingFunction.cs
+  artifactKey: Guid(7bb390715f4b8804089e7c174e399136) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Tween/Easing/AnimationCurveEasingFunction.cs using Guid(7bb390715f4b8804089e7c174e399136) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '7b023c0385fb321d10b1c4af85783eec') in 0.006927 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000021 seconds.
+  path: Assets/Project Data/Watermelon Core/Scripts/Utils/Editor/EditorExtensions.cs
+  artifactKey: Guid(a5afa180f9a324243a222086b005c2a6) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Scripts/Utils/Editor/EditorExtensions.cs using Guid(a5afa180f9a324243a222086b005c2a6) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'e5f9e0e185653c9a4cb7ba61d54a6861') in 0.009102 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000021 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Tween/Cases/AnimationTweenCases.cs
+  artifactKey: Guid(96ae9a85fe852704faf6a7645aa0754d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Tween/Cases/AnimationTweenCases.cs using Guid(96ae9a85fe852704faf6a7645aa0754d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '9a25e013841bda1d7a1890959653bd09') in 0.005925 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000020 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Advertisement/Prefabs/AdsDummyCanvas.prefab
+  artifactKey: Guid(a7af08efc5cd16c4db955b7f65f00dfc) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Advertisement/Prefabs/AdsDummyCanvas.prefab using Guid(a7af08efc5cd16c4db955b7f65f00dfc) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '622229fa9b2226fa2bca0aaf4fa1bf14') in 0.034730 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 59
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Editor/Drawers/MethodDrawers/ButtonMethodDrawer.cs
+  artifactKey: Guid(18f5cc6a6dc24844ea5d798887cee121) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Editor/Drawers/MethodDrawers/ButtonMethodDrawer.cs using Guid(18f5cc6a6dc24844ea5d798887cee121) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'f509f0812ddd194688db1a09a821c36a') in 0.006363 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000177 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/UI Manager/Helpers/RaycastGraphics.cs
+  artifactKey: Guid(f4e51e336d5264949b5499b590f2ac52) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/UI Manager/Helpers/RaycastGraphics.cs using Guid(f4e51e336d5264949b5499b590f2ac52) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '6d9045dd5d3abc695c7c8c7682418b42') in 0.006290 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000021 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Advertisement/Scripts/GDPRLoadingTask.cs
+  artifactKey: Guid(f63497b4cc6e0e849acfd655aeb7852b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Advertisement/Scripts/GDPRLoadingTask.cs using Guid(f63497b4cc6e0e849acfd655aeb7852b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '96bfd035488d78e2fadc17473d7f85f8') in 0.008189 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/WX-WASM-SDK-V2/Editor/Node/node_modules/binaryen/LICENSE
+  artifactKey: Guid(72db98ce23892438085944429a2f0f1e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/WX-WASM-SDK-V2/Editor/Node/node_modules/binaryen/LICENSE using Guid(72db98ce23892438085944429a2f0f1e) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '92310d7b200b2e994c4974445386925a') in 0.008117 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Tween/Cases/UITweenCases.cs
+  artifactKey: Guid(f561020f2546c7543b697d926139d007) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Tween/Cases/UITweenCases.cs using Guid(f561020f2546c7543b697d926139d007) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '46de7bc448bc608e0de18b08067defa2') in 0.006263 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000020 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Setup Guide/Editor/SetupGuideWindow.cs
+  artifactKey: Guid(4599f996d868e1d4f9989d237a23dfa9) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Setup Guide/Editor/SetupGuideWindow.cs using Guid(4599f996d868e1d4f9989d237a23dfa9) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '54710dce19bace66c76ee61a8295f3b5') in 0.006461 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Tween/Cases/RectTransformTweenCases.cs
+  artifactKey: Guid(80437ca66cf585d41a1e850118c0aeaf) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Tween/Cases/RectTransformTweenCases.cs using Guid(80437ca66cf585d41a1e850118c0aeaf) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'c39eac987acdcc7ffd81348aa212b469') in 0.006720 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000021 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Editor/Drawers/PropertyDrawers/DrawReferenceDrawer.cs
+  artifactKey: Guid(57975b2277fc8654791943284b6bfc79) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Editor/Drawers/PropertyDrawers/DrawReferenceDrawer.cs using Guid(57975b2277fc8654791943284b6bfc79) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '09cd6141f583fa33d1af7865331ec472') in 0.010053 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000016 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Advertisement/Scripts/AdProviderHandler.cs
+  artifactKey: Guid(329274fa20df3854286c7fbf49f3e4ea) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Advertisement/Scripts/AdProviderHandler.cs using Guid(329274fa20df3854286c7fbf49f3e4ea) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'd37bb45aec7b1473aa36a9c02aa6473d') in 0.006086 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Advertisement/Scripts/AdType.cs
+  artifactKey: Guid(80a9a298da9c9884987afff5157e4170) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Advertisement/Scripts/AdType.cs using Guid(80a9a298da9c9884987afff5157e4170) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '1d0a6f76cd31f024f4dd1c328d7dab64') in 0.004804 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Advertisement/Scripts/AdsManagerInitModule.cs
+  artifactKey: Guid(f517638b73f01c34780e6f4e044107a3) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Advertisement/Scripts/AdsManagerInitModule.cs using Guid(f517638b73f01c34780e6f4e044107a3) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '20b26ad9160253fe8f61bc54b02dd239') in 0.006024 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000024 seconds.
+  path: Assets/Project Data/Game/Scripts/Power Ups/Data/PUUndoSettings.cs
+  artifactKey: Guid(1554c988edbac41438f3903e05f5a021) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Scripts/Power Ups/Data/PUUndoSettings.cs using Guid(1554c988edbac41438f3903e05f5a021) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'fd01a456a169103c43fd08fb2655900a') in 0.005834 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000021 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Tween/Cases/TransformTweenCases.cs
+  artifactKey: Guid(59f39f3e4a335864aab53e123cbf79c6) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Tween/Cases/TransformTweenCases.cs using Guid(59f39f3e4a335864aab53e123cbf79c6) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'd25f4542898365475bee15ed62595c44') in 0.008498 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Setup Guide/Editor/OnlineDocumentation.cs
+  artifactKey: Guid(ed4ee9f3b8d09d4478ca078a6b06c29f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Setup Guide/Editor/OnlineDocumentation.cs using Guid(ed4ee9f3b8d09d4478ca078a6b06c29f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '719ff3637643607c724135a8b4ba7ca8') in 0.006416 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000025 seconds.
+  path: Assets/Project Data/Game/Scripts/Level/Effects/LinkedTileEffect.cs
+  artifactKey: Guid(5badf122a8d5a2c4db26f9f99f37ce0c) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Scripts/Level/Effects/LinkedTileEffect.cs using Guid(5badf122a8d5a2c4db26f9f99f37ce0c) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '1a7f888e755396bf40668c4b679f2861') in 0.008168 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/Project Data/Watermelon Core/Extra Components/Level Map/Prefabs/[Example] Chunk.prefab
+  artifactKey: Guid(4000f0821f8e80d43a0bbe43d13b4a04) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extra Components/Level Map/Prefabs/[Example] Chunk.prefab using Guid(4000f0821f8e80d43a0bbe43d13b4a04) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'cade44434a52af17da662a7d6fc32fab') in 0.050608 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 288
+========================================================================
+Received Import Request.
+  Time since last request: 0.000021 seconds.
+  path: Assets/Project Data/Game/Prefabs/Tiles/Effects/Ice Effect.prefab
+  artifactKey: Guid(27b92b391fe531e4eadcc21dd41fe9e5) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Prefabs/Tiles/Effects/Ice Effect.prefab using Guid(27b92b391fe531e4eadcc21dd41fe9e5) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '17d80ab35103e8badd32b864bcf224b0') in 0.016490 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 21
+========================================================================
+Received Import Request.
+  Time since last request: 0.000021 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Currencies Module/Prefabs/Currency Panel Simple.prefab
+  artifactKey: Guid(8bd707ccc762a5c40b83682643736deb) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Currencies Module/Prefabs/Currency Panel Simple.prefab using Guid(8bd707ccc762a5c40b83682643736deb) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'b7b863e6af2d1d0456fe935371bf1e08') in 0.030371 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 28
+========================================================================
+Received Import Request.
+  Time since last request: 0.000021 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Editor/Drawers/PropertyDrawConditions/HideIfPropertyDrawCondition.cs
+  artifactKey: Guid(711a9d5944655914687ec605f379619d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Editor/Drawers/PropertyDrawConditions/HideIfPropertyDrawCondition.cs using Guid(711a9d5944655914687ec605f379619d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '13d05c8f07e0ecfb1154ca49a814e9b0') in 0.006345 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000029 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Attributes/DrawerAttributes/DrawerAttribute.cs
+  artifactKey: Guid(288333fc18ea0914d8c9f4039f7c160d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Attributes/DrawerAttributes/DrawerAttribute.cs using Guid(288333fc18ea0914d8c9f4039f7c160d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '33caec615fd63ce59e85796aeee2023c') in 0.005169 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000017 seconds.
+  path: Assets/Project Data/Game/Scripts/Level/Level Field/LevelElement.cs
+  artifactKey: Guid(6af2433e16fe4b94faaa6930b4d82cc8) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Scripts/Level/Level Field/LevelElement.cs using Guid(6af2433e16fe4b94faaa6930b4d82cc8) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'e78937353a4ea33ecc00b851418c2b3a') in 0.005371 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/Project Data/Watermelon Core/Extra Components/Power Ups System/Prefabs/Power Up Panel.prefab
+  artifactKey: Guid(d833e437507c32e44bf509d910eb7684) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extra Components/Power Ups System/Prefabs/Power Up Panel.prefab using Guid(d833e437507c32e44bf509d910eb7684) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '567b802bee8304465ca418086819b510') in 0.043472 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 74
+========================================================================
+Received Import Request.
+  Time since last request: 0.000238 seconds.
+  path: Assets/Project Data/Watermelon Core/Extra Components/Level Map/Scripts/MapBehavior.cs
+  artifactKey: Guid(f435b34d67484ac428f433a0a923c975) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extra Components/Level Map/Scripts/MapBehavior.cs using Guid(f435b34d67484ac428f433a0a923c975) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'a64d1a2d59d18842c763d8bc877fcdf1') in 0.007531 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/Project Data/Game/Images/Tiles/new tile_c1_t1.png
+  artifactKey: Guid(47e58dbba5af91a4fb0d720b5a161414) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Images/Tiles/new tile_c1_t1.png using Guid(47e58dbba5af91a4fb0d720b5a161414) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '1092a81606b267db5ccdc0dee86e2ab7') in 0.025548 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 3
+========================================================================
+Received Import Request.
+  Time since last request: 0.000020 seconds.
+  path: Assets/Project Data/Watermelon Core/Extra Components/Settings Panel/Scripts/Buttons/SettingsRestoreButton.cs
+  artifactKey: Guid(db7fa84957f201f4ea3905cf8761e6ec) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extra Components/Settings Panel/Scripts/Buttons/SettingsRestoreButton.cs using Guid(db7fa84957f201f4ea3905cf8761e6ec) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '70369e899ff00c569dcd4e0c57300522') in 0.006108 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Advertisement/IDFA/Editor/Source/ISkAdNetworkSource.cs
+  artifactKey: Guid(92f8d1b3dd6ab3541bf3c5961b1fb7c9) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Advertisement/IDFA/Editor/Source/ISkAdNetworkSource.cs using Guid(92f8d1b3dd6ab3541bf3c5961b1fb7c9) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'f0658bcd0381c4c385ee9e14c585fe55') in 0.006614 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000021 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Save Module/Multiplatforms/WebGL/Plugins/webgLibrary.jslib
+  artifactKey: Guid(8fd5744f5fb524141842d93949820b75) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Save Module/Multiplatforms/WebGL/Plugins/webgLibrary.jslib using Guid(8fd5744f5fb524141842d93949820b75) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '651ea92d01cf73ba0b20a14e9367f98c') in 0.005991 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/WX-WASM-SDK-V2/Runtime/wechat-default/open-data/render/tpls/tips.js
+  artifactKey: Guid(3e974b94f0607e60e2ed654660c28197) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/WX-WASM-SDK-V2/Runtime/wechat-default/open-data/render/tpls/tips.js using Guid(3e974b94f0607e60e2ed654660c28197) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '60398c0ecb7e40435849ff2934c370bf') in 0.007504 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Advertisement/IDFA/Runtime/Plugins/iOS/TrackingAuthorizationManager.m
+  artifactKey: Guid(ef34b15a38c4e134a8ac44aff3d1dd37) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Advertisement/IDFA/Runtime/Plugins/iOS/TrackingAuthorizationManager.m using Guid(ef34b15a38c4e134a8ac44aff3d1dd37) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '6beacc353906eb5f08ae21c5db3c6841') in 0.006904 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000024 seconds.
+  path: Assets/Project Data/Watermelon Core/Extra Components/Settings Panel/Scripts/Buttons/SettingsLinkButton.cs
+  artifactKey: Guid(81f8eb722f0282e40a87865bd895d398) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extra Components/Settings Panel/Scripts/Buttons/SettingsLinkButton.cs using Guid(81f8eb722f0282e40a87865bd895d398) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '5c048e21a8b5b3e564a9d76ebe50fc95') in 0.005762 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000017 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Advertisement/IDFA/Editor/Parser/SkAdNetworkFileExtension.cs
+  artifactKey: Guid(5f22e33b273c0b24d80b19af275ef7ea) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Advertisement/IDFA/Editor/Parser/SkAdNetworkFileExtension.cs using Guid(5f22e33b273c0b24d80b19af275ef7ea) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'd7ab911b54415bb107c44014c53596a7') in 0.006107 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/WX-WASM-SDK-V2/Runtime/wechat-default/open-data/render/image/shareBg2.png
+  artifactKey: Guid(d13bcdff7663b0186343ad1cd5f01351) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/WX-WASM-SDK-V2/Runtime/wechat-default/open-data/render/image/shareBg2.png using Guid(d13bcdff7663b0186343ad1cd5f01351) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'c6d458e6286ded2d03389b812b76b103') in 0.058980 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000292 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Editor/Drawers/PropertyMetas/InfoBoxPropertyMeta.cs
+  artifactKey: Guid(d6cf49d843992584e959f1435af0d7a2) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Editor/Drawers/PropertyMetas/InfoBoxPropertyMeta.cs using Guid(d6cf49d843992584e959f1435af0d7a2) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '4c02f818c9f997dfc510916d87c2be05') in 0.006332 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Advertisement/Scripts/Providers/UnityAds/UnityAdsLegacyContainer.cs
+  artifactKey: Guid(ae79469390a906d4d816a121ffbcdf3a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Advertisement/Scripts/Providers/UnityAds/UnityAdsLegacyContainer.cs using Guid(ae79469390a906d4d816a121ffbcdf3a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'eee69565815075698a42507b8d1a8bf6') in 0.006243 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000028 seconds.
+  path: Assets/Project Data/Watermelon Core/Extra Components/IAP Module/Example/Scripts/ItemPanelScript.cs
+  artifactKey: Guid(570e73d2532b74446a7793d04bb813cc) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extra Components/IAP Module/Example/Scripts/ItemPanelScript.cs using Guid(570e73d2532b74446a7793d04bb813cc) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'ee5e5a4ff6244bb2572d7d2f03e0cd11') in 0.010016 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Advertisement/IDFA/Runtime/iOSTransparency/ATTrackingStatusBinding.cs
+  artifactKey: Guid(d4a82ed3be741104db943d319cf39137) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Advertisement/IDFA/Runtime/iOSTransparency/ATTrackingStatusBinding.cs using Guid(d4a82ed3be741104db943d319cf39137) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'd16d8bd3f1310b15b2ee9672aa40c358') in 0.007727 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000080 seconds.
+  path: Assets/Project Data/Watermelon Core/Extra Components/Settings Panel/Scripts/Animation/SettingsScaleAnimation.cs
+  artifactKey: Guid(6333ed0dcf3a792448f281c91b17bd1f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extra Components/Settings Panel/Scripts/Animation/SettingsScaleAnimation.cs using Guid(6333ed0dcf3a792448f281c91b17bd1f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'fef7697f31a68193f93c838553c0159a') in 0.009222 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000030 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Modules/Unique ID/Editor/UniqueIDHandler.cs
+  artifactKey: Guid(4555b354b26b31540ab77cb122479f18) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Modules/Unique ID/Editor/UniqueIDHandler.cs using Guid(4555b354b26b31540ab77cb122479f18) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '6f6ae10efdf247c35fba09adac6f8927') in 0.010570 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/Project Data/Watermelon Core/Extra Components/Settings Panel/Scripts/Editor/SettingsPanelEditor.cs
+  artifactKey: Guid(7eb025993147237489a0bf39fcc2a482) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extra Components/Settings Panel/Scripts/Editor/SettingsPanelEditor.cs using Guid(7eb025993147237489a0bf39fcc2a482) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '0edf891f1543a2b537e7017b95a378e4') in 0.008975 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000021 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Editor/Drawers/PropertyDrawers/SliderPropertyDrawer.cs
+  artifactKey: Guid(91214ccc6e70e2a4da0bd3db81496d68) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Editor/Drawers/PropertyDrawers/SliderPropertyDrawer.cs using Guid(91214ccc6e70e2a4da0bd3db81496d68) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '0dc4bc5a7b02970646939c4510c84bab') in 0.007369 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Editor/Drawers/PropertyDrawers/ResizableTextAreaPropertyDrawer.cs
+  artifactKey: Guid(83c3f675eadcebe4ca701ab3b22b119f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Editor/Drawers/PropertyDrawers/ResizableTextAreaPropertyDrawer.cs using Guid(83c3f675eadcebe4ca701ab3b22b119f) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'ce20ff7bcdc875dfa283669a6db1a701') in 0.006710 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/Project Data/Watermelon Core/Extra Components/Vibration/Plugins/iOS/Vibration/Vibration.mm
+  artifactKey: Guid(c31160a40d8f84d4395a22df26febd41) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extra Components/Vibration/Plugins/iOS/Vibration/Vibration.mm using Guid(c31160a40d8f84d4395a22df26febd41) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '91af223c48d4a2227d463a7487bf9e35') in 0.006079 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000021 seconds.
+  path: Assets/WX-WASM-SDK-V2/Editor/Node/node_modules/binaryen/bin/wasm2js
+  artifactKey: Guid(945d329c042b5422590297f9a668573b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/WX-WASM-SDK-V2/Editor/Node/node_modules/binaryen/bin/wasm2js using Guid(945d329c042b5422590297f9a668573b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '27f3ec7402160106647b0d696aaaf423') in 0.007272 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Currencies Module/Scripts/UI/CurrencyUIHelper.cs
+  artifactKey: Guid(e037f942c88d79341a8f6ed94c8aeaf1) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Currencies Module/Scripts/UI/CurrencyUIHelper.cs using Guid(e037f942c88d79341a8f6ed94c8aeaf1) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '28601a95c1534bb62f4301dda146be8e') in 0.005557 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000020 seconds.
+  path: Assets/WX-WASM-SDK-V2/Runtime/wechat-default/open-data/render/image/button1.png
+  artifactKey: Guid(59779c16150d1f382b45ba4866e7dd1c) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/WX-WASM-SDK-V2/Runtime/wechat-default/open-data/render/image/button1.png using Guid(59779c16150d1f382b45ba4866e7dd1c) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '05a4967f6e8b2a70acc188909e05076a') in 0.014493 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000020 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Modules/Assets Manager/Editor/Asset Smart Importer/TextureSmartImporter.cs
+  artifactKey: Guid(67501b52a17a59849bb2bc4bf9067518) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Modules/Assets Manager/Editor/Asset Smart Importer/TextureSmartImporter.cs using Guid(67501b52a17a59849bb2bc4bf9067518) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '8ed72c3b6313224c3b98f80d70f3a739') in 0.006194 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Currencies Module/Scripts/UI/CurrenciesUIController.cs
+  artifactKey: Guid(bd0a41daa4395be43b58ef060d1d15c9) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Currencies Module/Scripts/UI/CurrenciesUIController.cs using Guid(bd0a41daa4395be43b58ef060d1d15c9) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '815703d58b2f744a58c960227bf6b314') in 0.006030 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000017 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Advertisement/IDFA/Editor/Source/SkAdNetworkRemoteSource.cs
+  artifactKey: Guid(a15f5dea06f146e4bb3d856c5332fbb3) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Advertisement/IDFA/Editor/Source/SkAdNetworkRemoteSource.cs using Guid(a15f5dea06f146e4bb3d856c5332fbb3) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'dd7325354d87a444d146a88b69977142') in 0.006196 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000018 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Modules/Assets Manager/Editor/AssetRenamer/AssetRenamer.cs
+  artifactKey: Guid(2947ce7ef9360134394101e246423cc7) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Modules/Assets Manager/Editor/AssetRenamer/AssetRenamer.cs using Guid(2947ce7ef9360134394101e246423cc7) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '7aa5fc408196ba6572c4bf0b702bbb76') in 0.005684 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Modules/Manifest Generator/Editor/ManifestGenerator.cs
+  artifactKey: Guid(fdc0948df39c87542bd162c485a98c07) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Modules/Manifest Generator/Editor/ManifestGenerator.cs using Guid(fdc0948df39c87542bd162c485a98c07) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '1759d2bfd190a98bff54c0d6e566d3ae') in 0.005838 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000022 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Editor/Drawers/PropertyDrawers/ReadOnlyFieldPropertyDrawer.cs
+  artifactKey: Guid(2b495c8095f8e704d8b93b54a024518b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Editor/Drawers/PropertyDrawers/ReadOnlyFieldPropertyDrawer.cs using Guid(2b495c8095f8e704d8b93b54a024518b) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'c121278f91e4b9abdcbeca3bd5767123') in 0.052123 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/Initialiser/Scripts/Editor/InitModuleEditor.cs
+  artifactKey: Guid(1ee144818843f75438284be9fd8bf27a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Modules/Initialiser/Scripts/Editor/InitModuleEditor.cs using Guid(1ee144818843f75438284be9fd8bf27a) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '59cd36b2feeec65bfb839cabd762a0a5') in 0.005983 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000026 seconds.
+  path: Assets/WX-WASM-SDK-V2/Runtime/wechat-default/open-data/render/image/avatar.png
+  artifactKey: Guid(02a12edbd7b0f6ee4ba77232630ca383) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/WX-WASM-SDK-V2/Runtime/wechat-default/open-data/render/image/avatar.png using Guid(02a12edbd7b0f6ee4ba77232630ca383) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '804ba2ef5b83d881b7666795eb1df525') in 0.047552 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000028 seconds.
+  path: Assets/Project Data/Game/Prefabs/Tiles/Tile C4T12 12.prefab
+  artifactKey: Guid(d420e21d5e7acef448a9fbebd253c9cb) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Prefabs/Tiles/Tile C4T12 12.prefab using Guid(d420e21d5e7acef448a9fbebd253c9cb) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'bbbc82d5b9ce67b0a1d1146c9cbcf02e') in 0.015192 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 34
+========================================================================
+Received Import Request.
+  Time since last request: 0.000029 seconds.
+  path: Assets/Project Data/Content/LevelSystem/Levels/Level_186.asset
+  artifactKey: Guid(2dfdd0b3b2ab2c14eba7a869b91ed12c) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Content/LevelSystem/Levels/Level_186.asset using Guid(2dfdd0b3b2ab2c14eba7a869b91ed12c) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'edd145d0608f67b58e9a46fa70dfd672') in 0.006523 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000020 seconds.
+  path: Assets/Project Data/Game/Prefabs/Tiles/Tile C4T12 11.prefab
+  artifactKey: Guid(ec45138daa0e5d947ae13c98dc4e320d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Prefabs/Tiles/Tile C4T12 11.prefab using Guid(ec45138daa0e5d947ae13c98dc4e320d) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'c0a33904d78c7090ccb761f82700b4b0') in 0.015992 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 34
+========================================================================
+Received Import Request.
+  Time since last request: 0.000023 seconds.
+  path: Assets/Project Data/Game/Scripts/Tutorial/TutorialHelper.cs
+  artifactKey: Guid(6656b448b4a18aa469207888bb85d6c7) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Game/Scripts/Tutorial/TutorialHelper.cs using Guid(6656b448b4a18aa469207888bb85d6c7) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'cd976674e4b5499cab4ae7edd11c001c') in 0.010423 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000021 seconds.
+  path: Assets/Project Data/Watermelon Core/Extended Editor/Sprites/tab_02_normal_dark.png
+  artifactKey: Guid(ad1b71e92f295624a8ef240a6c92d8a1) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extended Editor/Sprites/tab_02_normal_dark.png using Guid(ad1b71e92f295624a8ef240a6c92d8a1) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'b53847ca6f230969d098a7ca8aef6858') in 0.016830 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 0.000020 seconds.
+  path: Assets/Project Data/Watermelon Core/Extra Components/Power Ups System/Prefabs/Power Up Purchase Panel.prefab
+  artifactKey: Guid(70b48147ff497a14eb2cc9018eb39555) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/Project Data/Watermelon Core/Extra Components/Power Ups System/Prefabs/Power Up Purchase Panel.prefab using Guid(70b48147ff497a14eb2cc9018eb39555) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'e17cd0a14e0c8945dbad4c58e3934b45') in 0.051966 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 97
+========================================================================
+Received Import Request.
+  Time since last request: 138.086158 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/UI Manager/FloatingCloud.cs
+  artifactKey: Guid(50c628223aa233843b37e67da7a2c4ce) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Project Data/Watermelon Core/Modules/UI Manager/FloatingCloud.cs using Guid(50c628223aa233843b37e67da7a2c4ce) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'bca460dc8d6dc8f300922999da477e01') in 0.000544 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 0
+========================================================================
+Received Import Request.
+  Time since last request: 1.375986 seconds.
+  path: Assets/Project Data/Watermelon Core/Modules/UI Manager/FloatingCloudSettings.cs
+  artifactKey: Guid(8b8095d5e93c51641a76af74625d3700) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Project Data/Watermelon Core/Modules/UI Manager/FloatingCloudSettings.cs using Guid(8b8095d5e93c51641a76af74625d3700) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '3e66f79d26e1fe700162e31e8cf6fde3') in 0.000521 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 0
+========================================================================
+Received Import Request.
+  Time since last request: 46.705703 seconds.
+  path: Assets/Project Data/Content/Data/Camera
+  artifactKey: Guid(f66109c7120eed544b57a090c6aff0c8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Project Data/Content/Data/Camera using Guid(f66109c7120eed544b57a090c6aff0c8) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '35526c567b4567d4980c57bf26e6a66b') in 0.000496 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 0
+========================================================================
+Received Import Request.
+  Time since last request: 1137.305513 seconds.
+  path: Assets/Project Data/Game/Scenes/Game.unity
+  artifactKey: Guid(361eea68332b709408fe8391773229a1) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Project Data/Game/Scenes/Game.unity using Guid(361eea68332b709408fe8391773229a1) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '68dbc9cbd40bb0daa3a00b491e292411') in 0.000533 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 0
+========================================================================
+Received Prepare
+Refreshing native plugins compatible for Editor in 14.86 ms, found 11 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 0 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 2 unused Assets / (1.6 KB). Loaded Objects now: 5009.
+Memory consumption went from 82.1 MB to 82.1 MB.
+Total: 5.125500 ms (FindLiveObjects: 0.632600 ms CreateObjectMapping: 0.163100 ms MarkObjects: 4.291800 ms  DeleteObjects: 0.037000 ms)
+
+Prepare: number of updated asset objects reloaded= 0
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:CustomObjectIndexerAttribute: 9a22284fe3817be447336de3de66b15e -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:SearchIndexIgnoredProperties: e643bd26f0fe6173181afceb89e7c659 -> 
+  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+========================================================================
+Received Prepare
+Refreshing native plugins compatible for Editor in 13.61 ms, found 11 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 1 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 1 unused Assets / (3.1 KB). Loaded Objects now: 5009.
+Memory consumption went from 82.4 MB to 82.4 MB.
+Total: 4.384700 ms (FindLiveObjects: 0.680100 ms CreateObjectMapping: 0.136200 ms MarkObjects: 3.540800 ms  DeleteObjects: 0.026100 ms)
+
+Prepare: number of updated asset objects reloaded= 0
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:CustomObjectIndexerAttribute: 9a22284fe3817be447336de3de66b15e -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:SearchIndexIgnoredProperties: e643bd26f0fe6173181afceb89e7c659 -> 
+  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+========================================================================
+Received Prepare
+Refreshing native plugins compatible for Editor in 14.65 ms, found 11 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 1 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 1 unused Assets / (3.1 KB). Loaded Objects now: 5009.
+Memory consumption went from 82.4 MB to 82.4 MB.
+Total: 4.664900 ms (FindLiveObjects: 0.667300 ms CreateObjectMapping: 0.168500 ms MarkObjects: 3.797400 ms  DeleteObjects: 0.030400 ms)
+
+Prepare: number of updated asset objects reloaded= 0
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:CustomObjectIndexerAttribute: 9a22284fe3817be447336de3de66b15e -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:SearchIndexIgnoredProperties: e643bd26f0fe6173181afceb89e7c659 -> 
+  custom:AudioImporter_EditorPlatform: d09bf68614088b80899f8185d706f6e7 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+========================================================================
+Received Import Request.
+  Time since last request: 771.055029 seconds.
+  path: Assets/WX-WASM-SDK-V2/Editor/MiniGameConfig.asset
+  artifactKey: Guid(876d0300b3dbbe941a128f806bd33156) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23)
+Start importing Assets/WX-WASM-SDK-V2/Editor/MiniGameConfig.asset using Guid(876d0300b3dbbe941a128f806bd33156) Importer(2089858483,0ecaa5967403d082aa24f35e1b516d23) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'a51b22a8299deef704cf3f3d7e2608e6') in 0.021640 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 1
+========================================================================
+Received Import Request.
+  Time since last request: 1061.981153 seconds.
+  path: Assets/Project Data/Game/Audio/Music/Casual Game Music 11.wav
+  artifactKey: Guid(e18713d5c19d4a84fa2c91618335bcd5) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Project Data/Game/Audio/Music/Casual Game Music 11.wav using Guid(e18713d5c19d4a84fa2c91618335bcd5) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+[PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: 'a26b762220b47601b430c11e74cadd8e') in 0.491081 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
+========================================================================
+Received Import Request.
+  Time since last request: 48.745564 seconds.
+  path: Assets/Project Data/Game/Audio/Sounds/coin pickup.wav
+  artifactKey: Guid(1b3a9aa133dd17e4a80144d16ef86d0b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Project Data/Game/Audio/Sounds/coin pickup.wav using Guid(1b3a9aa133dd17e4a80144d16ef86d0b) Importer(815301076,1909f56bfc062723c751e8b465ee728b) [PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+[PhysX] Initialized MultithreadedTaskDispatcher with 16 workers.
+ -> (artifact id: '65a7e8bfddc02550a7f9670403b0fc5a') in 0.009735 seconds
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 2
