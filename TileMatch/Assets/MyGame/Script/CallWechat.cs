@@ -24,7 +24,7 @@ public class CallWechat : MonoBehaviour
             }
         );
 
-        var feedback = "https://7465-test01cloud-8g9b0glp7aab2737-1322886618.tcb.qcloud.la/testFolder/Source_Han_Sans_SC_Normal_Normal.otf?sign=4665881d91f1c1b11adbb160cad2ced5&t=1729609199";
+        var feedback = "https://7465-test01cloud-8g9b0glp7aab2737-1322886618.tcb.qcloud.la/mainFolder/Fonts/Source_Han_Sans_SC_Normal_Normal.otf?sign=4665881d91f1c1b11adbb160cad2ced5&t=1729609199";
         WX.GetWXFont(feedback, (font) =>
         {
             wxFont = font;
@@ -39,10 +39,7 @@ public class CallWechat : MonoBehaviour
             }
         });
 
-        //ShareApp(() => { Debug.Log("回到前台"); });
     }
-
-
 
     public  static void ShareApp(UnityAction callback)
     {
@@ -62,5 +59,28 @@ public class CallWechat : MonoBehaviour
         WX.OnShow(res);
     }
 
+    /// <summary>
+    /// 上传用户数据
+    /// </summary>
+    public void UploadUserData()
+    {
+
+    }
+
+    /// <summary>
+    /// 下载用户数据
+    /// </summary>
+    public void DownloadUserData()
+    {
+
+    }
+
+    /// <summary>
+    /// 创建用户数据
+    /// </summary>
+    private void CreateUserData()
+    {
+        
+    }
 
 }

@@ -207,11 +207,11 @@ namespace Watermelon
 
 // Changelog
 // v 1.2.1
-// • Added Editor script that automatically configure CanvasScaler
+// ?Added Editor script that automatically configure CanvasScaler
 // v 1.2
-// • Added global overlay
+// ?Added global overlay
 // v 1.1
-// • Added popup callbacks and methods to handle when a custom window is opened
-// • RectTransform can be added to NotchSaveArea using NotchSaveArea.RegisterRectTransform method
+// ?Added popup callbacks and methods to handle when a custom window is opened
+// ?RectTransform can be added to NotchSaveArea using NotchSaveArea.RegisterRectTransform method
 // v 1.0
-// • Basic logic
+// ?Basic logic

@@ -14,7 +14,7 @@ namespace Watermelon
 
         [SerializeField] Image backgroundImage;
 
-        [SerializeField] public  Button button;
+        [SerializeField] public  Button button;//refill button
         [SerializeField] Button closeButton;
 
         [SerializeField] TMP_Text livesAmountText;
