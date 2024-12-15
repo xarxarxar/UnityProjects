@@ -31,7 +31,7 @@ const initShareEvents = () => {
                 if (item.dataset.isSelf === 'false') {
                     wx.shareMessageToFriend({
                         openId: item.dataset.id,
-                        title: '最强战力排行榜！谁是第一？',
+                        title: '谁能通过更多关卡？！',
                         imageUrl: 'https://mmgame.qpic.cn/image/5f9144af9f0e32d50fb878e5256d669fa1ae6fdec77550849bfee137be995d18/0',
                     });
                 }

@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 using WeChatWASM;
 
 public class CallWechat : MonoBehaviour
 {
     public static Font wxFont;
+    
 
     public static void Init() 
     {
@@ -38,6 +40,7 @@ public class CallWechat : MonoBehaviour
                 allTexts[i].font = wxFontAsset;
             }
         });
+        
 
     }
 
@@ -83,4 +86,8 @@ public class CallWechat : MonoBehaviour
         
     }
 
+    
+
 }
+
+
