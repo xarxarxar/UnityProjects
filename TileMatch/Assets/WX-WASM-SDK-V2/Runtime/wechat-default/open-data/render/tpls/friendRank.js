@@ -63,7 +63,7 @@ export default function anonymous(it) {
             <view class="rankNameView">
             <!--<image class="rankNameBg" src="open-data/render/image/nameBg.png"></image>-->
             <text class="rankName" value="${item.nickname}"></text>
-            <text class="rankScoreTip" value="最高通关:"></text>
+            <text class="rankScoreTip" value="关"></text>
             <text class="rankScoreVal" value="${item.score || 0}"></text>
             </view>
             <view class="shareToBtn" data-isSelf="${!!item.isSelf}" data-id="${item.openid || ''}">

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using WeChatWASM;
@@ -15,10 +16,16 @@ public class MyOpendataMessage
 public class TestWechat : MonoBehaviour
 {
     public RawImage RankBody;
+    public GameObject RankObject;
+
+    private void OnEnable()
+    {
+        
+    }
 
     private void Start()
     {
-        UploadScore(9999);
+        UploadScore(50);
         //ShowScore();
     }
     public  void UploadScore(int score)
@@ -47,5 +54,14 @@ public class TestWechat : MonoBehaviour
         Debug.Log("Ö´ÐÐShowScore");
     }
 
+    public void RankButton()
+    {
+        RankObject.SetActive(true);
+        ShowScore();
+    }
 
+    public void CloseRankPanel()
+    {
+        RankObject.SetActive(false);
+    }
 }
