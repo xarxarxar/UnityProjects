@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using Watermelon;
 using WeChatWASM;
 
 public class MyOpendataMessage
@@ -25,7 +26,7 @@ public class TestWechat : MonoBehaviour
 
     private void Start()
     {
-        UploadScore(50);
+        
         //ShowScore();
     }
     public  void UploadScore(int score)
@@ -40,7 +41,7 @@ public class TestWechat : MonoBehaviour
 
     public  void ShowScore()
     {
-        CanvasScaler scaler = gameObject.GetComponent<CanvasScaler>();
+        CanvasScaler scaler = RankObject.GetComponent<CanvasScaler>();
         var referenceResoultion = scaler.referenceResolution;
         var p = RankBody.transform.position;
         WX.ShowOpenData(RankBody.texture, (int)p.x, Screen.height - (int)p.y,
@@ -57,6 +58,9 @@ public class TestWechat : MonoBehaviour
     public void RankButton()
     {
         RankObject.SetActive(true);
+        LevelSave levelSave = SaveController.GetSaveObject<LevelSave>("level");
+        Debug.Log("最高通关："+levelSave.MaxReachedLevelIndex);
+        UploadScore(levelSave.MaxReachedLevelIndex);
         ShowScore();
     }
 
