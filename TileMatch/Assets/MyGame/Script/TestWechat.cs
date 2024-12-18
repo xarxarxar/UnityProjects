@@ -20,7 +20,7 @@ public class TestWechat : MonoBehaviour
     public GameObject RankObject;
     public Image imageLeftTop;
     public Image imageRightBottom;
-
+    CanvasScaler scaler;
     private void OnEnable()
     {
         
@@ -28,7 +28,8 @@ public class TestWechat : MonoBehaviour
 
     private void Start()
     {
-        
+        scaler = RankObject.transform.parent.GetComponent<CanvasScaler>();
+        RankObject.transform.position += new Vector3(10000, 0, 0);
         //ShowScore();
     }
     public  void UploadScore(int score)
@@ -43,7 +44,7 @@ public class TestWechat : MonoBehaviour
 
     public  void ShowScore()
     {
-        CanvasScaler scaler = RankObject.GetComponent<CanvasScaler>();
+        //CanvasScaler scaler = RankObject.GetComponent<CanvasScaler>();
         var referenceResoultion = scaler.referenceResolution;
         var p = RankBody.transform.position;
 
@@ -79,22 +80,31 @@ public class TestWechat : MonoBehaviour
         msgData.type = "showFriendsRank";
         string msg = JsonUtility.ToJson(msgData);
         WX.GetOpenDataContext().PostMessage(msg);
-        Debug.Log("执行ShowScore");
+        //Debug.Log("执行ShowScore");
     }
 
     public void RankButton()
     {
-        RankObject.SetActive(true);
+        RankObject.transform.position-=new Vector3(10000,0,0);
         LevelSave levelSave = SaveController.GetSaveObject<LevelSave>("level");
-        Debug.Log("最高通关："+levelSave.MaxReachedLevelIndex);
+        //Debug.Log("最高通关："+levelSave.MaxReachedLevelIndex);
+        Debug.Log(" RankObject.transform.position：" + RankObject.transform.position);
         UploadScore(levelSave.MaxReachedLevelIndex);
-        ShowScore();
+        StartCoroutine(DelayShowScore(0.1f));
     }
 
     public void CloseRankPanel()
     {
         WX.HideOpenData();
-        RankObject.SetActive(false);
+        //RankObject.SetActive(false);
+        RankObject.transform.position += new Vector3(10000, 0, 0);
+    }
+
+    IEnumerator DelayShowScore(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        ShowScore();
+        yield break;
     }
 
     // 在Scene视图中显示矩形
