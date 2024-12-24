@@ -76,6 +76,7 @@ namespace Watermelon
                 // 根据参数加载场景或进行简单加载
                 if (loadingScene)
                 {
+                    Debug.Log("GameLoading.LoadGameScene");
                     // 加载游戏场景
                     GameLoading.LoadGameScene(() =>
                     {
@@ -84,6 +85,7 @@ namespace Watermelon
                 }
                 else
                 {
+                    Debug.Log("GameLoading.SimpleLoad");
                     GameLoading.SimpleLoad(); // 进行简单加载
                 }
             }

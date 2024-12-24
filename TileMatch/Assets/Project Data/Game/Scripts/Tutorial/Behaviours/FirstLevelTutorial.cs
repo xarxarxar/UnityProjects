@@ -106,7 +106,7 @@ namespace Watermelon
             DockBehavior.ElementAdded += OnElementAddedToDock;
             PUController.OnPowerUpUsed += OnPUUsed;
 
-            AdsManager.DisableBanner();
+            //AdsManager.DisableBanner();
         }
 
         private void OnPUUsed(PUType powerUpType)

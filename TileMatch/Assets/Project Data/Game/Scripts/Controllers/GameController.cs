@@ -70,7 +70,9 @@ namespace Watermelon
             if(data.ShowTutorial && !tutorial.IsFinished)
             {
                 // Start first level tutorial
+                //新手教程
                 tutorial.StartTutorial();
+
             }
             else
             {
