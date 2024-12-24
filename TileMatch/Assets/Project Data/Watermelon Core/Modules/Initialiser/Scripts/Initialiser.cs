@@ -81,6 +81,7 @@ namespace Watermelon
                     GameLoading.LoadGameScene(() =>
                     {
                         CallWechat.Init();//初始化微信调用
+
                     });
                 }
                 else

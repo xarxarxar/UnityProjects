@@ -23,6 +23,12 @@ public class CallWechat : MonoBehaviour
                     env = "test01cloud-8g9b0glp7aab2737", // ÔÆ»·¾³ ID
                     traceUser = false
                 });
+                TestWechat.CallSetUserData(new LocalUserData
+                {
+                    UserName = "ÄãºÃ",
+                    IsActived = 0,
+                    CoinCount = 100,
+                });
             }
         );
 
