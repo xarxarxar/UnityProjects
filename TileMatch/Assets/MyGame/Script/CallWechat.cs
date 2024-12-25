@@ -23,12 +23,29 @@ public class CallWechat : MonoBehaviour
                     env = "test01cloud-8g9b0glp7aab2737", // 云环境 ID
                     traceUser = false
                 });
-                TestWechat.CallSetUserData(new LocalUserData
+                TestWechat.CallSetUserData(new LocalUserDataContioner
                 {
-                    UserName = "你好",
-                    IsActived = 0,
-                    CoinCount = 100,
+                    data=new LocalUserData
+                    {
+                        UserName = "你好",
+                        IsActived = 0,
+                        CoinCount = 100,
+                        MaxLifeCount = 50,
+                        CurrentLiftCount = 23,
+                        LifeDuration = 200,
+                        MaxLevelCount = 16,
+                        FreeCoinButtonLastTime = 7200,
+                        ShareLifeButtonLastTime = 7200,
+                        SharePromptButtonLastTime = 7200,
+                        ShareShuffleButtonLastTime = 7200,
+                        ShareUndoButtonLastTime = 7200,
+                        ShareAddButtonLastTime = 7200,
+                    }
                 });
+                //TestWechat.GetCardData(() =>
+                //{
+
+                //});
             }
         );
 

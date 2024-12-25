@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Watermelon;
 using WeChatWASM;
+using UnityEngine.Events;
 
 public class MyOpendataMessage
 {
@@ -39,7 +40,7 @@ public class TestWechat : MonoBehaviour
     /// 上传用户数据到云端
     /// </summary>
     /// <param name="gameUserData">游戏用户数据</param>
-    public static void CallSetUserData(LocalUserData gameUserData)
+    public static void CallSetUserData(LocalUserDataContioner gameUserData)
     {
         Debug.Log("调用上传用户数据");
         WX.cloud.CallFunction(new CallFunctionParam()
@@ -58,6 +59,41 @@ public class TestWechat : MonoBehaviour
             complete = (res) =>
             {
                 Debug.Log("上传用户数据操作完成");
+            }
+        });
+    }
+
+    /// <summary>
+    /// 从云数据库获取卡牌数据
+    /// </summary>
+    /// <param name="successAction">获取成功后的回调函数</param>
+    public static void  GetCardData(UnityAction<LocalUserDataContioner> successAction)
+    {
+
+        WX.cloud.CallFunction(new CallFunctionParam()
+        {
+            name = "get-userdata",
+            data = "{\"player_data\":0}", // 下载时需要随便传一个 JSON，否则会报错
+
+            success = (res) =>
+            {
+                Debug.Log("获取卡牌数据成功");
+
+                // 解析从云函数返回的结果
+                if (res.result != null)
+                {
+                    LocalUserData localUserData = JsonUtility.FromJson<LocalUserDataContioner>(res.result.ToString()).data;
+                    Debug.Log($"用户数据为：{localUserData.UserName}");
+                    Debug.Log($"用户result为：{res.result.ToString()}");
+                }
+            },
+            fail = (res) =>
+            {
+                Debug.LogError("获取卡牌数据失败：" + res.errMsg);
+            },
+            complete = (res) =>
+            {
+                Debug.Log("获取卡牌数据操作完成");
             }
         });
     }

@@ -259,11 +259,38 @@ namespace Watermelon
         }
 
         /// <summary>
+        /// 设置爱心回复间隔
+        /// </summary>
+        /// <param name="seconds"></param>
+        public static void SetLifeInterval(int seconds)
+        {
+            OneLifeInterval= seconds;
+        }
+
+        /// <summary>
+        /// 设置当前的爱心恢复倒计时时间
+        /// </summary>
+        /// <param name="seconds"></param>
+        public static void SetCurrentInterval(int seconds)
+        {
+            instance.data.oneLifeRestorationDuration=seconds;
+        }
+
+        /// <summary>
         /// 永久增加一条最大生命值，20241024添加
         /// </summary>
         public static  void AddMaxLife()
         {
             instance.data.customedMaxLivesCount++;
+        }
+
+        /// <summary>
+        /// 设置最大生命值
+        /// </summary>
+        /// <param name="count"></param>
+        public static void SetMaxLife(int count)
+        {
+            instance.data.customedMaxLivesCount = count;
         }
 
         /// <summary>
