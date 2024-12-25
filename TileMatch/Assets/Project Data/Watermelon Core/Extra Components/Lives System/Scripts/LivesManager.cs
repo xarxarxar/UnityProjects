@@ -294,6 +294,15 @@ namespace Watermelon
         }
 
         /// <summary>
+        /// 设置当前生命值
+        /// </summary>
+        /// <param name="count"></param>
+        public static void SetCurrentLife(int count)
+        {
+            SetLifes(count);
+        }
+
+        /// <summary>
         /// 获取当前的时间恢复间隔，20241026添加
         /// </summary>
         public static int CurrentLiveInterval()

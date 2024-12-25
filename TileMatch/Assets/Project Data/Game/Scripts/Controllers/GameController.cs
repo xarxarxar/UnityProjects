@@ -67,7 +67,7 @@ namespace Watermelon
             uiController.InitialisePages();
 
             ITutorial tutorial = TutorialController.GetTutorial(TutorialID.FirstLevel);
-            if(data.ShowTutorial && !tutorial.IsFinished)
+            if(data.ShowTutorial && !tutorial.IsFinished && UserControl.localUserData.IsActived==0)
             {
                 // Start first level tutorial
                 //新手教程

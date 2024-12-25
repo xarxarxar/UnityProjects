@@ -32,15 +32,13 @@ public class TestWechat : MonoBehaviour
         scaler = RankObject.transform.parent.GetComponent<CanvasScaler>();
         RankObject.transform.position += new Vector3(10000, 0, 0);
         //ShowScore();
-
-        
     }
 
     /// <summary>
     /// 上传用户数据到云端
     /// </summary>
     /// <param name="gameUserData">游戏用户数据</param>
-    public static void CallSetUserData(LocalUserDataContioner gameUserData)
+    public static void CallSetUserData(LocalUserData gameUserData)
     {
         Debug.Log("调用上传用户数据");
         WX.cloud.CallFunction(new CallFunctionParam()
@@ -67,7 +65,7 @@ public class TestWechat : MonoBehaviour
     /// 从云数据库获取卡牌数据
     /// </summary>
     /// <param name="successAction">获取成功后的回调函数</param>
-    public static void  GetCardData(UnityAction<LocalUserDataContioner> successAction)
+    public static void  GetUserData(UnityAction<LocalUserData> successAction)
     {
 
         WX.cloud.CallFunction(new CallFunctionParam()
@@ -82,9 +80,11 @@ public class TestWechat : MonoBehaviour
                 // 解析从云函数返回的结果
                 if (res.result != null)
                 {
-                    LocalUserData localUserData = JsonUtility.FromJson<LocalUserDataContioner>(res.result.ToString()).data;
+                    LocalUserData localUserData = JsonUtility.FromJson<LocalUserDataContioner>(res.result).data;
+                    Debug.Log($"用户data为：{JsonUtility.FromJson<LocalUserDataContioner>(res.result)}");
                     Debug.Log($"用户数据为：{localUserData.UserName}");
-                    Debug.Log($"用户result为：{res.result.ToString()}");
+                    Debug.Log($"用户result为：{res.result}");
+                    successAction?.Invoke(localUserData);
                 }
             },
             fail = (res) =>

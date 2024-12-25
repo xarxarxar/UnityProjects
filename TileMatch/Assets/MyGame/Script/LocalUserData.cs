@@ -6,7 +6,7 @@ using UnityEngine;
 /// <summary>
 /// 本地的玩家游戏数据
 /// </summary>
-[SerializeField]
+[System.Serializable]
 public class LocalUserData
 {
     public string UserName;//用户名
@@ -27,7 +27,7 @@ public class LocalUserData
 /// <summary>
 /// 从微信数据库中获取的玩家数据
 /// </summary>
-[SerializeField]
+[System.Serializable]
 public class LocalUserDataContioner
 {
     public LocalUserData data;
