@@ -1,6 +1,8 @@
 using System;
 using UnityEngine;
 using Watermelon.Map;
+using System.Threading;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -17,6 +19,8 @@ namespace Watermelon
 
         [LineSpacer]
         [SerializeField] UIController uiController;
+
+        public GameObject TimerSlider;//倒计时
 
         private LevelController levelController;
         private ParticlesController particlesController;
@@ -67,7 +71,7 @@ namespace Watermelon
             uiController.InitialisePages();
 
             ITutorial tutorial = TutorialController.GetTutorial(TutorialID.FirstLevel);
-            if(data.ShowTutorial && !tutorial.IsFinished && UserControl.localUserData.IsActived==0)
+            if(data.ShowTutorial && !tutorial.IsFinished)
             {
                 // Start first level tutorial
                 //新手教程
@@ -103,6 +107,8 @@ namespace Watermelon
 
                 UIController.ShowPage<UIGame>();
 
+                
+
                 gameController.levelController.LoadLevel(index, onLevelLoaded);
 
                 isGameActive = true;
@@ -127,6 +133,7 @@ namespace Watermelon
             {
                 UIController.ShowPage<UIComplete>();
             });
+            LevelController.instance.timerSliderObject.SetActive(false);
 
             isGameActive = false;
         }
@@ -140,7 +147,7 @@ namespace Watermelon
             {
                 UIController.ShowPage<UIGameOver>();
             });
-
+            LevelController.instance.timerSliderObject.SetActive(false);
             isGameActive = false;
         }
 
@@ -170,7 +177,7 @@ namespace Watermelon
 
             UIController.ShowPage<UIMainMenu>();
 
-            AdsManager.DisableBanner();
+            LevelController.instance.timerSliderObject.SetActive(false);
         }
 
         public static void Revive()

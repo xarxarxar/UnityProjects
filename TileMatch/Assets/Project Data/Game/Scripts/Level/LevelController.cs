@@ -7,7 +7,7 @@ namespace Watermelon
 {
     public class LevelController : MonoBehaviour
     {
-        private static LevelController instance;
+        public  static LevelController instance;
 
         [SerializeField] LevelDatabase database;
         [SerializeField] LevelSpawnAnimation levelSpawnAnimation;
@@ -17,6 +17,7 @@ namespace Watermelon
         [SerializeField] GameObject levelObject;
         [SerializeField] GameObject layersParentObject;
         [SerializeField] DockBehavior dock;
+        [SerializeField] public  GameObject timerSliderObject;//计时器
 
         private static bool isLevelLoaded;
         public static bool IsLevelLoaded => isLevelLoaded;
@@ -151,6 +152,16 @@ namespace Watermelon
                 UnloadLevel();
             }
 
+            //打开计时器
+            if ((levelSave.DisplayLevelIndex + 1) % 5 == 0)
+            {
+                Debug.Log($"LastPlayerLevelIndex为：{levelSave.LastPlayerLevelIndex}，" +
+                $"DisplayLevelIndex：{levelSave.DisplayLevelIndex}" +
+                $"RealLevelIndex：{levelSave.RealLevelIndex}");
+                timerSliderObject.SetActive(true);
+            }
+
+            
             int realLevelIndex;
             if (levelSave.IsPlayingRandomLevel && levelIndex == levelSave.DisplayLevelIndex && levelSave.RealLevelIndex != -1)
             {
