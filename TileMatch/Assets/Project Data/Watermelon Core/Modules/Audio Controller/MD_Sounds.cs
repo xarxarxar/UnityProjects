@@ -19,6 +19,8 @@ namespace Watermelon
 		public AudioClip getLife;
 		public AudioClip buySuccess;
 
+		public AudioClip didi;
+
 
 		[LineSpacer("UI")]
 		public AudioClip buttonSound;

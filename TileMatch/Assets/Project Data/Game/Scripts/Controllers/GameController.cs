@@ -133,8 +133,9 @@ namespace Watermelon
             {
                 UIController.ShowPage<UIComplete>();
             });
-            LevelController.instance.timerSliderObject.SetActive(false);
-
+            LevelController.instance.timerSliderObject.SetActive(false);//关闭计时条
+            LevelSave levelSave = SaveController.GetSaveObject<LevelSave>("level");
+            TestWechat.UploadScore(levelSave.MaxReachedLevelIndex);
             isGameActive = false;
         }
 
@@ -147,7 +148,7 @@ namespace Watermelon
             {
                 UIController.ShowPage<UIGameOver>();
             });
-            LevelController.instance.timerSliderObject.SetActive(false);
+            LevelController.instance.timerSliderObject.SetActive(false);//关闭计时条
             isGameActive = false;
         }
 

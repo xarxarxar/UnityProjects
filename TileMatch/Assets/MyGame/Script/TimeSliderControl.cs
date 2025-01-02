@@ -28,6 +28,7 @@ public class TimeSliderControl : MonoBehaviour
 
     void OnEnable()
     {
+        
         isShaked = false;
         slider = GetComponent<Slider>();
         sliderMaxValue=slider.maxValue;
@@ -40,7 +41,7 @@ public class TimeSliderControl : MonoBehaviour
 
         // 开始减值的 Coroutine
         StartCoroutine(DecreaseSliderValueOverTime());
-
+        StartCoroutine(PlaySoundWhenSliderLow());//播放滴滴声的协程
         ShakeImage();//震动沙漏
     }
 
@@ -107,9 +108,22 @@ public class TimeSliderControl : MonoBehaviour
         // 每秒减少 1，直到 Slider 的值为 0
         while (slider.value > 0)
         {
-            slider.value -= 1;
-            yield return new WaitForSeconds(1f); // 每秒减少 1
+            slider.value -= 0.1f;
+            yield return new WaitForSeconds(0.1f); // 每秒减少 1
         }
         LevelController.instance.OnSlotsFilled();//调用卡槽已满的方法
+    }
+
+    IEnumerator PlaySoundWhenSliderLow()
+    {
+        // 当 slider.value 小于 5 时，每秒播放一次音效
+        while (slider.value > 0)
+        {
+            if (slider.value < 5)
+            {
+                AudioController.PlaySound(AudioController.Sounds.didi);
+            }
+            yield return new WaitForSeconds(1f); // 每秒播放一次音效
+        }
     }
 }

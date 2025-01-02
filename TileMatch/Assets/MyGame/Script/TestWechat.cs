@@ -103,7 +103,7 @@ public class TestWechat : MonoBehaviour
     /// 上传分数
     /// </summary>
     /// <param name="score"></param>
-    public  void UploadScore(int score)
+    public static void UploadScore(int score)
     {
         MyOpendataMessage message = new MyOpendataMessage();
         message.type = "setUserRecord";
@@ -157,7 +157,7 @@ public class TestWechat : MonoBehaviour
         //Debug.Log("最高通关："+levelSave.MaxReachedLevelIndex);
         Debug.Log(" RankObject.transform.position：" + RankObject.transform.position);
         UploadScore(levelSave.MaxReachedLevelIndex);
-        StartCoroutine(DelayShowScore(0.1f));
+        StartCoroutine(DelayShowScore(1.0f));
     }
 
     /// <summary>
