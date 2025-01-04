@@ -174,14 +174,9 @@ namespace Watermelon
 
         private void ShowAdButton(bool immediately = false)
         {
-            if (AdsManager.IsForcedAdEnabled())
-            {
-                noAdsButton.Show(immediately);
-            }
-            else
-            {
-                noAdsButton.Hide(immediately: true);
-            }
+
+            noAdsButton.Hide(immediately: true);
+
         }
 
         private void HideAdButton(bool immediately = false)
@@ -241,10 +236,8 @@ namespace Watermelon
 
         private void IAPStoreButton()
         {
-            Debug.Log("111");
             if (UIController.GetPage<UIIAPStore>().IsPageDisplayed)
                 return;
-            Debug.Log("222");
             UILevelNumberText.Hide(true);
 
             UIController.HidePage<UIMainMenu>();

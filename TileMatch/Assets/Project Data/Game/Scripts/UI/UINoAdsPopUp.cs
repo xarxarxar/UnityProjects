@@ -26,12 +26,7 @@ namespace Watermelon
             backFade.Hide(immediately: true);
             panelScalable.Hide(immediately: true);
 
-            AdsManager.ForcedAdDisabled += ForcedAdDisabled;
-        }
-
-        private void ForcedAdDisabled()
-        {
-            ClosePanel();
+            
         }
 
         public void Show()
@@ -45,7 +40,7 @@ namespace Watermelon
                 panelScalable.Show(immediately: false, duration: 0.3f);
             });
 
-            AdsManager.ForcedAdDisabled += ForcedAdDisabled;
+            
         }
 
         private void ClosePanel()
@@ -59,7 +54,7 @@ namespace Watermelon
                 gameObject.SetActive(false);
             });
 
-            AdsManager.ForcedAdDisabled -= ForcedAdDisabled;
+            
         }
     }
 }

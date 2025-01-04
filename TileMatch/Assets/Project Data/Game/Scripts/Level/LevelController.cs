@@ -152,12 +152,12 @@ namespace Watermelon
                 UnloadLevel();
             }
 
+            
+
             //打开计时器
-            if ((levelSave.DisplayLevelIndex + 1) % 5 == 0)
+            if ((levelIndex+1) % 5 == 0)
             {
-                Debug.Log($"LastPlayerLevelIndex为：{levelSave.LastPlayerLevelIndex}，" +
-                $"DisplayLevelIndex：{levelSave.DisplayLevelIndex}" +
-                $"RealLevelIndex：{levelSave.RealLevelIndex}");
+                
                 timerSliderObject.SetActive(true);
             }
 

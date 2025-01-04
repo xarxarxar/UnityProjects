@@ -33,7 +33,6 @@ namespace Watermelon
         // Awake方法，在对象激活时调用
         public void Awake()
         {
-            
             screenSettings.Initialise(); // 初始化屏幕设置
 
             // 检查是否已初始化，确保只执行一次
@@ -80,6 +79,7 @@ namespace Watermelon
                     // 加载游戏场景
                     GameLoading.LoadGameScene(() =>
                     {
+                        //FloatingMessage.ShowMessage("Network error. Please try again later");
                         CallWechat.Init();//初始化微信调用
                         
                     });

@@ -16,13 +16,13 @@ namespace Watermelon
         [SerializeField] AllowedFrameRates defaultFrameRate = AllowedFrameRates.Rate60; // 默认帧率
         [SerializeField] AllowedFrameRates batterySaveFrameRate = AllowedFrameRates.Rate30; // 低电量模式帧率
 
-        [Header("Sleep")] // 睡眠设置标题
-        [SerializeField] int sleepTimeout = -1; // 屏幕休眠超时，-1表示不更改
+        //[Header("Sleep")] // 睡眠设置标题
+        //[SerializeField] int sleepTimeout = -1; // 屏幕休眠超时，-1表示不更改
 
         // 初始化屏幕设置
         public void Initialise()
         {
-            Screen.sleepTimeout = sleepTimeout; // 设置屏幕休眠超时
+            //Screen.sleepTimeout = sleepTimeout; // 设置屏幕休眠超时
 
             // 检查是否自动设置帧率
             if (setFrameRateAutomatically)

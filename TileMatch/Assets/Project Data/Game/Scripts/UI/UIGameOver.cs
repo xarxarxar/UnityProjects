@@ -84,7 +84,7 @@ namespace Watermelon
         {
             AudioController.PlaySound(AudioController.Sounds.buttonSound);
 
-            AdsManager.ShowRewardBasedVideo(ReviveCallback);
+            
         }
 
         private void ReviveCallback(bool watchedRV)

@@ -61,12 +61,10 @@ namespace Watermelon.IAPStore
                 CurrenciesController.Add(CurrencyType.Coins, coinsAmount);
             });
 
-            AdsManager.DisableForcedAd();
         }
 
         protected override void ReapplyOffer()
         {
-            AdsManager.DisableForcedAd();
         }
     }
 }

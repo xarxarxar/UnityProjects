@@ -152,6 +152,7 @@ public class TestWechat : MonoBehaviour
     /// </summary>
     public void RankButton()
     {
+        WX.HideOpenData();
         RankObject.transform.position-=new Vector3(10000,0,0);
         LevelSave levelSave = SaveController.GetSaveObject<LevelSave>("level");
         //Debug.Log("最高通关："+levelSave.MaxReachedLevelIndex);

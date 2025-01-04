@@ -41,18 +41,7 @@ namespace Watermelon.IAPStore
         private void OnAdButtonClicked()
         {
             // 显示奖励视频广告
-            AdsManager.ShowRewardBasedVideo((watched) => {
-                if (watched) // 如果观看了广告
-                {
-                    // 获取 IAP Store 页面并生成货币云特效
-                    UIIAPStore iapStore = UIController.GetPage<UIIAPStore>();
-                    iapStore.SpawnCurrencyCloud(cloudSpawnRectTransform, CurrencyType.Coins, floatingElementsAmount, () =>
-                    {
-                        // 增加玩家的金币数量
-                        CurrenciesController.Add(CurrencyType.Coins, coinsAmount);
-                    });
-                }
-            });
+            
         }
     }
 }

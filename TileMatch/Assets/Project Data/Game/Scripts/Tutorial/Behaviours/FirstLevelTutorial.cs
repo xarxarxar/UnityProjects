@@ -392,7 +392,6 @@ namespace Watermelon
             DockBehavior.ElementAdded -= OnElementAddedToDock;
             PUController.OnPowerUpUsed -= OnPUUsed;
 
-            AdsManager.EnableBanner();
 
             LevelController.CompleteCustomLevel();
 

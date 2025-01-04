@@ -50,22 +50,22 @@ public class CallWechat : MonoBehaviour
             }
         );
 
-        //var feedback = "https://7465-test01cloud-8g9b0glp7aab2737-1322886618.tcb.qcloud.la/mainFolder/Fonts/Source_Han_Sans_SC_Normal_Normal.otf?sign=4665881d91f1c1b11adbb160cad2ced5&t=1729609199";
-        var feedback = "https://7465-test01cloud-8g9b0glp7aab2737-1322886618.tcb.qcloud.la/testFolder/MaoMiPPP/webgl/JasonHandwriting8.ttf?sign=807298979ecf7183f740df4f525cedb9&t=1735832289";
-        //WX.GetWXFont(feedback, (font) =>
-        //{
-        //    wxFont = font;
-        //    //更换微信字体
-        //    TextMeshProUGUI[] allTexts = Resources.FindObjectsOfTypeAll<TextMeshProUGUI>();
-        //    // 创建字体资产
-        //    TMP_FontAsset wxFontAsset = TMP_FontAsset.CreateFontAsset(font);
-
-        //    for (int i = 0; i < allTexts.Length; i++)
-        //    {
-        //        allTexts[i].font = wxFontAsset;
-        //    }
-        //});
+        var feedback = "https://7465-test01cloud-8g9b0glp7aab2737-1322886618.tcb.qcloud.la/mainFolder/Fonts/Source_Han_Sans_SC_Normal_Normal.otf?sign=4665881d91f1c1b11adbb160cad2ced5&t=1729609199";
         
+        WX.GetWXFont(feedback, (font) =>
+        {
+            wxFont = font;
+            //更换微信字体
+            TextMeshProUGUI[] allTexts = Resources.FindObjectsOfTypeAll<TextMeshProUGUI>();
+            // 创建字体资产
+            TMP_FontAsset wxFontAsset = TMP_FontAsset.CreateFontAsset(font);
+
+            for (int i = 0; i < allTexts.Length; i++)
+            {
+                allTexts[i].font = wxFontAsset;
+            }
+        });
+
 
     }
 

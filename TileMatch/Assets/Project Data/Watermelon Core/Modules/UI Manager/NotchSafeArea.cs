@@ -72,11 +72,11 @@ namespace Watermelon
                 rect.height = Screen.height;
             }
 
-            if(AdsManager.Settings.BannerType != AdProvider.Disable && AdsManager.IsForcedAdEnabled())
-            {
-                rect.y += BANNER_OFFSET;
-                rect.height -= BANNER_OFFSET;
-            }
+            //if(AdsManager.Settings.BannerType != AdProvider.Disable && AdsManager.IsForcedAdEnabled())
+            //{
+            //    rect.y += BANNER_OFFSET;
+            //    rect.height -= BANNER_OFFSET;
+            //}
 
             // Check for invalid screen startup state on some Samsung devices (see below)
             if (Screen.width > 0 && Screen.height > 0)
