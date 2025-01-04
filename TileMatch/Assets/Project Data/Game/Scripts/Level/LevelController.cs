@@ -152,8 +152,6 @@ namespace Watermelon
                 UnloadLevel();
             }
 
-            
-
             //打开计时器
             if ((levelIndex+1) % 5 == 0)
             {

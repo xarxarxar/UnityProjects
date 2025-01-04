@@ -158,7 +158,7 @@ public class TestWechat : MonoBehaviour
         //Debug.Log("最高通关："+levelSave.MaxReachedLevelIndex);
         Debug.Log(" RankObject.transform.position：" + RankObject.transform.position);
         UploadScore(levelSave.MaxReachedLevelIndex);
-        StartCoroutine(DelayShowScore(1.0f));
+        StartCoroutine(DelayShowScore(0.1f));
     }
 
     /// <summary>
