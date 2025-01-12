@@ -46,7 +46,8 @@ namespace Watermelon.IAPStore
             // 为按钮添加点击事件监听器`
             button.onClick.AddListener(OnAdButtonClicked);
 
-            priceText.text = price.ToString();
+            //priceText.text = price.ToString();
+            priceText.text = "广告";
             description = $"永久减少{timeReduce}秒爱心恢复时间";
             descriptionText.text = description.ToString();
 
