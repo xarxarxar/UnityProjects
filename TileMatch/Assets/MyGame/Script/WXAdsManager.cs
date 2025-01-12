@@ -55,23 +55,8 @@ public class WXAdsManager : MonoBehaviour
     /// <param name="callback">看完广告后的回调</param>
     public void ShowAd(UnityAction<bool> callback)
     {
-        Debug.Log("显示广告");
         ad.Show();
         rewardCallback = callback;
-    }
-
-    public void TestPlayAds()
-    {
-        PlayAd((isEnd) =>
-        {
-
-        });
-    }
-
-
-    public void PlayAd(UnityAction<bool> callback)
-    {
-        ShowAd(callback);
     }
 
     /// <summary>
@@ -84,7 +69,6 @@ public class WXAdsManager : MonoBehaviour
         if (isEnd)
         {
             Debug.Log("完整看完广告");
-            
         }
         else
         {

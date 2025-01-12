@@ -46,6 +46,7 @@ public class CallWechat : MonoBehaviour
                 //    ShareAddButtonLastTime = 7200,
 
                 //});
+                WXAdsManager.Instance.Init();
 
             }
         );

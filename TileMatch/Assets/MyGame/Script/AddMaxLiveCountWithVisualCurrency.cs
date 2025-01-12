@@ -24,6 +24,7 @@ namespace Watermelon.IAPStore
 
         [Space]
         [SerializeField] GameObject imageObject; // 商品的图片
+        [SerializeField] GameObject targetObject; // 目标图片
 
         public GameObject GameObject => gameObject; // 获取当前游戏对象
 
@@ -55,16 +56,21 @@ namespace Watermelon.IAPStore
         }
 
         // 按钮点击事件处理
+        //private void OnAdButtonClicked()
+        //{
+        //    ReduceLiveInterval();
+        //    //如果当前的最大生命值已经大于99了，则购买按钮不可点击
+        //    if (data.customedMaxLivesCount >= 99)
+        //    {
+        //        button.interactable = false;
+        //        priceText.text = "最大";
+        //    }
+        //}
         private void OnAdButtonClicked()
         {
-            ReduceLiveInterval();
-            //如果当前的最大生命值已经大于99了，则购买按钮不可点击
-            if (data.customedMaxLivesCount >= 99)
-            {
-                button.interactable = false;
-                priceText.text = "最大";
-            }
+            PlayAds();
         }
+
 
         //示例
         private void ReduceLiveInterval()
@@ -84,6 +90,29 @@ namespace Watermelon.IAPStore
                 Tools.BlinkRedThreeTimes(priceText, 0.5f);//文字闪烁提示货币不足
             }
             //LivesManager.AddMaxLife();//添加一条最大生命值
+        }
+
+        private void PlayAds()
+        {
+            Debug.Log("播放广告");
+            AudioController.PlaySound(AudioController.Sounds.buttonSound);
+            
+            WXAdsManager.Instance.ShowAd((isEnd) =>
+            {
+                if (isEnd)
+                {
+                    Debug.Log("广告观看完毕");
+                    LivesManager.AddMaxLife();//添加一条最大生命值
+                    //Tools.MoveAndShrinkUI(imageObject, 0.5f, () => { });
+                    Tools.MoveAndShrinkUI(imageObject, targetObject, 1.0f, () => { });
+                    AudioController.PlaySound(AudioController.Sounds.buySuccess);
+                }
+                else
+                {
+                    Debug.Log("广告未观看完毕");
+                    FloatingMessage.ShowMessage("广告未观看完毕");
+                }
+            });
         }
     }
 }

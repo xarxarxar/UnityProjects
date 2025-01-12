@@ -249,6 +249,15 @@ namespace Watermelon
         }
 
         /// <summary>
+        /// 判断当前是否是达到了最大生命值
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsMaxLive()
+        {
+            return Lives >= instance.data.customedMaxLivesCount;
+        }
+
+        /// <summary>
         /// 永久减少单次恢复爱心的时间间隔，20241024添加
         /// </summary>
         /// <param name="seconds"></param>
@@ -281,7 +290,17 @@ namespace Watermelon
         /// </summary>
         public static  void AddMaxLife()
         {
-            instance.data.customedMaxLivesCount++;
+            if (Lives >= instance.data.customedMaxLivesCount)
+            {
+                RemoveLife();
+                instance.data.customedMaxLivesCount++;
+                SetLifes(Lives + 1);
+            }
+            else
+            {
+                instance.data.customedMaxLivesCount++;
+            }
+            
         }
 
         /// <summary>

@@ -28,6 +28,7 @@ namespace Watermelon.IAPStore
 
         [Space]
         [SerializeField] GameObject imageObject; // 商品的图片
+        [SerializeField] GameObject targetObject; // 目标图片
 
         public GameObject GameObject => gameObject; // 获取当前游戏对象
 
@@ -47,7 +48,7 @@ namespace Watermelon.IAPStore
             button.onClick.AddListener(OnAdButtonClicked);
 
             //priceText.text = price.ToString();
-            priceText.text = "广告";
+            priceText.text = "获得";
             description = $"永久减少{timeReduce}秒爱心恢复时间";
             descriptionText.text = description.ToString();
 
@@ -60,15 +61,20 @@ namespace Watermelon.IAPStore
         }
 
         // 按钮点击事件处理
+        //private void OnAdButtonClicked()
+        //{
+        //    ReduceLiveInterval();
+        //    //如果当前的时间间隔已经小于5分钟了，则购买按钮不可点击
+        //    if (data.oneLifeRestorationDuration <= 300)
+        //    {
+        //        button.interactable = false;
+        //        priceText.text = "最大";
+        //    }
+        //}
+
         private void OnAdButtonClicked()
         {
-            ReduceLiveInterval();
-            //如果当前的时间间隔已经小于5分钟了，则购买按钮不可点击
-            if (data.oneLifeRestorationDuration <= 300)
-            {
-                button.interactable = false;
-                priceText.text = "最大";
-            }
+            PlayAds();
         }
 
         //示例
@@ -91,6 +97,24 @@ namespace Watermelon.IAPStore
 
 
             //LivesManager.AddMaxLife();//添加一条最大生命值
+        }
+
+        private void PlayAds()
+        {
+            AudioController.PlaySound(AudioController.Sounds.buttonSound);
+            WXAdsManager.Instance.ShowAd((isEnd) =>
+            {
+                if (isEnd)
+                {
+                    LivesManager.RemoveOneLifeTime(timeReduce);//减少时间恢复间隔
+                    Tools.MoveAndShrinkUI(imageObject, targetObject, 1.0f, () => { });
+                    AudioController.PlaySound(AudioController.Sounds.buySuccess);
+                }
+                else
+                {
+                    FloatingMessage.ShowMessage("广告未观看完毕");
+                }
+            });
         }
     }
 }

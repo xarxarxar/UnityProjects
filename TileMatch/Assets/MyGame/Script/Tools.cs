@@ -3,9 +3,30 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using TMPro;
+using UnityEngine.UI;
 
 public class Tools : MonoBehaviour
 {
+    static Tools instance;
+    GameObject showTip;
+    public static Tools Instance
+    {
+        get { return instance; }
+    }
+
+    private void Awake()
+    {
+        if (instance != null)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            instance = this;
+        }
+    }
+
+
     // 函数参数：
     // targetObject：要复制并移动的UI物体
     // duration：移动和缩小的持续时间
@@ -53,14 +74,20 @@ public class Tools : MonoBehaviour
         // 复制UI物体
         GameObject newObject = Instantiate(targetObject, targetObject.transform.position, Quaternion.identity, targetObject.transform.parent);
 
+        // 设置新物体的父物体为目标物体所在的父物体
+        newObject.transform.SetParent(targetGameObject.transform); // 使用 false 来保持原来的局部位置
+
         // 获取新物体的RectTransform
         RectTransform rectTransform = newObject.GetComponent<RectTransform>();
 
-        // 获取目标GameObject的位置
-        Vector2 targetPosition = targetGameObject.GetComponent<RectTransform>().anchoredPosition;
+        // 获取目标物体的RectTransform
+        RectTransform targetRectTransform = targetGameObject.GetComponent<RectTransform>();
 
-        // 获取当前的PosX
-        float currentPosX = rectTransform.anchoredPosition.x;
+        // 将目标物体的位置转换为屏幕空间
+        Vector3 targetScreenPosition = RectTransformUtility.WorldToScreenPoint(Camera.main, targetRectTransform.position);
+
+        // 将新物体的屏幕空间位置转换为世界空间位置
+        Vector3 targetWorldPosition = Camera.main.ScreenToWorldPoint(targetScreenPosition);
 
         // 设置目标缩放（缩小到0）
         Vector3 targetScale = Vector3.zero;
@@ -68,11 +95,18 @@ public class Tools : MonoBehaviour
         // 创建 DOTween 动画序列
         Sequence sequence = DOTween.Sequence();
 
-        // 修改PosX到目标位置
-        sequence.Append(DOTween.To(() => currentPosX, x => rectTransform.anchoredPosition = new Vector2(x, rectTransform.anchoredPosition.y), targetPosition.x, duration));
+        // 修改物体位置，移动到目标物体的世界位置
+        sequence.Append(DOTween.To(() => rectTransform.position,
+                                   x => rectTransform.position = x,
+                                   targetWorldPosition,
+                                   duration));
 
-        // 同时缩小 `localScale`
-        sequence.Join(rectTransform.DOScale(targetScale, duration));
+        // 在位置动画完成后，执行缩小动画
+        sequence.AppendCallback(() =>
+        {
+            // 开始缩小
+            rectTransform.DOScale(targetScale, duration);
+        });
 
         // 动画完成后销毁物体并调用回调函数
         sequence.OnComplete(() =>
@@ -81,8 +115,6 @@ public class Tools : MonoBehaviour
             callback?.Invoke();  // 如果回调函数不为空，调用回调
         });
     }
-
-
 
 
     // 函数参数：
@@ -119,6 +151,7 @@ public class Tools : MonoBehaviour
             textComponent.transform.localScale = Vector3.one;  // 确保缩放恢复
         });
     }
+
 
 
 }
