@@ -122,6 +122,7 @@ namespace Watermelon
 
         public static void OnLevelCompleted()
         {
+            Debug.Log($"本关卡奖励为：{LevelController.CurrentReward}");
             if (!isGameActive)
                 return;
 
@@ -131,7 +132,7 @@ namespace Watermelon
             });
             LevelController.instance.timerSliderObject.SetActive(false);//关闭计时条
             LevelSave levelSave = SaveController.GetSaveObject<LevelSave>("level");
-            TestWechat.UploadScore(levelSave.MaxReachedLevelIndex);
+            //TestWechat.UploadScore(levelSave.MaxReachedLevelIndex);
             isGameActive = false;
         }
 

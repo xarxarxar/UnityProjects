@@ -146,19 +146,29 @@ namespace Watermelon
 
         #region Buttons
 
+        /// <summary>
+        /// 多倍金币按钮
+        /// </summary>
         public void MultiplyRewardButton()
         {
             AudioController.PlaySound(AudioController.Sounds.buttonSound);
 
-            if (noThanksAppearTween != null && noThanksAppearTween.IsActive)
+            WXAdsManager.Instance.ShowAd((isEnd) =>
             {
-                noThanksAppearTween.Kill();
-            }
+                if (isEnd)
+                {
+                    FloatingCloud.SpawnCurrency(coinsHash, rewardLabel.RectTransform, coinsPanelScalable.RectTransform, 10, "", () =>
+                    {
+                        CurrenciesController.Add(CurrencyType.Coins, currentReward * 3);
+                    });
+                }
+                else
+                {
+                    Debug.Log("广告未观看完毕");
+                    FloatingMessage.ShowMessage("广告未观看完毕");
+                }
+            });
 
-            homeButton.interactable = false;
-            nextLevelButton.interactable = false;
-
-            
         }
 
         public void NextLevelButton()
