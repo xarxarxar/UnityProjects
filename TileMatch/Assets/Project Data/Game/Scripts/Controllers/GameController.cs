@@ -122,9 +122,12 @@ namespace Watermelon
 
         public static void OnLevelCompleted()
         {
-            Debug.Log($"本关卡奖励为：{LevelController.CurrentReward}");
+            
             if (!isGameActive)
                 return;
+
+            Debug.Log("游戏完成");
+            
 
             UIController.HidePage<UIGame>(() =>
             {

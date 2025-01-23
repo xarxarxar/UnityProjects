@@ -39,6 +39,9 @@ namespace Watermelon
 
         public override void PlayShowAnimation()
         {
+            WXAdsManager.Instance.RandomPlayCustom();//随机展示格子广告或者横幅广告
+            WXAdsManager.Instance.ShowInterstitialAd();//展示插屏广告
+
             levelFailed.Hide(immediately: true);
             menuButtonScalable.Hide(immediately: true);
             replayButtonScalable.Hide(immediately: true);
@@ -64,6 +67,9 @@ namespace Watermelon
 
         public override void PlayHideAnimation()
         {
+            WXAdsManager.Instance.CloseGridAds();//隐藏格子广告
+            WXAdsManager.Instance.CloseBannerAds();//隐藏横幅广告
+
             backgroundFade.Hide(0.3f);
 
             Tween.DelayedCall(0.3f, delegate

@@ -66,7 +66,7 @@ namespace Watermelon
 
         public void OnLevelStarted(int levelIndex)
         {
-            Debug.Log(uiBehaviors == null);
+            
             for (int i = 0; i < uiBehaviors.Length; i++)
             {
                 if(uiBehaviors[i].Settings.RequiredLevel <= levelIndex)

@@ -54,6 +54,10 @@ namespace Watermelon
             if (isPageDisplayed)
                 return;
 
+            WXAdsManager.Instance.RandomPlayCustom();//随机展示格子广告或者横幅广告
+            //WXAdsManager.Instance.ShowBannerAd();//展示横幅广告
+            WXAdsManager.Instance.ShowInterstitialAd();//展示插屏广告
+
             isPageDisplayed = true;
             canvas.enabled = true;
 
@@ -99,6 +103,9 @@ namespace Watermelon
         {
             if (!isPageDisplayed)
                 return;
+
+            WXAdsManager.Instance.CloseGridAds();//隐藏格子广告
+            WXAdsManager.Instance.CloseBannerAds();//隐藏横幅广告
 
             backgroundFade.Hide(0.25f);
             coinsPanelScalable.Hide();
