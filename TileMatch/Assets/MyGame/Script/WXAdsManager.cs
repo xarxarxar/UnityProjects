@@ -33,12 +33,13 @@ public class WXAdsManager : MonoBehaviour
     {
         //格子广告
         WindowInfo windowInfo = WX.GetWindowInfo();
-        int gridAdWidth =(int) (windowInfo.windowWidth*0.8f);
+        float adRatio = 0.8f;//设置的custom的广告比例
+        //int gridAdWidth =(int) (windowInfo.windowWidth*0.8f);
         gridAd= WX.CreateCustomAd(new WXCreateCustomAdParam()
         {
             adUnitId= "adunit-bc98eedc1e644a7d",
             adIntervals =30,
-            style = new CustomStyle() { left = (int)(windowInfo.windowWidth*0.18f), top = (int)(windowInfo.windowHeight - 106), width = gridAdWidth },
+            style = new CustomStyle() { left = (int)(windowInfo.windowWidth/2-180* adRatio), top = (int)(windowInfo.windowHeight - 106* adRatio),width=(int)(360*adRatio) },
 
         });
         gridAd.OnLoad((res) =>
@@ -60,8 +61,7 @@ public class WXAdsManager : MonoBehaviour
         {
             adUnitId = "adunit-5f9c67c498bd26d8",
             adIntervals = 30,
-            style = new CustomStyle() { left = (int)(windowInfo.windowWidth * 0.18f), top = (int)(windowInfo.windowHeight - 106*0.8f), width = gridAdWidth },
-
+            style = new CustomStyle() { left = (int)(windowInfo.windowWidth/ 2 - 375/2), top = (int)(windowInfo.windowHeight - 120), width=375},
         });
         bannerAd.OnLoad((res) =>
         {
@@ -209,6 +209,7 @@ public class WXAdsManager : MonoBehaviour
     void OnPlayEnd(bool isEnd)
     {
         RandomPlayCustom();
+        ShowInterstitialAd();
         rewardCallback?.Invoke(isEnd);
         if (isEnd)
         {
