@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -6,34 +7,19 @@ using static Unity.VisualScripting.Dependencies.Sqlite.SQLite3;
 
 // 这个脚本定义了一个关卡配置类，可以用作ScriptableObject。
 // ScriptableObject可以作为数据资源存储在项目中，方便多次使用和编辑。
-// 使用[CreateAssetMenu]特性，允许我们在Unity编辑器中通过右键点击来创建LevelConfig实例。
-[CreateAssetMenu(fileName = "New Level Config", menuName = "Game/Level Config", order = 1)]
-public class LevelConfig : ScriptableObject
+[Serializable]
+public class LevelConfig
 {
-    // 关卡ID，标识不同的关卡
-    public int levelID;
-
-    // 目标分数，玩家完成该关卡需要达到的分数
+    public int levelId;
+    public string levelName;
+    public int rounds;
     public int targetScore;
-
-    // 最大回合数，每个关卡最多允许多少回合
-    public int maxRounds;
-
-    // 每回合最多允许抽取的卡牌数量
-    public int drawPerRound;
-
-    // 特殊任务列表，关卡中可能有多个特殊任务，玩家需要完成这些任务来获得额外奖励
-    // SpecialMission类可以定义任务类型、目标字母等信息
-    public List<SpecialMission> specialMissions;
-
-    // 有效组合列表，包含所有在此关卡中可以被认为有效的字母组合
-    // ValidCombination类可以定义哪些字母组合在当前关卡有效
-    //public List<ValidCombination> validCombinations;
-
-    // 可用的特殊卡牌，玩家在此关卡中可以使用的特殊卡牌
-    // SpecialCard类可以定义特殊卡牌的类型和功能
-    //public List<SpecialCard> availableSpecialCards;
+    [Range(0, 1)] public float specialCardProbability;
+    public int maxNormalCards;
+    public int maxSpecialCards;
 }
+
+
 
 // 特殊任务类，定义了一个关卡中的具体任务
 public class SpecialMission

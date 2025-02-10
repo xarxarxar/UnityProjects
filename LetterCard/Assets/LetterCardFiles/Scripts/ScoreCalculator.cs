@@ -1,19 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
-public class ScoreCalculator : MonoBehaviour
+public class ScoreCalculator
 {
     // 定义有效的字母组合列表，玩家出牌时如果能够组成这些字母组合，则会获得额外的分数奖励。
     // 这里是一些示例组合，你可以根据游戏规则扩展更多组合。
-    private List<string> validCombinations = new() {
-        "hello", "world", "unity", "game" // 示例组合
+    private static  List<string> validCombinations = new() {
+        "hello", "world", "unity", "game","ab","bc" // 示例组合
     };
 
     // 计算玩家出牌后的总分数
     // 输入参数 playedCards 是玩家在当前回合打出的卡牌列表
     // 返回值是玩家在当前回合的得分
-    public int CalculateScore(List<Card> playedCards)
+    public static  int CalculateScore(List<LetterCard> playedCards)
     {
         // 初始分数设为玩家出牌数量，即每张牌得1分
         int baseScore = playedCards.Count;
@@ -38,29 +39,23 @@ public class ScoreCalculator : MonoBehaviour
 
     // 根据玩家出牌的卡牌，构建一个由字母组成的字符串序列
     // 例如，如果出牌是 "a", "b", "c"，则返回的字符串为 "abc"
-    private string BuildLetterSequence(List<Card> cards)
+    private static string BuildLetterSequence(List<LetterCard> cards)
     {
         // 初始化一个空字符串来存储字母序列
-        string sequence = "";
+        StringBuilder sb = new StringBuilder();
 
-        // 遍历每张卡牌，将卡牌中的字母（如果是字母卡牌）添加到序列中
-        foreach (var card in cards)
+        // 遍历 List 中的每个字母
+        foreach (LetterCard card in cards)
         {
-            // 检查卡牌类型，如果是字母卡牌，则将字母添加到序列
-            if (card is LetterCard letterCard)
-            {
-                // 根据字母卡牌的字母和大小写状态来构建序列
-                sequence += letterCard.isUpperCase ? letterCard.letter.ToString().ToUpper() : letterCard.letter.ToString().ToLower();
-            }
+            sb.Append(card.letter);  // 将每个 LetterCard 的字母追加到 StringBuilder
         }
-
-        // 返回构建好的字母序列
-        return sequence;
+        Debug.Log("字符串为："+sb.ToString());
+        return sb.ToString();  // 返回拼接后的字符串
     }
 
     // 检查特殊任务的完成情况并返回额外的分数
     // 该方法可以根据任务的具体规则来调整，这里只是一个示例
-    private int CheckSpecialMissions(List<Card> playedCards)
+    private static int CheckSpecialMissions(List<LetterCard> playedCards)
     {
         // 示例任务：如果出牌中包含字母 'a'，则奖励额外的5分
         int bonusScore = 0;

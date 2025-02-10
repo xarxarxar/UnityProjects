@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 // 牌堆管理系统
 public class DeckManager : MonoBehaviour
@@ -13,16 +14,47 @@ public class DeckManager : MonoBehaviour
     {
         public int maxNormalCards = 10;
         public int maxSpecialCards = 3;
+        public int roundCount = 5;//回合数
+        public int needScore = 100;//过关所需的分数
         public float specialCardChance = 0.2f; // 特殊牌出现概率
     }
 
     // 卡牌池
-    [SerializeField] private List<LetterCard> letterDeck = new List<LetterCard>();
-    [SerializeField] private List<SpecialCard> specialCardPool = new List<SpecialCard>();
+    private List<LetterCard> letterDeck = new List<LetterCard>();
+    private List<SpecialCard> specialCardPool = new List<SpecialCard>();
+
+    // 等待出牌的暂存池
+    [SerializeField] private Transform cachePool;
 
     // 当前手牌
     public List<Card> letterHandCards = new List<Card>();
     public List<Card> specialHandCards = new List<Card>();
+
+    // 分数
+    private int totalScore;//当前总分数
+    public Text singleScoreText;//单个回合的分数显示text
+    public Text totalScoreText;//当前总分数显示text
+
+    // 回合
+    int currentRound;//当前回合
+    public int CurrentRound 
+    { 
+        get => currentRound; 
+        set 
+        {
+            currentRound = value;
+            if (value <= config.roundCount)
+            {
+                roundText.text = $"{value}/{config.roundCount}";
+            }
+        } 
+    }
+    public Text roundText;//回合数的text
+    public event UnityAction<int> roundOver;//回合结束的事件
+
+    // 关卡
+    public event UnityAction<int> levelOver;//关卡结束操作
+    
 
     // 配置参数
     public DeckConfig config;
@@ -33,10 +65,24 @@ public class DeckManager : MonoBehaviour
     public UnityEvent OnHandFull;
     public UnityEvent<Card> OnCardDrawn;
 
+    
+
     void Start()
     {
         InitializeLetterDeck();
         InitializeSpecialCardPool();
+        InitializeValue();
+        DrawCards(3, 1);//抽取三张字母牌和一张特殊牌
+    }
+
+    /// <summary>
+    /// 初始化数值
+    /// </summary>
+    void InitializeValue()
+    {
+        totalScore = 0;
+        CurrentRound = 1;
+        roundText.text = $"{CurrentRound}/{config.roundCount}";
     }
 
     /// <summary>
@@ -112,9 +158,18 @@ public class DeckManager : MonoBehaviour
             return;
         }
         int letterCardIndex= Random.Range(0, letterDeck.Count);
-        LetterCard newCard = Instantiate(letterDeck[letterCardIndex]);
+        LetterCard newCard = Instantiate(letterDeck[letterCardIndex], GameObject.Find("LetterHandPool").transform);
+        
         letterDeck.RemoveAt(letterCardIndex);//移出这个卡牌
         letterHandCards.Add(newCard);
+        newCard.cardToCache += () =>
+        {
+            letterHandCards.Remove(newCard);
+        };
+        newCard.cardBackHand += () =>
+        {
+            letterHandCards.Add(newCard);
+        };
         OnCardDrawn?.Invoke(newCard);
     }
 
@@ -123,6 +178,11 @@ public class DeckManager : MonoBehaviour
     /// </summary>
     void DrawSpecialCard()
     {
+        //根据特殊牌出现的概率执行代码
+        if(Random.value >=config.specialCardChance)
+        {
+            return;
+        }
         // 根据权重随机选择特殊牌
         float totalWeight = specialCardPool.Sum(c => c.spawnWeight);
         float randomPoint = Random.Range(0, totalWeight);
@@ -131,7 +191,7 @@ public class DeckManager : MonoBehaviour
         {
             if (randomPoint < card.spawnWeight)
             {
-                SpecialCard newCard = Instantiate(card);
+                SpecialCard newCard = Instantiate(card, GameObject.Find("SpecialHandPool").transform);
                 specialHandCards.Add(newCard);
                 OnCardDrawn?.Invoke(newCard);
                 return;
@@ -182,6 +242,51 @@ public class DeckManager : MonoBehaviour
         return baseValue;
     }
 
+    /// <summary>
+    /// 出牌方法
+    /// </summary>
+    public void PlayCard()
+    {
+        if (CurrentRound > config.roundCount)
+        {
+            Debug.Log("关卡已结束");
+            return;
+        }
+
+        //获取暂存池内的物体
+        Transform cachePool = GameObject.Find("CachePool").transform;
+        List<LetterCard> childrenList = new List<LetterCard>();
+        // 遍历物体的所有子物体
+        foreach (Transform child in cachePool)
+        {
+            childrenList.Add(child.GetComponent<LetterCard>());  // 将子物体添加到列表中
+        }
+        if (childrenList.Count == 0)
+        {
+            Debug.Log("暂存池没有字母牌");
+            return;
+        }
+
+
+        int score = ScoreCalculator.CalculateScore(childrenList);
+        singleScoreText.text=score.ToString();
+        totalScore += score;
+        totalScoreText.text= totalScore.ToString();
+
+        //销毁暂存池中的所有物体
+        foreach (Transform child in cachePool)
+        {
+            Destroy(child.gameObject);
+        }
+        roundOver?.Invoke(CurrentRound);
+        CurrentRound += 1;
+        if (CurrentRound > config.roundCount)
+        {
+            Debug.Log($"进入关卡结束操作，总分为{totalScore}");
+            levelOver?.Invoke(totalScore);
+        }
+
+    }
 
     /// <summary>
     /// 弃牌方法
@@ -196,6 +301,8 @@ public class DeckManager : MonoBehaviour
             letterDeck.Add(letterCard); // 字母牌返回牌堆底部
         }
     }
+
+    
 }
 
 
