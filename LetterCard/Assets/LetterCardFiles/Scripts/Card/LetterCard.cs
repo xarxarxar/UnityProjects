@@ -9,6 +9,9 @@ public class LetterCard : Card
     // 字母，表示卡牌上的字母字符，例如 'A'、'b' 等。
     public char letter;
 
+    //卡牌的颜色
+    public ColorType color;
+
     // 是否是大写字母，标识该卡牌上的字母是大写还是小写。
     public bool isUpperCase;
 }

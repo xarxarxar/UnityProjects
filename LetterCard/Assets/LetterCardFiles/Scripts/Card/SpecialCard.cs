@@ -9,6 +9,13 @@ public class SpecialCard : Card
     // 特殊效果类型，定义了该特殊卡牌的效果种类，例如：移除卡牌、交换卡牌等。
     public SpecialEffectType effectType;
 
+    // spawnWeight：表示这张特殊牌的生成权重，权重越高，生成的概率越大
+    public float spawnWeight = 1f;
+
+    // initialPoolSize：表示初始牌池中的特殊牌数量
+    public int initialPoolSize = 3;
+
+
     // 重写 ActivateEffect 方法，执行特殊卡牌的具体效果。
     // 该方法会根据卡牌的类型来执行不同的效果。
     public override void ActivateEffect()

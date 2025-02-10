@@ -6,14 +6,11 @@ using UnityEngine;
 // 它是一个抽象类，意味着不能直接实例化。子类需要继承并实现具体的行为。
 public abstract class Card : MonoBehaviour
 {
-    // 卡牌类型，定义了卡牌的种类。例如字母卡牌、特殊卡牌等。
-    public CardType cardType;
+    //// 卡牌类型，定义了卡牌的种类。例如字母卡牌、特殊卡牌等。
+    //public CardType cardType;
 
     // 卡牌的图像，使用Sprite类型来显示卡牌的视觉效果。
-    public Sprite cardSprite;
-
-    // 卡牌颜色，定义了卡牌的颜色类型。例如，红色、绿色、蓝色等。
-    public ColorType cardColor;
+    //public Sprite cardSprite;//此处直接使用文本代替
 
     // 激活卡牌效果的虚拟方法，允许子类根据不同的卡牌类型实现具体效果。
     // 这个方法是虚拟的，可以被子类重写，以实现不同的卡牌效果。
