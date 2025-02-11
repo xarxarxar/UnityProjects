@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class LevelConfigEditor : EditorWindow
 {
+    private string version;
     private LevelDatabase database;
     private Vector2 scrollPos;
     private string jsonPath;
@@ -32,6 +33,7 @@ public class LevelConfigEditor : EditorWindow
     private int selectedLevelIndex = -1;
     void OnGUI()
     {
+        
         // 顶部显示标题和保存按钮
         EditorGUILayout.BeginHorizontal();
         //GUILayout.Label("关卡配置", EditorStyles.boldLabel);
@@ -42,6 +44,7 @@ public class LevelConfigEditor : EditorWindow
             database,
             typeof(LevelDatabase),
             false);
+        database.version=EditorGUILayout.TextField("版本", database.version);
         if (GUILayout.Button("保存", GUILayout.Width(80)))
         {
             SaveDatabase();
@@ -212,6 +215,7 @@ public class LevelConfigEditor : EditorWindow
 
         LevelDataWrapper wrapper = new LevelDataWrapper()
         {
+            version=database.version,
             levels = database.levels
         };
 
@@ -231,34 +235,37 @@ public class LevelConfigEditor : EditorWindow
             SpecialMission mission = config.specialMissions[i];
 
             mission.conditionDescription = EditorGUILayout.TextField("任务描述", mission.conditionDescription);
-            mission.missionType = (MissionType)EditorGUILayout.EnumPopup("Mission Type", mission.missionType);
-
+            mission.missionType = (MissionType)EditorGUILayout.EnumPopup("任务类型", mission.missionType);
+            mission.bonusScore = EditorGUILayout.IntField("分数倍率", mission.bonusScore);
             switch (mission.missionType)
             {
                 case MissionType.SpecificCombination:
-                    mission.targetLetters = EditorGUILayout.TextField("Target Letters", mission.targetLetters);
+                    mission.targetLetters = EditorGUILayout.TextField("目标组合", mission.targetLetters);
                     break;
 
-                case MissionType.ColorSet:
-                    mission.requiredColor = (ColorType)EditorGUILayout.EnumPopup("Required Color", mission.requiredColor);
-                    mission.minCount = EditorGUILayout.IntField("Min Cards", mission.minCount);
+                case MissionType.SameColor:
+                    mission.requiredColor = (ColorType)EditorGUILayout.EnumPopup("颜色", mission.requiredColor);
+                    //mission.minCount = EditorGUILayout.IntField("最少", mission.minCount);
                     break;
 
-                case MissionType.LetterCount:
-                    mission.targetLetters = EditorGUILayout.TextField("Target Letter", mission.targetLetters);
-                    mission.minCount = EditorGUILayout.IntField("Min Count", mission.minCount);
+                case MissionType.SameLetter:
+                    mission.targetLetters = EditorGUILayout.TextField("目标字母", mission.targetLetters);
+                    //mission.minCount = EditorGUILayout.IntField("Min Count", mission.minCount);
                     break;
 
-                case MissionType.MixedCondition:
-                    mission.targetLetters = EditorGUILayout.TextField("Contains Letters", mission.targetLetters);
-                    mission.requiredColor = (ColorType)EditorGUILayout.EnumPopup("Required Color", mission.requiredColor);
-                    mission.minCount = EditorGUILayout.IntField("Min Cards", mission.minCount);
+                case MissionType.MixLetterAndColor:
+                    DrawMixLetterColorMission(mission);
+                    break;
+                case MissionType.WordDictionary:
+                    mission.targetLetters = EditorGUILayout.TextField("该种任务待定", mission.targetLetters);
+                    //mission.requiredColor = (ColorType)EditorGUILayout.EnumPopup("Required Color", mission.requiredColor);
+                    //mission.minCount = EditorGUILayout.IntField("Min Cards", mission.minCount);
                     break;
             }
 
-            mission.bonusScore = EditorGUILayout.IntField("Bonus Score", mission.bonusScore);
+            
 
-            if (GUILayout.Button("Remove Mission"))
+            if (GUILayout.Button("删除任务"))
             {
                 config.specialMissions.RemoveAt(i);
                 break;
@@ -267,13 +274,61 @@ public class LevelConfigEditor : EditorWindow
             EditorGUILayout.EndVertical();
         }
 
-        if (GUILayout.Button("Add New Mission"))
+        if (GUILayout.Button("添加新任务"))
         {
             config.specialMissions.Add(new SpecialMission()
             {
-                bonusScore = 100,
-                minCount = 1
+                bonusScore = 2,
             });
+        }
+    }
+
+    // 新增绘制方法
+    void DrawMixLetterColorMission(SpecialMission mission)
+    {
+        EditorGUILayout.LabelField("字母颜色同时组合", EditorStyles.boldLabel);
+
+        // 列表操作按钮
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("添加组合", GUILayout.Width(120)))
+        {
+            mission.mixLetterColor.Add(new LetterColorPair());
+        }
+        if (GUILayout.Button("清除所有", GUILayout.Width(80)))
+        {
+            mission.mixLetterColor.Clear();
+        }
+        EditorGUILayout.EndHorizontal();
+
+        // 列表内容绘制
+        for (int i = 0; i < mission.mixLetterColor.Count; i++)
+        {
+            EditorGUILayout.BeginHorizontal("Box");
+
+            // 字母输入
+            string input = EditorGUILayout.TextField(
+                "字母",
+                mission.mixLetterColor[i].letter.ToString(),
+                GUILayout.Width(200));
+
+            if (!string.IsNullOrEmpty(input))
+            {
+                mission.mixLetterColor[i].letter = input.ToLower()[0];
+            }
+
+            // 颜色选择
+            mission.mixLetterColor[i].color = (ColorType)EditorGUILayout.EnumPopup(
+                "颜色", mission.mixLetterColor[i].color);
+
+            // 删除按钮
+            if (GUILayout.Button("×", GUILayout.Width(20)))
+            {
+                mission.mixLetterColor.RemoveAt(i);
+                EditorGUILayout.EndHorizontal();
+                break; // 退出循环防止索引越界
+            }
+
+            EditorGUILayout.EndHorizontal();
         }
     }
 
@@ -281,6 +336,7 @@ public class LevelConfigEditor : EditorWindow
     [System.Serializable]
     private class LevelDataWrapper
     {
+        public string version;
         public List<LevelConfig> levels;
     }
 }

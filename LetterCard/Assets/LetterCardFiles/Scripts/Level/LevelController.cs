@@ -7,6 +7,13 @@ public class LevelController : MonoBehaviour
 {
     public DeckManager deckManager;
 
+    public static LevelController instance;
+
+    public void Awake()
+    {
+        instance = this;
+    }
+
     private void Start()
     {
         deckManager.roundOver +=(round)=>
@@ -16,7 +23,7 @@ public class LevelController : MonoBehaviour
 
         deckManager.levelOver += (totalScore) =>
         {
-            if(totalScore <deckManager.config.needScore)
+            if(totalScore <deckManager.config.targetScore)
             {
                 Debug.Log("±¾¹Ø¿¨Ê§°Ü");
             }
@@ -42,6 +49,14 @@ public class LevelController : MonoBehaviour
             PlayCards();
         }
 
+    }
+
+    public void StartLevel(int level)
+    {
+        GameObject.Find("GameCanvas").GetComponent<Canvas>().enabled = true;
+        LevelConfig levelConfig= LevelConfigManager.instance.localDatabase.levels[level-1];
+        deckManager.config= levelConfig;
+        deckManager.StartLevel();
     }
 
     void StartRound()

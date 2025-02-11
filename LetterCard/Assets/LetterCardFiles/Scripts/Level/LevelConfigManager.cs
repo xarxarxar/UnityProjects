@@ -9,8 +9,20 @@ public class LevelConfigManager : MonoBehaviour
     public LevelDatabase localDatabase;
 
     // 网络端的 LevelDatabase 配置（JSON）
-    private const string serverUrl = "http://your-server.com/levels.json";
+    private const string serverUrl = "https://myblog-1312666993.cos.ap-shanghai.myqcloud.com/levels.json";
     private const string localVersionKey = "LevelDatabaseVersion";  // 本地保存的版本号
+
+    public static LevelConfigManager instance;
+    public void Awake()
+    {
+        instance = this;
+    }
+
+
+    private void Start()
+    {
+        LoadDatabase();
+    }
 
     // 从JSON加载（网络或本地）
     public void LoadFromJson(string json)

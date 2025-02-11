@@ -9,17 +9,6 @@ using UnityEngine.UI;
 // 牌堆管理系统
 public class DeckManager : MonoBehaviour
 {
-    // 牌组配置
-    [System.Serializable]
-    public class DeckConfig
-    {
-        public int maxNormalCards = 10;
-        public int maxSpecialCards = 3;
-        public int roundCount = 5;//回合数
-        public int needScore = 100;//过关所需的分数
-        public float specialCardChance = 0.2f; // 特殊牌出现概率
-    }
-
     // 卡牌池
     public CardPool cardPool;
     [SerializeField]private List<(char,ColorType)> letterDeck = new List<(char, ColorType)>();
@@ -45,9 +34,9 @@ public class DeckManager : MonoBehaviour
         set 
         {
             currentRound = value;
-            if (value <= config.roundCount)
+            if (value <= config.rounds)
             {
-                roundText.text = $"{value}/{config.roundCount}";
+                roundText.text = $"{value}/{config.rounds}";
             }
         } 
     }
@@ -59,7 +48,7 @@ public class DeckManager : MonoBehaviour
     
 
     // 配置参数
-    public DeckConfig config;
+    public LevelConfig config;
     public LetterCard letterCardPrefab; // 字母牌预制体
     public SpecialCard[] specialCardTemplates; // 特殊牌模板
 
@@ -69,7 +58,7 @@ public class DeckManager : MonoBehaviour
 
     
 
-    void Start()
+    public void StartLevel()
     {
         InitializeLetterDeck();
         InitializeSpecialCardPool();
@@ -84,7 +73,7 @@ public class DeckManager : MonoBehaviour
     {
         totalScore = 0;
         CurrentRound = 1;
-        roundText.text = $"{CurrentRound}/{config.roundCount}";
+        roundText.text = $"{CurrentRound}/{config.rounds}";
     }
 
     /// <summary>
@@ -168,6 +157,7 @@ public class DeckManager : MonoBehaviour
        
         newCard.Letter= letterDeck[letterCardIndex].Item1;
         newCard.Color= letterDeck[letterCardIndex].Item2;
+        
         newCard.transform.SetParent(GameObject.Find("LetterHandPool").transform);
 
         letterDeck.RemoveAt(letterCardIndex);//移出这个卡牌
@@ -189,7 +179,7 @@ public class DeckManager : MonoBehaviour
     void DrawSpecialCard()
     {
         //根据特殊牌出现的概率执行代码
-        if(UnityEngine.Random.value >=config.specialCardChance)
+        if(UnityEngine.Random.value >=config.specialCardProbability)
         {
             return;
         }
@@ -257,7 +247,7 @@ public class DeckManager : MonoBehaviour
     /// </summary>
     public void PlayCard()
     {
-        if (CurrentRound > config.roundCount)
+        if (CurrentRound > config.rounds)
         {
             Debug.Log("关卡已结束");
             return;
@@ -290,7 +280,7 @@ public class DeckManager : MonoBehaviour
         }
         roundOver?.Invoke(CurrentRound);
         CurrentRound += 1;
-        if (CurrentRound > config.roundCount)
+        if (CurrentRound > config.rounds)
         {
             Debug.Log($"进入关卡结束操作，总分为{totalScore}");
             levelOver?.Invoke(totalScore);

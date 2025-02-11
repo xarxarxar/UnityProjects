@@ -23,6 +23,7 @@ public class LevelConfig
 
 
 // 特殊任务类，定义了一个关卡中的具体任务
+[System.Serializable]
 public class SpecialMission
 {
     // 任务类型，可能有不同类型的任务，任务类型用MissionType枚举表示
@@ -36,11 +37,13 @@ public class SpecialMission
     // 这个字段使用ColorType枚举来定义颜色
     //public ColorType[] requiredColors;
 
-    // 完成此任务后，玩家将获得的额外奖励分数
+    // 完成此任务后，玩家将获得的额外奖励分数倍率
     public int bonusScore;
 
     public ColorType requiredColor;    // 需要的颜色类型
-    public int minCount;               // 最小数量要求
+
+    [SerializeField]
+    public List<LetterColorPair> mixLetterColor = new List<LetterColorPair>();
 
     // 条件说明（编辑器用）
     public string conditionDescription;
@@ -48,8 +51,17 @@ public class SpecialMission
 
 public enum MissionType
 {
-    SpecificCombination,   // 指定组合
-    ColorSet,              // 颜色组合
-    LetterCount,           // 字母数量
-    MixedCondition         // 混合条件
+    SpecificCombination,   // 指定字母组合
+    SameColor,             // 相同颜色
+    SameLetter,            // 相同字母
+    MixLetterAndColor,     // 混合字母颜色
+    WordDictionary         // 单词字典
+}
+
+// 替换原有的元组定义，解决Unity序列化问题
+[System.Serializable]
+public class LetterColorPair
+{
+    public char letter;
+    public ColorType color;
 }
