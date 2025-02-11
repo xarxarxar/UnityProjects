@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
-using static Unity.VisualScripting.Dependencies.Sqlite.SQLite3;
 
 // 这个脚本定义了一个关卡配置类，可以用作ScriptableObject。
 // ScriptableObject可以作为数据资源存储在项目中，方便多次使用和编辑。
@@ -17,6 +16,8 @@ public class LevelConfig
     [Range(0, 1)] public float specialCardProbability;
     public int maxNormalCards;
     public int maxSpecialCards;
+
+    public List<SpecialMission> specialMissions = new List<SpecialMission>();
 }
 
 
@@ -25,7 +26,7 @@ public class LevelConfig
 public class SpecialMission
 {
     // 任务类型，可能有不同类型的任务，任务类型用MissionType枚举表示
-    //public MissionType type;
+    public MissionType missionType;
 
     // 目标字母，任务可能要求玩家在某些回合内使用特定的字母
     // 例如，可能要求使用字母"a"、"b"等，多个字母用逗号分隔
@@ -37,12 +38,18 @@ public class SpecialMission
 
     // 完成此任务后，玩家将获得的额外奖励分数
     public int bonusScore;
+
+    public ColorType requiredColor;    // 需要的颜色类型
+    public int minCount;               // 最小数量要求
+
+    // 条件说明（编辑器用）
+    public string conditionDescription;
 }
 
 public enum MissionType
 {
-    SingleRoundColorSet,  //单回合颜色收集
-    TotalLetterUsage,     //累计字母使用
-    ComboChain,           //连击组合
-    SpecialCardUsage      //特殊卡使用
+    SpecificCombination,   // 指定组合
+    ColorSet,              // 颜色组合
+    LetterCount,           // 字母数量
+    MixedCondition         // 混合条件
 }

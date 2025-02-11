@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
+using Unity.VisualScripting.FullSerializer;
 using UnityEditor;
 using UnityEngine;
 
@@ -113,6 +114,8 @@ public class LevelConfigEditor : EditorWindow
             selectedConfig.maxNormalCards = EditorGUILayout.IntField("字母牌初始最大手牌数", selectedConfig.maxNormalCards);
             selectedConfig.maxSpecialCards = EditorGUILayout.IntField("特殊牌初始最大手牌数", selectedConfig.maxSpecialCards);
 
+            DrawMissions(selectedConfig);
+
             EditorGUILayout.Space(20);
             GUI.backgroundColor = Color.red; // 你可以选择任何颜色
             // 删除关卡按钮
@@ -216,6 +219,64 @@ public class LevelConfigEditor : EditorWindow
         System.IO.File.WriteAllText(jsonPath, json);
         Debug.Log($"JSON exported to: {jsonPath}");
     }
+
+
+    void DrawMissions(LevelConfig config)
+    {
+        EditorGUILayout.LabelField("Special Missions", EditorStyles.boldLabel);
+
+        for (int i = 0; i < config.specialMissions.Count; i++)
+        {
+            EditorGUILayout.BeginVertical("Box");
+            SpecialMission mission = config.specialMissions[i];
+
+            mission.conditionDescription = EditorGUILayout.TextField("任务描述", mission.conditionDescription);
+            mission.missionType = (MissionType)EditorGUILayout.EnumPopup("Mission Type", mission.missionType);
+
+            switch (mission.missionType)
+            {
+                case MissionType.SpecificCombination:
+                    mission.targetLetters = EditorGUILayout.TextField("Target Letters", mission.targetLetters);
+                    break;
+
+                case MissionType.ColorSet:
+                    mission.requiredColor = (ColorType)EditorGUILayout.EnumPopup("Required Color", mission.requiredColor);
+                    mission.minCount = EditorGUILayout.IntField("Min Cards", mission.minCount);
+                    break;
+
+                case MissionType.LetterCount:
+                    mission.targetLetters = EditorGUILayout.TextField("Target Letter", mission.targetLetters);
+                    mission.minCount = EditorGUILayout.IntField("Min Count", mission.minCount);
+                    break;
+
+                case MissionType.MixedCondition:
+                    mission.targetLetters = EditorGUILayout.TextField("Contains Letters", mission.targetLetters);
+                    mission.requiredColor = (ColorType)EditorGUILayout.EnumPopup("Required Color", mission.requiredColor);
+                    mission.minCount = EditorGUILayout.IntField("Min Cards", mission.minCount);
+                    break;
+            }
+
+            mission.bonusScore = EditorGUILayout.IntField("Bonus Score", mission.bonusScore);
+
+            if (GUILayout.Button("Remove Mission"))
+            {
+                config.specialMissions.RemoveAt(i);
+                break;
+            }
+
+            EditorGUILayout.EndVertical();
+        }
+
+        if (GUILayout.Button("Add New Mission"))
+        {
+            config.specialMissions.Add(new SpecialMission()
+            {
+                bonusScore = 100,
+                minCount = 1
+            });
+        }
+    }
+
 
     [System.Serializable]
     private class LevelDataWrapper

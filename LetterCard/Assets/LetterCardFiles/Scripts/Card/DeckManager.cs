@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,15 +21,16 @@ public class DeckManager : MonoBehaviour
     }
 
     // 卡牌池
-    private List<LetterCard> letterDeck = new List<LetterCard>();
+    public CardPool cardPool;
+    [SerializeField]private List<(char,ColorType)> letterDeck = new List<(char, ColorType)>();
     private List<SpecialCard> specialCardPool = new List<SpecialCard>();
 
     // 等待出牌的暂存池
     [SerializeField] private Transform cachePool;
 
     // 当前手牌
-    public List<Card> letterHandCards = new List<Card>();
-    public List<Card> specialHandCards = new List<Card>();
+    [HideInInspector]public List<Card> letterHandCards = new List<Card>();
+    [HideInInspector] public List<Card> specialHandCards = new List<Card>();
 
     // 分数
     private int totalScore;//当前总分数
@@ -58,7 +60,7 @@ public class DeckManager : MonoBehaviour
 
     // 配置参数
     public DeckConfig config;
-    public LetterCard[] allLetterCards; // 所有字母牌预制体
+    public LetterCard letterCardPrefab; // 字母牌预制体
     public SpecialCard[] specialCardTemplates; // 特殊牌模板
 
     // 事件
@@ -90,14 +92,17 @@ public class DeckManager : MonoBehaviour
     /// </summary>
     void InitializeLetterDeck()
     {
+        // 生成包含大小写字母的数组
+        char[] allLetters = GetAllLetters();
         // 创建所有字母牌实例
-        foreach (var card in allLetterCards)
+        foreach (var cardChar in allLetters)
         {
-            for (int i = 0;i<4;i++)
+            // 遍历 ColorType 枚举的所有值
+            foreach (ColorType color in Enum.GetValues(typeof(ColorType)))
             {
-                letterDeck.Add(card);
+                (char, ColorType) letterCard = (cardChar,color);
+                letterDeck.Add(letterCard);
             }
-            
         }
     }
 
@@ -157,9 +162,14 @@ public class DeckManager : MonoBehaviour
             Debug.LogWarning("Letter deck is empty!");
             return;
         }
-        int letterCardIndex= Random.Range(0, letterDeck.Count);
-        LetterCard newCard = Instantiate(letterDeck[letterCardIndex], GameObject.Find("LetterHandPool").transform);
-        
+
+        int letterCardIndex=UnityEngine.Random.Range(0, letterDeck.Count);
+        LetterCard newCard =(LetterCard)cardPool.GetCard();
+       
+        newCard.Letter= letterDeck[letterCardIndex].Item1;
+        newCard.Color= letterDeck[letterCardIndex].Item2;
+        newCard.transform.SetParent(GameObject.Find("LetterHandPool").transform);
+
         letterDeck.RemoveAt(letterCardIndex);//移出这个卡牌
         letterHandCards.Add(newCard);
         newCard.cardToCache += () =>
@@ -179,13 +189,13 @@ public class DeckManager : MonoBehaviour
     void DrawSpecialCard()
     {
         //根据特殊牌出现的概率执行代码
-        if(Random.value >=config.specialCardChance)
+        if(UnityEngine.Random.value >=config.specialCardChance)
         {
             return;
         }
         // 根据权重随机选择特殊牌
         float totalWeight = specialCardPool.Sum(c => c.spawnWeight);
-        float randomPoint = Random.Range(0, totalWeight);
+        float randomPoint = UnityEngine.Random.Range(0, totalWeight);
 
         foreach (var card in specialCardPool.OrderBy(c => c.spawnWeight))
         {
@@ -267,16 +277,16 @@ public class DeckManager : MonoBehaviour
             return;
         }
 
-
         int score = ScoreCalculator.CalculateScore(childrenList);
         singleScoreText.text=score.ToString();
         totalScore += score;
         totalScoreText.text= totalScore.ToString();
 
         //销毁暂存池中的所有物体
-        foreach (Transform child in cachePool)
+        foreach (LetterCard child in childrenList)
         {
-            Destroy(child.gameObject);
+            //Destroy(child.gameObject);
+            cardPool.ReturnCard(child);
         }
         roundOver?.Invoke(CurrentRound);
         CurrentRound += 1;
@@ -288,21 +298,30 @@ public class DeckManager : MonoBehaviour
 
     }
 
-    /// <summary>
-    /// 弃牌方法
-    /// </summary>
-    /// <param name="card">需要丢弃的卡牌</param>
-    public void DiscardLetterCard(LetterCard letterCard)
+    ///// <summary>
+    ///// 弃牌方法
+    ///// </summary>
+    ///// <param name="card">需要丢弃的卡牌</param>
+    //public void DiscardLetterCard(LetterCard letterCard)
+    //{
+    //    if (letterHandCards.Contains(letterCard))
+    //    {
+    //        letterHandCards.Remove(letterCard);
+
+    //        letterDeck.Add(letterCard); // 字母牌返回牌堆底部
+    //    }
+    //}
+
+    // 生成全部大小写字母的数组
+    char[] GetAllLetters()
     {
-        if (letterHandCards.Contains(letterCard))
-        {
-            letterHandCards.Remove(letterCard);
+        // 使用 'A' 到 'Z' 和 'a' 到 'z' 的字符代码生成字母
+        char[] upperCase = Enumerable.Range('A', 26).Select(i => (char)i).ToArray();
+        char[] lowerCase = Enumerable.Range('a', 26).Select(i => (char)i).ToArray();
 
-            letterDeck.Add(letterCard); // 字母牌返回牌堆底部
-        }
+        // 合并大写字母和小写字母
+        return upperCase.Concat(lowerCase).ToArray();
     }
-
-    
 }
 
 

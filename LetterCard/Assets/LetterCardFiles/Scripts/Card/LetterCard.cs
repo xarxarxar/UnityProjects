@@ -10,11 +10,41 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Button))] // 确保按钮组件存在
 public class LetterCard : Card
 {
-    // 字母，表示卡牌上的字母字符，例如 'A'、'b' 等。
-    public char letter;
+    [SerializeField] private Text largeLetter;//中间的大字母
+    [SerializeField] private Text smallLetter;//左上角的小字母
 
+    // 字母，表示卡牌上的字母字符，例如 'A'、'b' 等。
+    private char letter;
+    public char Letter 
+    { 
+        get => letter; 
+        set 
+        {
+            if (letter != value)
+            {
+                letter = value;
+                largeLetter.text = value.ToString();
+                smallLetter.text = value.ToString();
+            }
+        }
+    }
+    
     //卡牌的颜色
-    public ColorType color;
+    private ColorType color;
+    public ColorType Color 
+    { 
+        get => color; 
+        set
+        {
+            if (color != value)
+            {
+                color = value;
+                largeLetter.color = colorMap[value];
+                smallLetter.color = colorMap[value];
+            }
+
+        } 
+    }
 
     // 是否是大写字母，标识该卡牌上的字母是大写还是小写。
     public bool isUpperCase;
@@ -22,12 +52,32 @@ public class LetterCard : Card
     //是否在手里，如果不在手里则在暂存池里等待出牌
     private bool isInhand=true;
 
+    
+    
+
     public event UnityAction cardToCache;//字母牌到暂存池中去的事件
     public event UnityAction cardBackHand;//字母牌回到暂存池中的事件;
 
+
+    // 使用字典映射 ColorType 到 Color
+    Dictionary<ColorType, Color32> colorMap = new Dictionary<ColorType, Color32>
+        {
+            { ColorType.Red, new Color32(194,24,91,255) },
+            { ColorType.Green, new Color32(56,142,60,255) },
+            { ColorType.Blue, new Color32(48,63,159,255) },
+            { ColorType.Yellow, new Color32(255,162,0,255) }
+        };
+
+    
+
     private void Start()
     {
-        OnInstantiate();
+        OnInstantiate();//实例化之后的操作
+    }
+
+    private void OnEnable()
+    {
+        OnLetterCardShow();
     }
 
     /// <summary>
@@ -36,6 +86,18 @@ public class LetterCard : Card
     public void OnInstantiate()
     {
         GetComponent<Button>().onClick.AddListener(OnLetterCardChoose);
+    }
+
+    /// <summary>
+    /// 字母牌出现之后的操作，将字母设置为设定的字母
+    /// </summary>
+    private void OnLetterCardShow()
+    {
+        smallLetter.text = Letter.ToString();
+        largeLetter.text = Letter.ToString();
+
+        smallLetter.color = colorMap[Color];
+        largeLetter.color = colorMap[Color];
     }
 
     private void OnLetterCardChoose()

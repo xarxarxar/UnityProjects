@@ -47,7 +47,7 @@ public class ScoreCalculator
         // 遍历 List 中的每个字母
         foreach (LetterCard card in cards)
         {
-            sb.Append(card.letter);  // 将每个 LetterCard 的字母追加到 StringBuilder
+            sb.Append(card.Letter);  // 将每个 LetterCard 的字母追加到 StringBuilder
         }
         Debug.Log("字符串为："+sb.ToString());
         return sb.ToString();  // 返回拼接后的字符串
@@ -62,7 +62,7 @@ public class ScoreCalculator
 
         foreach (var card in playedCards)
         {
-            if (card is LetterCard letterCard && letterCard.letter == 'a')
+            if (card is LetterCard letterCard && letterCard.Letter == 'a')
             {
                 bonusScore += 5; // 任务完成，奖励5分
             }
