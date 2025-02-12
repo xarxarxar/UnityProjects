@@ -17,11 +17,21 @@ MonoBehaviour:
   - levelId: 1
     levelName: "\u5173\u53611"
     rounds: 10
-    targetScore: 38
+    targetScore: 20
     specialCardProbability: 0.345
-    maxNormalCards: 10
-    maxSpecialCards: 3
-    specialMissions: []
+    maxNormalCards: 20
+    maxSpecialCards: 10
+    specialMissions:
+    - missionType: 3
+      targetLetters: 
+      bonusScore: 2
+      requiredColor: 0
+      mixLetterColor:
+      - letter: 97
+        color: 0
+      - letter: 115
+        color: 1
+      conditionDescription: 
   - levelId: 2
     levelName: "\u5173\u53613"
     rounds: 0

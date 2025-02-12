@@ -693,6 +693,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxCards: 10
+  isSorted: 1
+  currentSortOrder: 0
 --- !u!1 &587334520
 GameObject:
   m_ObjectHideFlags: 0
@@ -704,7 +706,7 @@ GameObject:
   - component: {fileID: 587334521}
   - component: {fileID: 587334524}
   - component: {fileID: 587334523}
-  - component: {fileID: 587334522}
+  - component: {fileID: 587334525}
   m_Layer: 5
   m_Name: CachePool
   m_TagString: Untagged
@@ -731,30 +733,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 315.27014}
   m_SizeDelta: {x: 0, y: 777.4468}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &587334522
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 587334520}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
-  m_ChildAlignment: 0
-  m_StartCorner: 2
-  m_StartAxis: 0
-  m_CellSize: {x: 189, y: 264}
-  m_Spacing: {x: 5, y: 5}
-  m_Constraint: 0
-  m_ConstraintCount: 2
 --- !u!114 &587334523
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -793,6 +771,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 587334520}
   m_CullTransparentMesh: 1
+--- !u!114 &587334525
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 587334520}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52f4da6a3329d474395b22dddac8d5fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxCards: 10
+  isSorted: 0
+  currentSortOrder: 0
 --- !u!1 &642463730
 GameObject:
   m_ObjectHideFlags: 0
@@ -887,7 +880,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &767399169
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1112,7 +1105,7 @@ GameObject:
   - component: {fileID: 1010271307}
   - component: {fileID: 1010271310}
   - component: {fileID: 1010271309}
-  - component: {fileID: 1010271308}
+  - component: {fileID: 1010271311}
   m_Layer: 5
   m_Name: SpecialHandPool
   m_TagString: Untagged
@@ -1139,30 +1132,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -812.68005}
   m_SizeDelta: {x: 0, y: -1625.4}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1010271308
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1010271306}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
-  m_ChildAlignment: 6
-  m_StartCorner: 2
-  m_StartAxis: 0
-  m_CellSize: {x: 189, y: 264}
-  m_Spacing: {x: 5, y: 5}
-  m_Constraint: 0
-  m_ConstraintCount: 2
 --- !u!114 &1010271309
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1201,6 +1170,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1010271306}
   m_CullTransparentMesh: 1
+--- !u!114 &1010271311
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1010271306}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52f4da6a3329d474395b22dddac8d5fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxCards: 10
+  isSorted: 0
+  currentSortOrder: 0
 --- !u!1 &1359149305
 GameObject:
   m_ObjectHideFlags: 0
@@ -1740,7 +1724,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1803087497
 RectTransform:
   m_ObjectHideFlags: 0

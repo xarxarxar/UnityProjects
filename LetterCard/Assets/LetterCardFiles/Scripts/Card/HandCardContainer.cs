@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using System.Linq;
+
 /// <summary>
 /// 管理手牌的摆放
 /// </summary>
@@ -10,34 +12,116 @@ public class HandCardContainer : MonoBehaviour
     [Header("Settings")]
     [SerializeField] private int maxCards = 10;            // 最大卡牌数量，外部脚本可以修改
 
+    public bool isSorted=false;//是否需要排序
+    // 排序规则
+    public enum SortOrder
+    {
+        ByLetterFirst,  // 先按字母排序
+        ByColorFirst    // 先按颜色排序
+    }
+    public SortOrder currentSortOrder = SortOrder.ByLetterFirst;
+
+
+    private void Update()
+    {
+        if(Input.GetKeyUp(KeyCode.C))
+        {
+            ToggleSortOrder();
+            Debug.Log($"排列规则为{currentSortOrder}");
+        }
+    }
+
     private void OnTransformChildrenChanged()
     {
+        Debug.Log($"子物体数量为{transform.childCount}");
         // 添加卡牌
-        AddCard();
+        ArrangeCards();//排列卡牌
     }
-    // 每当容器内容发生变化时调用
-    public void AddCard()
+
+    /// <summary>
+    /// 对卡牌排序
+    /// </summary>
+    private void SoreCards()
     {
-        if (transform.childCount >= maxCards)
+        List<Transform> childrenList = new List<Transform>();
+        foreach (Transform child in transform)
         {
-            Debug.LogWarning("达到最大卡牌数量，不再添加");
-            return; // 达到最大卡牌数量，不再添加
+            childrenList.Add(child);
+        }
+        // 根据不同的排序规则排列子物体
+        switch (currentSortOrder)
+        {
+            case SortOrder.ByLetterFirst:
+                // 按字母排序，先大写字母后小写字母，并且按字母顺序和颜色排序
+                childrenList = childrenList.OrderBy(card => card.GetComponent<LetterCard>().Letter.ToString().ToLower())
+                                           .ThenBy(card => card.GetComponent<LetterCard>().Color)
+                                           .ToList();
+
+                // 对大写字母和小写字母分别排序
+                var upperCards = childrenList.Where(card => char.IsUpper(card.GetComponent<LetterCard>().Letter)).ToList();
+                var lowerCards = childrenList.Where(card => char.IsLower(card.GetComponent<LetterCard>().Letter)).ToList();
+
+                upperCards = upperCards.OrderBy(card => card.GetComponent<LetterCard>().Letter).ThenBy(card => card.GetComponent<LetterCard>().Color).ToList();
+                lowerCards = lowerCards.OrderBy(card => card.GetComponent<LetterCard>().Letter).ThenBy(card => card.GetComponent<LetterCard>().Color).ToList();
+
+                // 合并大写字母和小写字母
+                childrenList = upperCards.Concat(lowerCards).ToList();
+                break;
+
+            case SortOrder.ByColorFirst:
+                // 先按颜色排序，红、黄、蓝、绿排序
+                var sortedByColor = childrenList.OrderBy(card => card.GetComponent<LetterCard>().Color)
+                                                .ThenBy(card => card.GetComponent<LetterCard>().Letter.ToString().ToLower())
+                                                .ToList();
+
+                // 对每种颜色的字母（大写和小写）分别排序
+                var redCards = sortedByColor.Where(card => card.GetComponent<LetterCard>().Color == ColorType.Red).ToList();
+                var yellowCards = sortedByColor.Where(card => card.GetComponent<LetterCard>().Color == ColorType.Yellow).ToList();
+                var blueCards = sortedByColor.Where(card => card.GetComponent<LetterCard>().Color == ColorType.Blue).ToList();
+                var greenCards = sortedByColor.Where(card => card.GetComponent<LetterCard>().Color == ColorType.Green).ToList();
+
+                // 对每种颜色下的字母进行字母排序
+                redCards = redCards.OrderBy(card => card.GetComponent<LetterCard>().Letter).ThenBy(card => card.GetComponent<LetterCard>().Color).ToList();
+                yellowCards = yellowCards.OrderBy(card => card.GetComponent<LetterCard>().Letter).ThenBy(card => card.GetComponent<LetterCard>().Color).ToList();
+                blueCards = blueCards.OrderBy(card => card.GetComponent<LetterCard>().Letter).ThenBy(card => card.GetComponent<LetterCard>().Color).ToList();
+                greenCards = greenCards.OrderBy(card => card.GetComponent<LetterCard>().Letter).ThenBy(card => card.GetComponent<LetterCard>().Color).ToList();
+
+                // 合并所有颜色的卡牌
+                childrenList = redCards.Concat(yellowCards).Concat(blueCards).Concat(greenCards).ToList();
+                break;
         }
 
-        ArrangeCards();//排列卡牌
+        // 根据排序后的顺序排列子物体
+        for (int i = 0; i < childrenList.Count; i++)
+        {
+            childrenList[i].SetSiblingIndex(i);
+        }
+    }
+
+    public void ToggleSortOrder()
+    {
+        if(!isSorted) { return; }
+        // 切换排序规则
+        currentSortOrder = (SortOrder)(((int)currentSortOrder + 1) % 2);
+        SoreCards();
     }
 
 
     // 排列所有手牌
     private void ArrangeCards()
     {
+        if (transform.childCount == 0) { return; }
+        if (isSorted)
+        {
+            SoreCards();//排序
+        }
         // 计算容器的宽度和手牌的总宽度
         float containerWidth = GetComponent<RectTransform>().rect.width;
-        float totalWidth = 0f;
-        foreach (Transform card in transform)
-        {
-            totalWidth += card.GetComponent<RectTransform>().rect.width;
-        }
+        
+        float singleWidth = transform.GetChild(0).GetComponent<RectTransform>().rect.width;
+        float totalWidth = singleWidth* transform.childCount;
+        
+
         if (totalWidth <= containerWidth)
         {
             // 所有手牌宽度小于容器宽度，水平排列
@@ -46,11 +130,9 @@ public class HandCardContainer : MonoBehaviour
         else
         {
             // 手牌宽度总和大于容器宽度，卡牌开始叠放
-            ArrangeCardsOverlapping(containerWidth,totalWidth);
+            ArrangeCardsOverlapping(containerWidth, singleWidth);
         }
 
-        // 竖直居中卡牌
-        CenterCardsVertically();
     }
 
     // 水平排列手牌
@@ -71,14 +153,15 @@ public class HandCardContainer : MonoBehaviour
     }
 
     // 叠放手牌
-    private void ArrangeCardsOverlapping(float containerWidth, float totalWidth)
+    private void ArrangeCardsOverlapping(float containerWidth, float singleWidth)
     {
-        // 获取容器的 RectTransform
+        // 获取容器的 RectTransform 并计算左端位置
         RectTransform containerRect = GetComponent<RectTransform>();
-        float containerLeftEdge = containerRect.anchoredPosition.x;
+        float containerLeftEdge = containerRect.anchoredPosition.x - containerWidth / 2;
+
 
         // 计算每张卡牌的重叠偏移量
-        float overlapAmount = (totalWidth - containerWidth) / (transform.childCount - 1);
+        float overlapAmount = (containerWidth-singleWidth) / (transform.childCount - 1);
         if (transform.childCount == 1) overlapAmount = 0; // 如果只有一个卡牌，不需要重叠
 
         // 从容器的左端开始叠放卡牌
@@ -87,7 +170,7 @@ public class HandCardContainer : MonoBehaviour
             RectTransform card = transform.GetChild(i).GetComponent<RectTransform>();
 
             // 计算每张卡牌的偏移量，并应用到卡牌位置
-            float offsetX = containerLeftEdge + i * overlapAmount - 0.5f * card.rect.width;
+            float offsetX = containerLeftEdge + 0.5f * card.GetComponent<RectTransform>().rect.width+i* overlapAmount;
 
             // 设置卡牌的位置
             card.anchoredPosition = new Vector2(offsetX, 0);
@@ -104,7 +187,7 @@ public class HandCardContainer : MonoBehaviour
         // 计算容器的竖直居中偏移量
         float containerHeight = containerRect.rect.height;
         float cardHeight = transform.GetChild(transform.childCount - 1).GetComponent<RectTransform>().rect.height;
-        float offsetY = (containerHeight - cardHeight) / 2f;
+        float offsetY = containerHeight / 2f;
 
         // 将最新添加的卡牌位置设定为竖直居中
         Transform newCard = transform.GetChild(transform.childCount - 1);
