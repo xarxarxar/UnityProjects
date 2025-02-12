@@ -52,9 +52,6 @@ public class LetterCard : Card
     //是否在手里，如果不在手里则在暂存池里等待出牌
     private bool isInhand=true;
 
-    
-    
-
     public event UnityAction cardToCache;//字母牌到暂存池中去的事件
     public event UnityAction cardBackHand;//字母牌回到暂存池中的事件;
 
@@ -104,13 +101,15 @@ public class LetterCard : Card
     {
         if (isInhand)
         {
-            transform.SetParent(GameObject.Find("CachePool").transform);
+            transform.SetParent(DeckManager.instance.cachePool);
+            CacheText.AddCharacterWithColor(color, letter);
             cardToCache?.Invoke();
             isInhand =false;
         }
         else
         {
-            transform.SetParent(GameObject.Find("LetterHandPool").transform);
+            transform.SetParent(DeckManager.instance.LetterHandCard);
+            CacheText.RemoveCharacterWithColor(color, letter);
             cardBackHand?.Invoke();
             isInhand = true;
         }

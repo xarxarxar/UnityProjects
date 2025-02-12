@@ -9,13 +9,16 @@ using UnityEngine.UI;
 // 牌堆管理系统
 public class DeckManager : MonoBehaviour
 {
+    public static DeckManager instance;
     // 卡牌池
     public CardPool cardPool;
     [SerializeField]private List<(char,ColorType)> letterDeck = new List<(char, ColorType)>();
     private List<SpecialCard> specialCardPool = new List<SpecialCard>();
 
     // 等待出牌的暂存池
-    [SerializeField] private Transform cachePool;
+    [SerializeField] public Transform cachePool;
+    public Transform LetterHandCard;
+    public Transform SpecialHandCard;
 
     // 当前手牌
     [HideInInspector]public List<Card> letterHandCards = new List<Card>();
@@ -48,7 +51,7 @@ public class DeckManager : MonoBehaviour
     
 
     // 配置参数
-    public LevelConfig config;
+    [HideInInspector]public LevelConfig config;
     public LetterCard letterCardPrefab; // 字母牌预制体
     public SpecialCard[] specialCardTemplates; // 特殊牌模板
 
@@ -56,7 +59,10 @@ public class DeckManager : MonoBehaviour
     public UnityEvent OnHandFull;
     public UnityEvent<Card> OnCardDrawn;
 
-    
+    private void Awake()
+    {
+        instance = this;
+    }
 
     public void StartLevel()
     {
@@ -158,7 +164,7 @@ public class DeckManager : MonoBehaviour
         newCard.Letter= letterDeck[letterCardIndex].Item1;
         newCard.Color= letterDeck[letterCardIndex].Item2;
         
-        newCard.transform.SetParent(GameObject.Find("LetterHandPool").transform);
+        newCard.transform.SetParent(LetterHandCard);
 
         letterDeck.RemoveAt(letterCardIndex);//移出这个卡牌
         letterHandCards.Add(newCard);
@@ -191,7 +197,7 @@ public class DeckManager : MonoBehaviour
         {
             if (randomPoint < card.spawnWeight)
             {
-                SpecialCard newCard = Instantiate(card, GameObject.Find("SpecialHandPool").transform);
+                SpecialCard newCard = Instantiate(card, SpecialHandCard);
                 specialHandCards.Add(newCard);
                 OnCardDrawn?.Invoke(newCard);
                 return;
@@ -254,7 +260,6 @@ public class DeckManager : MonoBehaviour
         }
 
         //获取暂存池内的物体
-        Transform cachePool = GameObject.Find("CachePool").transform;
         List<LetterCard> childrenList = new List<LetterCard>();
         // 遍历物体的所有子物体
         foreach (Transform child in cachePool)

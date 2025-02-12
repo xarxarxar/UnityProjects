@@ -16,6 +16,7 @@ public class LevelController : MonoBehaviour
 
     private void Start()
     {
+        deckManager=DeckManager.instance;
         deckManager.roundOver +=(round)=>
         {
             StartRound();
