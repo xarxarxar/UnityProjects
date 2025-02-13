@@ -147,6 +147,107 @@ public class DeckManager : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            DrawDesignatedCard(CardType.Letter, 'e', ColorType.Green);
+            DrawDesignatedCard(CardType.Letter, 'x', ColorType.Green);
+            DrawDesignatedCard(CardType.Letter, 'p', ColorType.Green);
+            DrawDesignatedCard(CardType.Letter, 'e', ColorType.Blue);
+            DrawDesignatedCard(CardType.Letter, 'r', ColorType.Green);
+            DrawDesignatedCard(CardType.Letter, 'i', ColorType.Green);
+            DrawDesignatedCard(CardType.Letter, 'e', ColorType.Red);
+            DrawDesignatedCard(CardType.Letter, 'n', ColorType.Green);
+            DrawDesignatedCard(CardType.Letter, 'c', ColorType.Green);
+            DrawDesignatedCard(CardType.Letter, 'e', ColorType.Yellow);
+        }
+    }
+
+
+    /// <summary>
+    /// 抽取指定的卡牌，用于游戏教程等等
+    /// </summary>
+    /// <param name="cardType">指定卡牌类型（字母牌或特殊牌）</param>
+    /// <param name="letter">指定字母（仅适用于字母牌）</param>
+    /// <param name="color">指定颜色（仅适用于字母牌）</param>
+    void DrawDesignatedCard(CardType cardType, char? letter = null, ColorType? color = null)
+    {
+        // 如果是字母卡
+        if (cardType == CardType.Letter)
+        {
+            // 先过滤字母牌堆，筛选符合条件的卡牌
+            List<(char, ColorType)> validLetterCards = letterDeck
+                .Where(card => (!letter.HasValue || card.Item1 == letter.Value) &&
+                               (!color.HasValue || card.Item2 == color.Value))
+                .ToList();
+
+            if (validLetterCards.Count == 0)
+            {
+                Debug.LogWarning("没有符合条件的字母牌！");
+                return;
+            }
+
+            // 从符合条件的卡牌中随机选择一张
+            int index = UnityEngine.Random.Range(0, validLetterCards.Count);
+            var selectedCard = validLetterCards[index];
+
+            // 创建新的字母卡
+            LetterCard newCard = (LetterCard)cardPool.GetCard();
+            newCard.Letter = selectedCard.Item1;
+            newCard.Color = selectedCard.Item2;
+
+            // 设置父物体
+            newCard.transform.SetParent(LetterHandCard);
+
+            // 从字母堆移除已抽取的卡牌
+            letterDeck.Remove(selectedCard);
+            letterHandCards.Add(newCard);
+
+            // 配置卡牌回收和归还
+            newCard.cardToCache += () =>
+            {
+                letterHandCards.Remove(newCard);
+            };
+            newCard.cardBackHand += () =>
+            {
+                letterHandCards.Add(newCard);
+            };
+
+            // 调用抽牌事件
+            OnCardDrawn?.Invoke(newCard);
+        }
+        // 如果是特殊卡
+        else if (cardType == CardType.Special)
+        {
+            // 检查是否可以抽取特殊卡
+            if (!CanDrawSpecialCard())
+            {
+                Debug.LogWarning("无法抽取特殊卡！");
+                return;
+            }
+
+            // 根据权重抽取特殊卡
+            float totalWeight = specialCardPool.Sum(c => c.spawnWeight);
+            float randomPoint = UnityEngine.Random.Range(0, totalWeight);
+
+            foreach (var card in specialCardPool.OrderBy(c => c.spawnWeight))
+            {
+                if (randomPoint < card.spawnWeight)
+                {
+                    // 生成特殊卡实例
+                    SpecialCard newCard = Instantiate(card, SpecialHandCard);
+                    specialHandCards.Add(newCard);
+
+                    // 调用抽牌事件
+                    OnCardDrawn?.Invoke(newCard);
+                    return;
+                }
+                randomPoint -= card.spawnWeight;
+            }
+        }
+    }
+
     /// <summary>
     /// 抽取字母牌
     /// </summary>
