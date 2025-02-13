@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -83,6 +81,9 @@ public class LetterCard : Card
     public void OnInstantiate()
     {
         GetComponent<Button>().onClick.AddListener(OnLetterCardChoose);
+        RectTransform letterCardRect= GetComponent<RectTransform>();
+        letterCardRect.sizeDelta = new Vector2(1080/ 7, letterCardRect.sizeDelta.y);
+        //Debug.Log($"ScreenWidthΪ{WechatManager.ScreenWidth},ScreenHeightΪ{WechatManager.ScreenHeight}");
     }
 
     /// <summary>

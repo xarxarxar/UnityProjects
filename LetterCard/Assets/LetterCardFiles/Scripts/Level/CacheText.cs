@@ -85,12 +85,24 @@ public class CacheText : MonoBehaviour
         // 更新文本内容
         textBuilder.Clear();
         textBuilder.Append(updatedText);
-        textBuilder.Clear();
-        textBuilder.Append(updatedText);//更新原始文本
+        originalText.Clear();
+        originalText.Append(updatedText);//更新原始文本
         textComponent.text = textBuilder.ToString();
 
         ImageAdapt();//适配背景
         
+    }
+
+    /// <summary>
+    /// 清空缓存文本
+    /// </summary>
+    public static void ClearTextShow()
+    {
+        // 更新文本内容
+        textBuilder.Clear();
+        originalText.Clear();
+        textComponent.text = textBuilder.ToString();
+        ImageAdapt();//适配背景
     }
 
     public void ToggleTextShow()

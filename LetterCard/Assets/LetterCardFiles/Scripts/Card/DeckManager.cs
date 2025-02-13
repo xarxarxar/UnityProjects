@@ -24,27 +24,8 @@ public class DeckManager : MonoBehaviour
     [HideInInspector]public List<Card> letterHandCards = new List<Card>();
     [HideInInspector] public List<Card> specialHandCards = new List<Card>();
 
-    // 分数
-    private int totalScore;//当前总分数
-    public Text singleScoreText;//单个回合的分数显示text
-    public Text totalScoreText;//当前总分数显示text
-
     // 回合
-    int currentRound;//当前回合
-    public int CurrentRound 
-    { 
-        get => currentRound; 
-        set 
-        {
-            currentRound = value;
-            if (value <= config.rounds)
-            {
-                roundText.text = $"{value}/{config.rounds}";
-            }
-        } 
-    }
-    public Text roundText;//回合数的text
-    public event UnityAction<int> roundOver;//回合结束的事件
+    public event UnityAction<int> roundOver;//回合结束的事件,参数为单回合的分数
 
     // 关卡
     public event UnityAction<int> levelOver;//关卡结束操作
@@ -68,18 +49,7 @@ public class DeckManager : MonoBehaviour
     {
         InitializeLetterDeck();
         InitializeSpecialCardPool();
-        InitializeValue();
         DrawCards(3, 1);//抽取三张字母牌和一张特殊牌
-    }
-
-    /// <summary>
-    /// 初始化数值
-    /// </summary>
-    void InitializeValue()
-    {
-        totalScore = 0;
-        CurrentRound = 1;
-        roundText.text = $"{CurrentRound}/{config.rounds}";
     }
 
     /// <summary>
@@ -354,11 +324,6 @@ public class DeckManager : MonoBehaviour
     /// </summary>
     public void PlayCard()
     {
-        if (CurrentRound > config.rounds)
-        {
-            Debug.Log("关卡已结束");
-            return;
-        }
 
         //获取暂存池内的物体
         List<LetterCard> childrenList = new List<LetterCard>();
@@ -373,10 +338,7 @@ public class DeckManager : MonoBehaviour
             return;
         }
 
-        int score = ScoreCalculator.CalculateScore(childrenList);
-        singleScoreText.text=score.ToString();
-        totalScore += score;
-        totalScoreText.text= totalScore.ToString();
+        int singleScore = ScoreCalculator.CalculateScore(childrenList);
 
         //销毁暂存池中的所有物体
         foreach (LetterCard child in childrenList)
@@ -384,13 +346,8 @@ public class DeckManager : MonoBehaviour
             //Destroy(child.gameObject);
             cardPool.ReturnCard(child);
         }
-        roundOver?.Invoke(CurrentRound);
-        CurrentRound += 1;
-        if (CurrentRound > config.rounds)
-        {
-            Debug.Log($"进入关卡结束操作，总分为{totalScore}");
-            levelOver?.Invoke(totalScore);
-        }
+        roundOver?.Invoke(singleScore);
+
 
     }
 
