@@ -6,6 +6,7 @@ using UnityEngine;
 // 它是一个抽象类，意味着不能直接实例化。子类需要继承并实现具体的行为。
 public abstract class Card : MonoBehaviour
 {
+    public static float cardWidth = (float)(390 * 3) / 7;
     //// 卡牌类型，定义了卡牌的种类。例如字母卡牌、特殊卡牌等。
     //public CardType cardType;
 

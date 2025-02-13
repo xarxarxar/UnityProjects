@@ -14,4 +14,9 @@ public class WechatManager : MonoBehaviour
     /// </summary>
     public static double ScreenHeight {  get => WX.GetWindowInfo().screenHeight;}
     
+    public static double WindowWidth {  get => WX.GetWindowInfo().windowWidth;}
+
+    public static double WindowHeight {  get => WX.GetWindowInfo().windowHeight;}
+
+    public static double DPR { get=>WX.GetWindowInfo().pixelRatio;}
 }

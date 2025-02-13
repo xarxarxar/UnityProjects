@@ -82,8 +82,8 @@ public class LetterCard : Card
     {
         GetComponent<Button>().onClick.AddListener(OnLetterCardChoose);
         RectTransform letterCardRect= GetComponent<RectTransform>();
-        letterCardRect.sizeDelta = new Vector2(1080/ 7, letterCardRect.sizeDelta.y);
-        //Debug.Log($"ScreenWidthΪ{WechatManager.ScreenWidth},ScreenHeightΪ{WechatManager.ScreenHeight}");
+        letterCardRect.sizeDelta = new Vector2(cardWidth, letterCardRect.sizeDelta.y);
+        Debug.Log($"ScreenWidthΪ{WechatManager.ScreenWidth},ScreenHeightΪ{WechatManager.ScreenHeight},windowWidth={WechatManager.WindowWidth},windowHeight={WechatManager.WindowHeight},dprΪ{WechatManager.DPR}");
     }
 
     /// <summary>
