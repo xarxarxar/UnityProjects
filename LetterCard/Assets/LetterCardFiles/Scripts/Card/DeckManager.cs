@@ -102,7 +102,8 @@ public class DeckManager : MonoBehaviour
         {
             if (CanDrawNormalCard())
             {
-                DrawLetterCard();
+                //DrawLetterCard();
+                DrawLetterCardNoPool();//不要有卡牌池的限定
                 yield return new WaitForSeconds(0.3f); // 抽牌间隔
             }
         }
@@ -121,17 +122,34 @@ public class DeckManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.W))
         {
-            DrawDesignatedCard(CardType.Letter, 'e', ColorType.Green);
-            DrawDesignatedCard(CardType.Letter, 'x', ColorType.Green);
-            DrawDesignatedCard(CardType.Letter, 'p', ColorType.Green);
-            DrawDesignatedCard(CardType.Letter, 'e', ColorType.Blue);
-            DrawDesignatedCard(CardType.Letter, 'r', ColorType.Green);
-            DrawDesignatedCard(CardType.Letter, 'i', ColorType.Green);
-            DrawDesignatedCard(CardType.Letter, 'e', ColorType.Red);
-            DrawDesignatedCard(CardType.Letter, 'n', ColorType.Green);
-            DrawDesignatedCard(CardType.Letter, 'c', ColorType.Green);
-            DrawDesignatedCard(CardType.Letter, 'e', ColorType.Yellow);
+
+            StartCoroutine(test());
         }
+    }
+
+    IEnumerator test()
+    {
+        DrawDesignatedCard(CardType.Letter, 'e', ColorType.Green);
+        yield return new WaitForSeconds(0.5f);
+        DrawDesignatedCard(CardType.Letter, 'x', ColorType.Green);
+        yield return new WaitForSeconds(0.5f);
+        DrawDesignatedCard(CardType.Letter, 'p', ColorType.Green);
+        yield return new WaitForSeconds(0.5f);
+        DrawDesignatedCard(CardType.Letter, 'e', ColorType.Blue);
+        yield return new WaitForSeconds(0.5f);
+        DrawDesignatedCard(CardType.Letter, 'r', ColorType.Green);
+        yield return new WaitForSeconds(0.5f);
+        DrawDesignatedCard(CardType.Letter, 'i', ColorType.Green);
+        yield return new WaitForSeconds(0.5f);
+        DrawDesignatedCard(CardType.Letter, 'e', ColorType.Red);
+        yield return new WaitForSeconds(0.5f);
+        DrawDesignatedCard(CardType.Letter, 'n', ColorType.Green);
+        yield return new WaitForSeconds(0.5f);
+        DrawDesignatedCard(CardType.Letter, 'c', ColorType.Green);
+        yield return new WaitForSeconds(0.5f);
+        DrawDesignatedCard(CardType.Letter, 'e', ColorType.Yellow);
+        yield return new WaitForSeconds(0.5f);
+
     }
 
 
@@ -229,6 +247,38 @@ public class DeckManager : MonoBehaviour
             return;
         }
 
+        int letterCardIndex = UnityEngine.Random.Range(0, letterDeck.Count);
+        LetterCard newCard = (LetterCard)cardPool.GetCard();
+
+        newCard.Letter = letterDeck[letterCardIndex].Item1;
+        newCard.Color = letterDeck[letterCardIndex].Item2;
+
+        newCard.transform.SetParent(LetterHandCard);
+
+        letterDeck.RemoveAt(letterCardIndex);//移出这个卡牌
+        letterHandCards.Add(newCard);
+        newCard.cardToCache += () =>
+        {
+            letterHandCards.Remove(newCard);
+        };
+        newCard.cardBackHand += () =>
+        {
+            letterHandCards.Add(newCard);
+        };
+        OnCardDrawn?.Invoke(newCard);
+    }
+
+    /// <summary>
+    /// 抽取字母牌,没有卡牌池，随机抽
+    /// </summary>
+    void DrawLetterCardNoPool()
+    {
+        if (letterDeck.Count == 0)
+        {
+            Debug.LogWarning("Letter deck is empty!");
+            return;
+        }
+
         int letterCardIndex=UnityEngine.Random.Range(0, letterDeck.Count);
         LetterCard newCard =(LetterCard)cardPool.GetCard();
        
@@ -237,7 +287,7 @@ public class DeckManager : MonoBehaviour
         
         newCard.transform.SetParent(LetterHandCard);
 
-        letterDeck.RemoveAt(letterCardIndex);//移出这个卡牌
+        //letterDeck.RemoveAt(letterCardIndex);//不用移出
         letterHandCards.Add(newCard);
         newCard.cardToCache += () =>
         {
@@ -347,8 +397,6 @@ public class DeckManager : MonoBehaviour
             cardPool.ReturnCard(child);
         }
         roundOver?.Invoke(singleScore);
-
-
     }
 
     ///// <summary>

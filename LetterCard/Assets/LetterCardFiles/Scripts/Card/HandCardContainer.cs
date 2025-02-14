@@ -117,9 +117,7 @@ public class HandCardContainer : MonoBehaviour
         }
         // 计算容器的宽度和手牌的总宽度
         float containerWidth = GetComponent<RectTransform>().rect.width;
-        
-        
-        Debug.Log($"singleWidth为{singleWidth},containerWidth为{containerWidth}");
+        //Debug.Log($"singleWidth为{singleWidth},containerWidth为{containerWidth}");
         float totalWidth = singleWidth* transform.childCount;
         
 
@@ -144,12 +142,13 @@ public class HandCardContainer : MonoBehaviour
         float containerLeftEdge = containerRect.anchoredPosition.x - containerWidth / 2;
 
         float currentX = containerLeftEdge; // 从容器左端开始
-
+        
         // 将卡牌水平排列
         foreach (Transform card in transform)
         {
             card.GetComponent<RectTransform>().anchoredPosition = new Vector2(currentX + 0.5f * singleWidth, 0);
             currentX += singleWidth;
+            //Debug.Log($"card位置为{card.GetComponent<RectTransform>().anchoredPosition}");
         }
     }
 
@@ -159,11 +158,12 @@ public class HandCardContainer : MonoBehaviour
         // 获取容器的 RectTransform 并计算左端位置
         RectTransform containerRect = GetComponent<RectTransform>();
         float containerLeftEdge = containerRect.anchoredPosition.x - containerWidth / 2;
+        
+        float overlapAmount;
+        // 如果只有一个卡牌，不需要重叠
+        if (transform.childCount == 1) overlapAmount = 0;
+        else overlapAmount = (containerWidth - singleWidth) / (transform.childCount - 1);// 计算每张卡牌的重叠偏移量
 
-
-        // 计算每张卡牌的重叠偏移量
-        float overlapAmount = (containerWidth- singleWidth) / (transform.childCount - 1);
-        if (transform.childCount == 1) overlapAmount = 0; // 如果只有一个卡牌，不需要重叠
 
         // 从容器的左端开始叠放卡牌
         for (int i = 0; i < transform.childCount; i++)
@@ -175,6 +175,7 @@ public class HandCardContainer : MonoBehaviour
 
             // 设置卡牌的位置
             card.anchoredPosition = new Vector2(offsetX, 0);
+            //Debug.Log($"card位置为{card.anchoredPosition}");
         }
     }
 

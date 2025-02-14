@@ -3,7 +3,14 @@ using UnityEngine;
 
 public class WordChecker : MonoBehaviour
 {
+    public static WordChecker Instance;
+
     public WordList wordList;  // 通过 Inspector 赋值 ScriptableObject
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     // 判断单词是否存在于 words 集合中
     public bool IsWordInList(string word)

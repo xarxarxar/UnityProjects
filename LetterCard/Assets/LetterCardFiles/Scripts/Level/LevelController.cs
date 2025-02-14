@@ -9,6 +9,8 @@ public class LevelController : MonoBehaviour
 {
     private DeckManager deckManager;
 
+    public LevelConfig levelConfig; 
+
     // 分数
     private int totalScore=0;//当前总分数
     public int TotalScore 
@@ -105,7 +107,7 @@ public class LevelController : MonoBehaviour
     public void StartLevel(int level)
     {
         GameObject.Find("GameCanvas").GetComponent<Canvas>().enabled = true;//打开游戏场景
-        LevelConfig levelConfig= LevelConfigManager.instance.localDatabase.levels[level-1];
+        levelConfig = LevelConfigManager.instance.localDatabase.levels[level-1];
         deckManager.config= levelConfig;
 
         InitializeValue();
