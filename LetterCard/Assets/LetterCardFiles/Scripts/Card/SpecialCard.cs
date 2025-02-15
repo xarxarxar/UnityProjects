@@ -26,6 +26,7 @@ public class SpecialCard : Card
         {
             case SpecialEffectType.RemoveCard:
                 // 实现移除卡牌的效果
+
                 break;
             case SpecialEffectType.SwapCard:
                 // 实现交换卡牌的效果

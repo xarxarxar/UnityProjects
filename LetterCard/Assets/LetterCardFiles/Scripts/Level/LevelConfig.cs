@@ -40,7 +40,7 @@ public class SpecialMission
     // 完成此任务后，玩家将获得的额外奖励分数倍率
     public int bonusScore;
 
-    public ColorType requiredColor;    // 需要的颜色类型
+    public char requiredColor;    // 需要的颜色类型
 
     [SerializeField]
     public List<LetterColorPair> mixLetterColor = new List<LetterColorPair>();
@@ -52,8 +52,7 @@ public class SpecialMission
 public enum MissionType
 {
     SpecificCombination,   // 指定字母组合
-    SameColor,             // 相同颜色
-    SameLetter,            // 相同字母
+    SpecificColor,         // 指定颜色组合
     MixLetterAndColor,     // 混合字母颜色
     WordDictionary         // 单词字典
 }
@@ -63,5 +62,5 @@ public enum MissionType
 public class LetterColorPair
 {
     public char letter;
-    public ColorType color;
+    public char color;
 }

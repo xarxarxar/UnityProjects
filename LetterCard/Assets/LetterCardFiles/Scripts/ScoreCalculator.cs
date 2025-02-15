@@ -1,33 +1,44 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
 public class ScoreCalculator
 {
-    // 定义有效的字母组合列表，玩家出牌时如果能够组成这些字母组合，则会获得额外的分数奖励。
-    // 这里是一些示例组合，你可以根据游戏规则扩展更多组合。
-    private static List<string> validCombinations = new() {
-        "hello", "world", "unity", "game","ab","bc" // 示例组合
-    };
-
-    // 字典：MissionType 到返回 int 的委托映射
-    private static Dictionary<MissionType, System.Func<SpecialMission,List<LetterCard>, int>> missionActions = new Dictionary<MissionType, System.Func<SpecialMission, List<LetterCard>, int>>();
-
     /// <summary>
     /// 存在指定字母组合
     /// </summary>
     /// <param name="cards"></param>
     /// <returns></returns>
-    int SpecificCombinationMission(SpecialMission mission,List<LetterCard> cards)
+    static int SpecificMissionScore(SpecialMission mission,List<LetterCard> cards)
     {
         int score = 0;
         string sequence = BuildLetterSequence(cards);
-        string targetString = mission.targetLetters;
-        if (sequence.Contains(targetString))
+        switch (mission.missionType)
         {
-            score += targetString.Length;
+            ///只要包含特殊字符串就可以
+            case MissionType.SpecificCombination:
+                string targetString = mission.targetLetters;
+                if (sequence.Contains(targetString))
+                {
+                    score = targetString.Length;//额外奖励卡牌数量的分数
+                }
+                ShowTipManager.instance.ShowTip($"特定组合+{score}分");
+                return score;
+            ///TODO 所有字符必须是包含特定颜色
+            case MissionType.SpecificColor:
+
+                break;
+            /// TODO
+            case MissionType.MixLetterAndColor:
+
+                break;
+            /// TODO
+            case MissionType.WordDictionary:
+                break;
         }
         return score;
     }
@@ -44,23 +55,15 @@ public class ScoreCalculator
 
         // 构建一个由打出的字母卡牌组成的字母序列，用于后续检测是否有有效的字母组合
         string sequence = BuildLetterSequence( playedCards);
-        int sequenceCount = sequence.Length;//该字符串的长度
-        //如果在六级单词表里，那么获取额外分数
-        int wordScore = WordScore(WordChecker.Instance.IsWordInList(sequence.ToLower()), sequence);
+        string colorSequence=BuildColorSequence( playedCards);
 
-        // 遍历所有有效的字母组合，检查当前字母序列中是否包含这些组合
-        foreach (var combo in validCombinations)
-        {
-            // 如果字母序列中包含该组合，则奖励额外分数
-            if (sequence.Contains(combo))
-            {
-                // 每个有效组合的长度乘以2，作为奖励分数加到基本分数上
-                baseScore += combo.Length * 2; // 示例奖励规则：每个组合的长度*2
-            }
-        }
-        Debug.Log($"baseScore为{baseScore}，wordScore为{wordScore}");
+        ShowTipManager.instance.ShowTip($"基础+{baseScore}分");
+
+        int ruleScore = GetRuleScore(sequence, colorSequence);
+        int specialScore = CheckSpecialMissions(LevelController.instance.levelConfig.specialMissions, playedCards);
+        
         // 最后加上通过特殊任务（CheckSpecialMissions）获得的分数
-        return baseScore + CheckSpecialMissions(LevelController.instance.levelConfig.specialMissions, playedCards)+ wordScore;
+        return baseScore + ruleScore+ specialScore;
     }
 
     // 根据玩家出牌的卡牌，构建一个由字母组成的字符串序列
@@ -78,6 +81,21 @@ public class ScoreCalculator
         return sb.ToString();  // 返回拼接后的字符串
     }
 
+    // 根据玩家出牌的卡牌，构建一个由颜色字母组成的字符串序列
+    // 例如，如果出牌是 "R", "G", "B"，则返回的字符串为 "RGB"
+    private static string BuildColorSequence(List<LetterCard> cards)
+    {
+        // 初始化一个空字符串来存储字母序列
+        StringBuilder sb = new StringBuilder();
+
+        // 遍历 List 中的每个字母
+        foreach (LetterCard card in cards)
+        {
+            sb.Append(card.Color);  // 将每个 LetterCard 的字母追加到 StringBuilder
+        }
+        return sb.ToString();  // 返回拼接后的字符串
+    }
+
     // 检查特殊任务的完成情况并返回额外的分数
     // 该方法可以根据任务的具体规则来调整，这里只是一个示例
     private static int CheckSpecialMissions(List<SpecialMission> specialMissions, List<LetterCard> playedCards)
@@ -85,24 +103,115 @@ public class ScoreCalculator
         int specialScore = 0;
        for(int i = 0; i < specialMissions.Count; i++)
         {
-            specialScore += missionActions[specialMissions[i].missionType](specialMissions[i],playedCards);
+            specialScore += SpecificMissionScore(specialMissions[i],playedCards);
         }
 
         // 返回根据特殊任务获得的奖励分数
         return specialScore;
     }
 
+
     /// <summary>
-    /// 如果字母序列在单词表中，那么获取的额外分数
+    /// 获取规则之内的分数，如同字符，同颜色，相邻字符，字符组成了单词等等
     /// </summary>
-    /// <param name="isInWordList">是否在单词表中</param>
+    /// <param name="sequence">字符序列</param>
+    /// <param name="colorSequence">颜色序列</param>
+    /// <returns></returns>
+    private static int GetRuleScore(string sequence,string colorSequence)
+    {
+        int score = SameLetter(sequence)+ SameColor(colorSequence)+ SortByAlphabet(sequence)+ WordScore(sequence);
+        return score;
+    }
+
+    /// <summary>
+    /// 如果字母序列在单词表中，那么获取的额外分数，额外获取卡牌数量*2的分数
+    /// </summary>
     /// <param name="sequence">字母序列</param>
     /// <returns></returns>
-    private static int WordScore(bool isInWordList,string sequence)
+    private static int WordScore(string sequence)
     {
-        if (isInWordList) Debug.Log($"{sequence}在单词表中");
-        else Debug.Log($"{sequence}不在单词表中");
-        return isInWordList ? sequence.Length*2 : 0;
+        bool isInWordList=WordChecker.Instance.IsWordInList(sequence.ToLower());
+        if (isInWordList)
+        {
+            ShowTipManager.instance.ShowTip($"组成单词{sequence}+{sequence.Length * 2}分");
+            return sequence.Length * 2;
+        }
+        
+        return 0;
+    }
+
+    /// <summary>
+    /// 如果所有的字符都是相同字符，那么额外获取卡牌数量*1倍的分数，三张卡牌起步
+    /// </summary>
+    /// <param name="sequence"></param>
+    /// <returns></returns>
+    private static int SameLetter(string sequence)
+    {
+        if (sequence.Length < 3) return 0;
+        sequence=sequence.ToLower();
+        // 获取第一个字符
+        char firstChar = sequence[0];
+
+        // 从第二个字符开始检查是否与第一个字符相同
+        for (int i = 1; i < sequence.Length; i++)
+        {
+            if (sequence[i] != firstChar)
+            {
+                return 0;  // 如果有不同的字符，返回 false
+            }
+        }
+
+        ShowTipManager.instance.ShowTip($"相同字母+{sequence.Length}分");
+        return sequence.Length;
+
+    }
+
+    /// <summary>
+    /// 如果所有的卡牌都是相同颜色，额外获取卡牌数量*1倍的分数，三张卡牌起步，和SameLetter的逻辑一模一样
+    /// </summary>
+    /// <param name="sequence"></param>
+    /// <returns></returns>
+    private static int SameColor(string sequence)
+    {
+        if (sequence.Length < 3) return 0;
+        // 获取第一个字符
+        char firstChar = sequence[0];
+
+        // 从第二个字符开始检查是否与第一个字符相同
+        for (int i = 1; i < sequence.Length; i++)
+        {
+            if (sequence[i] != firstChar)
+            {
+                return 0;  // 如果有不同的字符，返回 false
+            }
+        }
+
+        ShowTipManager.instance.ShowTip($"相同颜色+{sequence.Length}分");
+        return sequence.Length;
+    }
+
+    /// <summary>
+    /// 字母是按照字母表的顺序的，额外获取卡牌数量*1倍的分数，三张卡牌起步
+    /// </summary>
+    /// <param name="sequence"></param>
+    /// <returns></returns>
+    private static int SortByAlphabet(string sequence)
+    {
+        if(sequence.Length < 3) return 0;
+
+        // 将字符串转换为小写，忽略大小写
+        sequence = sequence.ToLower();
+
+        // 遍历字符串，确保每个字符与前一个字符的差值为 1
+        for (int i = 1; i < sequence.Length; i++)
+        {
+            if (sequence[i] != sequence[i - 1] + 1)  // 检查字符的 ASCII 值是否连续
+            {
+                return 0;
+            }
+        }
+        ShowTipManager.instance.ShowTip($"顺序排列+{sequence.Length}分");
+        return sequence.Length;
     }
 }
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -12,7 +13,7 @@ public class DeckManager : MonoBehaviour
     public static DeckManager instance;
     // 卡牌池
     public CardPool cardPool;
-    [SerializeField]private List<(char,ColorType)> letterDeck = new List<(char, ColorType)>();
+    [SerializeField]private List<(char,char)> letterDeck = new List<(char, char)>();
     private List<SpecialCard> specialCardPool = new List<SpecialCard>();
 
     // 等待出牌的暂存池
@@ -63,9 +64,9 @@ public class DeckManager : MonoBehaviour
         foreach (var cardChar in allLetters)
         {
             // 遍历 ColorType 枚举的所有值
-            foreach (ColorType color in Enum.GetValues(typeof(ColorType)))
+            foreach (char color in "RGBY")
             {
-                (char, ColorType) letterCard = (cardChar,color);
+                (char, char) letterCard = (cardChar,color);
                 letterDeck.Add(letterCard);
             }
         }
@@ -129,25 +130,25 @@ public class DeckManager : MonoBehaviour
 
     IEnumerator test()
     {
-        DrawDesignatedCard(CardType.Letter, 'e', ColorType.Green);
+        DrawDesignatedCard(CardType.Letter, 'e', 'G');
         yield return new WaitForSeconds(0.5f);
-        DrawDesignatedCard(CardType.Letter, 'x', ColorType.Green);
+        DrawDesignatedCard(CardType.Letter, 'x', 'G');
         yield return new WaitForSeconds(0.5f);
-        DrawDesignatedCard(CardType.Letter, 'p', ColorType.Green);
+        DrawDesignatedCard(CardType.Letter, 'p', 'G');
         yield return new WaitForSeconds(0.5f);
-        DrawDesignatedCard(CardType.Letter, 'e', ColorType.Blue);
+        DrawDesignatedCard(CardType.Letter, 'e', 'B');
         yield return new WaitForSeconds(0.5f);
-        DrawDesignatedCard(CardType.Letter, 'r', ColorType.Green);
+        DrawDesignatedCard(CardType.Letter, 'r', 'G');
         yield return new WaitForSeconds(0.5f);
-        DrawDesignatedCard(CardType.Letter, 'i', ColorType.Green);
+        DrawDesignatedCard(CardType.Letter, 'i', 'G');
         yield return new WaitForSeconds(0.5f);
-        DrawDesignatedCard(CardType.Letter, 'e', ColorType.Red);
+        DrawDesignatedCard(CardType.Letter, 'e', 'R');
         yield return new WaitForSeconds(0.5f);
-        DrawDesignatedCard(CardType.Letter, 'n', ColorType.Green);
+        DrawDesignatedCard(CardType.Letter, 'n', 'G');
         yield return new WaitForSeconds(0.5f);
-        DrawDesignatedCard(CardType.Letter, 'c', ColorType.Green);
+        DrawDesignatedCard(CardType.Letter, 'c', 'G');
         yield return new WaitForSeconds(0.5f);
-        DrawDesignatedCard(CardType.Letter, 'e', ColorType.Yellow);
+        DrawDesignatedCard(CardType.Letter, 'e', 'Y');
         yield return new WaitForSeconds(0.5f);
 
     }
@@ -159,13 +160,13 @@ public class DeckManager : MonoBehaviour
     /// <param name="cardType">指定卡牌类型（字母牌或特殊牌）</param>
     /// <param name="letter">指定字母（仅适用于字母牌）</param>
     /// <param name="color">指定颜色（仅适用于字母牌）</param>
-    void DrawDesignatedCard(CardType cardType, char? letter = null, ColorType? color = null)
+    void DrawDesignatedCard(CardType cardType, char? letter = null, char? color = null)
     {
         // 如果是字母卡
         if (cardType == CardType.Letter)
         {
             // 先过滤字母牌堆，筛选符合条件的卡牌
-            List<(char, ColorType)> validLetterCards = letterDeck
+            List<(char, char)> validLetterCards = letterDeck
                 .Where(card => (!letter.HasValue || card.Item1 == letter.Value) &&
                                (!color.HasValue || card.Item2 == color.Value))
                 .ToList();
@@ -189,7 +190,7 @@ public class DeckManager : MonoBehaviour
             newCard.transform.SetParent(LetterHandCard);
 
             // 从字母堆移除已抽取的卡牌
-            letterDeck.Remove(selectedCard);
+            //letterDeck.Remove(selectedCard);
             letterHandCards.Add(newCard);
 
             // 配置卡牌回收和归还
@@ -278,15 +279,13 @@ public class DeckManager : MonoBehaviour
             Debug.LogWarning("Letter deck is empty!");
             return;
         }
-
         int letterCardIndex=UnityEngine.Random.Range(0, letterDeck.Count);
         LetterCard newCard =(LetterCard)cardPool.GetCard();
-       
+
         newCard.Letter= letterDeck[letterCardIndex].Item1;
         newCard.Color= letterDeck[letterCardIndex].Item2;
         
-        newCard.transform.SetParent(LetterHandCard);
-
+        newCard.transform.SetParent(LetterHandCard,worldPositionStays:false);
         //letterDeck.RemoveAt(letterCardIndex);//不用移出
         letterHandCards.Add(newCard);
         newCard.cardToCache += () =>
@@ -319,6 +318,8 @@ public class DeckManager : MonoBehaviour
             if (randomPoint < card.spawnWeight)
             {
                 SpecialCard newCard = Instantiate(card, SpecialHandCard);
+                //SpecialCard newCard = (SpecialCard)cardPool.GetCard();
+                //newCard.transform.SetParent(SpecialHandCard);
                 specialHandCards.Add(newCard);
                 OnCardDrawn?.Invoke(newCard);
                 return;

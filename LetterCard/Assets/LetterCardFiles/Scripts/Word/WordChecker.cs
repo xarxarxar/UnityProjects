@@ -22,12 +22,6 @@ public class WordChecker : MonoBehaviour
     // 调用示例
     private void Start()
     {
-        // 要检查的单词
-        string wordToCheck = "abandon";
-        // 判断单词是否存在
-        bool result = IsWordInList(wordToCheck);
 
-        // 打印结果
-        Debug.Log(result ? "Word found!" : "Word not found.");
     }
 }

@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,10 +16,23 @@ public abstract class Card : MonoBehaviour
 
     // 激活卡牌效果的虚拟方法，允许子类根据不同的卡牌类型实现具体效果。
     // 这个方法是虚拟的，可以被子类重写，以实现不同的卡牌效果。
+
+    public  bool IsSorted = false;//是否已经排列好了
+    //public bool IsSorted { get => isSorted; set => isSorted = value; }
     public virtual void ActivateEffect()
     {
         // 默认情况下，基类的实现为空，子类会重写此方法。
     }
+
+    protected void OnEnable()
+    {
+        GetComponent<RectTransform>().anchoredPosition = new Vector2(GetComponent<RectTransform>().anchoredPosition.x, 100);
+        // 设置卡牌的位置
+        GetComponent<RectTransform>().DOAnchorPosY(0, 0.5f).SetEase(Ease.OutQuad);// 设置缓动效果
+    }
+
+    
+
 }
 
 
@@ -32,13 +46,13 @@ public enum CardType
 }
 
 // 颜色类型枚举，定义卡牌的颜色类型。可以根据不同的卡牌分配不同的颜色。
-public enum ColorType
-{
-    Red,        // 红色
-    Green,      // 绿色
-    Blue,       // 蓝色
-    Yellow      // 黄色
-}
+//public enum ColorType
+//{
+//    Red,        // 红色
+//    Green,      // 绿色
+//    Blue,       // 蓝色
+//    Yellow      // 黄色
+//}
 
 // 特殊效果类型枚举，定义特殊卡牌的效果种类
 // 例如：移除卡牌、交换卡牌等。

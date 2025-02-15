@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using System.Linq;
+using DG.Tweening;
+using static UnityEngine.GraphicsBuffer;
+using TMPro;
 
 /// <summary>
 /// 管理手牌的摆放
@@ -75,10 +78,10 @@ public class HandCardContainer : MonoBehaviour
                                                 .ToList();
 
                 // 对每种颜色的字母（大写和小写）分别排序
-                var redCards = sortedByColor.Where(card => card.GetComponent<LetterCard>().Color == ColorType.Red).ToList();
-                var yellowCards = sortedByColor.Where(card => card.GetComponent<LetterCard>().Color == ColorType.Yellow).ToList();
-                var blueCards = sortedByColor.Where(card => card.GetComponent<LetterCard>().Color == ColorType.Blue).ToList();
-                var greenCards = sortedByColor.Where(card => card.GetComponent<LetterCard>().Color == ColorType.Green).ToList();
+                var redCards = sortedByColor.Where(card => card.GetComponent<LetterCard>().Color == 'R').ToList();
+                var yellowCards = sortedByColor.Where(card => card.GetComponent<LetterCard>().Color == 'Y').ToList();
+                var blueCards = sortedByColor.Where(card => card.GetComponent<LetterCard>().Color == 'B').ToList();
+                var greenCards = sortedByColor.Where(card => card.GetComponent<LetterCard>().Color == 'G').ToList();
 
                 // 对每种颜色下的字母进行字母排序
                 redCards = redCards.OrderBy(card => card.GetComponent<LetterCard>().Letter).ThenBy(card => card.GetComponent<LetterCard>().Color).ToList();
@@ -146,7 +149,11 @@ public class HandCardContainer : MonoBehaviour
         // 将卡牌水平排列
         foreach (Transform card in transform)
         {
-            card.GetComponent<RectTransform>().anchoredPosition = new Vector2(currentX + 0.5f * singleWidth, 0);
+            // 设置卡牌的位置
+            card.GetComponent<RectTransform>().DOAnchorPosX(currentX + 0.5f * singleWidth, 0.5f).SetEase(Ease.OutQuad);// 设置缓动效果
+            
+            //card.GetComponent<RectTransform>().anchoredPosition = new Vector2(currentX + 0.5f * singleWidth, 0);
+
             currentX += singleWidth;
             //Debug.Log($"card位置为{card.GetComponent<RectTransform>().anchoredPosition}");
         }
@@ -173,8 +180,11 @@ public class HandCardContainer : MonoBehaviour
             // 计算每张卡牌的偏移量，并应用到卡牌位置
             float offsetX = containerLeftEdge + 0.5f * singleWidth + i* overlapAmount;
 
+            // 只在 Y 轴上移动 UI 元素
+            card.GetComponent<RectTransform>().DOAnchorPosX(offsetX, 0.5f).SetEase(Ease.OutQuad);// 设置缓动效果
             // 设置卡牌的位置
-            card.anchoredPosition = new Vector2(offsetX, 0);
+            //card.anchoredPosition = new Vector2(offsetX, 0);
+            
             //Debug.Log($"card位置为{card.anchoredPosition}");
         }
     }

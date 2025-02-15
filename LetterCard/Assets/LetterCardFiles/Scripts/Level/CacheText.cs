@@ -10,12 +10,12 @@ public class CacheText : MonoBehaviour
     private static Text textComponent;
     private static RectTransform background;
     // 使用字典映射 ColorType 到 Color
-    static Dictionary<ColorType, Color32> colorMap = new Dictionary<ColorType, Color32>
+    static Dictionary<char, Color32> colorMap = new Dictionary<char, Color32>
         {
-            { ColorType.Red, new Color32(194,24,91,255) },
-            { ColorType.Green, new Color32(56,142,60,255) },
-            { ColorType.Blue, new Color32(48,63,159,255) },
-            { ColorType.Yellow, new Color32(255,162,0,255) }
+            { 'R', new Color32(194,24,91,255) },
+            { 'G', new Color32(56,142,60,255) },
+            { 'B', new Color32(48,63,159,255) },
+            { 'Y', new Color32(255,162,0,255) }
         };
     // 用来存储最终的文本内容
     public static StringBuilder textBuilder = new StringBuilder();
@@ -51,7 +51,7 @@ public class CacheText : MonoBehaviour
     }
 
     // 方法：添加字符并设置颜色
-    public static void AddCharacterWithColor(ColorType colorType, char character)
+    public static void AddCharacterWithColor(char colorType, char character)
     {
         // 获取颜色
         Color32 color = colorMap[colorType];
@@ -70,7 +70,7 @@ public class CacheText : MonoBehaviour
     }
 
     // 方法：移除指定颜色类型的字符
-    public static void RemoveCharacterWithColor(ColorType colorType, char character)
+    public static void RemoveCharacterWithColor(char colorType, char character)
     {
         // 获取颜色
         Color32 color = colorMap[colorType];

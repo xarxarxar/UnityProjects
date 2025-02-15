@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using System;
 using System.Collections.Generic;
 using Unity.VisualScripting.FullSerializer;
 using UnityEditor;
@@ -243,14 +244,18 @@ public class LevelConfigEditor : EditorWindow
                     mission.targetLetters = EditorGUILayout.TextField("目标组合", mission.targetLetters);
                     break;
 
-                case MissionType.SameColor:
-                    mission.requiredColor = (ColorType)EditorGUILayout.EnumPopup("颜色", mission.requiredColor);
+                case MissionType.SpecificColor:
+                    string input = EditorGUILayout.TextField("颜色", mission.requiredColor.ToString());
+                    if (input.Length == 1)
+                    {
+                        mission.requiredColor = input[0];
+                    }
+                    else
+                    {
+                        // 提示错误或采取其他措施
+                        EditorGUILayout.HelpBox("请输入一个字符", MessageType.Error);
+                    }
                     //mission.minCount = EditorGUILayout.IntField("最少", mission.minCount);
-                    break;
-
-                case MissionType.SameLetter:
-                    mission.targetLetters = EditorGUILayout.TextField("目标字母", mission.targetLetters);
-                    //mission.minCount = EditorGUILayout.IntField("Min Count", mission.minCount);
                     break;
 
                 case MissionType.MixLetterAndColor:
@@ -317,8 +322,16 @@ public class LevelConfigEditor : EditorWindow
             }
 
             // 颜色选择
-            mission.mixLetterColor[i].color = (ColorType)EditorGUILayout.EnumPopup(
-                "颜色", mission.mixLetterColor[i].color);
+            string inputMixcolor = EditorGUILayout.TextField("颜色", mission.requiredColor.ToString());
+            if (input.Length == 1)
+            {
+                mission.mixLetterColor[i].color = input[0];
+            }
+            else
+            {
+                // 提示错误或采取其他措施
+                EditorGUILayout.HelpBox("请输入一个字符", MessageType.Error);
+            }
 
             // 删除按钮
             if (GUILayout.Button("×", GUILayout.Width(20)))
