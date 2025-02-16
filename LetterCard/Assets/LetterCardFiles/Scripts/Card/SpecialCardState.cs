@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SpecialCardState : MonoBehaviour
 {
@@ -21,9 +22,13 @@ public class SpecialCardState : MonoBehaviour
     }
 
     private bool isChoosingCard;//是否正在选取特殊牌
-    private SpecialCard chosenCard;//正在选择的牌
+    public  SpecialCard chosenCard;//正在选择的牌
+
+    public  Text specialText;//显示功能牌效果的文字
 
     public Transform specialHandCards;
+
+    public Button useSpecialButton;//使用特殊牌的按钮
 
     private void Awake()
     {
@@ -42,13 +47,18 @@ public class SpecialCardState : MonoBehaviour
             chosenCard?.DownCard();//将原来的牌降下去
             specialCard.GetComponent<SpecialCard>().UpCard();
             chosenCard = specialCard.GetComponent<SpecialCard>();
+            specialText.text = chosenCard.specialDescribe;
+            useSpecialButton.interactable= true;
+            useSpecialButton.onClick.AddListener(chosenCard.ActivateEffect);
         }
         else//如果选择的是这张牌
         {
             //将这张牌降下去
             specialCard.GetComponent<SpecialCard>().DownCard();
             chosenCard = null;
-
+            specialText.text = "";
+            useSpecialButton.interactable = false;
+            useSpecialButton.onClick.RemoveAllListeners();
         }
     }
 }

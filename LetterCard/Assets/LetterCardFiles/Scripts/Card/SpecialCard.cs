@@ -28,12 +28,24 @@ public class SpecialCard : Card
     public float spawnWeight = 1f;
     // initialPoolSize：表示初始牌池中的特殊牌数量
     public int initialPoolSize = 3;
+    public string specialDescribe = "";//特殊牌的描述
 
-    [SerializeField] private Text largeLetter;//中间的大字母
-    [SerializeField] private Text smallLetter;//左上角的小字母
+    [SerializeField] private Text largeLetter;//中间的大字
+    [SerializeField] private Text smallLetter;//左上角小字
+    [SerializeField] private Text bottomLetter;//下方的小字
+
+    // 使用字典映射 ColorType 到 Color
+    Dictionary<char, Color32> colorMap = new Dictionary<char, Color32>
+        {
+            { 'R', new Color32(194,24,91,255) },
+            { 'G', new Color32(56,142,60,255) },
+            { 'B', new Color32(48,63,159,255) },
+            { 'Y', new Color32(255,162,0,255) }
+        };
 
     // 目标卡牌的 Image 组件
     private CanvasGroup canvasGroup;
+
 
     private void Awake()
     {
@@ -60,35 +72,67 @@ public class SpecialCard : Card
         {
             case SpecialEffectType.RemoveCard:
                 // 实现移除卡牌的效果
-                largeLetter.text = "Remove";
+                largeLetter.text = smallLetter.text = "除";
+                largeLetter.color = smallLetter.color = Color.black; 
+                bottomLetter.text = "-1";
+
+                specialDescribe = "移除一张字母牌";
                 break;
             case SpecialEffectType.AddOneLetterHand:
                 // 实现增加一个字母手牌上限的效果
-                largeLetter.text = "AOLH";
+                largeLetter.text = smallLetter.text = "字";
+                largeLetter.color = smallLetter.color = Color.black;
+                bottomLetter.text = "+1";
+
+                specialDescribe = "字母牌上限+1";
                 break;
             case SpecialEffectType.AddOneCacheHand:
                 // 实现增加一个缓存手牌上限的效果
-                largeLetter.text = "AOCH";
+                largeLetter.text = smallLetter.text = "出";
+                largeLetter.color = smallLetter.color = Color.black;
+                bottomLetter.text = "+1";
+
+                specialDescribe = "出牌上限+1";
                 break;
             case SpecialEffectType.AddOneSpecialHand:
-                // 实现增加一个特殊手牌上限的效果
-                largeLetter.text = "AOSH";
+                // 实现增加一个功能手牌上限的效果
+                largeLetter.text = smallLetter.text = "功";
+                largeLetter.color = smallLetter.color = Color.black;
+                bottomLetter.text = "+1";
+
+                specialDescribe = "功能牌上限+1";
                 break;
             case SpecialEffectType.RandomRedCard:
                 // 实现获取一张随机红色卡牌的效果
-                largeLetter.text = "RRC";
+                largeLetter.text = smallLetter.text = "取";
+                largeLetter.color = smallLetter.color = colorMap['R'];
+                bottomLetter.text = "?";
+
+                specialDescribe = "随机抽取一张红色字母牌";
                 break;
             case SpecialEffectType.RandomYellowCard:
                 // 实现获取一张随机黄色卡牌的效果
-                largeLetter.text = "RYC";
+                largeLetter.text = smallLetter.text = "取";
+                largeLetter.color = smallLetter.color = colorMap['Y'];
+                bottomLetter.text = "?";
+
+                specialDescribe = "随机抽取一张黄色字母牌";
                 break;
             case SpecialEffectType.RandomBlueCard:
                 // 实现获取一张随机蓝色卡牌的效果
-                largeLetter.text = "RBC";
+                largeLetter.text = smallLetter.text = "取";
+                largeLetter.color = smallLetter.color = colorMap['B'];
+                bottomLetter.text = "?";
+
+                specialDescribe = "随机抽取一张蓝色字母牌";
                 break;
             case SpecialEffectType.RandomGreenCard:
                 // 实现获取一张随机绿色卡牌的效果
-                largeLetter.text = "RGC";
+                largeLetter.text = smallLetter.text = "取";
+                largeLetter.color = smallLetter.color = colorMap['G'];
+                bottomLetter.text = "?";
+
+                specialDescribe = "随机抽取一张绿色字母牌";
                 break;
 
         }
@@ -106,7 +150,7 @@ public class SpecialCard : Card
     }
 
     public void DownCard()
-    {
+    { 
         GetComponent<RectTransform>().DOAnchorPosY(0, 0.3f).SetEase(Ease.OutQuad);
     }
 
@@ -152,7 +196,7 @@ public class SpecialCard : Card
                 break;
 
         }
-
+        SpecialCardState.instance.chosenCard = null;//将选择的牌置为空
         DestroyCard();
     }
 

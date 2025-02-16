@@ -46,7 +46,7 @@ public class ShowTipManager : MonoBehaviour
     {
         dustbinGameobject.transform.GetChild(0).GetComponent<Image>().color = Color.white;
         Text text = dustbinGameobject.transform.GetChild(0).GetChild(0).GetComponent<Text>();
-        text.text = "将卡牌拖到此处移除";
+        text.text = "拖到此处移除";
         text.color = new Color32(139, 0, 0, 255);
     }
 
