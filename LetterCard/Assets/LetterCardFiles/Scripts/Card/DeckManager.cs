@@ -14,7 +14,21 @@ public class DeckManager : MonoBehaviour
     // 卡牌池
     public CardPool cardPool;
     [SerializeField]private List<(char,char)> letterDeck = new List<(char, char)>();
-    private List<SpecialCard> specialCardPool = new List<SpecialCard>();
+    private List<(SpecialEffectType,float)> specialCardPool = new List<(SpecialEffectType, float)>();
+    Dictionary<SpecialEffectType, float> specialCardWeightDic =
+        new Dictionary<SpecialEffectType, float>()
+        {
+            {SpecialEffectType.RemoveCard, 0.2f},
+            {SpecialEffectType.AddOneLetterHand, 0.2f},
+            {SpecialEffectType.AddOneCacheHand, 0.2f},
+            {SpecialEffectType.AddOneSpecialHand, 0.2f},
+            {SpecialEffectType.RandomRedCard, 0.3f},
+            {SpecialEffectType.RandomYellowCard, 0.3f},
+            {SpecialEffectType.RandomGreenCard, 0.3f},
+            {SpecialEffectType.RandomBlueCard, 0.3f},
+        };
+    public SpecialCard specialCardPrefab;
+
 
     // 等待出牌的暂存池
     [SerializeField] public Transform cachePool;
@@ -77,13 +91,12 @@ public class DeckManager : MonoBehaviour
     /// </summary>
     void InitializeSpecialCardPool()
     {
-        // 根据模板生成初始特殊牌池
-        foreach (var template in specialCardTemplates)
+        
+        // 遍历所有的 SpecialEffectType 枚举类型
+        foreach (SpecialEffectType effect in Enum.GetValues(typeof(SpecialEffectType)))
         {
-            for (int i = 0; i < template.initialPoolSize; i++)
-            {
-                specialCardPool.Add(template);
-            }
+            (SpecialEffectType, float) specialCard = (effect, specialCardWeightDic[effect]);
+            specialCardPool.Add(specialCard);
         }
     }
 
@@ -217,25 +230,74 @@ public class DeckManager : MonoBehaviour
             }
 
             // 根据权重抽取特殊卡
-            float totalWeight = specialCardPool.Sum(c => c.spawnWeight);
+            float totalWeight = specialCardPool.Sum(c => c.Item2);
             float randomPoint = UnityEngine.Random.Range(0, totalWeight);
 
-            foreach (var card in specialCardPool.OrderBy(c => c.spawnWeight))
+            foreach (var card in specialCardPool.OrderBy(c => c.Item2))
             {
-                if (randomPoint < card.spawnWeight)
+                if (randomPoint < card.Item2)
                 {
                     // 生成特殊卡实例
-                    SpecialCard newCard = Instantiate(card, SpecialHandCard);
+                    SpecialCard newCard = Instantiate(specialCardPrefab, SpecialHandCard);
+                    newCard.EffectType = card.Item1;
                     specialHandCards.Add(newCard);
-
+                    
                     // 调用抽牌事件
                     OnCardDrawn?.Invoke(newCard);
                     return;
                 }
-                randomPoint -= card.spawnWeight;
+                randomPoint -= card.Item2;
             }
         }
     }
+
+    /// <summary>
+    /// 抽取指定颜色的随机字母卡牌
+    /// </summary>
+    /// <param name="color">指定的颜色（R、G、B、Y）</param>
+    public  void DrawRandomLetterCardByColor(char color)
+    {
+        // 先过滤字母牌堆，筛选符合颜色条件的卡牌
+        List<(char, char)> validLetterCards = letterDeck
+            .Where(card => card.Item2 == color)
+            .ToList();
+
+        if (validLetterCards.Count == 0)
+        {
+            Debug.LogWarning("没有符合条件的字母牌！");
+            return;
+        }
+
+        // 从符合条件的卡牌中随机选择一张
+        int index = UnityEngine.Random.Range(0, validLetterCards.Count);
+        var selectedCard = validLetterCards[index];
+
+        // 创建新的字母卡
+        LetterCard newCard = (LetterCard)cardPool.GetCard();
+        newCard.Letter = selectedCard.Item1;
+        newCard.Color = selectedCard.Item2;
+
+        // 设置父物体
+        newCard.transform.SetParent(LetterHandCard);
+
+        // 从字母堆移除已抽取的卡牌
+        //letterDeck.Remove(selectedCard);
+        letterHandCards.Add(newCard);
+
+        // 配置卡牌回收和归还
+        newCard.cardToCache += () =>
+        {
+            letterHandCards.Remove(newCard);
+        };
+        newCard.cardBackHand += () =>
+        {
+            letterHandCards.Add(newCard);
+        };
+
+        // 调用抽牌事件
+        OnCardDrawn?.Invoke(newCard);
+    }
+
 
     /// <summary>
     /// 抽取字母牌
@@ -310,21 +372,22 @@ public class DeckManager : MonoBehaviour
             return;
         }
         // 根据权重随机选择特殊牌
-        float totalWeight = specialCardPool.Sum(c => c.spawnWeight);
+        float totalWeight = specialCardPool.Sum(c => c.Item2);
         float randomPoint = UnityEngine.Random.Range(0, totalWeight);
 
-        foreach (var card in specialCardPool.OrderBy(c => c.spawnWeight))
+        foreach (var card in specialCardPool.OrderBy(c => c.Item2))
         {
-            if (randomPoint < card.spawnWeight)
+            if (randomPoint < card.Item2)
             {
-                SpecialCard newCard = Instantiate(card, SpecialHandCard);
+                SpecialCard newCard = Instantiate(specialCardPrefab, SpecialHandCard);
                 //SpecialCard newCard = (SpecialCard)cardPool.GetCard();
                 //newCard.transform.SetParent(SpecialHandCard);
+                newCard.EffectType = card.Item1;
                 specialHandCards.Add(newCard);
                 OnCardDrawn?.Invoke(newCard);
                 return;
             }
-            randomPoint -= card.spawnWeight;
+            randomPoint -= card.Item2;
         }
     }
 

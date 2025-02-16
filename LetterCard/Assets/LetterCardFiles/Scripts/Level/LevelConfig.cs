@@ -16,6 +16,7 @@ public class LevelConfig
     [Range(0, 1)] public float specialCardProbability;
     public int maxNormalCards;
     public int maxSpecialCards;
+    public int maxCacheCards;
 
     public List<SpecialMission> specialMissions = new List<SpecialMission>();
 }

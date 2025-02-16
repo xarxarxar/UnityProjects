@@ -2769,6 +2769,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cardPool: {fileID: 2009783669}
+  specialCardPrefab: {fileID: 2058765276574020603, guid: b864583d3fb212b4fadf3d78d07492a3, type: 3}
   cachePool: {fileID: 587334521}
   LetterHandCard: {fileID: 540521481}
   SpecialHandCard: {fileID: 1010271307}
@@ -2782,6 +2783,7 @@ MonoBehaviour:
     specialCardProbability: 0
     maxNormalCards: 10
     maxSpecialCards: 3
+    maxCacheCards: 0
     specialMissions: []
   letterCardPrefab: {fileID: 4366181984899387316, guid: 6f814d641e448ff478bce0212b28f530, type: 3}
   specialCardTemplates:
@@ -2813,6 +2815,7 @@ MonoBehaviour:
     specialCardProbability: 0
     maxNormalCards: 0
     maxSpecialCards: 0
+    maxCacheCards: 0
     specialMissions: []
   totalScoreText: {fileID: 44485141}
   singleScoreText: {fileID: 1777516002}
@@ -2829,6 +2832,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c05cdba6a94d0c41ac9ddf6ae1e1884, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  specialHandCards: {fileID: 1010271307}
 --- !u!1 &1803087496
 GameObject:
   m_ObjectHideFlags: 0

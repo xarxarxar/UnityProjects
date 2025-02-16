@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 510149347262403923}
   - component: {fileID: 4366181984899387316}
   - component: {fileID: 2058765276574020603}
+  - component: {fileID: 951480534708407345}
   m_Layer: 5
   m_Name: SpecialCard
   m_TagString: Untagged
@@ -141,6 +142,7 @@ MonoBehaviour:
   IsSorted: 0
   largeLetter: {fileID: 6375037844326368466}
   smallLetter: {fileID: 2450926550769066774}
+  dropArea: {fileID: 0}
   isUpperCase: 0
 --- !u!114 &2058765276574020603
 MonoBehaviour:
@@ -155,9 +157,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsSorted: 0
-  effectType: 0
   spawnWeight: 1
   initialPoolSize: 3
+  largeLetter: {fileID: 6375037844326368466}
+  smallLetter: {fileID: 2450926550769066774}
+--- !u!225 &951480534708407345
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3905669663017972891}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &5559566522125580873
 GameObject:
   m_ObjectHideFlags: 0

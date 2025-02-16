@@ -58,7 +58,13 @@ public enum CardType
 // 例如：移除卡牌、交换卡牌等。
 public enum SpecialEffectType
 {
-    RemoveCard,  // 移除一张卡牌
-    SwapCard     // 交换一张卡牌
+    RemoveCard,         //  移除一张卡牌
+    AddOneLetterHand,   //  增加一个字母手牌最大值
+    AddOneCacheHand,    //  增加一个缓存手牌最大值
+    AddOneSpecialHand,  //  增加一个特殊手牌最大值
+    RandomRedCard,      //  随机获取一张红色字母牌
+    RandomYellowCard,   //  随机获取一张黄色字母牌
+    RandomBlueCard,     //  随机获取一张蓝色字母牌
+    RandomGreenCard    //  随机获取一张绿色字母牌
 }
 
