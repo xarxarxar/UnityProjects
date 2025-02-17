@@ -168,35 +168,59 @@ public class SpecialCard : Card
                 break;
             case SpecialEffectType.AddOneLetterHand:
                 // 实现增加一个字母手牌上限的效果
-                LevelController.instance.levelConfig.maxNormalCards += 1;
+                LevelController.instance.IncreaseHandLimit(1);
                 break;
             case SpecialEffectType.AddOneCacheHand:
                 // 实现增加一个缓存手牌上限的效果
-                LevelController.instance.levelConfig.maxCacheCards += 1;
+                LevelController.instance.IncreaseCacheLimit(1);
                 break;
             case SpecialEffectType.AddOneSpecialHand:
                 // 实现增加一个特殊手牌上限的效果
-                LevelController.instance.levelConfig.maxSpecialCards += 1;
+                LevelController.instance.IncreaseSpecialLimit(1);
                 break;
             case SpecialEffectType.RandomRedCard:
                 // 实现获取一张随机红色卡牌的效果
-                DeckManager.instance.DrawRandomLetterCardByColor('R');
+                if (!DeckManager.instance.DrawRandomLetterCardByColor('R'))
+                {
+                    SpecialCardState.instance.CardChoosing(null);
+                    SpecialCardState.instance.ChosenCard = null;//将选择的牌置为空
+                    //如果抽取不成功，则不要销毁这个卡牌
+                    return;
+                }
                 break;
             case SpecialEffectType.RandomYellowCard:
                 // 实现获取一张随机黄色卡牌的效果
-                DeckManager.instance.DrawRandomLetterCardByColor('Y');
+                if (!DeckManager.instance.DrawRandomLetterCardByColor('Y'))
+                {
+                    SpecialCardState.instance.CardChoosing(null);
+                    SpecialCardState.instance.ChosenCard = null;//将选择的牌置为空
+                    //如果抽取不成功，则不要销毁这个卡牌
+                    return;
+                }
                 break;
             case SpecialEffectType.RandomBlueCard:
                 // 实现获取一张随机蓝色卡牌的效果
-                DeckManager.instance.DrawRandomLetterCardByColor('B');
+                if (!DeckManager.instance.DrawRandomLetterCardByColor('B'))
+                {
+                    SpecialCardState.instance.CardChoosing(null);
+                    SpecialCardState.instance.ChosenCard = null;//将选择的牌置为空
+                    //如果抽取不成功，则不要销毁这个卡牌
+                    return;
+                }
                 break;
             case SpecialEffectType.RandomGreenCard:
                 // 实现获取一张随机绿色卡牌的效果
-                DeckManager.instance.DrawRandomLetterCardByColor('G');
+                if (!DeckManager.instance.DrawRandomLetterCardByColor('G'))
+                {
+                    SpecialCardState.instance.CardChoosing(null);
+                    SpecialCardState.instance.ChosenCard = null;//将选择的牌置为空
+                    //如果抽取不成功，则不要销毁这个卡牌
+                    return;
+                }
                 break;
 
         }
-        SpecialCardState.instance.chosenCard = null;//将选择的牌置为空
+        SpecialCardState.instance.ChosenCard = null;//将选择的牌置为空
         DestroyCard();
     }
 

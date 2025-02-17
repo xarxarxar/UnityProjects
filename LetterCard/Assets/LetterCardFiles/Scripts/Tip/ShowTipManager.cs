@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,6 +27,7 @@ public class ShowTipManager : MonoBehaviour
 
     public void ShowTip(string showText)
     {
+        if (tipTexts.Count != 0&&tipTexts.Last() == showText) return;
         tipTexts.Enqueue(showText);
     }
 
@@ -61,7 +63,7 @@ public class ShowTipManager : MonoBehaviour
             {
                 // 实例化队列中的第一个物体
                 string firstText = tipTexts.Dequeue();
-                 Instantiate(tip, tipParent).GetComponent<Tip>().showString = firstText;
+                Instantiate(tip, tipParent).GetComponent<Tip>().showString = firstText;
                 delay = tip.duration;
             }
             else

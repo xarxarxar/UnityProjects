@@ -117,6 +117,7 @@ public class LevelConfigEditor : EditorWindow
                 0, 1);
             selectedConfig.maxNormalCards = EditorGUILayout.IntField("字母牌初始最大手牌数", selectedConfig.maxNormalCards);
             selectedConfig.maxSpecialCards = EditorGUILayout.IntField("特殊牌初始最大手牌数", selectedConfig.maxSpecialCards);
+            selectedConfig.maxCacheCards = EditorGUILayout.IntField("缓存池最大卡牌上限", selectedConfig.maxCacheCards);
 
             DrawMissions(selectedConfig);
 

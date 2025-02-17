@@ -2,10 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
 
 // 牌堆管理系统
 public class DeckManager : MonoBehaviour
@@ -39,6 +37,7 @@ public class DeckManager : MonoBehaviour
     [HideInInspector]public List<Card> letterHandCards = new List<Card>();
     [HideInInspector] public List<Card> specialHandCards = new List<Card>();
 
+
     // 回合
     public event UnityAction<int> roundOver;//回合结束的事件,参数为单回合的分数
 
@@ -50,6 +49,9 @@ public class DeckManager : MonoBehaviour
     [HideInInspector]public LevelConfig config;
     public LetterCard letterCardPrefab; // 字母牌预制体
     public SpecialCard[] specialCardTemplates; // 特殊牌模板
+    public int maxNormalCards;//手牌上限
+    public int maxSpecialCards;//功能牌上限
+    public int maxCacheCards;//缓存牌上限
 
     // 事件
     public UnityEvent OnHandFull;
@@ -65,6 +67,7 @@ public class DeckManager : MonoBehaviour
         InitializeLetterDeck();
         InitializeSpecialCardPool();
         DrawCards(3, 1);//抽取三张字母牌和一张特殊牌
+        
     }
 
     /// <summary>
@@ -72,6 +75,10 @@ public class DeckManager : MonoBehaviour
     /// </summary>
     void InitializeLetterDeck()
     {
+        maxNormalCards=config.maxNormalCards;
+        maxSpecialCards=config.maxSpecialCards;
+        maxCacheCards=config.maxCacheCards;
+
         // 生成包含大小写字母的数组
         char[] allLetters = GetAllLetters();
         // 创建所有字母牌实例
@@ -120,6 +127,11 @@ public class DeckManager : MonoBehaviour
                 DrawLetterCardNoPool();//不要有卡牌池的限定
                 yield return new WaitForSeconds(0.3f); // 抽牌间隔
             }
+            else
+            {
+                ShowTipManager.instance.ShowTip("牌数达到上限，请及时出牌");
+                Debug.Log($"达到手牌上限现在有{letterHandCards.Count()}张");
+            }
         }
 
         for (int i = 0; i < specialCount; i++)
@@ -130,40 +142,7 @@ public class DeckManager : MonoBehaviour
                 yield return new WaitForSeconds(0.3f);
             }
         }
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-
-            StartCoroutine(test());
-        }
-    }
-
-    IEnumerator test()
-    {
-        DrawDesignatedCard(CardType.Letter, 'e', 'G');
-        yield return new WaitForSeconds(0.5f);
-        DrawDesignatedCard(CardType.Letter, 'x', 'G');
-        yield return new WaitForSeconds(0.5f);
-        DrawDesignatedCard(CardType.Letter, 'p', 'G');
-        yield return new WaitForSeconds(0.5f);
-        DrawDesignatedCard(CardType.Letter, 'e', 'B');
-        yield return new WaitForSeconds(0.5f);
-        DrawDesignatedCard(CardType.Letter, 'r', 'G');
-        yield return new WaitForSeconds(0.5f);
-        DrawDesignatedCard(CardType.Letter, 'i', 'G');
-        yield return new WaitForSeconds(0.5f);
-        DrawDesignatedCard(CardType.Letter, 'e', 'R');
-        yield return new WaitForSeconds(0.5f);
-        DrawDesignatedCard(CardType.Letter, 'n', 'G');
-        yield return new WaitForSeconds(0.5f);
-        DrawDesignatedCard(CardType.Letter, 'c', 'G');
-        yield return new WaitForSeconds(0.5f);
-        DrawDesignatedCard(CardType.Letter, 'e', 'Y');
-        yield return new WaitForSeconds(0.5f);
-
+        yield break;
     }
 
 
@@ -209,11 +188,11 @@ public class DeckManager : MonoBehaviour
             // 配置卡牌回收和归还
             newCard.cardToCache += () =>
             {
-                letterHandCards.Remove(newCard);
+                
             };
             newCard.cardBackHand += () =>
             {
-                letterHandCards.Add(newCard);
+                
             };
 
             // 调用抽牌事件
@@ -255,8 +234,13 @@ public class DeckManager : MonoBehaviour
     /// 抽取指定颜色的随机字母卡牌
     /// </summary>
     /// <param name="color">指定的颜色（R、G、B、Y）</param>
-    public  void DrawRandomLetterCardByColor(char color)
+    public bool DrawRandomLetterCardByColor(char color)
     {
+        if(!CanDrawNormalCard())
+        {
+            Debug.Log($"达到手牌上限");
+            return false;
+        }
         // 先过滤字母牌堆，筛选符合颜色条件的卡牌
         List<(char, char)> validLetterCards = letterDeck
             .Where(card => card.Item2 == color)
@@ -265,7 +249,7 @@ public class DeckManager : MonoBehaviour
         if (validLetterCards.Count == 0)
         {
             Debug.LogWarning("没有符合条件的字母牌！");
-            return;
+            return false;
         }
 
         // 从符合条件的卡牌中随机选择一张
@@ -287,15 +271,16 @@ public class DeckManager : MonoBehaviour
         // 配置卡牌回收和归还
         newCard.cardToCache += () =>
         {
-            letterHandCards.Remove(newCard);
+            
         };
         newCard.cardBackHand += () =>
         {
-            letterHandCards.Add(newCard);
+            
         };
 
         // 调用抽牌事件
         OnCardDrawn?.Invoke(newCard);
+        return true;
     }
 
 
@@ -322,11 +307,11 @@ public class DeckManager : MonoBehaviour
         letterHandCards.Add(newCard);
         newCard.cardToCache += () =>
         {
-            letterHandCards.Remove(newCard);
+            
         };
         newCard.cardBackHand += () =>
         {
-            letterHandCards.Add(newCard);
+            
         };
         OnCardDrawn?.Invoke(newCard);
     }
@@ -352,11 +337,11 @@ public class DeckManager : MonoBehaviour
         letterHandCards.Add(newCard);
         newCard.cardToCache += () =>
         {
-            letterHandCards.Remove(newCard);
+            
         };
         newCard.cardBackHand += () =>
         {
-            letterHandCards.Add(newCard);
+            
         };
         OnCardDrawn?.Invoke(newCard);
     }
@@ -367,7 +352,7 @@ public class DeckManager : MonoBehaviour
     void DrawSpecialCard()
     {
         //根据特殊牌出现的概率执行代码
-        if(UnityEngine.Random.value >=config.specialCardProbability)
+        if(UnityEngine.Random.value >=config. specialCardProbability)
         {
             return;
         }
@@ -412,12 +397,22 @@ public class DeckManager : MonoBehaviour
     }
 
     /// <summary>
+    /// 检查能否向缓存池中添加卡牌
+    /// </summary>
+    /// <returns></returns>
+    public  bool CanDrawCacheCard()
+    {
+        int currentCache = cachePool.childCount;
+        return currentCache < GetCurrentMaxCache();
+    }
+
+    /// <summary>
     /// 当前最大普通牌容量（可扩展）
     /// </summary>
     /// <returns></returns>
     int GetCurrentMaxNormal()
     {
-        int baseValue = config.maxNormalCards;
+        int baseValue = maxNormalCards;
         // 这里可以添加临时加成逻辑
         return baseValue;
     }
@@ -428,7 +423,18 @@ public class DeckManager : MonoBehaviour
     /// <returns></returns>
     int GetCurrentMaxSpecial()
     {
-        int baseValue = config.maxSpecialCards;
+        int baseValue = maxSpecialCards;
+        // 这里可以添加临时加成逻辑
+        return baseValue;
+    }
+
+    /// <summary>
+    /// 当前最大缓存容量
+    /// </summary>
+    /// <returns></returns>
+    int GetCurrentMaxCache()
+    {
+        int baseValue = maxCacheCards;
         // 这里可以添加临时加成逻辑
         return baseValue;
     }
@@ -438,7 +444,6 @@ public class DeckManager : MonoBehaviour
     /// </summary>
     public void PlayCard()
     {
-
         //获取暂存池内的物体
         List<LetterCard> childrenList = new List<LetterCard>();
         // 遍历物体的所有子物体
@@ -459,6 +464,7 @@ public class DeckManager : MonoBehaviour
         {
             //Destroy(child.gameObject);
             cardPool.ReturnCard(child);
+            letterHandCards.Remove(child);//从手牌中移出
         }
         roundOver?.Invoke(singleScore);
     }

@@ -34,12 +34,15 @@ public class LevelController : MonoBehaviour
             if(singleScore != value)
             {
                 singleScore = value;
-                singleScoreText.text= value.ToString();
+                singleScoreText.text=value.ToString();
             }
         } 
     }
     public Text totalScoreText;//当前总分数显示text
     public Text singleScoreText;//单个回合的分数显示text
+
+
+
 
     // 回合
     private int currentRound=1;//当前回合
@@ -49,17 +52,17 @@ public class LevelController : MonoBehaviour
         set
         {
             currentRound = value;
-            if (value <= deckManager.config.rounds)
+            if (value <= maxRounds)
             {
-                roundText.text = $"{value}/{deckManager.config.rounds}";
+                roundText.text = $"{value}/{maxRounds}";
             }
         }
     }
     public Text roundText;//回合数的text
 
-    public static LevelController instance;
+    public int maxRounds;//回合上限
 
-    
+    public static LevelController instance;
 
     public void Awake()
     {
@@ -85,22 +88,7 @@ public class LevelController : MonoBehaviour
                 Debug.Log("通关");
             }
         };
-    }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            deckManager.DrawCards(3, 1);
-        }
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            IncreaseHandLimit(20,10);
-        }
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-            PlayCards();
-        }
 
     }
 
@@ -115,6 +103,22 @@ public class LevelController : MonoBehaviour
         deckManager.StartLevel();
     }
 
+    public void EndLevel()
+    {
+        if (TotalScore >= levelConfig.targetScore)
+        {
+            ShowTipManager.instance.ShowTip("恭喜过关");
+            //过关操作
+        }
+        else
+        {
+            ShowTipManager.instance.ShowTip("未过关");
+            //未过关的操作
+            GameObject.Find("MainCanvas").GetComponent<Canvas>().enabled = true;
+            GameObject.Find("GameCanvas").GetComponent<Canvas>().enabled = false;//打开游戏场景
+        }
+    }
+
     /// <summary>
     /// 初始化数值
     /// </summary>
@@ -122,6 +126,7 @@ public class LevelController : MonoBehaviour
     {
         TotalScore = 0;//总分初始化为0
         SingleScore = 0;//单回合分数初始化为0
+        maxRounds = levelConfig.rounds;
         CurrentRound = 1;
     }
 
@@ -132,7 +137,7 @@ public class LevelController : MonoBehaviour
     {
         singleScoreText.text = "0";
         singleScoreText.text = SingleScore.ToString();
-        roundText.text = $"{CurrentRound}/{deckManager.config.rounds}";
+        roundText.text = $"{CurrentRound}/{maxRounds}";
     }
 
     /// <summary>
@@ -153,7 +158,15 @@ public class LevelController : MonoBehaviour
     {
         SingleScore = singleRoundScore;//单回合分数
         TotalScore += SingleScore;//总分累加
-        StartRound();
+        if(CurrentRound == maxRounds)
+        {
+            EndLevel();
+        }
+        else
+        {
+            StartRound();
+        }
+        
     }
 
 
@@ -175,14 +188,32 @@ public class LevelController : MonoBehaviour
     }
 
     /// <summary>
-    /// 临时提升手牌上限（示例方法）
+    /// 临时提升字母牌上限（示例方法）
     /// </summary>
     /// <param name="normalBonus"></param>
-    /// <param name="specialBonus"></param>
-    public void IncreaseHandLimit(int normalBonus, int specialBonus)
+    public void IncreaseHandLimit(int count)
     {
         // 这里可以修改DeckManager的内部状态
-        deckManager.config.maxNormalCards = normalBonus;
-        deckManager.config.maxSpecialCards = specialBonus;
+        deckManager.maxNormalCards += count;
+    }
+
+    /// <summary>
+    /// 临时提升缓存牌上限（示例方法）
+    /// </summary>
+    /// <param name="normalBonus"></param>
+    public void IncreaseCacheLimit(int count)
+    {
+        // 这里可以修改DeckManager的内部状态
+        deckManager.maxCacheCards += count;
+    }
+
+    /// <summary>
+    /// 临时提升功能牌上限（示例方法）
+    /// </summary>
+    /// <param name="normalBonus"></param>
+    public void IncreaseSpecialLimit(int count)
+    {
+        // 这里可以修改DeckManager的内部状态
+        deckManager.maxSpecialCards += count;
     }
 }

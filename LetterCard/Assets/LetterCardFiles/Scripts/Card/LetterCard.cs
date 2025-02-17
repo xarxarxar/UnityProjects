@@ -73,7 +73,7 @@ public class LetterCard : Card, IDragHandler, IEndDragHandler, IPointerUpHandler
             { 'Y', new Color32(255,162,0,255) }
         };
 
-    
+    float cardWidth = 900 / 7.0f;
 
     private void Start()
     {
@@ -113,15 +113,21 @@ public class LetterCard : Card, IDragHandler, IEndDragHandler, IPointerUpHandler
 
     private void OnLetterCardChoose()
     {
+        //如果在手牌中
         if (isInhand)
         {
-            if (!alreadyDrag)
+            if (alreadyDrag) return;//如果正在拖拽的话，直接返回
+
+            if(!DeckManager.instance.CanDrawCacheCard())
             {
-                transform.SetParent(DeckManager.instance.cachePool, worldPositionStays: false);
-                CacheText.AddCharacterWithColor(color, letter);
-                cardToCache?.Invoke();
-                isInhand = false;
+                ShowTipManager.instance.ShowTip("已达出牌上限");
+                return;
             }
+
+            transform.SetParent(DeckManager.instance.cachePool, worldPositionStays: false);
+            CacheText.AddCharacterWithColor(color, letter);
+            cardToCache?.Invoke();
+            isInhand = false;
             
         }
         else
@@ -136,8 +142,7 @@ public class LetterCard : Card, IDragHandler, IEndDragHandler, IPointerUpHandler
     // 拖动过程中更新 UI 元素的位置
     public void OnDrag(PointerEventData eventData)
     {
-        Debug.Log("拖动中");
-        SpecialCardState.instance.IsDeleting = true;
+        if (!SpecialCardState.instance.IsDeleting) return;
         if (!alreadyDrag)//如果刚开始拖动
         {
             originalPosition= rectTransform.anchoredPosition;
@@ -163,7 +168,7 @@ public class LetterCard : Card, IDragHandler, IEndDragHandler, IPointerUpHandler
     // 拖动结束时检查是否进入指定区域
     public void OnEndDrag(PointerEventData eventData)
     {
-        Debug.Log("拖动结束");
+        if (!alreadyDrag) return;
         SpecialCardState.instance.IsDeleting = false;
         //// 检查是否在目标区域内
         ///// 确保使用世界空间的坐标来进行判断
@@ -172,6 +177,7 @@ public class LetterCard : Card, IDragHandler, IEndDragHandler, IPointerUpHandler
         {
             // 触发指定区域的成功事件（你可以在这里调用方法，或者改变 UI）
             DeckManager.instance.cardPool.ReturnCard(this);
+            SpecialCardState.instance.IsDeleting = false;
         }
         else
         {

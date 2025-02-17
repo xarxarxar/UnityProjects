@@ -59,7 +59,6 @@ public class InfiniteLevelManager : MonoBehaviour
     {
         if (levelNumber <= unlockedLevel)
         {
-            Debug.Log("Starting level " + levelNumber);
             // 在这里实现进入关卡的逻辑
             GameObject.Find("MainCanvas").GetComponent<Canvas>().enabled = false;
             LevelController.instance.StartLevel(levelNumber);

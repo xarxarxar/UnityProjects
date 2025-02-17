@@ -1,22 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 using System.Linq;
 using DG.Tweening;
-using static UnityEngine.GraphicsBuffer;
-using TMPro;
 
 /// <summary>
 /// 管理手牌的摆放
 /// </summary>
 public class HandCardContainer : MonoBehaviour
 {
-    [Header("Settings")]
-    [SerializeField] private int maxCards = 10;            // 最大卡牌数量，外部脚本可以修改
+
 
     public bool isSorted=false;//是否需要排序
-    float singleWidth = Card.cardWidth;
+    float singleWidth = 900/7.0f;
     // 排序规则
     public enum SortOrder
     {
@@ -24,16 +20,6 @@ public class HandCardContainer : MonoBehaviour
         ByColorFirst    // 先按颜色排序
     }
     public SortOrder currentSortOrder = SortOrder.ByLetterFirst;
-
-
-    private void Update()
-    {
-        if(Input.GetKeyUp(KeyCode.C))
-        {
-            ToggleSortOrder();
-            Debug.Log($"排列规则为{currentSortOrder}");
-        }
-    }
 
     private void OnTransformChildrenChanged()
     {
@@ -205,11 +191,5 @@ public class HandCardContainer : MonoBehaviour
         Transform newCard = transform.GetChild(transform.childCount - 1);
         RectTransform cardRect = newCard.GetComponent<RectTransform>();
         cardRect.anchoredPosition = new Vector2(cardRect.anchoredPosition.x, offsetY);
-    }
-
-    // 允许外部脚本设置最大卡牌数量
-    public void SetMaxCards(int max)
-    {
-        maxCards = max;
     }
 }

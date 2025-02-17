@@ -1,13 +1,10 @@
 using DG.Tweening;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 // Card 类是所有卡牌的基类，表示卡牌的基本属性和行为。
 // 它是一个抽象类，意味着不能直接实例化。子类需要继承并实现具体的行为。
 public abstract class Card : MonoBehaviour
 {
-    public static float cardWidth = (float)(390 * 3) / 7;
     //// 卡牌类型，定义了卡牌的种类。例如字母卡牌、特殊卡牌等。
     //public CardType cardType;
 
@@ -62,9 +59,18 @@ public enum SpecialEffectType
     AddOneLetterHand,   //  增加一个字母手牌最大值
     AddOneCacheHand,    //  增加一个缓存手牌最大值
     AddOneSpecialHand,  //  增加一个特殊手牌最大值
+    AddOneStateHand,    //  增加一个状态最大值
     RandomRedCard,      //  随机获取一张红色字母牌
     RandomYellowCard,   //  随机获取一张黄色字母牌
     RandomBlueCard,     //  随机获取一张蓝色字母牌
-    RandomGreenCard    //  随机获取一张绿色字母牌
+    RandomGreenCard,    //  随机获取一张绿色字母牌
+
+    //状态
+    ExtraScoreOnlyOne,  //  如果只出一张牌的话，每个额外加分，整个关卡起作用
+    ExtraDrawLetter,    //  每回合多一次抽字母牌次数
+    ExtraDrawSpecial,   //  每回合多一次抽功能牌次数
+    ExtraScoreLevelOver,//  关卡结束的时候额外加分，加分值为当前关卡中分值最大的一回合
+
+
 }
 

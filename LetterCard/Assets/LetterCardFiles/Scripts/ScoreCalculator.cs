@@ -133,7 +133,7 @@ public class ScoreCalculator
         bool isInWordList=WordChecker.Instance.IsWordInList(sequence.ToLower());
         if (isInWordList)
         {
-            ShowTipManager.instance.ShowTip($"组成单词{sequence}+{sequence.Length * 2}分");
+            ShowTipManager.instance.ShowTip($"组成单词+{sequence.Length * 2}分");
             return sequence.Length * 2;
         }
         

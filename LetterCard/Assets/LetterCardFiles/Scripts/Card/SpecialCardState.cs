@@ -22,7 +22,30 @@ public class SpecialCardState : MonoBehaviour
     }
 
     private bool isChoosingCard;//是否正在选取特殊牌
-    public  SpecialCard chosenCard;//正在选择的牌
+    private SpecialCard chosenCard;//正在选择的牌
+    public SpecialCard ChosenCard 
+    { 
+        get => chosenCard;
+        set 
+        {
+            if (chosenCard != value)
+            {
+                chosenCard = value;
+                if (chosenCard == null)
+                {
+                    specialText.text = "";
+                    useSpecialButton.onClick.RemoveAllListeners();
+                    useSpecialButton.interactable = false;
+                }
+                else
+                {
+                    specialText.text = ChosenCard.specialDescribe;
+                    useSpecialButton.interactable = true;
+                    useSpecialButton.onClick.AddListener(ChosenCard.ActivateEffect);
+                }
+            }
+        } 
+    }
 
     public  Text specialText;//显示功能牌效果的文字
 
@@ -35,30 +58,37 @@ public class SpecialCardState : MonoBehaviour
         instance=this;
     }
 
+    public void Initialize()
+    {
+        IsDeleting = false;
+
+    }
+
     /// <summary>
     /// 是否有特殊牌正在被选择
     /// </summary>
     /// <returns></returns>
     public void CardChoosing(Transform specialCard)
     {
-        //如果已经选择的牌不是这张牌，那么就将这张牌选择上
-        if (chosenCard!= specialCard.GetComponent<SpecialCard>())
+        if(specialCard == null)
         {
-            chosenCard?.DownCard();//将原来的牌降下去
+            ChosenCard?.DownCard();//将原来的牌降下去
+            ChosenCard = null;
+            return;
+
+        }
+        //如果已经选择的牌不是这张牌，那么就将这张牌选择上
+        if (ChosenCard!= specialCard.GetComponent<SpecialCard>())
+        {
+            ChosenCard?.DownCard();//将原来的牌降下去
             specialCard.GetComponent<SpecialCard>().UpCard();
-            chosenCard = specialCard.GetComponent<SpecialCard>();
-            specialText.text = chosenCard.specialDescribe;
-            useSpecialButton.interactable= true;
-            useSpecialButton.onClick.AddListener(chosenCard.ActivateEffect);
+            ChosenCard = specialCard.GetComponent<SpecialCard>();
         }
         else//如果选择的是这张牌
         {
             //将这张牌降下去
             specialCard.GetComponent<SpecialCard>().DownCard();
-            chosenCard = null;
-            specialText.text = "";
-            useSpecialButton.interactable = false;
-            useSpecialButton.onClick.RemoveAllListeners();
+            ChosenCard = null;
         }
     }
 }
