@@ -26,8 +26,8 @@ public class LevelButton : MonoBehaviour
     {
         this.levelNumber = levelNumber;
 
-        levelText.text = $"LEVEL{levelNumber}";
-        scoreText.text = bestScore > 0 ? $"BEST: {bestScore}" : "NOT PLAYED";
+        levelText.text = $"L{levelNumber}";
+        scoreText.text = bestScore > 0 ? $"BEST: {bestScore}" : "NOT PLAY";
 
         UpdateLockState(isLocked);
         button.onClick.AddListener(() => onClick?.Invoke());

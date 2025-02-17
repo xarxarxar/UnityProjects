@@ -10,7 +10,7 @@ using UnityEngine.UI;
 public class SpecialCard : Card
 {
     // 特殊效果类型，定义了该特殊卡牌的效果种类，例如：移除卡牌、交换卡牌等。
-    private SpecialEffectType effectType;
+    [SerializeField] private  SpecialEffectType effectType;
     public SpecialEffectType EffectType
     { 
         get => effectType; 
@@ -59,6 +59,7 @@ public class SpecialCard : Card
 
     private void OnEnable()
     {
+        Debug.Log("特殊卡牌的onenable");
         base.OnEnable();
         OnInstantiate();
         GetComponent<Button>().onClick.AddListener(ChooseCard);
@@ -66,6 +67,7 @@ public class SpecialCard : Card
 
     private void OnInstantiate()
     {
+        Debug.Log($"SpecialEffectType is {EffectType}");
         // 这里是具体效果的实现，可能会根据 effectType 来执行不同的操作。
         // 例如，移除卡牌、交换卡牌等。
         switch (EffectType)
@@ -75,7 +77,6 @@ public class SpecialCard : Card
                 largeLetter.text = smallLetter.text = "除";
                 largeLetter.color = smallLetter.color = Color.black; 
                 bottomLetter.text = "-1";
-
                 specialDescribe = "移除一张字母牌";
                 break;
             case SpecialEffectType.AddOneLetterHand:
@@ -101,6 +102,15 @@ public class SpecialCard : Card
                 bottomLetter.text = "+1";
 
                 specialDescribe = "功能牌上限+1";
+                break;
+
+            case SpecialEffectType.AddOneStateHand:
+                // 实现增加一个功能手牌上限的效果
+                largeLetter.text = smallLetter.text = "状";
+                largeLetter.color = smallLetter.color = Color.black;
+                bottomLetter.text = "+1";
+
+                specialDescribe = "状态上限+1";
                 break;
             case SpecialEffectType.RandomRedCard:
                 // 实现获取一张随机红色卡牌的效果
@@ -134,6 +144,38 @@ public class SpecialCard : Card
 
                 specialDescribe = "随机抽取一张绿色字母牌";
                 break;
+            case SpecialEffectType.ExtraScoreOnlyOne:
+                // 实现获取一张随机绿色卡牌的效果
+                largeLetter.text = smallLetter.text = "单";
+                largeLetter.color = smallLetter.color = colorMap['G'];
+                bottomLetter.text = "+2";
+
+                specialDescribe = "只出一张牌时，分数加2";
+                break;
+            case SpecialEffectType.ExtraDrawLetter:
+                // 实现获取一张随机绿色卡牌的效果
+                largeLetter.text = smallLetter.text = "抽";
+                largeLetter.color = smallLetter.color = colorMap['G'];
+                bottomLetter.text = "+1";
+
+                specialDescribe = "每回合多抽一次字母牌";
+                break;
+            case SpecialEffectType.ExtraDrawSpecial:
+                // 实现获取一张随机绿色卡牌的效果
+                largeLetter.text = smallLetter.text = "能";
+                largeLetter.color = smallLetter.color = colorMap['G'];
+                bottomLetter.text = "+1";
+
+                specialDescribe = "每回合多抽一次功能牌";
+                break;
+            case SpecialEffectType.ExtraScoreLevelOver:
+                // 实现获取一张随机绿色卡牌的效果
+                largeLetter.text = smallLetter.text = "增";
+                largeLetter.color = smallLetter.color = colorMap['G'];
+                bottomLetter.text = "+1";
+
+                specialDescribe = "关卡结束时额外加10分";
+                break;
 
         }
     }
@@ -158,6 +200,7 @@ public class SpecialCard : Card
     // 该方法会根据卡牌的类型来执行不同的效果。
     public override void ActivateEffect()
     {
+        
         // 这里是具体效果的实现，可能会根据 effectType 来执行不同的操作。
         // 例如，移除卡牌、交换卡牌等。
         switch (EffectType)
@@ -165,6 +208,7 @@ public class SpecialCard : Card
             case SpecialEffectType.RemoveCard:
                 // 实现移除卡牌的效果
                 SpecialCardState.instance.IsDeleting = true;
+                Debug.Log($"SpecialCardState.instance.IsDeleting is {SpecialCardState.instance.IsDeleting}");
                 break;
             case SpecialEffectType.AddOneLetterHand:
                 // 实现增加一个字母手牌上限的效果

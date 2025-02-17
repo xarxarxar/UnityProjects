@@ -142,11 +142,13 @@ public class LetterCard : Card, IDragHandler, IEndDragHandler, IPointerUpHandler
     // 拖动过程中更新 UI 元素的位置
     public void OnDrag(PointerEventData eventData)
     {
+        
         if (!SpecialCardState.instance.IsDeleting) return;
         if (!alreadyDrag)//如果刚开始拖动
         {
             originalPosition= rectTransform.anchoredPosition;
             alreadyDrag=true;
+            GetComponent<CanvasGroup>().DOFade(0.5f, 0.3f);  //将透明度调为0.5
         }
 
         rectTransform.position = eventData.position;
@@ -156,7 +158,6 @@ public class LetterCard : Card, IDragHandler, IEndDragHandler, IPointerUpHandler
         if (RectTransformUtility.RectangleContainsScreenPoint(dropArea, screenPoint, Camera.main))
         {
             // 触发指定区域的成功事件（你可以在这里调用方法，或者改变 UI）
-            Debug.Log("有交叉");
             ShowTipManager.instance.DustbinRed();
         }
         else
@@ -169,7 +170,7 @@ public class LetterCard : Card, IDragHandler, IEndDragHandler, IPointerUpHandler
     public void OnEndDrag(PointerEventData eventData)
     {
         if (!alreadyDrag) return;
-        SpecialCardState.instance.IsDeleting = false;
+        //SpecialCardState.instance.IsDeleting = false;
         //// 检查是否在目标区域内
         ///// 确保使用世界空间的坐标来进行判断
         Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(Camera.main, rectTransform.position);
@@ -184,8 +185,8 @@ public class LetterCard : Card, IDragHandler, IEndDragHandler, IPointerUpHandler
             // 如果没有进入指定区域，可以选择将物体放回初始位置
             MoveBackToOriginalPosition();
         }
-        
-        
+        GetComponent<CanvasGroup>().DOFade(1.0f, 0.3f);  //将透明度调为0.5
+
     }
 
     // 点击抬起时触发的方法

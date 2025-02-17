@@ -20,10 +20,17 @@ public class DeckManager : MonoBehaviour
             {SpecialEffectType.AddOneLetterHand, 0.2f},
             {SpecialEffectType.AddOneCacheHand, 0.2f},
             {SpecialEffectType.AddOneSpecialHand, 0.2f},
+            {SpecialEffectType.AddOneStateHand, 0.2f},
+
             {SpecialEffectType.RandomRedCard, 0.3f},
             {SpecialEffectType.RandomYellowCard, 0.3f},
             {SpecialEffectType.RandomGreenCard, 0.3f},
             {SpecialEffectType.RandomBlueCard, 0.3f},
+
+            {SpecialEffectType.ExtraScoreOnlyOne, 0.3f},
+            {SpecialEffectType.ExtraDrawLetter, 0.3f},
+            {SpecialEffectType.ExtraDrawSpecial, 0.3f},
+            {SpecialEffectType.ExtraScoreLevelOver, 0.3f},
         };
     public SpecialCard specialCardPrefab;
 
@@ -230,6 +237,16 @@ public class DeckManager : MonoBehaviour
         }
     }
 
+    public  void DrawDesignCard(SpecialEffectType effectType)
+    {
+        SpecialCard newCard = Instantiate(specialCardPrefab, SpecialHandCard);
+        //SpecialCard newCard = (SpecialCard)cardPool.GetCard();
+        //newCard.transform.SetParent(SpecialHandCard);
+        newCard.EffectType = effectType;
+        specialHandCards.Add(newCard);
+        OnCardDrawn?.Invoke(newCard);
+    }
+
     /// <summary>
     /// 抽取指定颜色的随机字母卡牌
     /// </summary>
@@ -268,16 +285,6 @@ public class DeckManager : MonoBehaviour
         //letterDeck.Remove(selectedCard);
         letterHandCards.Add(newCard);
 
-        // 配置卡牌回收和归还
-        newCard.cardToCache += () =>
-        {
-            
-        };
-        newCard.cardBackHand += () =>
-        {
-            
-        };
-
         // 调用抽牌事件
         OnCardDrawn?.Invoke(newCard);
         return true;
@@ -305,14 +312,7 @@ public class DeckManager : MonoBehaviour
 
         letterDeck.RemoveAt(letterCardIndex);//移出这个卡牌
         letterHandCards.Add(newCard);
-        newCard.cardToCache += () =>
-        {
-            
-        };
-        newCard.cardBackHand += () =>
-        {
-            
-        };
+
         OnCardDrawn?.Invoke(newCard);
     }
 
@@ -335,14 +335,6 @@ public class DeckManager : MonoBehaviour
         newCard.transform.SetParent(LetterHandCard,worldPositionStays:false);
         //letterDeck.RemoveAt(letterCardIndex);//不用移出
         letterHandCards.Add(newCard);
-        newCard.cardToCache += () =>
-        {
-            
-        };
-        newCard.cardBackHand += () =>
-        {
-            
-        };
         OnCardDrawn?.Invoke(newCard);
     }
 
@@ -367,6 +359,7 @@ public class DeckManager : MonoBehaviour
                 SpecialCard newCard = Instantiate(specialCardPrefab, SpecialHandCard);
                 //SpecialCard newCard = (SpecialCard)cardPool.GetCard();
                 //newCard.transform.SetParent(SpecialHandCard);
+                Debug.Log($"card.Item1 is {card.Item1}");
                 newCard.EffectType = card.Item1;
                 specialHandCards.Add(newCard);
                 OnCardDrawn?.Invoke(newCard);

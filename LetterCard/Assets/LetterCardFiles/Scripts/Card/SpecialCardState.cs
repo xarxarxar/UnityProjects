@@ -61,7 +61,6 @@ public class SpecialCardState : MonoBehaviour
     public void Initialize()
     {
         IsDeleting = false;
-
     }
 
     /// <summary>

@@ -92,6 +92,14 @@ public class LevelController : MonoBehaviour
 
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            deckManager.DrawDesignCard(SpecialEffectType.RemoveCard);
+        }
+    }
+
     public void StartLevel(int level)
     {
         GameObject.Find("GameCanvas").GetComponent<Canvas>().enabled = true;//打开游戏场景
