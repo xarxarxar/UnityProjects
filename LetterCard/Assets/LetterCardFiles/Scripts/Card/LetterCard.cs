@@ -113,11 +113,11 @@ public class LetterCard : Card, IDragHandler, IEndDragHandler, IPointerUpHandler
 
     private void OnLetterCardChoose()
     {
+        if (alreadyDrag) return;//如果正在拖拽的话，直接返回
+        AudioManager.instance.PlaySoundEffect("ClickCard");
         //如果在手牌中
         if (isInhand)
         {
-            if (alreadyDrag) return;//如果正在拖拽的话，直接返回
-
             if(!DeckManager.instance.CanDrawCacheCard())
             {
                 ShowTipManager.instance.ShowTip("已达出牌上限");
@@ -142,7 +142,6 @@ public class LetterCard : Card, IDragHandler, IEndDragHandler, IPointerUpHandler
     // 拖动过程中更新 UI 元素的位置
     public void OnDrag(PointerEventData eventData)
     {
-        
         if (!SpecialCardState.instance.IsDeleting) return;
         if (!alreadyDrag)//如果刚开始拖动
         {
@@ -177,6 +176,8 @@ public class LetterCard : Card, IDragHandler, IEndDragHandler, IPointerUpHandler
         if (RectTransformUtility.RectangleContainsScreenPoint(dropArea, screenPoint, Camera.main))
         {
             // 触发指定区域的成功事件（你可以在这里调用方法，或者改变 UI）
+            AudioManager.instance.PlaySoundEffect("DeleteCard");
+            CacheText.RemoveCharacterWithColor(color, letter);
             DeckManager.instance.cardPool.ReturnCard(this);
             SpecialCardState.instance.IsDeleting = false;
         }

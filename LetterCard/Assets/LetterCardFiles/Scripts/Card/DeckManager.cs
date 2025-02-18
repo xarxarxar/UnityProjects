@@ -359,7 +359,6 @@ public class DeckManager : MonoBehaviour
                 SpecialCard newCard = Instantiate(specialCardPrefab, SpecialHandCard);
                 //SpecialCard newCard = (SpecialCard)cardPool.GetCard();
                 //newCard.transform.SetParent(SpecialHandCard);
-                Debug.Log($"card.Item1 is {card.Item1}");
                 newCard.EffectType = card.Item1;
                 specialHandCards.Add(newCard);
                 OnCardDrawn?.Invoke(newCard);

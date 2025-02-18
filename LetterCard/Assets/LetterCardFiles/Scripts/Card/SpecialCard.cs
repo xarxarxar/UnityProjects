@@ -59,7 +59,6 @@ public class SpecialCard : Card
 
     private void OnEnable()
     {
-        Debug.Log("特殊卡牌的onenable");
         base.OnEnable();
         OnInstantiate();
         GetComponent<Button>().onClick.AddListener(ChooseCard);
@@ -67,7 +66,6 @@ public class SpecialCard : Card
 
     private void OnInstantiate()
     {
-        Debug.Log($"SpecialEffectType is {EffectType}");
         // 这里是具体效果的实现，可能会根据 effectType 来执行不同的操作。
         // 例如，移除卡牌、交换卡牌等。
         switch (EffectType)
@@ -183,6 +181,7 @@ public class SpecialCard : Card
     // 当点击 UI 时触发的方法
     public void ChooseCard()
     {
+        AudioManager.instance.PlaySoundEffect("ClickCard");
         SpecialCardState.instance.CardChoosing(transform);
     }
 

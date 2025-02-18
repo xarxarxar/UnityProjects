@@ -34,12 +34,12 @@ public class LevelController : MonoBehaviour
             if(singleScore != value)
             {
                 singleScore = value;
-                singleScoreText.text=value.ToString();
             }
         } 
     }
     public Text totalScoreText;//当前总分数显示text
-    public Text singleScoreText;//单个回合的分数显示text
+    public Text targetScoreText;//当前关卡的目标分数text
+    public Text targetRoundText;//当前关卡的总回合数text
 
 
 
@@ -52,15 +52,31 @@ public class LevelController : MonoBehaviour
         set
         {
             currentRound = value;
-            if (value <= maxRounds)
+            if (value <= MaxRounds)
             {
-                roundText.text = $"{value}/{maxRounds}";
+                roundText.text = $"{value}/{MaxRounds}";
             }
         }
     }
+
+    
+
     public Text roundText;//回合数的text
 
-    public int maxRounds;//回合上限
+    private int maxRounds;//回合上限
+    public int MaxRounds 
+    { 
+        get => maxRounds;
+        set 
+        {
+            if (maxRounds != value)
+            {
+                maxRounds = value;
+                targetRoundText.text = $"回合总数:{value}";
+            }
+        }
+    }
+
 
     public static LevelController instance;
 
@@ -115,15 +131,22 @@ public class LevelController : MonoBehaviour
     {
         if (TotalScore >= levelConfig.targetScore)
         {
-            ShowTipManager.instance.ShowTip("恭喜过关");
+            ShowTipManager.instance.ShowTip("恭喜过关", () =>
+            {
+                GameObject.Find("MainCanvas").GetComponent<Canvas>().enabled = true;
+                GameObject.Find("GameCanvas").GetComponent<Canvas>().enabled = false;//打开游戏场景
+                InfiniteLevelManager.instance.UnlockNextLevel();
+            });
             //过关操作
+            
         }
         else
         {
-            ShowTipManager.instance.ShowTip("未过关");
-            //未过关的操作
-            GameObject.Find("MainCanvas").GetComponent<Canvas>().enabled = true;
-            GameObject.Find("GameCanvas").GetComponent<Canvas>().enabled = false;//打开游戏场景
+            ShowTipManager.instance.ShowTip("未过关",() =>
+            {
+                GameObject.Find("MainCanvas").GetComponent<Canvas>().enabled = true;
+                GameObject.Find("GameCanvas").GetComponent<Canvas>().enabled = false;//打开游戏场景
+            });
         }
     }
 
@@ -134,7 +157,7 @@ public class LevelController : MonoBehaviour
     {
         TotalScore = 0;//总分初始化为0
         SingleScore = 0;//单回合分数初始化为0
-        maxRounds = levelConfig.rounds;
+        MaxRounds = levelConfig.rounds;
         CurrentRound = 1;
     }
 
@@ -143,9 +166,8 @@ public class LevelController : MonoBehaviour
     /// </summary>
     void InitializeText()
     {
-        singleScoreText.text = "0";
-        singleScoreText.text = SingleScore.ToString();
-        roundText.text = $"{CurrentRound}/{maxRounds}";
+        targetScoreText.text = $"目标分数:{levelConfig.targetScore}";
+        roundText.text = $"{CurrentRound}/{MaxRounds}";
     }
 
     /// <summary>
@@ -164,9 +186,10 @@ public class LevelController : MonoBehaviour
     /// <param name="singleRoundScore">单回合分数</param>
     public void OverRound(int singleRoundScore)
     {
+        
         SingleScore = singleRoundScore;//单回合分数
         TotalScore += SingleScore;//总分累加
-        if(CurrentRound == maxRounds)
+        if(CurrentRound == MaxRounds)
         {
             EndLevel();
         }
@@ -177,13 +200,13 @@ public class LevelController : MonoBehaviour
         
     }
 
-
     /// <summary>
     /// 出牌
     /// </summary>
     public void PlayCards()
     {
         deckManager.PlayCard();
+        AudioManager.instance.PlaySoundEffect("PlayCard");
         CacheText.ClearTextShow();
     }
 

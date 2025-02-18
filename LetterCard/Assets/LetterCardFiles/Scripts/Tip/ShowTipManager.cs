@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class ShowTipManager : MonoBehaviour
@@ -12,7 +13,7 @@ public class ShowTipManager : MonoBehaviour
 
     public GameObject dustbinGameobject;
 
-    private Queue<string> tipTexts = new Queue<string>();
+    private Queue<(string,UnityAction)> tipTexts = new Queue<(string, UnityAction)>();
 
     private void Awake()
     {
@@ -25,10 +26,10 @@ public class ShowTipManager : MonoBehaviour
         Coroutine cor= StartCoroutine(InstantiateObjects());
     }
 
-    public void ShowTip(string showText)
+    public void ShowTip(string showText,UnityAction callback=null)
     {
-        if (tipTexts.Count != 0&&tipTexts.Last() == showText) return;
-        tipTexts.Enqueue(showText);
+        if (tipTexts.Count != 0&&tipTexts.Last().Item1 == showText) return;
+        tipTexts.Enqueue((showText,callback));
     }
 
     public void ToggleDustbin(bool isShow)
@@ -62,17 +63,22 @@ public class ShowTipManager : MonoBehaviour
             if (tipTexts.Count > 0)
             {
                 // 实例化队列中的第一个物体
-                string firstText = tipTexts.Dequeue();
-                Instantiate(tip, tipParent).GetComponent<Tip>().showString = firstText;
+                (string,UnityAction) firstText = tipTexts.Dequeue();
+                Instantiate(tip, tipParent).GetComponent<Tip>().showString = firstText.Item1;
                 delay = tip.duration;
+                AudioManager.instance.PlaySoundEffect("GetScore");
+                // 等待 1 秒
+                yield return new WaitForSeconds(delay);
+                firstText.Item2?.Invoke();
             }
             else
             {
                 delay = 0.2f;
+                // 等待 1 秒
+                yield return new WaitForSeconds(delay);
             }
 
-            // 等待 1 秒
-            yield return new WaitForSeconds(delay);
+            
         }
     }
 }

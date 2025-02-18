@@ -7,10 +7,11 @@ using UnityEngine.UI;
 public class LevelButton : MonoBehaviour
 {
     [SerializeField] private Text levelText;
-    [SerializeField] private Text scoreText;
+    //[SerializeField] private Text scoreText;
     [SerializeField] private Image background;
-    [SerializeField] private Color lockedColor;
-    [SerializeField] private Color unlockedColor;
+    [SerializeField] private Image lockIcon;
+    //[SerializeField] private Color lockedColor;
+    //[SerializeField] private Color unlockedColor;
 
     [SerializeField] private int levelNumber;
     private Button button;
@@ -22,12 +23,11 @@ public class LevelButton : MonoBehaviour
         button = GetComponent<Button>();
     }
 
-    public void Initialize(int levelNumber, bool isLocked, int bestScore, System.Action onClick)
+    public void Initialize(int levelNumber, bool isLocked,  System.Action onClick)
     {
         this.levelNumber = levelNumber;
 
-        levelText.text = $"L{levelNumber}";
-        scoreText.text = bestScore > 0 ? $"BEST: {bestScore}" : "NOT PLAY";
+        levelText.text = $"{levelNumber}";
 
         UpdateLockState(isLocked);
         button.onClick.AddListener(() => onClick?.Invoke());
@@ -35,8 +35,8 @@ public class LevelButton : MonoBehaviour
 
     public void UpdateLockState(bool isLocked)
     {
-        //lockIcon.gameObject.SetActive(isLocked);
-        background.color = isLocked ? lockedColor : unlockedColor;
+        lockIcon.gameObject.SetActive(isLocked);
+        //background.color = isLocked ? lockedColor : unlockedColor;
         button.interactable = !isLocked;
     }
 
@@ -44,6 +44,5 @@ public class LevelButton : MonoBehaviour
     {
         button.onClick.RemoveAllListeners();
         levelNumber = 0;
-        scoreText.text = "";
     }
 }

@@ -5,53 +5,86 @@ using UnityEngine.UI;
 
 public class InfiniteLevelManager : MonoBehaviour
 {
+    public static InfiniteLevelManager instance;
     [Header("UI Components")]
     [SerializeField] private Transform levelButtonContainer;
     [SerializeField] private GameObject levelButtonPrefab;
     [SerializeField] private ScrollRect scrollRect;
 
-    [Header("Generation Settings")]
-    [SerializeField] private int initialPoolSize = 20; // 初始生成的关卡按钮数量
-    [SerializeField] private int loadThreshold = 5;    // 提前加载阈值
-
     private int currentMaxLevel = 1;  // 当前最大关卡
     private int unlockedLevel = 1;    // 当前解锁的关卡
     private List<LevelButton> buttonList = new List<LevelButton>();
 
-    // 玩家数据存储结构
-    private class PlayerProgress
-    {
-        public int unlockedLevel = 1;
-        public Dictionary<int, int> levelScores = new Dictionary<int, int>();
+    //页面
+    private int currentPage = 1;
+    [SerializeField] private Button previousButton;
+    [SerializeField] private Button nextButton;
+    public int CurrentPage 
+    { 
+        get => currentPage;
+        set 
+        {
+            if (currentPage != value)
+            {
+                currentPage = value;
+            }
+            previousButton.interactable = currentPage != 1;
+        } 
     }
-    private PlayerProgress progress;
+
+    PlayerInfo playInfo;
+
+    private void Awake()
+    {
+        instance = this;
+    }
+
 
     void Start()
     {
-        LoadProgress();
         GenerateInitialLevels();
-        StartCoroutine(MonitorScrollPosition());
         UpdateButtonStates();
+
+        
     }
 
     // 生成初始关卡
     private void GenerateInitialLevels()
     {
-        for (int i = 1; i <= initialPoolSize; i++)
+        //初始化按钮状态
+        previousButton.onClick.AddListener(PreviousPage);
+        nextButton.onClick.AddListener(NextPage);
+        CurrentPage = 1;
+
+        for (int i = 1; i <= 15; i++)
         {
             CreateLevelButton(i);
         }
-        currentMaxLevel = initialPoolSize;
+        currentMaxLevel = 1;
     }
 
     // 创建关卡按钮
     private void CreateLevelButton(int levelNumber)
     {
-        GameObject buttonObj = Instantiate(levelButtonPrefab, levelButtonContainer);
-        LevelButton button = buttonObj.GetComponent<LevelButton>();
-        int bestScore = progress.levelScores.ContainsKey(levelNumber) ? progress.levelScores[levelNumber] : 0;
-        button.Initialize(levelNumber, levelNumber <= unlockedLevel, bestScore, () => OnLevelButtonClick(levelNumber));
-        buttonList.Add(button);
+        //Debug.Log($"levelNumber is {levelNumber}");
+        LevelButton foundButton = buttonList.Find(button => button.LevelNumber == levelNumber);
+        if (foundButton!=null)//已存在
+        {
+            return;
+        }
+        if (buttonList.Count < 15)
+        {
+            GameObject buttonObj = Instantiate(levelButtonPrefab, levelButtonContainer);
+            LevelButton button = buttonObj.GetComponent<LevelButton>();
+            button.Initialize(levelNumber, levelNumber >= unlockedLevel, () => OnLevelButtonClick(levelNumber));
+            buttonList.Add(button);
+        }
+        else
+        {
+            LevelButton button = buttonList[(levelNumber-1) % 15 ];
+            button.Initialize(levelNumber, levelNumber >= unlockedLevel, () => OnLevelButtonClick(levelNumber));
+        }
+        
     }
 
     // 处理关卡按钮点击事件
@@ -69,37 +102,33 @@ public class InfiniteLevelManager : MonoBehaviour
         }
     }
 
-    // 每次滚动时检查是否需要加载更多关卡
-    private IEnumerator MonitorScrollPosition()
-    {
-        while (true)
-        {
-            float normalizedPosition = 1 - scrollRect.verticalNormalizedPosition;
-            int visibleMaxLevel = Mathf.FloorToInt(normalizedPosition * currentMaxLevel);
 
-            if (currentMaxLevel - visibleMaxLevel < loadThreshold)
-            {
-                LoadMoreLevels(10); // 每次加载10个新关卡
-            }
-            yield return new WaitForSeconds(0.5f);
+    /// <summary>
+    /// 下一页
+    /// </summary>
+    public void NextPage()
+    {
+        CurrentPage++;
+        for (int i = 15*(CurrentPage-1)+1; i <= 15 * (CurrentPage - 1) + 15; i++)
+        {
+            CreateLevelButton(i);
         }
     }
 
-    // 加载更多关卡
-    private void LoadMoreLevels(int count)
+    public void PreviousPage()
     {
-        for (int i = 1; i <= count; i++)
+        if (CurrentPage == 1) return;
+        CurrentPage --;
+        for (int i = 15 * (CurrentPage - 1) + 1; i <= 15 * (CurrentPage - 1) + 15; i++)
         {
-            CreateLevelButton(currentMaxLevel + i);
+            CreateLevelButton(i);
         }
-        currentMaxLevel += count;
     }
 
     // 解锁下一个关卡
     public void UnlockNextLevel()
     {
         unlockedLevel++;
-        SaveProgress();
         UpdateButtonStates();
     }
 
@@ -113,26 +142,6 @@ public class InfiniteLevelManager : MonoBehaviour
     }
 
     #region Progress Management
-    private void LoadProgress()
-    {
-        string json = PlayerPrefs.GetString("PlayerProgress", "");
-        if (!string.IsNullOrEmpty(json))
-        {
-            progress = JsonUtility.FromJson<PlayerProgress>(json);
-        }
-        else
-        {
-            progress = new PlayerProgress();
-        }
-        unlockedLevel = progress.unlockedLevel;
-    }
 
-    private void SaveProgress()
-    {
-        progress.unlockedLevel = unlockedLevel;
-        string json = JsonUtility.ToJson(progress);
-        PlayerPrefs.SetString("PlayerProgress", json);
-        PlayerPrefs.Save();
-    }
     #endregion
 }
