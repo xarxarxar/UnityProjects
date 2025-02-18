@@ -6,8 +6,8 @@ public class AudioManager : MonoBehaviour
     public static AudioManager instance;
     public AudioSettings audioSettings; // 引用 AudioSettings ScriptableObject
 
-    private AudioSource musicSource;  // 用于播放背景音乐
-    private AudioSource effectsSource;  // 用于播放音效
+    [SerializeField]private AudioSource musicSource;  // 用于播放背景音乐
+    [SerializeField]private AudioSource effectsSource;  // 用于播放音效
 
     private void Awake()
     {
@@ -18,9 +18,6 @@ public class AudioManager : MonoBehaviour
     // Start 用于初始化
     private void Start()
     {
-        // 获取 AudioSource 组件，如果没有则添加
-        musicSource = gameObject.AddComponent<AudioSource>();
-        effectsSource = gameObject.AddComponent<AudioSource>();
 
         // 初始化音源设置
         InitializeAudio();

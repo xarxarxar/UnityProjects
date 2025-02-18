@@ -28,7 +28,7 @@ public class InfiniteLevelManager : MonoBehaviour
             {
                 currentPage = value;
             }
-            previousButton.interactable = currentPage != 1;
+            previousButton.gameObject.SetActive(currentPage != 1);
         } 
     }
 
@@ -76,13 +76,13 @@ public class InfiniteLevelManager : MonoBehaviour
         {
             GameObject buttonObj = Instantiate(levelButtonPrefab, levelButtonContainer);
             LevelButton button = buttonObj.GetComponent<LevelButton>();
-            button.Initialize(levelNumber, levelNumber >= unlockedLevel, () => OnLevelButtonClick(levelNumber));
+            button.Initialize(levelNumber, levelNumber > unlockedLevel, () => OnLevelButtonClick(levelNumber));
             buttonList.Add(button);
         }
         else
         {
             LevelButton button = buttonList[(levelNumber-1) % 15 ];
-            button.Initialize(levelNumber, levelNumber >= unlockedLevel, () => OnLevelButtonClick(levelNumber));
+            button.Initialize(levelNumber, levelNumber >unlockedLevel, () => OnLevelButtonClick(levelNumber));
         }
         
     }
