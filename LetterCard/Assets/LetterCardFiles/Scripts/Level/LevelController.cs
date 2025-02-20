@@ -54,7 +54,7 @@ public class LevelController : MonoBehaviour
             currentRound = value;
             if (value <= MaxRounds)
             {
-                roundText.text = $"{value}/{MaxRounds}";
+                roundText.text = $"当前回合:{value}";
             }
         }
     }
@@ -144,7 +144,7 @@ public class LevelController : MonoBehaviour
         {
             ShowTipManager.instance.ShowTip("未过关",() =>
             {
-                GameObject.Find("MainCanvas").GetComponent<Canvas>().enabled = true;
+                GameObject.Find("GameOverCanvas").GetComponent<Canvas>().enabled = true;
                 GameObject.Find("GameCanvas").GetComponent<Canvas>().enabled = false;//打开游戏场景
             });
         }
@@ -167,7 +167,7 @@ public class LevelController : MonoBehaviour
     void InitializeText()
     {
         targetScoreText.text = $"目标分数:{levelConfig.targetScore}";
-        roundText.text = $"{CurrentRound}/{MaxRounds}";
+        roundText.text = $"当前回合:{CurrentRound}";
     }
 
     /// <summary>
