@@ -44,21 +44,8 @@ public class DeckManager : MonoBehaviour
     [HideInInspector]public List<Card> letterHandCards = new List<Card>();
     [HideInInspector] public List<Card> specialHandCards = new List<Card>();
 
-
-    // 回合
-    public event UnityAction<int> roundOver;//回合结束的事件,参数为单回合的分数
-
-    // 关卡
-    public event UnityAction<int> levelOver;//关卡结束操作
-    
-
     // 配置参数
-    [HideInInspector]public LevelConfig config;
     public LetterCard letterCardPrefab; // 字母牌预制体
-    public SpecialCard[] specialCardTemplates; // 特殊牌模板
-    public int maxNormalCards;//手牌上限
-    public int maxSpecialCards;//功能牌上限
-    public int maxCacheCards;//缓存牌上限
 
     // 事件
     public UnityEvent OnHandFull;
@@ -74,7 +61,6 @@ public class DeckManager : MonoBehaviour
         InitializeLetterDeck();
         InitializeSpecialCardPool();
         DrawCards(3, 1);//抽取三张字母牌和一张特殊牌
-        
     }
 
     /// <summary>
@@ -82,10 +68,6 @@ public class DeckManager : MonoBehaviour
     /// </summary>
     void InitializeLetterDeck()
     {
-        maxNormalCards=config.maxNormalCards;
-        maxSpecialCards=config.maxSpecialCards;
-        maxCacheCards=config.maxCacheCards;
-
         // 生成包含大小写字母的数组
         char[] allLetters = GetAllLetters();
         // 创建所有字母牌实例
@@ -105,7 +87,6 @@ public class DeckManager : MonoBehaviour
     /// </summary>
     void InitializeSpecialCardPool()
     {
-        
         // 遍历所有的 SpecialEffectType 枚举类型
         foreach (SpecialEffectType effect in Enum.GetValues(typeof(SpecialEffectType)))
         {
@@ -344,10 +325,10 @@ public class DeckManager : MonoBehaviour
     void DrawSpecialCard()
     {
         //根据特殊牌出现的概率执行代码
-        if(UnityEngine.Random.value >=config. specialCardProbability)
-        {
-            return;
-        }
+        //if(UnityEngine.Random.value >=config. specialCardProbability)
+        //{
+        //    return;
+        //}
         // 根据权重随机选择特殊牌
         float totalWeight = specialCardPool.Sum(c => c.Item2);
         float randomPoint = UnityEngine.Random.Range(0, totalWeight);
@@ -404,9 +385,7 @@ public class DeckManager : MonoBehaviour
     /// <returns></returns>
     int GetCurrentMaxNormal()
     {
-        int baseValue = maxNormalCards;
-        // 这里可以添加临时加成逻辑
-        return baseValue;
+        return 10;
     }
 
     /// <summary>
@@ -415,9 +394,7 @@ public class DeckManager : MonoBehaviour
     /// <returns></returns>
     int GetCurrentMaxSpecial()
     {
-        int baseValue = maxSpecialCards;
-        // 这里可以添加临时加成逻辑
-        return baseValue;
+        return 10;
     }
 
     /// <summary>
@@ -426,9 +403,7 @@ public class DeckManager : MonoBehaviour
     /// <returns></returns>
     int GetCurrentMaxCache()
     {
-        int baseValue = maxCacheCards;
-        // 这里可以添加临时加成逻辑
-        return baseValue;
+        return 10;
     }
 
     /// <summary>
@@ -458,32 +433,21 @@ public class DeckManager : MonoBehaviour
             cardPool.ReturnCard(child);
             letterHandCards.Remove(child);//从手牌中移出
         }
-        roundOver?.Invoke(singleScore);
-    }
+        //roundOver?.Invoke(singleScore);
+    } 
 
-    ///// <summary>
-    ///// 弃牌方法
-    ///// </summary>
-    ///// <param name="card">需要丢弃的卡牌</param>
-    //public void DiscardLetterCard(LetterCard letterCard)
-    //{
-    //    if (letterHandCards.Contains(letterCard))
-    //    {
-    //        letterHandCards.Remove(letterCard);
-
-    //        letterDeck.Add(letterCard); // 字母牌返回牌堆底部
-    //    }
-    //}
-
-    // 生成全部大小写字母的数组
+    // 生成全部字母的数组
     char[] GetAllLetters()
     {
         // 使用 'A' 到 'Z' 和 'a' 到 'z' 的字符代码生成字母
-        char[] upperCase = Enumerable.Range('A', 26).Select(i => (char)i).ToArray();
+        //char[] upperCase = Enumerable.Range('A', 26).Select(i => (char)i).ToArray();
         char[] lowerCase = Enumerable.Range('a', 26).Select(i => (char)i).ToArray();
 
         // 合并大写字母和小写字母
-        return upperCase.Concat(lowerCase).ToArray();
+        //return upperCase.Concat(lowerCase).ToArray();
+
+        //仅使用小写字母
+        return lowerCase.ToArray();
     }
 }
 

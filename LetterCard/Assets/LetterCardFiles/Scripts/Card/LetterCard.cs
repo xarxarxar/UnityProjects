@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 // LetterCard 类是Card的子类，表示字母卡牌。
 // 字母卡牌拥有一个字母和大小写的属性。
-[RequireComponent(typeof(Button))] // 确保按钮组件存在
+
 public class LetterCard : Card, IDragHandler, IEndDragHandler, IPointerUpHandler
 {
     [SerializeField] private Text largeLetter;//中间的大字母
@@ -51,11 +51,8 @@ public class LetterCard : Card, IDragHandler, IEndDragHandler, IPointerUpHandler
 
         } 
     }
-
-    
-
     // 是否是大写字母，标识该卡牌上的字母是大写还是小写。
-    public bool isUpperCase;
+    //public bool isUpperCase;
 
     //是否在手里，如果不在手里则在暂存池里等待出牌
     private bool isInhand=true;

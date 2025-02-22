@@ -2,16 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// 游戏入口
-/// </summary>
-public class GameEntrance : MonoBehaviour
+public class GameConfig : MonoBehaviour
 {
     // Start is called before the first frame update
     void Start()
     {
-        GameManager.Instance.StartChallenge();//开始挑战
-
+        
     }
 
     // Update is called once per frame

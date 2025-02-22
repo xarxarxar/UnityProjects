@@ -88,24 +88,6 @@ public class LevelController : MonoBehaviour
     private void Start()
     {
         deckManager=DeckManager.instance;
-        deckManager.roundOver +=(singleRoundScore)=>
-        {
-            OverRound(singleRoundScore);
-        };
-
-        deckManager.levelOver += (totalScore) =>
-        {
-            if(totalScore <deckManager.config.targetScore)
-            {
-                Debug.Log("本关卡失败");
-            }
-            else
-            {
-                Debug.Log("通关");
-            }
-        };
-
-
     }
 
     private void Update()
@@ -120,7 +102,6 @@ public class LevelController : MonoBehaviour
     {
         GameObject.Find("GameCanvas").GetComponent<Canvas>().enabled = true;//打开游戏场景
         levelConfig = LevelConfigManager.instance.localDatabase.levels[level-1];
-        deckManager.config= levelConfig;
 
         InitializeValue();
         InitializeText();
@@ -225,7 +206,6 @@ public class LevelController : MonoBehaviour
     public void IncreaseHandLimit(int count)
     {
         // 这里可以修改DeckManager的内部状态
-        deckManager.maxNormalCards += count;
     }
 
     /// <summary>
@@ -235,7 +215,6 @@ public class LevelController : MonoBehaviour
     public void IncreaseCacheLimit(int count)
     {
         // 这里可以修改DeckManager的内部状态
-        deckManager.maxCacheCards += count;
     }
 
     /// <summary>
@@ -245,6 +224,5 @@ public class LevelController : MonoBehaviour
     public void IncreaseSpecialLimit(int count)
     {
         // 这里可以修改DeckManager的内部状态
-        deckManager.maxSpecialCards += count;
     }
 }
