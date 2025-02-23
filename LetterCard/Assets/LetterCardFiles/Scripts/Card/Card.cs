@@ -23,9 +23,9 @@ public abstract class Card : MonoBehaviour
 
     protected void OnEnable()
     {
-        GetComponent<RectTransform>().anchoredPosition = new Vector2(GetComponent<RectTransform>().anchoredPosition.x, 100);
+        //GetComponent<RectTransform>().anchoredPosition = new Vector2(GetComponent<RectTransform>().anchoredPosition.x, 100);
         // 设置卡牌的位置
-        GetComponent<RectTransform>().DOAnchorPosY(0, 0.5f).SetEase(Ease.OutQuad);// 设置缓动效果
+        //GetComponent<RectTransform>().DOAnchorPosY(0, 0.5f).SetEase(Ease.OutQuad);// 设置缓动效果
     }
 
     

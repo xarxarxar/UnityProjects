@@ -5,13 +5,14 @@ using UnityEngine;
 public class CardPool : MonoBehaviour
 {
     public GameObject cardPrefab;      // 卡牌的预设（Prefab）
-    public Transform poolParent;       // 存放卡牌的父物体
+    private Transform poolParent;       // 暂时存放卡牌的卡牌池
     public int initialSize = 10;       // 初始池大小
 
     private Queue<Card> cardPool = new Queue<Card>();  // 存放卡牌的队列
 
     void Start()
     {
+        poolParent=GetComponent<Transform>();
         // 初始化对象池
         InitializePool();
     }

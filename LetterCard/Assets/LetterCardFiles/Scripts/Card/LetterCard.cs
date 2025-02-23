@@ -5,11 +5,13 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Lean.Touch;
+
 
 // LetterCard 类是Card的子类，表示字母卡牌。
 // 字母卡牌拥有一个字母和大小写的属性。
 
-public class LetterCard : Card, IDragHandler, IEndDragHandler, IPointerUpHandler
+public class LetterCard : Card
 {
     [SerializeField] private Text largeLetter;//中间的大字母
     [SerializeField] private Text smallLetter;//左上角的小字母
@@ -72,6 +74,11 @@ public class LetterCard : Card, IDragHandler, IEndDragHandler, IPointerUpHandler
 
     float cardWidth = 900 / 7.0f;
 
+    private float lastClickTime = 0;
+    private const float doubleClickTime = 0.3f; // 双击最大间隔时间
+    private Vector3 dragOffset;
+    private bool waitingForSecondClick = false;
+
     private void Start()
     {
         OnInstantiate();//实例化之后的操作
@@ -81,6 +88,8 @@ public class LetterCard : Card, IDragHandler, IEndDragHandler, IPointerUpHandler
     {
         base.OnEnable();
         OnLetterCardShow();
+        LeanTouch.OnFingerSwipe += OnFingerSwipe;
+
     }
 
     /// <summary>
@@ -88,12 +97,19 @@ public class LetterCard : Card, IDragHandler, IEndDragHandler, IPointerUpHandler
     /// </summary>
     public void OnInstantiate()
     {
-        GetComponent<Button>().onClick.AddListener(OnLetterCardChoose);
-        rectTransform = GetComponent<RectTransform>();
-        rectTransform.sizeDelta = new Vector2(cardWidth, rectTransform.sizeDelta.y);
 
         dropArea = ShowTipManager.instance.dustbinGameobject.GetComponent<RectTransform>();
         //Debug.Log($"ScreenWidth为{WechatManager.ScreenWidth},ScreenHeight为{WechatManager.ScreenHeight},windowWidth={WechatManager.WindowWidth},windowHeight={WechatManager.WindowHeight},dpr为{WechatManager.DPR}");
+    }
+
+    // 处理滑动事件
+    private void OnFingerSwipe(LeanFinger finger)
+    {
+        Debug.Log("click");
+        if (finger.IsOverGui) return; // 忽略 UI 上的操作
+        // 将屏幕坐标转换为世界坐标
+        Vector3 worldPos = finger.GetWorldPosition(10f); // Z 深度
+        transform.position = worldPos;
     }
 
     /// <summary>
@@ -108,121 +124,27 @@ public class LetterCard : Card, IDragHandler, IEndDragHandler, IPointerUpHandler
         largeLetter.color = colorMap[Color];
     }
 
-    private void OnLetterCardChoose()
-    {
-        if (alreadyDrag) return;//如果正在拖拽的话，直接返回
-        AudioManager.instance.PlaySoundEffect("ClickCard");
-        //如果在手牌中
-        if (isInhand)
-        {
-            if(!DeckManager.instance.CanDrawCacheCard())
-            {
-                ShowTipManager.instance.ShowTip("已达出牌上限");
-                return;
-            }
 
-            transform.SetParent(DeckManager.instance.cachePool, worldPositionStays: false);
-            CacheText.AddCharacterWithColor(color, letter);
-            cardToCache?.Invoke();
-            isInhand = false;
-            
-        }
-        else
-        {
-            transform.SetParent(DeckManager.instance.LetterHandCard, worldPositionStays: false);
-            CacheText.RemoveCharacterWithColor(color, letter);
-            cardBackHand?.Invoke();
-            isInhand = true;
-        }
-    }
 
-    // 拖动过程中更新 UI 元素的位置
-    public void OnDrag(PointerEventData eventData)
-    {
-        if (!SpecialCardState.instance.IsDeleting) return;
-        if (!alreadyDrag)//如果刚开始拖动
-        {
-            originalPosition= rectTransform.anchoredPosition;
-            alreadyDrag=true;
-            GetComponent<CanvasGroup>().DOFade(0.5f, 0.3f);  //将透明度调为0.5
-        }
 
-        rectTransform.position = eventData.position;
 
-        // 确保使用世界空间的坐标来进行判断
-        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(Camera.main, rectTransform.position);
-        if (RectTransformUtility.RectangleContainsScreenPoint(dropArea, screenPoint, Camera.main))
-        {
-            // 触发指定区域的成功事件（你可以在这里调用方法，或者改变 UI）
-            ShowTipManager.instance.DustbinRed();
-        }
-        else
-        {
-            ShowTipManager.instance.DustbinWhite();
-        }
-    }
 
-    // 拖动结束时检查是否进入指定区域
-    public void OnEndDrag(PointerEventData eventData)
-    {
-        if (!alreadyDrag) return;
-        //SpecialCardState.instance.IsDeleting = false;
-        //// 检查是否在目标区域内
-        ///// 确保使用世界空间的坐标来进行判断
-        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(Camera.main, rectTransform.position);
-        if (RectTransformUtility.RectangleContainsScreenPoint(dropArea, screenPoint, Camera.main))
-        {
-            // 触发指定区域的成功事件（你可以在这里调用方法，或者改变 UI）
-            AudioManager.instance.PlaySoundEffect("DeleteCard");
-            CacheText.RemoveCharacterWithColor(color, letter);
-            DeckManager.instance.cardPool.ReturnCard(this);
-            SpecialCardState.instance.IsDeleting = false;
-        }
-        else
-        {
-            // 如果没有进入指定区域，可以选择将物体放回初始位置
-            MoveBackToOriginalPosition();
-        }
-        GetComponent<CanvasGroup>().DOFade(1.0f, 0.3f);  //将透明度调为0.5
 
-    }
 
-    // 点击抬起时触发的方法
-    public void OnPointerUp(PointerEventData eventData)
-    {
-        //Debug.Log("抬起");
-        //// 检查是否在目标区域内
-        //if (RectTransformUtility.RectangleContainsScreenPoint(dropArea, eventData.position, Camera.main))
-        //{
-        //    // 触发成功的方法
-        //    TriggerSuccess();
-        //}
-        //else
-        //{
-        //    // 如果没有在指定区域，可以选择将物体放回初始位置
-        //    rectTransform.position = originalPosition;
-        //}
-    }
 
-    // 成功拖动到目标区域时调用的方法
-    private void TriggerSuccess()
-    {
-        Debug.Log("成功拖动到指定区域！");
-        //if (successMessage != null)
-        //{
-        //    successMessage.SetActive(true);  // 显示成功消息
-        //}
-        //// 你可以在这里添加任何你需要触发的逻辑或动画
-    }
 
-    // 使用 DOTween 将物体平滑移动回原位置
-    private void MoveBackToOriginalPosition()
-    {
-        rectTransform.DOAnchorPos(originalPosition, 0.5f)  // 平滑移动回原位置
-            .SetEase(Ease.OutQuad)
-            .OnComplete(() =>
-            {
-                alreadyDrag = false;//设置为不在拖动中
-            });  // 设置缓动效果
-    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
