@@ -13,30 +13,12 @@ public class DeckManager : MonoBehaviour
     public CardPool cardPool;
     [SerializeField]private List<(char,char)> letterDeck = new List<(char, char)>();
     private List<(SpecialEffectType,float)> specialCardPool = new List<(SpecialEffectType, float)>();
-    Dictionary<SpecialEffectType, float> specialCardWeightDic =
-        new Dictionary<SpecialEffectType, float>()
-        {
-            {SpecialEffectType.RemoveCard, 0.2f},
-            {SpecialEffectType.AddOneLetterHand, 0.2f},
-            {SpecialEffectType.AddOneCacheHand, 0.2f},
-            {SpecialEffectType.AddOneSpecialHand, 0.2f},
-            {SpecialEffectType.AddOneStateHand, 0.2f},
-
-            {SpecialEffectType.RandomRedCard, 0.3f},
-            {SpecialEffectType.RandomYellowCard, 0.3f},
-            {SpecialEffectType.RandomGreenCard, 0.3f},
-            {SpecialEffectType.RandomBlueCard, 0.3f},
-
-            {SpecialEffectType.ExtraScoreOnlyOne, 0.3f},
-            {SpecialEffectType.ExtraDrawLetter, 0.3f},
-            {SpecialEffectType.ExtraDrawSpecial, 0.3f},
-            {SpecialEffectType.ExtraScoreLevelOver, 0.3f},
-        };
+    
     public SpecialCard specialCardPrefab;
 
 
     // 等待出牌的暂存池
-    [SerializeField] public Transform cachePool;
+    public Transform cachePool;
     public Transform LetterHandCard;
     public Transform SpecialHandCard;
 
@@ -90,7 +72,7 @@ public class DeckManager : MonoBehaviour
         // 遍历所有的 SpecialEffectType 枚举类型
         foreach (SpecialEffectType effect in Enum.GetValues(typeof(SpecialEffectType)))
         {
-            (SpecialEffectType, float) specialCard = (effect, specialCardWeightDic[effect]);
+            (SpecialEffectType, float) specialCard = (effect, GameConfig.specialCardWeightDic[effect]);
             specialCardPool.Add(specialCard);
         }
     }
