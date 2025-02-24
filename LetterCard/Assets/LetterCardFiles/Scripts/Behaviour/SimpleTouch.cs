@@ -18,7 +18,7 @@ public class SimpleTouch : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     private bool isHolding = false;  // 长按标志
     private bool waitingForSecondClick = false;
     private float lastClickTime = 0;//上次点击时间
-    private Vector3 offset; // 偏移量，用来保持拖动时鼠标和物体之间的相对位置
+    
 
     /// <summary>
     /// 单击操作
@@ -38,17 +38,17 @@ public class SimpleTouch : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     /// <summary>
     /// 开始拖拽操作
     /// </summary>
-    public UnityAction onBeginDrag;
+    public UnityAction<PointerEventData> onBeginDrag;
 
     /// <summary>
     /// 拖拽中操作
     /// </summary>
-    public UnityAction onDrag;
+    public UnityAction<PointerEventData> onDrag;
 
     /// <summary>
     /// 停止拖拽操作
     /// </summary>
-    public UnityAction onEndDrag;
+    public UnityAction<PointerEventData> onEndDrag;
 
     //点击
     // 单击事件
@@ -135,19 +135,19 @@ public class SimpleTouch : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     // 拖动
     public void OnBeginDrag(PointerEventData eventData)
     {
-        onBeginDrag?.Invoke();
+        onBeginDrag?.Invoke(eventData);
     }
 
     public void OnDrag(PointerEventData eventData)
     {
         if (eventData.pointerDrag != null)
         {
-            onDrag?.Invoke();
+            onDrag?.Invoke(eventData);
         }
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        onEndDrag?.Invoke();
+        onEndDrag?.Invoke(eventData);
     }
 }

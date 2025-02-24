@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -42,7 +43,7 @@ public class DeckManager : MonoBehaviour
     {
         InitializeLetterDeck();
         InitializeSpecialCardPool();
-        DrawCards(3, 1);//抽取三张字母牌和一张特殊牌
+        DrawCards(1, 1);//抽取三张字母牌和一张特殊牌
     }
 
     /// <summary>
@@ -155,15 +156,6 @@ public class DeckManager : MonoBehaviour
             //letterDeck.Remove(selectedCard);
             letterHandCards.Add(newCard);
 
-            // 配置卡牌回收和归还
-            newCard.cardToCache += () =>
-            {
-                
-            };
-            newCard.cardBackHand += () =>
-            {
-                
-            };
 
             // 调用抽牌事件
             OnCardDrawn?.Invoke(newCard);
@@ -294,8 +286,27 @@ public class DeckManager : MonoBehaviour
 
         newCard.Letter= letterDeck[letterCardIndex].Item1;
         newCard.Color= letterDeck[letterCardIndex].Item2;
+
+        // 创建一个动画序列
+        Sequence sequence = DOTween.Sequence();
+
+        // 第一个旋转动画：从当前角度旋转到目标角度
+        sequence.Append(newCard.FlipCardToBack(3.0f));//先翻到背面);
+
         
-        newCard.transform.SetParent(LetterHandCard,worldPositionStays:false);
+
+        sequence.Append(newCard.transform.DOLocalMove(-1.0f*cardPool.transform.position, 1.0f)
+            .SetEase(Ease.Linear));
+
+        // 第一个旋转动画：从当前角度旋转到目标角度
+        sequence.Append(newCard.FlipCardToFront(3.0f));//再翻到正面
+
+        sequence.AppendCallback(() =>
+        {
+            newCard.transform.SetParent(LetterHandCard, worldPositionStays: true);
+        });
+
+        
         //letterDeck.RemoveAt(letterCardIndex);//不用移出
         letterHandCards.Add(newCard);
         OnCardDrawn?.Invoke(newCard);
