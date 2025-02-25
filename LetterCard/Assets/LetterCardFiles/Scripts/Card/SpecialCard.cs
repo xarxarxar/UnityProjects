@@ -31,7 +31,6 @@ public class SpecialCard : Card
     public string specialDescribe = "";//特殊牌的描述
 
     [SerializeField] private Text largeLetter;//中间的大字
-    [SerializeField] private Text smallLetter;//左上角小字
     [SerializeField] private Text bottomLetter;//下方的小字
 
     // 使用字典映射 ColorType 到 Color
@@ -49,19 +48,13 @@ public class SpecialCard : Card
 
     private void Awake()
     {
-        // 获取卡牌的 CanvasGroup 组件，如果没有就添加一个
-        canvasGroup = GetComponent<CanvasGroup>();
-        if (canvasGroup == null)
-        {
-            canvasGroup = gameObject.AddComponent<CanvasGroup>();
-        }
+
     }
 
     private void OnEnable()
     {
         base.OnEnable();
         OnInstantiate();
-        GetComponent<Button>().onClick.AddListener(ChooseCard);
     }
 
     private void OnInstantiate()
@@ -72,31 +65,31 @@ public class SpecialCard : Card
         {
             case SpecialEffectType.RemoveCard:
                 // 实现移除卡牌的效果
-                largeLetter.text = smallLetter.text = "除";
-                largeLetter.color = smallLetter.color = Color.black; 
+                largeLetter.text = "除";
+                largeLetter.color = Color.black; 
                 bottomLetter.text = "-1";
                 specialDescribe = "移除一张字母牌";
                 break;
             case SpecialEffectType.AddOneLetterHand:
                 // 实现增加一个字母手牌上限的效果
-                largeLetter.text = smallLetter.text = "字";
-                largeLetter.color = smallLetter.color = Color.black;
+                largeLetter.text = "字";
+                largeLetter.color = Color.black;
                 bottomLetter.text = "+1";
 
                 specialDescribe = "字母牌上限+1";
                 break;
             case SpecialEffectType.AddOneCacheHand:
                 // 实现增加一个缓存手牌上限的效果
-                largeLetter.text = smallLetter.text = "出";
-                largeLetter.color = smallLetter.color = Color.black;
+                largeLetter.text = "出";
+                largeLetter.color = Color.black;
                 bottomLetter.text = "+1";
 
                 specialDescribe = "出牌上限+1";
                 break;
             case SpecialEffectType.AddOneSpecialHand:
                 // 实现增加一个功能手牌上限的效果
-                largeLetter.text = smallLetter.text = "功";
-                largeLetter.color = smallLetter.color = Color.black;
+                largeLetter.text = "功";
+                largeLetter.color = Color.black;
                 bottomLetter.text = "+1";
 
                 specialDescribe = "功能牌上限+1";
@@ -104,72 +97,72 @@ public class SpecialCard : Card
 
             case SpecialEffectType.AddOneStateHand:
                 // 实现增加一个功能手牌上限的效果
-                largeLetter.text = smallLetter.text = "状";
-                largeLetter.color = smallLetter.color = Color.black;
+                largeLetter.text = "状";
+                largeLetter.color = Color.black;
                 bottomLetter.text = "+1";
 
                 specialDescribe = "状态上限+1";
                 break;
             case SpecialEffectType.RandomRedCard:
                 // 实现获取一张随机红色卡牌的效果
-                largeLetter.text = smallLetter.text = "取";
-                largeLetter.color = smallLetter.color = colorMap['R'];
+                largeLetter.text = "取";
+                largeLetter.color = colorMap['R'];
                 bottomLetter.text = "?";
 
                 specialDescribe = "随机抽取一张红色字母牌";
                 break;
             case SpecialEffectType.RandomYellowCard:
                 // 实现获取一张随机黄色卡牌的效果
-                largeLetter.text = smallLetter.text = "取";
-                largeLetter.color = smallLetter.color = colorMap['Y'];
+                largeLetter.text = "取";
+                largeLetter.color = colorMap['Y'];
                 bottomLetter.text = "?";
 
                 specialDescribe = "随机抽取一张黄色字母牌";
                 break;
             case SpecialEffectType.RandomBlueCard:
                 // 实现获取一张随机蓝色卡牌的效果
-                largeLetter.text = smallLetter.text = "取";
-                largeLetter.color = smallLetter.color = colorMap['B'];
+                largeLetter.text = "取";
+                largeLetter.color = colorMap['B'];
                 bottomLetter.text = "?";
 
                 specialDescribe = "随机抽取一张蓝色字母牌";
                 break;
             case SpecialEffectType.RandomGreenCard:
                 // 实现获取一张随机绿色卡牌的效果
-                largeLetter.text = smallLetter.text = "取";
-                largeLetter.color = smallLetter.color = colorMap['G'];
+                largeLetter.text = "取";
+                largeLetter.color = colorMap['G'];
                 bottomLetter.text = "?";
 
                 specialDescribe = "随机抽取一张绿色字母牌";
                 break;
             case SpecialEffectType.ExtraScoreOnlyOne:
                 // 实现获取一张随机绿色卡牌的效果
-                largeLetter.text = smallLetter.text = "单";
-                largeLetter.color = smallLetter.color = colorMap['G'];
+                largeLetter.text = "单";
+                largeLetter.color = colorMap['G'];
                 bottomLetter.text = "+2";
 
                 specialDescribe = "只出一张牌时，分数加2";
                 break;
             case SpecialEffectType.ExtraDrawLetter:
                 // 实现获取一张随机绿色卡牌的效果
-                largeLetter.text = smallLetter.text = "抽";
-                largeLetter.color = smallLetter.color = colorMap['G'];
+                largeLetter.text = "抽";
+                largeLetter.color = colorMap['G'];
                 bottomLetter.text = "+1";
 
                 specialDescribe = "每回合多抽一次字母牌";
                 break;
             case SpecialEffectType.ExtraDrawSpecial:
                 // 实现获取一张随机绿色卡牌的效果
-                largeLetter.text = smallLetter.text = "能";
-                largeLetter.color = smallLetter.color = colorMap['G'];
+                largeLetter.text = "能";
+                largeLetter.color = colorMap['G'];
                 bottomLetter.text = "+1";
 
                 specialDescribe = "每回合多抽一次功能牌";
                 break;
             case SpecialEffectType.ExtraScoreLevelOver:
                 // 实现获取一张随机绿色卡牌的效果
-                largeLetter.text = smallLetter.text = "增";
-                largeLetter.color = smallLetter.color = colorMap['G'];
+                largeLetter.text = "增";
+                largeLetter.color = colorMap['G'];
                 bottomLetter.text = "+1";
 
                 specialDescribe = "关卡结束时额外加10分";

@@ -43,7 +43,7 @@ public class DeckManager : MonoBehaviour
     {
         InitializeLetterDeck();
         InitializeSpecialCardPool();
-        DrawCards(1, 1);//抽取三张字母牌和一张特殊牌
+        DrawCards(3, 1);//抽取三张字母牌和一张特殊牌
     }
 
     /// <summary>
@@ -78,6 +78,11 @@ public class DeckManager : MonoBehaviour
         }
     }
 
+    void DrawOneCard()
+    {
+        
+    }
+
     /// <summary>
     /// 抽取卡牌
     /// </summary>
@@ -95,7 +100,7 @@ public class DeckManager : MonoBehaviour
             if (CanDrawNormalCard())
             {
                 //DrawLetterCard();
-                DrawLetterCardNoPool();//不要有卡牌池的限定
+                DrawLetterCardNoPool(letterCount==1);//不要有卡牌池的限定
                 yield return new WaitForSeconds(0.3f); // 抽牌间隔
             }
             else
@@ -107,10 +112,19 @@ public class DeckManager : MonoBehaviour
 
         for (int i = 0; i < specialCount; i++)
         {
+            //根据特殊牌出现的概率执行代码
+            if (UnityEngine.Random.value >= 0.8f)//抽到特殊牌的概率
+            {
+                continue;
+            }
             if (CanDrawSpecialCard())
             {
                 DrawSpecialCard();
                 yield return new WaitForSeconds(0.3f);
+            }
+            else
+            {
+                ShowTipManager.instance.ShowTip("抽到了功能牌，但功能牌数量达到上限");
             }
         }
         yield break;
@@ -192,7 +206,7 @@ public class DeckManager : MonoBehaviour
         }
     }
 
-    public  void DrawDesignCard(SpecialEffectType effectType)
+    public void DrawDesignCard(SpecialEffectType effectType)
     {
         SpecialCard newCard = Instantiate(specialCardPrefab, SpecialHandCard);
         //SpecialCard newCard = (SpecialCard)cardPool.GetCard();
@@ -274,7 +288,8 @@ public class DeckManager : MonoBehaviour
     /// <summary>
     /// 抽取字母牌,没有卡牌池，随机抽
     /// </summary>
-    void DrawLetterCardNoPool()
+    /// <param name="singleDraw">是否是单张地抽，如果不是单张的抽，那就没这么多动画</param>
+    void DrawLetterCardNoPool(bool singleDraw)
     {
         if (letterDeck.Count == 0)
         {
@@ -287,26 +302,17 @@ public class DeckManager : MonoBehaviour
         newCard.Letter= letterDeck[letterCardIndex].Item1;
         newCard.Color= letterDeck[letterCardIndex].Item2;
 
-        // 创建一个动画序列
-        Sequence sequence = DOTween.Sequence();
-
-        // 第一个旋转动画：从当前角度旋转到目标角度
-        sequence.Append(newCard.FlipCardToBack(3.0f));//先翻到背面);
-
-        
-
-        sequence.Append(newCard.transform.DOLocalMove(-1.0f*cardPool.transform.position, 1.0f)
-            .SetEase(Ease.Linear));
-
-        // 第一个旋转动画：从当前角度旋转到目标角度
-        sequence.Append(newCard.FlipCardToFront(3.0f));//再翻到正面
-
-        sequence.AppendCallback(() =>
+        if (singleDraw)
         {
+            DrawCardAnim(newCard,LetterHandCard);
+        }
+        else
+        {
+            newCard.transform.position = Vector3.zero;
             newCard.transform.SetParent(LetterHandCard, worldPositionStays: true);
-        });
-
+        }
         
+
         //letterDeck.RemoveAt(letterCardIndex);//不用移出
         letterHandCards.Add(newCard);
         OnCardDrawn?.Invoke(newCard);
@@ -317,11 +323,6 @@ public class DeckManager : MonoBehaviour
     /// </summary>
     void DrawSpecialCard()
     {
-        //根据特殊牌出现的概率执行代码
-        //if(UnityEngine.Random.value >=config. specialCardProbability)
-        //{
-        //    return;
-        //}
         // 根据权重随机选择特殊牌
         float totalWeight = specialCardPool.Sum(c => c.Item2);
         float randomPoint = UnityEngine.Random.Range(0, totalWeight);
@@ -340,6 +341,34 @@ public class DeckManager : MonoBehaviour
             }
             randomPoint -= card.Item2;
         }
+    }
+
+    Sequence DrawCardAnim(LetterCard newCard,Transform parents)
+    {
+        // 创建一个动画序列
+        Sequence sequence = DOTween.Sequence();
+
+        // 第一个旋转动画：从当前角度旋转到目标角度
+        sequence.Append(newCard.FlipCardToBack(0.01f));//先翻到背面);
+
+        sequence.Append(newCard.transform.DOLocalMove(-1.0f * cardPool.transform.position, 0.6f)
+            .SetEase(Ease.InOutQuart));
+
+        // 添加停顿一秒
+        sequence.AppendInterval(0.1f);  // 停顿
+
+        // 第一个旋转动画：从当前角度旋转到目标角度
+        sequence.Append(newCard.FlipCardToFront(0.4f));//再翻到正面
+
+        // 添加停顿一秒
+        sequence.AppendInterval(0.15f);  // 停顿
+
+        sequence.AppendCallback(() =>
+        {
+            newCard.transform.SetParent(parents, worldPositionStays: true);
+        });
+
+        return sequence;
     }
 
     /// <summary>

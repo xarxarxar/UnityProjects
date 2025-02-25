@@ -14,7 +14,7 @@ public class LetterCard : Card
     [SerializeField] private GameObject backSide;//卡牌的背面
     [SerializeField] private GameObject frontSide;//卡牌的正面
     [SerializeField] private Transform canvasFather;//卡牌正反面的父物体
-    [SerializeField] private bool isFront=true;//是否是正面
+    [SerializeField] public  bool isFront=true;//是否是正面
     
 
     // 字母，表示卡牌上的字母字符，例如 'A'、'b' 等。
@@ -124,21 +124,25 @@ public class LetterCard : Card
     /// </summary>
     public Sequence FlipCardToBack(float duration)
     {
-        if (!isFront)
-        {
-            return null; // 已经是背面
-        }
-
         // 创建一个动画序列
         Sequence sequence = DOTween.Sequence();
 
+        // 添加一个检查，如果 isFront 为 false 则停止序列
+        sequence.AppendCallback(() =>
+        {
+            if (!isFront)
+            {
+                sequence.Kill(); // 立即停止序列
+                return; // 已经是背面
+            }
+        });
         // 第一个旋转动画：从当前角度旋转到目标角度
         sequence.Append(frontSide.transform.DOScaleX(0, duration)
-            .SetEase(Ease.Linear));
+            .SetEase(Ease.InOutCubic));
 
         // 第二个旋转动画：从目标角度旋转回零角度
         sequence.Append(backSide.transform.DOScaleX(1, duration)
-            .SetEase(Ease.Linear));
+            .SetEase(Ease.InOutBack));
 
         // 在第二个旋转动画完成后更新状态
         sequence.AppendCallback(() =>
@@ -154,22 +158,26 @@ public class LetterCard : Card
     /// </summary>
     public Sequence FlipCardToFront(float duration)
     {
-        Debug.Log($"isFront is {isFront}");
-        if (isFront)
-        {
-            return null; // 已经是背面
-        }
-
         // 创建一个动画序列
         Sequence sequence = DOTween.Sequence();
 
+        // 添加一个检查
+        sequence.AppendCallback(() =>
+        {
+            if (isFront)
+            {
+                sequence.Kill(); // 立即停止序列
+                return; // 已经是背面
+            }
+        });
+
         // 第二个旋转动画：从目标角度旋转回零角度
         sequence.Append(backSide.transform.DOScaleX(0, duration)
-            .SetEase(Ease.Linear));
+            .SetEase(Ease.InOutCubic));
 
         // 第一个旋转动画：从当前角度旋转到目标角度
         sequence.Append(frontSide.transform.DOScaleX(1, duration)
-            .SetEase(Ease.Linear));
+            .SetEase(Ease.InOutBack));
 
         // 在第二个旋转动画完成后更新状态
         sequence.AppendCallback(() =>

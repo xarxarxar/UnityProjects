@@ -24,7 +24,6 @@ public class GameManager : MonoBehaviour
     [SerializeField]private Text scoreText;//显示当前分数的Text
     [SerializeField]private Text nextScoreText;//显示下一个目标分数的Text
 
-    
 
     private void Awake()
     {
@@ -39,6 +38,11 @@ public class GameManager : MonoBehaviour
         InitText();//初始化文本
         InitValue();//初始化数值
         DeckManager.instance.StartLevel();
+    }
+
+    public void DrawCards()
+    {
+        DeckManager.instance.DrawCards(1,1);
     }
 
     //初始化文本
