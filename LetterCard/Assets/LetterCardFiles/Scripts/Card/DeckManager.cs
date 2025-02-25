@@ -22,6 +22,7 @@ public class DeckManager : MonoBehaviour
     public Transform cachePool;
     public Transform LetterHandCard;
     public Transform SpecialHandCard;
+    public Transform DrawHandCard;//抽牌暂存的地方
 
     // 当前手牌
     [HideInInspector]public List<Card> letterHandCards = new List<Card>();
@@ -78,11 +79,6 @@ public class DeckManager : MonoBehaviour
         }
     }
 
-    void DrawOneCard()
-    {
-        
-    }
-
     /// <summary>
     /// 抽取卡牌
     /// </summary>
@@ -95,21 +91,6 @@ public class DeckManager : MonoBehaviour
 
     IEnumerator DrawCardsRoutine(int letterCount, int specialCount)
     {
-        for (int i = 0; i < letterCount; i++)
-        {
-            if (CanDrawNormalCard())
-            {
-                //DrawLetterCard();
-                DrawLetterCardNoPool(letterCount==1);//不要有卡牌池的限定
-                yield return new WaitForSeconds(0.3f); // 抽牌间隔
-            }
-            else
-            {
-                ShowTipManager.instance.ShowTip("牌数达到上限，请及时出牌");
-                Debug.Log($"达到手牌上限现在有{letterHandCards.Count()}张");
-            }
-        }
-
         for (int i = 0; i < specialCount; i++)
         {
             //根据特殊牌出现的概率执行代码
@@ -125,6 +106,21 @@ public class DeckManager : MonoBehaviour
             else
             {
                 ShowTipManager.instance.ShowTip("抽到了功能牌，但功能牌数量达到上限");
+            }
+        }
+
+        for (int i = 0; i < letterCount; i++)
+        {
+            if (CanDrawNormalCard())
+            {
+                //DrawLetterCard();
+                DrawLetterCardNoPool(letterCount==1);//不要有卡牌池的限定
+                yield return new WaitForSeconds(0.3f); // 抽牌间隔
+            }
+            else
+            {
+                ShowTipManager.instance.ShowTip("牌数达到上限，请及时出牌");
+                Debug.Log($"达到手牌上限现在有{letterHandCards.Count()}张");
             }
         }
         yield break;
@@ -159,7 +155,7 @@ public class DeckManager : MonoBehaviour
             var selectedCard = validLetterCards[index];
 
             // 创建新的字母卡
-            LetterCard newCard = (LetterCard)cardPool.GetCard();
+            LetterCard newCard = (LetterCard)cardPool.GetCard<LetterCard>();
             newCard.Letter = selectedCard.Item1;
             newCard.Color = selectedCard.Item2;
 
@@ -243,7 +239,7 @@ public class DeckManager : MonoBehaviour
         var selectedCard = validLetterCards[index];
 
         // 创建新的字母卡
-        LetterCard newCard = (LetterCard)cardPool.GetCard();
+        LetterCard newCard = (LetterCard)cardPool.GetCard<LetterCard>();
         newCard.Letter = selectedCard.Item1;
         newCard.Color = selectedCard.Item2;
 
@@ -272,7 +268,7 @@ public class DeckManager : MonoBehaviour
         }
 
         int letterCardIndex = UnityEngine.Random.Range(0, letterDeck.Count);
-        LetterCard newCard = (LetterCard)cardPool.GetCard();
+        LetterCard newCard = (LetterCard)cardPool.GetCard<LetterCard>();
 
         newCard.Letter = letterDeck[letterCardIndex].Item1;
         newCard.Color = letterDeck[letterCardIndex].Item2;
@@ -297,7 +293,7 @@ public class DeckManager : MonoBehaviour
             return;
         }
         int letterCardIndex=UnityEngine.Random.Range(0, letterDeck.Count);
-        LetterCard newCard =(LetterCard)cardPool.GetCard();
+        LetterCard newCard =(LetterCard)cardPool.GetCard<LetterCard>();
 
         newCard.Letter= letterDeck[letterCardIndex].Item1;
         newCard.Color= letterDeck[letterCardIndex].Item2;
@@ -331,10 +327,9 @@ public class DeckManager : MonoBehaviour
         {
             if (randomPoint < card.Item2)
             {
-                SpecialCard newCard = Instantiate(specialCardPrefab, SpecialHandCard);
-                //SpecialCard newCard = (SpecialCard)cardPool.GetCard();
-                //newCard.transform.SetParent(SpecialHandCard);
+                SpecialCard newCard = (SpecialCard)cardPool.GetCard<SpecialCard>();
                 newCard.EffectType = card.Item1;
+                DrawCardAnim(newCard, SpecialHandCard);
                 specialHandCards.Add(newCard);
                 OnCardDrawn?.Invoke(newCard);
                 return;
@@ -343,7 +338,7 @@ public class DeckManager : MonoBehaviour
         }
     }
 
-    Sequence DrawCardAnim(LetterCard newCard,Transform parents)
+    Sequence DrawCardAnim(Card newCard,Transform parents)
     {
         // 创建一个动画序列
         Sequence sequence = DOTween.Sequence();
@@ -351,11 +346,15 @@ public class DeckManager : MonoBehaviour
         // 第一个旋转动画：从当前角度旋转到目标角度
         sequence.Append(newCard.FlipCardToBack(0.01f));//先翻到背面);
 
-        sequence.Append(newCard.transform.DOLocalMove(-1.0f * cardPool.transform.position, 0.6f)
-            .SetEase(Ease.InOutQuart));
+        sequence.AppendCallback(() =>
+        {
+            newCard.transform.SetParent(DrawHandCard, worldPositionStays: true);
+        });
+        //sequence.Append(newCard.transform.DOLocalMove(-1.0f * cardPool.transform.position, 0.6f)
+        //    .SetEase(Ease.InOutQuart));
 
         // 添加停顿一秒
-        sequence.AppendInterval(0.1f);  // 停顿
+        sequence.AppendInterval(0.6f);  // 停顿
 
         // 第一个旋转动画：从当前角度旋转到目标角度
         sequence.Append(newCard.FlipCardToFront(0.4f));//再翻到正面

@@ -19,6 +19,7 @@ public class HandCardContainer : MonoBehaviour
     }
     public SortOrder currentSortOrder = SortOrder.ByLetterFirst;
 
+    [SerializeField] public int sortCount = 5; // 卡牌单行数量
     [SerializeField] private float horizontalSpacing = 0.1f; // 卡牌横向间距
     [SerializeField] private float verticalSpacing = 1.2f;    // 卡牌纵向间距
     private readonly List<Transform> cards = new List<Transform>();
@@ -108,11 +109,11 @@ public class HandCardContainer : MonoBehaviour
         List<List<Transform>> rows = new List<List<Transform>>();
         List<Transform> currentRow = new List<Transform>();
 
-        // 将卡牌按每行最多7个分组
+        // 将卡牌按每行最多5个分组
         foreach (var card in cards)
         {
             currentRow.Add(card);
-            if (currentRow.Count == 7)
+            if (currentRow.Count == 5)
             {
                 rows.Add(currentRow);
                 currentRow = new List<Transform>();
@@ -125,7 +126,8 @@ public class HandCardContainer : MonoBehaviour
         {
             var row = rows[rowIndex];
             int cardsInRow = row.Count;
-            float yPosition = -rowIndex * verticalSpacing;
+            //float yPosition = -rowIndex * verticalSpacing;
+            float yPosition = rowIndex * verticalSpacing;
 
             // 计算行内卡牌位置
             for (int i = 0; i < cardsInRow; i++)

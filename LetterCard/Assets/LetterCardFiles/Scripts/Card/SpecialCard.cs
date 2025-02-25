@@ -46,14 +46,8 @@ public class SpecialCard : Card
     private CanvasGroup canvasGroup;
 
 
-    private void Awake()
-    {
-
-    }
-
     private void OnEnable()
     {
-        base.OnEnable();
         OnInstantiate();
     }
 

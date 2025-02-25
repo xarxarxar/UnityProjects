@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class CardPool : MonoBehaviour
 {
-    public GameObject cardPrefab;      // 卡牌的预设（Prefab）
+    public GameObject letterCardPrefab;      // 卡牌的预设（Prefab）
+    public GameObject specialCardPrefab;      // 卡牌的预设（Prefab）
     private Transform poolParent;       // 暂时存放卡牌的卡牌池
     public int initialSize = 10;       // 初始池大小
 
-    private Queue<Card> cardPool = new Queue<Card>();  // 存放卡牌的队列
+    private Queue<LetterCard> letterCardPool = new Queue<LetterCard>();  // 存放卡牌的队列
+    private Queue<SpecialCard> specialCardPool = new Queue<SpecialCard>();  // 存放卡牌的队列
 
     void Start()
     {
@@ -23,29 +25,55 @@ public class CardPool : MonoBehaviour
         for (int i = 0; i < initialSize; i++)
         {
             // 实例化卡牌并设置父物体
-            Card newCard = Instantiate(cardPrefab, poolParent).GetComponent<Card>();
-            newCard.gameObject.SetActive(false);  // 默认情况下卡牌不可见
-            cardPool.Enqueue(newCard);  // 将卡牌加入池中
+            LetterCard newLetterCard = Instantiate(letterCardPrefab, poolParent).GetComponent<LetterCard>();
+            newLetterCard.gameObject.SetActive(false);  // 默认情况下卡牌不可见
+            letterCardPool.Enqueue(newLetterCard);  // 将卡牌加入池中
+
+            // 实例化卡牌并设置父物体
+            SpecialCard newSpecialCard = Instantiate(specialCardPrefab, poolParent).GetComponent<SpecialCard>();
+            newSpecialCard.gameObject.SetActive(false);  // 默认情况下卡牌不可见
+            specialCardPool.Enqueue(newSpecialCard);  // 将卡牌加入池中
         }
     }
 
     // 获取一个卡牌对象，如果池子为空则动态扩展
-    public Card GetCard()
+    public Card GetCard<T>() where T : Card
     {
-        if (cardPool.Count > 0)
+        if (typeof(T) == typeof(LetterCard))
         {
-            Card card = cardPool.Dequeue();  // 从池中取出一个卡牌
-            card.gameObject.SetActive(true);  // 激活卡牌
-            ResetCard(card);  // 重置卡牌状态
-            return card;
+            if (letterCardPool.Count > 0)
+            {
+                Card card = letterCardPool.Dequeue();  // 从池中取出一个卡牌
+                card.gameObject.SetActive(true);  // 激活卡牌
+                ResetCard(card);  // 重置卡牌状态
+                return card;
+            }
+            else
+            {
+                // 池子没有卡牌了，扩展池并返回新卡牌
+                Card newCard = Instantiate(letterCardPrefab, poolParent).GetComponent<Card>();
+                ResetCard(newCard);
+                return newCard;
+            }
         }
         else
         {
-            // 池子没有卡牌了，扩展池并返回新卡牌
-            Card newCard = Instantiate(cardPrefab, poolParent).GetComponent<Card>();
-            ResetCard(newCard);
-            return newCard;
+            if (specialCardPool.Count > 0)
+            {
+                Card card = specialCardPool.Dequeue();  // 从池中取出一个卡牌
+                card.gameObject.SetActive(true);  // 激活卡牌
+                ResetCard(card);  // 重置卡牌状态
+                return card;
+            }
+            else
+            {
+                // 池子没有卡牌了，扩展池并返回新卡牌
+                Card newCard = Instantiate(specialCardPrefab, poolParent).GetComponent<Card>();
+                ResetCard(newCard);
+                return newCard;
+            }
         }
+        
     }
 
     // 将卡牌返回池中，并隐藏它
@@ -53,7 +81,14 @@ public class CardPool : MonoBehaviour
     {
         card.gameObject.SetActive(false);  // 隐藏卡牌
         card.transform.SetParent(poolParent);//放回父物体内
-        cardPool.Enqueue(card);  // 将卡牌放回池中
+        if (card is LetterCard)
+        {
+            letterCardPool.Enqueue((LetterCard)card);
+        }
+        else if (card is SpecialCard)
+        {
+            specialCardPool.Enqueue((SpecialCard)card);
+        }
     }
 
     // 重置卡牌状态（比如位置、旋转等）

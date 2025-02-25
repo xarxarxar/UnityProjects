@@ -559,7 +559,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 307066930}
-  - component: {fileID: 307066929}
   - component: {fileID: 307066931}
   m_Layer: 0
   m_Name: "\u5B57\u6BCD\u724C\u7236\u7269\u4F53"
@@ -568,32 +567,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &307066929
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 307066928}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50a083140ad9ce24da8c93c2b45d3550, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cardPool: {fileID: 1066460430}
-  specialCardPrefab: {fileID: 6517797227015281427, guid: 25204adc87267bf4abb9ec4d67bcbf5a, type: 3}
-  cachePool: {fileID: 587334521}
-  LetterHandCard: {fileID: 307066930}
-  SpecialHandCard: {fileID: 1943362829}
-  letterHandCards: []
-  specialHandCards: []
-  letterCardPrefab: {fileID: 23298769114286843, guid: 4e8361e11107bc14aa212fe1a32d9b9d, type: 3}
-  OnHandFull:
-    m_PersistentCalls:
-      m_Calls: []
-  OnCardDrawn:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!4 &307066930
 Transform:
   m_ObjectHideFlags: 0
@@ -603,7 +576,7 @@ Transform:
   m_GameObject: {fileID: 307066928}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -3, z: 0}
+  m_LocalPosition: {x: 0, y: -2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -623,6 +596,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isSorted: 0
   currentSortOrder: 0
+  sortCount: 5
   horizontalSpacing: 0
   verticalSpacing: 1.2
 --- !u!1 &363499964
@@ -2731,7 +2705,7 @@ GameObject:
   - component: {fileID: 1066460431}
   - component: {fileID: 1066460430}
   m_Layer: 0
-  m_Name: "\u5B57\u6BCD\u724C\u6C60"
+  m_Name: "\u724C\u6C60"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2749,7 +2723,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c963fb40f6991d49a957b00c602b06e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardPrefab: {fileID: 5851458920441766581, guid: 4e8361e11107bc14aa212fe1a32d9b9d, type: 3}
+  letterCardPrefab: {fileID: 5851458920441766581, guid: 4e8361e11107bc14aa212fe1a32d9b9d, type: 3}
+  specialCardPrefab: {fileID: 4965073399841481128, guid: 25204adc87267bf4abb9ec4d67bcbf5a, type: 3}
   initialSize: 10
 --- !u!4 &1066460431
 Transform:
@@ -4316,6 +4291,55 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1884566549}
   m_CullTransparentMesh: 1
+--- !u!1 &1942258245
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1942258246}
+  - component: {fileID: 1942258247}
+  m_Layer: 0
+  m_Name: "\u53D1\u724C\u6682\u5B58\u6C60"
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1942258246
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1942258245}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1942258247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1942258245}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52f4da6a3329d474395b22dddac8d5fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isSorted: 0
+  currentSortOrder: 0
+  sortCount: 5
+  horizontalSpacing: 0.1
+  verticalSpacing: 1.2
 --- !u!1 &1943362827
 GameObject:
   m_ObjectHideFlags: 0
@@ -4347,7 +4371,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isSorted: 0
   currentSortOrder: 0
-  horizontalSpacing: 0.1
+  sortCount: 5
+  horizontalSpacing: 0
   verticalSpacing: 1.2
 --- !u!4 &1943362829
 Transform:
@@ -4358,7 +4383,7 @@ Transform:
   m_GameObject: {fileID: 1943362827}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -3.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4446,6 +4471,7 @@ GameObject:
   - component: {fileID: 2009783674}
   - component: {fileID: 2009783675}
   - component: {fileID: 2009783676}
+  - component: {fileID: 2009783677}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -4535,6 +4561,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c9e4a22e9f718a4db99242756e3b49b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2009783677
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2009783666}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50a083140ad9ce24da8c93c2b45d3550, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cardPool: {fileID: 1066460430}
+  specialCardPrefab: {fileID: 6517797227015281427, guid: 25204adc87267bf4abb9ec4d67bcbf5a, type: 3}
+  cachePool: {fileID: 587334521}
+  LetterHandCard: {fileID: 307066930}
+  SpecialHandCard: {fileID: 1943362829}
+  DrawHandCard: {fileID: 1942258246}
+  letterHandCards: []
+  specialHandCards: []
+  letterCardPrefab: {fileID: 23298769114286843, guid: 4e8361e11107bc14aa212fe1a32d9b9d, type: 3}
+  OnHandFull:
+    m_PersistentCalls:
+      m_Calls: []
+  OnCardDrawn:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &2028785344
 GameObject:
   m_ObjectHideFlags: 0
@@ -4850,6 +4903,7 @@ SceneRoots:
   - {fileID: 1219489073}
   - {fileID: 167181842}
   - {fileID: 692828349}
-  - {fileID: 307066930}
   - {fileID: 1066460431}
+  - {fileID: 307066930}
   - {fileID: 1943362829}
+  - {fileID: 1942258246}

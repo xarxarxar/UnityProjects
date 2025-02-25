@@ -11,11 +11,6 @@ using UnityEngine.UI;
 public class LetterCard : Card
 {
     [SerializeField] private Text letterText;//中间的文字
-    [SerializeField] private GameObject backSide;//卡牌的背面
-    [SerializeField] private GameObject frontSide;//卡牌的正面
-    [SerializeField] private Transform canvasFather;//卡牌正反面的父物体
-    [SerializeField] public  bool isFront=true;//是否是正面
-    
 
     // 字母，表示卡牌上的字母字符，例如 'A'、'b' 等。
     private char letter;
@@ -52,27 +47,14 @@ public class LetterCard : Card
     private Vector3 offset; // 偏移量，用来保持拖动时鼠标和物体之间的相对位置
 
 
-    private new void OnEnable()
+    private void OnEnable()
     {
-        base.OnEnable();
         simpleTouch = GetComponent<SimpleTouch>();
         simpleTouch.onBeginDrag += OnCardBeginDrag;//开始拖拽的方法
         simpleTouch.onDrag += OnCardDrag;//拖拽中的方法
         simpleTouch.onEndDrag += OnCardEndDrag;//拖拽中的方法
 
         OnLetterCardShow();
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.B))
-        {
-            FlipCardToBack(1.0f);
-        }
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            FlipCardToFront(1.0f);
-        }
     }
 
     /// <summary>
@@ -119,72 +101,5 @@ public class LetterCard : Card
         letterText.color = GameConfig.colorMap[Color];
     }
  
-    /// <summary>
-    /// 旋转到背面
-    /// </summary>
-    public Sequence FlipCardToBack(float duration)
-    {
-        // 创建一个动画序列
-        Sequence sequence = DOTween.Sequence();
-
-        // 添加一个检查，如果 isFront 为 false 则停止序列
-        sequence.AppendCallback(() =>
-        {
-            if (!isFront)
-            {
-                sequence.Kill(); // 立即停止序列
-                return; // 已经是背面
-            }
-        });
-        // 第一个旋转动画：从当前角度旋转到目标角度
-        sequence.Append(frontSide.transform.DOScaleX(0, duration)
-            .SetEase(Ease.InOutCubic));
-
-        // 第二个旋转动画：从目标角度旋转回零角度
-        sequence.Append(backSide.transform.DOScaleX(1, duration)
-            .SetEase(Ease.InOutBack));
-
-        // 在第二个旋转动画完成后更新状态
-        sequence.AppendCallback(() =>
-        {
-            isFront = false; // 现在是背面
-        });
-
-        return sequence;
-    }
-
-    /// <summary>
-    /// 旋转到正面
-    /// </summary>
-    public Sequence FlipCardToFront(float duration)
-    {
-        // 创建一个动画序列
-        Sequence sequence = DOTween.Sequence();
-
-        // 添加一个检查
-        sequence.AppendCallback(() =>
-        {
-            if (isFront)
-            {
-                sequence.Kill(); // 立即停止序列
-                return; // 已经是背面
-            }
-        });
-
-        // 第二个旋转动画：从目标角度旋转回零角度
-        sequence.Append(backSide.transform.DOScaleX(0, duration)
-            .SetEase(Ease.InOutCubic));
-
-        // 第一个旋转动画：从当前角度旋转到目标角度
-        sequence.Append(frontSide.transform.DOScaleX(1, duration)
-            .SetEase(Ease.InOutBack));
-
-        // 在第二个旋转动画完成后更新状态
-        sequence.AppendCallback(() =>
-        {
-            isFront = true; // 现在是背面
-        });
-
-        return sequence;
-    }
+    
 }
