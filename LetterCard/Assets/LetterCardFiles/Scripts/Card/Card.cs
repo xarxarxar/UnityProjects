@@ -45,11 +45,11 @@ public abstract class Card : MonoBehaviour
             }
         });
         // 第一个旋转动画：从当前角度旋转到目标角度
-        sequence.Append(frontSide.transform.DOScaleX(0, duration)
+        sequence.Append(frontSide.transform.DOScaleX(0, duration*0.1f)
             .SetEase(Ease.InOutCubic));
 
         // 第二个旋转动画：从目标角度旋转回零角度
-        sequence.Append(backSide.transform.DOScaleX(1, duration)
+        sequence.Append(backSide.transform.DOScaleX(1, duration*0.9f)
             .SetEase(Ease.InOutBack));
 
         // 在第二个旋转动画完成后更新状态
@@ -80,11 +80,11 @@ public abstract class Card : MonoBehaviour
         });
 
         // 第二个旋转动画：从目标角度旋转回零角度
-        sequence.Append(backSide.transform.DOScaleX(0, duration)
+        sequence.Append(backSide.transform.DOScaleX(0, duration*0.1f)
             .SetEase(Ease.InOutCubic));
 
         // 第一个旋转动画：从当前角度旋转到目标角度
-        sequence.Append(frontSide.transform.DOScaleX(1, duration)
+        sequence.Append(frontSide.transform.DOScaleX(1, duration*0.9f)
             .SetEase(Ease.InOutBack));
 
         // 在第二个旋转动画完成后更新状态
@@ -101,7 +101,7 @@ public abstract class Card : MonoBehaviour
 
 
 // 卡牌类型枚举，用于定义不同的卡牌类型
-// 例如：字母卡牌（LetterCard）和特殊卡牌（SpecialCard）。
+// 例如：字母卡牌（LetterCard）和特殊卡牌（FunctionCard）。
 public enum CardType
 {
     Letter,     // 字母卡牌

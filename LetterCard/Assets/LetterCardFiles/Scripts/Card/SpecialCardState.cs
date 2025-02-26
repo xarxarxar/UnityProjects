@@ -22,8 +22,8 @@ public class SpecialCardState : MonoBehaviour
     }
 
     private bool isChoosingCard;//是否正在选取特殊牌
-    private SpecialCard chosenCard;//正在选择的牌
-    public SpecialCard ChosenCard 
+    private FunctionCard chosenCard;//正在选择的牌
+    public FunctionCard ChosenCard 
     { 
         get => chosenCard;
         set 
@@ -77,16 +77,16 @@ public class SpecialCardState : MonoBehaviour
 
         }
         //如果已经选择的牌不是这张牌，那么就将这张牌选择上
-        if (ChosenCard!= specialCard.GetComponent<SpecialCard>())
+        if (ChosenCard!= specialCard.GetComponent<FunctionCard>())
         {
             ChosenCard?.DownCard();//将原来的牌降下去
-            specialCard.GetComponent<SpecialCard>().UpCard();
-            ChosenCard = specialCard.GetComponent<SpecialCard>();
+            specialCard.GetComponent<FunctionCard>().UpCard();
+            ChosenCard = specialCard.GetComponent<FunctionCard>();
         }
         else//如果选择的是这张牌
         {
             //将这张牌降下去
-            specialCard.GetComponent<SpecialCard>().DownCard();
+            specialCard.GetComponent<FunctionCard>().DownCard();
             ChosenCard = null;
         }
     }

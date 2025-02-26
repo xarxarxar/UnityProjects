@@ -16,13 +16,13 @@ public class DeckManager : MonoBehaviour
     [SerializeField]private List<(char,char)> letterDeck = new List<(char, char)>();
     private List<(SpecialEffectType,float)> specialCardPool = new List<(SpecialEffectType, float)>();
     
-    public SpecialCard specialCardPrefab;
+    public FunctionCard specialCardPrefab;
 
 
     // 手牌
-    public Transform cachePool;
     public Transform LetterHandCard;
     public Transform SpecialHandCard;
+
     private bool isDrawing;//是否正处于抽牌动画
     public bool IsDrawing 
     { 
@@ -117,7 +117,6 @@ public class DeckManager : MonoBehaviour
                 sequence.AppendCallback(() =>
                 {
                     ShowTipManager.instance.ShowTip("牌数达到上限，请及时出牌");
-                    Debug.Log($"达到手牌上限现在有{letterHandCards.Count()}张");
                 });
                 break; // 如果达到手牌上限，终止循环
             }
@@ -220,7 +219,7 @@ public class DeckManager : MonoBehaviour
                 if (randomPoint < card.Item2)
                 {
                     // 生成特殊卡实例
-                    SpecialCard newCard = Instantiate(specialCardPrefab, SpecialHandCard);
+                    FunctionCard newCard = Instantiate(specialCardPrefab, SpecialHandCard);
                     newCard.EffectType = card.Item1;
                     specialHandCards.Add(newCard);
                     
@@ -235,8 +234,8 @@ public class DeckManager : MonoBehaviour
 
     public void DrawDesignCard(SpecialEffectType effectType)
     {
-        SpecialCard newCard = Instantiate(specialCardPrefab, SpecialHandCard);
-        //SpecialCard newCard = (SpecialCard)cardPool.GetCard();
+        FunctionCard newCard = Instantiate(specialCardPrefab, SpecialHandCard);
+        //FunctionCard newCard = (FunctionCard)cardPool.GetCard();
         //newCard.transform.SetParent(SpecialHandCard);
         newCard.EffectType = effectType;
         specialHandCards.Add(newCard);
@@ -331,7 +330,6 @@ public class DeckManager : MonoBehaviour
 
         if (singleDraw)
         {
-            Debug.Log("抽取动画");
             DrawCardAnim(newCard,LetterHandCard);
         }
         else
@@ -359,7 +357,7 @@ public class DeckManager : MonoBehaviour
         {
             if (randomPoint < card.Item2)
             {
-                SpecialCard newCard = (SpecialCard)cardPool.GetCard<SpecialCard>();
+                FunctionCard newCard = (FunctionCard)cardPool.GetCard<FunctionCard>();
                 newCard.EffectType = card.Item1;
                 DrawCardAnim(newCard, SpecialHandCard);
                 specialHandCards.Add(newCard);
@@ -380,29 +378,24 @@ public class DeckManager : MonoBehaviour
             IsDrawing = true;
         });
 
-        // 第一个旋转动画：从当前角度旋转到目标角度
-        sequence.Append(newCard.FlipCardToBack(0.01f));//先翻到背面);
-
-
-
         sequence.AppendCallback(() =>
         {
-            //newCard.transform.SetParent(DrawHandCard, worldPositionStays: true);
             newCard.transform.localScale = Vector3.zero;
             newCard.transform.position = Vector3.zero;
         });
 
-        sequence.Append(newCard.transform.DOScale(Vector3.one, 0.5f)
+        // 第一个旋转动画：从当前角度旋转到目标角度
+        sequence.Append(newCard.FlipCardToBack(0.01f));//先翻到背面);
+
+        sequence.Append(newCard.transform.DOScale(Vector3.one, 0.3f)
             .SetEase(Ease.InOutQuart));
 
-        // 添加停顿一秒
-        //sequence.AppendInterval(0.6f);  // 停顿
 
         // 第一个旋转动画：从当前角度旋转到目标角度
-        sequence.Append(newCard.FlipCardToFront(0.4f));//再翻到正面
+        sequence.Append(newCard.FlipCardToFront(0.7f));//再翻到正面
 
         // 添加停顿一秒
-        sequence.AppendInterval(0.15f);  // 停顿
+        sequence.AppendInterval(0.1f);  // 停顿
 
         sequence.AppendCallback(() =>
         {
@@ -433,15 +426,6 @@ public class DeckManager : MonoBehaviour
         return currentSpecial < GetCurrentMaxSpecial();
     }
 
-    /// <summary>
-    /// 检查能否向缓存池中添加卡牌
-    /// </summary>
-    /// <returns></returns>
-    public  bool CanDrawCacheCard()
-    {
-        int currentCache = cachePool.childCount;
-        return currentCache < GetCurrentMaxCache();
-    }
 
     /// <summary>
     /// 当前最大普通牌容量（可扩展）

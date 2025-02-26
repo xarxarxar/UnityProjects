@@ -10,7 +10,7 @@ public class CardPool : MonoBehaviour
     public int initialSize = 10;       // 初始池大小
 
     private Queue<LetterCard> letterCardPool = new Queue<LetterCard>();  // 存放卡牌的队列
-    private Queue<SpecialCard> specialCardPool = new Queue<SpecialCard>();  // 存放卡牌的队列
+    private Queue<FunctionCard> specialCardPool = new Queue<FunctionCard>();  // 存放卡牌的队列
 
     void Start()
     {
@@ -30,7 +30,7 @@ public class CardPool : MonoBehaviour
             letterCardPool.Enqueue(newLetterCard);  // 将卡牌加入池中
 
             // 实例化卡牌并设置父物体
-            SpecialCard newSpecialCard = Instantiate(specialCardPrefab, poolParent).GetComponent<SpecialCard>();
+            FunctionCard newSpecialCard = Instantiate(specialCardPrefab, poolParent).GetComponent<FunctionCard>();
             newSpecialCard.gameObject.SetActive(false);  // 默认情况下卡牌不可见
             specialCardPool.Enqueue(newSpecialCard);  // 将卡牌加入池中
         }
@@ -84,9 +84,9 @@ public class CardPool : MonoBehaviour
         {
             letterCardPool.Enqueue((LetterCard)card);
         }
-        else if (card is SpecialCard)
+        else if (card is FunctionCard)
         {
-            specialCardPool.Enqueue((SpecialCard)card);
+            specialCardPool.Enqueue((FunctionCard)card);
         }
     }
 

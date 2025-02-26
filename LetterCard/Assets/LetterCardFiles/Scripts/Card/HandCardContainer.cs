@@ -134,7 +134,7 @@ public class HandCardContainer : MonoBehaviour
                 float totalWidth = (cardsInRow - 1) * (1 + horizontalSpacing);
                 float xPosition = (i - (cardsInRow - 1) / 2f) * (1 + horizontalSpacing);
                 //row[i].localPosition = new Vector3(xPosition, yPosition, 0);
-                row[i].DOLocalMove(new Vector3(xPosition, yPosition, 0), 0.5f).SetEase(Ease.OutQuad);
+                row[i].DOLocalMove(new Vector3(xPosition, yPosition, 0), 0.3f).SetEase(Ease.OutQuad);
             }
         }
     }
