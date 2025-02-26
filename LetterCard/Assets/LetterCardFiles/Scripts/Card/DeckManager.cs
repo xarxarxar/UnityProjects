@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Serialization;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -18,11 +19,20 @@ public class DeckManager : MonoBehaviour
     public SpecialCard specialCardPrefab;
 
 
-    // 等待出牌的暂存池
+    // 手牌
     public Transform cachePool;
     public Transform LetterHandCard;
     public Transform SpecialHandCard;
-    public Transform DrawHandCard;//抽牌暂存的地方
+    private bool isDrawing;//是否正处于抽牌动画
+    public bool IsDrawing 
+    { 
+        get => isDrawing;
+        set 
+        { 
+            isDrawing = value;
+            ButtonManager.instance.drawCardButton.interactable=!value;
+        }
+    }
 
     // 当前手牌
     [HideInInspector]public List<Card> letterHandCards = new List<Card>();
@@ -35,16 +45,17 @@ public class DeckManager : MonoBehaviour
     public UnityEvent OnHandFull;
     public UnityEvent<Card> OnCardDrawn;
 
+    
+
     private void Awake()
     {
         instance = this;
     }
 
-    public void StartLevel()
+    public void Init()
     {
         InitializeLetterDeck();
         InitializeSpecialCardPool();
-        DrawCards(3, 1);//抽取三张字母牌和一张特殊牌
     }
 
     /// <summary>
@@ -80,18 +91,46 @@ public class DeckManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 抽取卡牌
+    /// 抽取字母牌
     /// </summary>
-    /// <param name="normalCount">抽取字母牌的数量</param>
-    /// <param name="specialCount">抽取特殊牌的数量</param>
-    public void DrawCards(int letterCount, int specialCount)
+    public void DrawLetterCard(int count)
     {
-        StartCoroutine(DrawCardsRoutine(letterCount, specialCount));
-    }
+        if (IsDrawing) return;//如果正在抽牌
+        Sequence sequence = DOTween.Sequence();
 
-    IEnumerator DrawCardsRoutine(int letterCount, int specialCount)
+        for (int i = 0; i < count; i++)
+        {
+            if (CanDrawNormalCard())
+            {
+
+                bool singleDraw = (count == 1);
+
+                // 延迟后调用抽卡
+                sequence.AppendCallback(() => DrawLetterCardNoPool(singleDraw));
+
+                sequence.AppendInterval(0.5f);
+
+            }
+            else
+            {
+                // 牌数达到上限时显示提示
+                sequence.AppendCallback(() =>
+                {
+                    ShowTipManager.instance.ShowTip("牌数达到上限，请及时出牌");
+                    Debug.Log($"达到手牌上限现在有{letterHandCards.Count()}张");
+                });
+                break; // 如果达到手牌上限，终止循环
+            }
+        }
+    }
+    /// <summary>
+    /// 抽取特殊牌
+    /// </summary>
+    public void DrawSpecialCard(int count)
     {
-        for (int i = 0; i < specialCount; i++)
+        if (IsDrawing) return;//如果正在抽牌
+        Sequence sequence = DOTween.Sequence();
+        for (int i = 0; i < count; i++)
         {
             //根据特殊牌出现的概率执行代码
             if (UnityEngine.Random.value >= 0.8f)//抽到特殊牌的概率
@@ -100,30 +139,22 @@ public class DeckManager : MonoBehaviour
             }
             if (CanDrawSpecialCard())
             {
-                DrawSpecialCard();
-                yield return new WaitForSeconds(0.3f);
-            }
-            else
-            {
-                ShowTipManager.instance.ShowTip("抽到了功能牌，但功能牌数量达到上限");
-            }
-        }
+                // 延迟后调用抽卡
+                sequence.AppendCallback(() => DrawSpecialCard());
 
-        for (int i = 0; i < letterCount; i++)
-        {
-            if (CanDrawNormalCard())
-            {
-                //DrawLetterCard();
-                DrawLetterCardNoPool(letterCount==1);//不要有卡牌池的限定
-                yield return new WaitForSeconds(0.3f); // 抽牌间隔
+                // 设置每次抽卡后的间隔
+                sequence.AppendInterval(0.5f);
             }
             else
             {
-                ShowTipManager.instance.ShowTip("牌数达到上限，请及时出牌");
-                Debug.Log($"达到手牌上限现在有{letterHandCards.Count()}张");
+                // 牌数达到上限时显示提示
+                sequence.AppendCallback(() =>
+                {
+                    ShowTipManager.instance.ShowTip("抽到了功能牌，但功能牌数量达到上限");
+                });
+                break; // 如果达到手牌上限，终止循环
             }
         }
-        yield break;
     }
 
 
@@ -290,7 +321,7 @@ public class DeckManager : MonoBehaviour
         if (letterDeck.Count == 0)
         {
             Debug.LogWarning("Letter deck is empty!");
-            return;
+            return ;
         }
         int letterCardIndex=UnityEngine.Random.Range(0, letterDeck.Count);
         LetterCard newCard =(LetterCard)cardPool.GetCard<LetterCard>();
@@ -300,6 +331,7 @@ public class DeckManager : MonoBehaviour
 
         if (singleDraw)
         {
+            Debug.Log("抽取动画");
             DrawCardAnim(newCard,LetterHandCard);
         }
         else
@@ -343,18 +375,28 @@ public class DeckManager : MonoBehaviour
         // 创建一个动画序列
         Sequence sequence = DOTween.Sequence();
 
+        sequence.AppendCallback(() =>
+        {
+            IsDrawing = true;
+        });
+
         // 第一个旋转动画：从当前角度旋转到目标角度
         sequence.Append(newCard.FlipCardToBack(0.01f));//先翻到背面);
 
+
+
         sequence.AppendCallback(() =>
         {
-            newCard.transform.SetParent(DrawHandCard, worldPositionStays: true);
+            //newCard.transform.SetParent(DrawHandCard, worldPositionStays: true);
+            newCard.transform.localScale = Vector3.zero;
+            newCard.transform.position = Vector3.zero;
         });
-        //sequence.Append(newCard.transform.DOLocalMove(-1.0f * cardPool.transform.position, 0.6f)
-        //    .SetEase(Ease.InOutQuart));
+
+        sequence.Append(newCard.transform.DOScale(Vector3.one, 0.5f)
+            .SetEase(Ease.InOutQuart));
 
         // 添加停顿一秒
-        sequence.AppendInterval(0.6f);  // 停顿
+        //sequence.AppendInterval(0.6f);  // 停顿
 
         // 第一个旋转动画：从当前角度旋转到目标角度
         sequence.Append(newCard.FlipCardToFront(0.4f));//再翻到正面
@@ -365,6 +407,7 @@ public class DeckManager : MonoBehaviour
         sequence.AppendCallback(() =>
         {
             newCard.transform.SetParent(parents, worldPositionStays: true);
+            IsDrawing = false;
         });
 
         return sequence;
@@ -426,36 +469,6 @@ public class DeckManager : MonoBehaviour
     {
         return 10;
     }
-
-    /// <summary>
-    /// 出牌方法
-    /// </summary>
-    public void PlayCard()
-    {
-        //获取暂存池内的物体
-        List<LetterCard> childrenList = new List<LetterCard>();
-        // 遍历物体的所有子物体
-        foreach (Transform child in cachePool)
-        {
-            childrenList.Add(child.GetComponent<LetterCard>());  // 将子物体添加到列表中
-        }
-        if (childrenList.Count == 0)
-        {
-            Debug.Log("暂存池没有字母牌");
-            return;
-        }
-
-        int singleScore = ScoreCalculator.CalculateScore(childrenList);
-
-        //销毁暂存池中的所有物体
-        foreach (LetterCard child in childrenList)
-        {
-            //Destroy(child.gameObject);
-            cardPool.ReturnCard(child);
-            letterHandCards.Remove(child);//从手牌中移出
-        }
-        //roundOver?.Invoke(singleScore);
-    } 
 
     // 生成全部字母的数组
     char[] GetAllLetters()

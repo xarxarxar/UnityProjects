@@ -1,7 +1,5 @@
 using DG.Tweening;
-
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -11,6 +9,7 @@ using UnityEngine.UI;
 public class LetterCard : Card
 {
     [SerializeField] private Text letterText;//中间的文字
+
 
     // 字母，表示卡牌上的字母字符，例如 'A'、'b' 等。
     private char letter;
@@ -45,7 +44,8 @@ public class LetterCard : Card
 
     SimpleTouch simpleTouch;
     private Vector3 offset; // 偏移量，用来保持拖动时鼠标和物体之间的相对位置
-
+    private Vector3 originalPos;//拖拽前的初始位置
+    public bool isInhand = true;//是否在手中，用于区分在手中和暂存池中
 
     private void OnEnable()
     {
@@ -54,7 +54,34 @@ public class LetterCard : Card
         simpleTouch.onDrag += OnCardDrag;//拖拽中的方法
         simpleTouch.onEndDrag += OnCardEndDrag;//拖拽中的方法
 
+        simpleTouch.onClick+= OnCardClick;//单击的方法
+
         OnLetterCardShow();
+    }
+
+    private void OnDisable()
+    {
+        simpleTouch.onBeginDrag = null;//开始拖拽的方法
+        simpleTouch.onDrag = null;//拖拽中的方法
+        simpleTouch.onEndDrag = null;//拖拽中的方法
+        simpleTouch.onClick = null;//单击的方法
+    }
+
+    private void OnCardClick()
+    {
+        if (isInhand)
+        {
+            isInhand = false;
+            transform.SetParent(CacheText.instance.cacheCardPool, true);
+            CacheText.instance.AddCharacterWithColor(this);
+        }
+        else
+        {
+            transform.SetParent(DeckManager.instance.LetterHandCard, true);
+            isInhand = true;
+            CacheText.instance.RemoveCharacterWithColor(this);
+        }
+        
     }
 
     /// <summary>
@@ -62,6 +89,7 @@ public class LetterCard : Card
     /// </summary>
     private void OnCardBeginDrag(PointerEventData eventData)
     {
+        originalPos = transform.localPosition;//记录初始位置
         transform.DOScale(1.2f * Vector3.one, 0.2f).SetEase(Ease.OutQuad);
         // 将屏幕点击位置转换为世界坐标
         Vector3 clickWorldPos = Camera.main.ScreenToWorldPoint(eventData.position);
@@ -90,6 +118,7 @@ public class LetterCard : Card
     private void OnCardEndDrag(PointerEventData eventData)
     {
         transform.DOScale(Vector3.one, 0.2f).SetEase(Ease.OutQuad);
+        transform.DOLocalMove(originalPos,0.2f).SetEase(Ease.OutQuad);
     }
 
     /// <summary>

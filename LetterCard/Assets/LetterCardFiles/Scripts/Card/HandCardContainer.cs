@@ -1,9 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using DG.Tweening;
-using Unity.Collections.LowLevel.Unsafe;
 
 /// <summary>
 /// 管理手牌的摆放
@@ -38,7 +36,7 @@ public class HandCardContainer : MonoBehaviour
     /// <summary>
     /// 对卡牌排序
     /// </summary>
-    private void SoreCards()
+    private void SortCards()
     {
         List<Transform> childrenList = new List<Transform>();
         foreach (Transform child in transform)
@@ -100,12 +98,13 @@ public class HandCardContainer : MonoBehaviour
         if(!isSorted) { return; }
         // 切换排序规则
         currentSortOrder = (SortOrder)(((int)currentSortOrder + 1) % 2);
-        SoreCards();
+        SortCards();
     }
 
 
     private void ArrangeCards()
     {
+        if (isSorted) SortCards();
         List<List<Transform>> rows = new List<List<Transform>>();
         List<Transform> currentRow = new List<Transform>();
 
@@ -126,8 +125,8 @@ public class HandCardContainer : MonoBehaviour
         {
             var row = rows[rowIndex];
             int cardsInRow = row.Count;
-            //float yPosition = -rowIndex * verticalSpacing;
-            float yPosition = rowIndex * verticalSpacing;
+            float yPosition = -rowIndex * verticalSpacing;
+            
 
             // 计算行内卡牌位置
             for (int i = 0; i < cardsInRow; i++)

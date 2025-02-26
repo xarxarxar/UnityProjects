@@ -73,7 +73,6 @@ public class CardPool : MonoBehaviour
                 return newCard;
             }
         }
-        
     }
 
     // 将卡牌返回池中，并隐藏它

@@ -47,23 +47,21 @@ public class ScoreCalculator
     // 计算玩家出牌后的总分数
     // 输入参数 playedCards 是玩家在当前回合打出的卡牌列表
     // 返回值是玩家在当前回合的得分
-    public static  int CalculateScore(List<LetterCard> playedCards)
+    public static void CalculateScore(List<LetterCard> playedCards,ref int normalScore,ref int extraScore,ref int specialScore)
     {
-        
         // 初始分数设为玩家出牌数量，即每张牌得1分
-        int baseScore = playedCards.Count;
+        normalScore = playedCards.Count;
 
         // 构建一个由打出的字母卡牌组成的字母序列，用于后续检测是否有有效的字母组合
         string sequence = BuildLetterSequence( playedCards);
         string colorSequence=BuildColorSequence( playedCards);
 
-        ShowTipManager.instance.ShowTip($"基础+{baseScore}分");
+        ShowTipManager.instance.ShowTip($"基础+{normalScore}分");
 
-        int ruleScore = GetRuleScore(sequence, colorSequence);
-        int specialScore = CheckSpecialMissions(LevelController.instance.levelConfig.specialMissions, playedCards);
+        extraScore = GetRuleScore(sequence, colorSequence);
+        //int specialScore = CheckSpecialMissions(LevelController.instance.levelConfig.specialMissions, playedCards);
+        specialScore = 0;
         
-        // 最后加上通过特殊任务（CheckSpecialMissions）获得的分数
-        return baseScore + ruleScore+ specialScore;
     }
 
     // 根据玩家出牌的卡牌，构建一个由字母组成的字符串序列

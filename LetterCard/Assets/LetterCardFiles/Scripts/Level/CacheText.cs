@@ -7,21 +7,18 @@ using UnityEngine.UI;
 
 public class CacheText : MonoBehaviour
 {
+    public static CacheText instance;
+
     private static Text textComponent;
     private static RectTransform background;
-    // 使用字典映射 ColorType 到 Color
-    static Dictionary<char, Color32> colorMap = new Dictionary<char, Color32>
-        {
-            { 'R', new Color32(194,24,91,255) },
-            { 'G', new Color32(56,142,60,255) },
-            { 'B', new Color32(48,63,159,255) },
-            { 'Y', new Color32(255,162,0,255) }
-        };
+
     // 用来存储最终的文本内容
     public static StringBuilder textBuilder = new StringBuilder();
     private static StringBuilder originalText = new StringBuilder();  // 用于存储最初的文本内容
 
     public LetterDisplay letterDisplayMode = LetterDisplay.None;
+    public Transform cacheCardPool;//出牌暂存池
+    public List<LetterCard> letterCards= new List<LetterCard>();
 
     /// <summary>
     /// 缓存Text的大小写显示
@@ -32,6 +29,11 @@ public class CacheText : MonoBehaviour
         CapitalLetter,//大写显示
         LowercaseLetter//小写显示
     }
+    private void Awake()
+    {
+        instance= this;
+    }
+
 
     // Start is called before the first frame update
     void OnEnable()
@@ -51,10 +53,12 @@ public class CacheText : MonoBehaviour
     }
 
     // 方法：添加字符并设置颜色
-    public static void AddCharacterWithColor(char colorType, char character)
+    public void AddCharacterWithColor(LetterCard card)
     {
+        char colorType = card.Color;
+        char character = card.Letter;
         // 获取颜色
-        Color32 color = colorMap[colorType];
+        Color32 color = GameConfig.colorMap[colorType];
 
         // 构建富文本字符串，指定颜色
         textBuilder.AppendFormat("<color=#{0:X2}{1:X2}{2:X2}>{3}</color>",
@@ -65,15 +69,18 @@ public class CacheText : MonoBehaviour
         // 更新Text组件的文本内容
         textComponent.text = textBuilder.ToString();
 
+        letterCards.Add(card);
         ImageAdapt();//适配背景
        
     }
 
     // 方法：移除指定颜色类型的字符
-    public static void RemoveCharacterWithColor(char colorType, char character)
+    public void RemoveCharacterWithColor(LetterCard card)
     {
+        char colorType = card.Color;
+        char character = card.Letter;
         // 获取颜色
-        Color32 color = colorMap[colorType];
+        Color32 color = GameConfig.colorMap[colorType];
 
         // 创建一个模式来匹配包含特定颜色的字符
         string pattern = string.Format(@"<color=#{0:X2}{1:X2}{2:X2}>{3}</color>",
@@ -88,6 +95,8 @@ public class CacheText : MonoBehaviour
         originalText.Clear();
         originalText.Append(updatedText);//更新原始文本
         textComponent.text = textBuilder.ToString();
+
+        letterCards.Remove(card);
 
         ImageAdapt();//适配背景
         

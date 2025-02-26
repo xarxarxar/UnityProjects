@@ -198,15 +198,15 @@ public class SpecialCard : Card
                 break;
             case SpecialEffectType.AddOneLetterHand:
                 // 实现增加一个字母手牌上限的效果
-                LevelController.instance.IncreaseHandLimit(1);
+                //LevelController.instance.IncreaseHandLimit(1);
                 break;
             case SpecialEffectType.AddOneCacheHand:
                 // 实现增加一个缓存手牌上限的效果
-                LevelController.instance.IncreaseCacheLimit(1);
+                //LevelController.instance.IncreaseCacheLimit(1);
                 break;
             case SpecialEffectType.AddOneSpecialHand:
                 // 实现增加一个特殊手牌上限的效果
-                LevelController.instance.IncreaseSpecialLimit(1);
+                //LevelController.instance.IncreaseSpecialLimit(1);
                 break;
             case SpecialEffectType.RandomRedCard:
                 // 实现获取一张随机红色卡牌的效果

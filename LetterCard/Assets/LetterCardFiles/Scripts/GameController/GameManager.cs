@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
 
     //局内数值
     private int currentRound;//当前回合数
-    public int CurrentRound { get => currentRound; set { currentRound = value; roundText.text = value.ToString(); } }
+    public int CurrentRound { get => currentRound; set { currentRound = value; roundText.text = $"当前回合:{value}"; } }
     private int currentScore;//当前总分数
     public int CurrentScore { get => currentScore; set { currentScore = value; scoreText.text = value.ToString(); } }
     private int nextScore;//下一目标分数
@@ -35,30 +35,59 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void StartChallenge()
     {
-        InitText();//初始化文本
-        InitValue();//初始化数值
-        DeckManager.instance.StartLevel();
+        DeckManager.instance.Init();//初始化DeckManager
+        StartRound();//开始回合
     }
-
+    /// <summary>
+    /// 抽卡
+    /// </summary>
     public void DrawCards()
     {
-        DeckManager.instance.DrawCards(1,1);
+        DeckManager.instance.DrawLetterCard(1);
     }
 
-    //初始化文本
-    private void InitText()
+    /// <summary>
+    /// 出牌
+    /// </summary>
+    public void PlayCard()
     {
-        roundText.text = "1";
-        scoreText.text = "0";
-        nextScoreText.text = $"下一目标分数：{NextScore}";
+        AudioManager.instance.PlaySoundEffect("PlayCard");
+
+        int normalScore = 0;//基础分
+        int extraScore = 0;//额外分，如颜色相同，字母相同，组成单词
+        int specialScore = 0;//特殊分数
+        ScoreCalculator.CalculateScore(CacheText.instance.letterCards,ref normalScore,ref extraScore,ref specialScore);
+
+        int totalRoundScore= normalScore+ extraScore+specialScore;
+
+        //销毁暂存池中的所有物体
+        foreach (LetterCard child in CacheText.instance.letterCards)
+        {
+            DeckManager.instance.cardPool.ReturnCard(child);
+            DeckManager.instance.letterHandCards.Remove(child);//从手牌中移出
+        }
+
+        CurrentScore += totalRoundScore;//当前总分数
+
+        CacheText.ClearTextShow();
+        StartRound();
     }
 
-    //初始化数值
-    private void InitValue()
+    /// <summary>
+    /// 开始回合
+    /// </summary>
+    private void StartRound()
     {
-        CurrentRound = 1;
-        CurrentScore = 0;
-        NextScore = 0;
+        CurrentRound++;
+    }
+
+
+    /// <summary>
+    /// 结束当前回合
+    /// </summary>
+    private void EndRound()
+    {
+        
     }
 
 }
