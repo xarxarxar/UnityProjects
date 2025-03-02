@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour
 
     //局内数值
     private int currentRound;//当前回合数
-    public int CurrentRound { get => currentRound; set { currentRound = value; roundText.text = $"当前回合:{value}"; } }
+    public int CurrentRound { get => currentRound; set { currentRound = value; roundText.text = $"{value}"; } }
     private int currentScore;//当前总分数
     public int CurrentScore { get => currentScore; set { currentScore = value; scoreText.text = value.ToString(); } }
     private uint nextScore;//下一目标分数
@@ -34,6 +34,16 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+    }
+
+    public void RestartChallenge()
+    {
+        DeckManager.instance.Init();//初始化DeckManager
+        DeckManager.instance.ClearHandCards();//清空手牌
+        CurrentRound = 0;
+        CurrentScore = 0;
+        NextScore = 100;
+        StartRound();//开始回合
     }
 
     /// <summary>

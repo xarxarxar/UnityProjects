@@ -13,7 +13,7 @@ public class GameEntrance : MonoBehaviour
     public static uint CoinCount { get => coinCount; set => coinCount = value; }
 
     //UI
-    public Text mainCoinText;//主界面的金币Text 
+
     // Start is called before the first frame update
     void Start()
     {
@@ -22,7 +22,7 @@ public class GameEntrance : MonoBehaviour
 
     private void OnEnable()
     {
-        mainCoinText.text = coinCount.ToString();//设置主页金币数
+
     }
 
     /// <summary>
@@ -33,7 +33,11 @@ public class GameEntrance : MonoBehaviour
         GetComponent<Canvas>().enabled = false;//关闭主界面
 
         GameManager.Instance.GetComponent<Canvas>().enabled = true;
-        GameManager.Instance.StartChallenge();//开始挑战
+        if (GameGuide.needGuide)
+        {
+            GameGuide.instance.Init();
+        }
+        //GameManager.Instance.StartChallenge();//开始挑战
     }
 
     /// <summary>
@@ -41,10 +45,7 @@ public class GameEntrance : MonoBehaviour
     /// </summary>
     private void SetCoinText()
     {
-        if (mainCoinText.gameObject.activeSelf)
-        {
-            mainCoinText.text = coinCount.ToString();
-        }
+        
     }
 
 }

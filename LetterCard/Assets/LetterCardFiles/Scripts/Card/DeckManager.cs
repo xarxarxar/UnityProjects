@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Schema;
 using System.Xml.Serialization;
 using UnityEngine;
 using UnityEngine.Events;
@@ -63,6 +64,7 @@ public class DeckManager : MonoBehaviour
     /// </summary>
     void InitializeLetterDeck()
     {
+        letterDeck.Clear();
         // 生成包含大小写字母的数组
         char[] allLetters = GetAllLetters();
         // 创建所有字母牌实例
@@ -82,6 +84,7 @@ public class DeckManager : MonoBehaviour
     /// </summary>
     void InitializeSpecialCardPool()
     {
+        specialCardPool.Clear();
         // 遍历所有的 SpecialEffectType 枚举类型
         foreach (SpecialEffectType effect in Enum.GetValues(typeof(SpecialEffectType)))
         {
@@ -102,7 +105,6 @@ public class DeckManager : MonoBehaviour
         {
             if (CanDrawNormalCard())
             {
-
                 bool singleDraw = (count == 1);
 
                 // 延迟后调用抽卡
@@ -121,6 +123,8 @@ public class DeckManager : MonoBehaviour
                 break; // 如果达到手牌上限，终止循环
             }
         }
+
+        GameEntrance.CoinCount--;
     }
     /// <summary>
     /// 抽取特殊牌
@@ -157,13 +161,25 @@ public class DeckManager : MonoBehaviour
     }
 
 
+    public void ClearHandCards()
+    {
+        foreach(LetterCard child in letterHandCards)
+        {
+            cardPool.ReturnCard(child);
+        }
+        foreach(SpecialCard child in specialHandCards)
+        {
+            cardPool.ReturnCard(child);
+        }
+    }
+
     /// <summary>
     /// 抽取指定的卡牌，用于游戏教程等等
     /// </summary>
     /// <param name="cardType">指定卡牌类型（字母牌或特殊牌）</param>
     /// <param name="letter">指定字母（仅适用于字母牌）</param>
     /// <param name="color">指定颜色（仅适用于字母牌）</param>
-    void DrawDesignatedCard(CardType cardType, char? letter = null, char? color = null)
+    public void DrawDesignatedCard(CardType cardType, char? letter = null, char? color = null)
     {
         // 如果是字母卡
         if (cardType == CardType.Letter)

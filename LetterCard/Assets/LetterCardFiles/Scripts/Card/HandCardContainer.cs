@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using DG.Tweening;
+using UnityEngine.Events;
 
 /// <summary>
 /// 管理手牌的摆放
@@ -22,6 +23,8 @@ public class HandCardContainer : MonoBehaviour
     [SerializeField] private float verticalSpacing = 1.2f;    // 卡牌纵向间距
     private readonly List<Transform> cards = new List<Transform>();
 
+    public UnityAction OnTransformChanged;//子物体数量变化时
+
     private void OnTransformChildrenChanged()
     {
         cards.Clear();
@@ -31,6 +34,8 @@ public class HandCardContainer : MonoBehaviour
         }
         // 添加卡牌
         ArrangeCards();//排列卡牌
+
+        OnTransformChanged?.Invoke();
     }
 
     /// <summary>
