@@ -114,6 +114,18 @@ public class CacheText : MonoBehaviour
         ImageAdapt();//适配背景
     }
 
+    public void ClearCacheCard()
+    {
+        //销毁暂存池中的所有物体
+        foreach (LetterCard child in letterCards)
+        {
+            DeckManager.instance.cardPool.ReturnCard(child);
+            DeckManager.instance.letterHandCards.Remove(child);//从手牌中移出
+        }
+        letterCards.Clear();
+        ClearTextShow();
+    }
+
     public void ToggleTextShow()
     {
         // 获取当前显示模式

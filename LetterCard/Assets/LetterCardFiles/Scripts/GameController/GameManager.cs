@@ -27,13 +27,26 @@ public class GameManager : MonoBehaviour
     [SerializeField]private Text scoreText;//显示当前分数的Text
     [SerializeField]private Text nextScoreText;//显示下一个目标分数的Text
 
-
     //局内UI
     [SerializeField] private GameObject getCoinPanel;//获取金币的panel
+
+    //游戏成功和游戏失败面板
+    [SerializeField] private Canvas gameSuccessCanvas;//
+    [SerializeField] private Canvas gameFailCanvas;//
 
     private void Awake()
     {
         Instance = this;
+    }
+
+    private void Update()
+    {
+#if UNITY_EDITOR
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            CurrentScore += 100;
+        }
+#endif
     }
 
     public void RestartChallenge()
@@ -61,6 +74,8 @@ public class GameManager : MonoBehaviour
     public void EndChallenge()
     {
         ShowTipManager.instance.ShowTip("挑战失败");
+        gameFailCanvas.enabled = true;
+
     }
 
     /// <summary>
@@ -86,20 +101,16 @@ public class GameManager : MonoBehaviour
         int normalScore = 0;//基础分
         int extraScore = 0;//额外分，如颜色相同，字母相同，组成单词
         int specialScore = 0;//特殊分数
+        Debug.Log($"normalScore01 is{normalScore}");
         ScoreCalculator.CalculateScore(CacheText.instance.letterCards,ref normalScore,ref extraScore,ref specialScore);
-
+        Debug.Log($"normalScore02 is{normalScore}");
         int totalRoundScore= normalScore+ extraScore+specialScore;
 
-        //销毁暂存池中的所有物体
-        foreach (LetterCard child in CacheText.instance.letterCards)
-        {
-            DeckManager.instance.cardPool.ReturnCard(child);
-            DeckManager.instance.letterHandCards.Remove(child);//从手牌中移出
-        }
+        
 
         CurrentScore += totalRoundScore;//当前总分数
 
-        CacheText.ClearTextShow();
+        CacheText.instance.ClearCacheCard();
         EndRound();//回合结束
     }
 
@@ -132,5 +143,7 @@ public class GameManager : MonoBehaviour
             StartRound(); 
         }
     }
+
+
 
 }
