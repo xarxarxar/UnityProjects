@@ -9,7 +9,8 @@ public class ShowTipManager : MonoBehaviour
 {
     public static ShowTipManager instance;
     public Transform tipParent;
-    public Tip tip;
+    public Tip tipWithMoney;
+    public Tip tipNomoney;
 
     public GameObject dustbinGameobject;
 
@@ -20,16 +21,31 @@ public class ShowTipManager : MonoBehaviour
         instance = this;
     }
 
-    private void Start()
+    private void Update()
     {
-        // 启动协程
-        Coroutine cor= StartCoroutine(InstantiateObjects());
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            ShowTip("你好");
+        }
+        if (Input.GetKeyDown(KeyCode.Y))
+        {
+            ShowTip("你好",10);
+        }
     }
+
 
     public void ShowTip(string showText,UnityAction callback=null)
     {
-        if (tipTexts.Count != 0&&tipTexts.Last().Item1 == showText) return;
-        tipTexts.Enqueue((showText,callback));
+        Instantiate(tipNomoney, tipParent).GetComponent<Tip>().showString = showText;
+        callback?.Invoke();
+    }
+
+    public void ShowTip(string showText,int count, UnityAction callback = null)
+    {
+        Tip tipGameobject= Instantiate(tipWithMoney, tipParent).GetComponent<Tip>();
+        tipGameobject.showString = showText;
+        tipGameobject.countNumber = count;
+        callback?.Invoke();
     }
 
     public void ToggleDustbin(bool isShow)
@@ -53,32 +69,4 @@ public class ShowTipManager : MonoBehaviour
         text.color = new Color32(139, 0, 0, 255);
     }
 
-    // 每隔 1 秒实例化一个物体并移除队列
-    private IEnumerator InstantiateObjects()
-    {
-        float delay = 0.2f;
-        while (true)
-        {
-            // 如果队列有物体
-            if (tipTexts.Count > 0)
-            {
-                // 实例化队列中的第一个物体
-                (string,UnityAction) firstText = tipTexts.Dequeue();
-                Instantiate(tip, tipParent).GetComponent<Tip>().showString = firstText.Item1;
-                delay = tip.duration;
-                AudioManager.instance.PlaySoundEffect("GetScore");
-                // 等待 1 秒
-                yield return new WaitForSeconds(delay);
-                firstText.Item2?.Invoke();
-            }
-            else
-            {
-                delay = 0.2f;
-                // 等待 1 秒
-                yield return new WaitForSeconds(delay);
-            }
-
-            
-        }
-    }
 }
