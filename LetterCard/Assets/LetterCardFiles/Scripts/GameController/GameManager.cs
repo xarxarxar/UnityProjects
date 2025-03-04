@@ -17,9 +17,27 @@ public class GameManager : MonoBehaviour
     private uint nextScore;//下一目标分数
     public uint NextScore { get => nextScore; set { nextScore = value; nextScoreText.text =$"目标分数:{value}"; } }
 
+    [SerializeField]public Text coinText;//总金币数
 
+    public Text needCoinText;//抽卡需要的金币数
     private uint drawNeedCoin;//抽一次卡需要的金币数
-    public uint DrawNeedCoin { get => drawNeedCoin; set => drawNeedCoin = value; }
+    public uint DrawNeedCoin 
+    { 
+        get => drawNeedCoin;
+        set
+        {
+            drawNeedCoin = value;
+            if (drawNeedCoin > GameEntrance.instance.CoinCount)
+            {
+                needCoinText.color = new Color32(255, 34, 12, 255);//红色
+            }
+            else
+            {
+                needCoinText.color = new Color32(255, 255, 255, 255);//白色
+            }
+            needCoinText.text= $"×{value}";
+        }
+    }
 
 
     //局内文本
@@ -31,7 +49,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject getCoinPanel;//获取金币的panel
 
     //游戏成功和游戏失败面板
-    [SerializeField] private Canvas gameSuccessCanvas;//
     [SerializeField] private Canvas gameFailCanvas;//
 
     private void Awake()
@@ -49,7 +66,19 @@ public class GameManager : MonoBehaviour
 #endif
     }
 
-    public void RestartChallenge()
+
+    /// <summary>
+    /// 继续挑战
+    /// </summary>
+    public void ContinueChallenge()
+    {
+
+    }
+
+    /// <summary>
+    /// 开始游戏
+    /// </summary>
+    public void StartChallenge()
     {
         DeckManager.instance.Init();//初始化DeckManager
         DeckManager.instance.ClearHandCards();//清空手牌
@@ -60,22 +89,11 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 开始游戏
-    /// </summary>
-    public void StartChallenge()
-    {
-        DeckManager.instance.Init();//初始化DeckManager
-        StartRound();//开始回合
-    }
-
-    /// <summary>
     /// 挑战结束
     /// </summary>
     public void EndChallenge()
     {
-        ShowTipManager.instance.ShowTip("挑战失败");
         gameFailCanvas.enabled = true;
-
     }
 
     /// <summary>
@@ -83,12 +101,13 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void DrawCards()
     {
-        if(GameEntrance.CoinCount< DrawNeedCoin)
+        if(GameEntrance.instance.CoinCount< DrawNeedCoin)
         {
             getCoinPanel.transform.DOScale(Vector3.one, 0.1f);//打开获取金币面板
             return;
         }
         DeckManager.instance.DrawLetterCard(1);
+        GameEntrance.instance.CoinCount-= DrawNeedCoin;
     }
 
     /// <summary>
@@ -101,15 +120,10 @@ public class GameManager : MonoBehaviour
         int normalScore = 0;//基础分
         int extraScore = 0;//额外分，如颜色相同，字母相同，组成单词
         int specialScore = 0;//特殊分数
-        Debug.Log($"normalScore01 is{normalScore}");
         ScoreCalculator.CalculateScore(CacheText.instance.letterCards,ref normalScore,ref extraScore,ref specialScore);
-        Debug.Log($"normalScore02 is{normalScore}");
         int totalRoundScore= normalScore+ extraScore+specialScore;
-
-        
-
         CurrentScore += totalRoundScore;//当前总分数
-
+        GameEntrance.instance.CoinCount+= (uint)totalRoundScore;//当前总金币
         CacheText.instance.ClearCacheCard();
         EndRound();//回合结束
     }
@@ -123,7 +137,7 @@ public class GameManager : MonoBehaviour
 
         if (CurrentRound % 5 == 1) NextScore = 30 * (uint)CurrentRound;//每过5关设置一次目标分数
 
-        DrawNeedCoin = (uint)CurrentRound;//抽取一次所需要的金币数量就是当前的回合数
+        DrawNeedCoin = (uint)(CurrentRound/5.0f)+1;//抽取一次所需要的金币数量就是当前的回合数
 
         DeckManager.instance.DrawLetterCard(2);//每回合开始抽两张卡牌
     }

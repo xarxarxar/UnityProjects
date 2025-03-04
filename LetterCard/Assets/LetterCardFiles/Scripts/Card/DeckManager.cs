@@ -123,8 +123,6 @@ public class DeckManager : MonoBehaviour
                 break; // 如果达到手牌上限，终止循环
             }
         }
-
-        GameEntrance.CoinCount--;
     }
     /// <summary>
     /// 抽取特殊牌
@@ -160,17 +158,21 @@ public class DeckManager : MonoBehaviour
         }
     }
 
-
+    /// <summary>
+    /// 清空手牌
+    /// </summary>
     public void ClearHandCards()
     {
-        foreach(LetterCard child in letterHandCards)
+        letterHandCards.RemoveAll(child =>
         {
             cardPool.ReturnCard(child);
-        }
-        foreach(SpecialCard child in specialHandCards)
+            return true; // 删除所有元素
+        });
+        specialHandCards.RemoveAll(child =>
         {
             cardPool.ReturnCard(child);
-        }
+            return true; // 删除所有元素
+        });
     }
 
     /// <summary>

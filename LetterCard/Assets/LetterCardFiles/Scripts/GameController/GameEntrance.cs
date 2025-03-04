@@ -8,22 +8,43 @@ using UnityEngine.UI;
 /// </summary>
 public class GameEntrance : MonoBehaviour
 {
-    private static uint coinCount = 100;//金币的数量
+    public static GameEntrance instance;
+    private uint coinCount;//金币的数量
+    public uint CoinCount 
+    { 
+        get => coinCount;
+        set 
+        { 
+            coinCount = value;
+            coinText.text = coinCount.ToString();
+            GameManager.Instance.coinText.text = coinCount.ToString();
+            if (value < GameManager.Instance.DrawNeedCoin)
+            {
+                GameManager.Instance.needCoinText.color = new Color32(255, 34, 12, 255);//红色
+            }
+            else
+            {
+                GameManager.Instance.needCoinText.color = new Color32(255, 255, 255, 255);//红色
+            }
+        }
+    }
 
-    public static uint CoinCount { get => coinCount; set => coinCount = value; }
+    [SerializeField] private Text coinText;
 
     //UI
+
+    private void Awake()
+    {
+        instance = this;
+    }
 
     // Start is called before the first frame update
     void Start()
     {
+        CoinCount = 10;
         ButtonManager.instance.startGameButton.onClick.AddListener(SartGame);
     }
 
-    private void OnEnable()
-    {
-
-    }
 
     /// <summary>
     /// 开始游戏
@@ -37,7 +58,11 @@ public class GameEntrance : MonoBehaviour
         {
             GameGuide.instance.Init();
         }
-        //GameManager.Instance.StartChallenge();//开始挑战
+        else
+        {
+            GameManager.Instance.StartChallenge();//开始挑战
+        }
+        
     }
 
     /// <summary>

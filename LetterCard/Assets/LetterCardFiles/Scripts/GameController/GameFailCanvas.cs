@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,6 +10,33 @@ public class GameFailCanvas : MonoBehaviour
     //继续挑战按钮
     [SerializeField] private Button continueButton;
 
+    /// <summary>
+    /// 回到主页
+    /// </summary>
+    public void BackToMenu()
+    {
+        DeckManager.instance.ClearHandCards();
+        GameEntrance.instance.GetComponent<Canvas>().enabled = true;
+        GameManager.Instance.GetComponent<Canvas>().enabled = false;
+        GetComponent<Canvas>().enabled = false;
+    }
 
+    /// <summary>
+    /// 重新挑战
+    /// </summary>
+    public void RestartChallenge()
+    {
+        GameManager.Instance.StartChallenge();
+        GetComponent<Canvas>().enabled = false;
+    }
+
+    /// <summary>
+    /// 继续挑战
+    /// </summary>
+    public void ContinueChallenge()
+    {
+        //GameManager.Instance.StartChallenge();
+        GetComponent<Canvas>().enabled = false;
+    }
 
 }
