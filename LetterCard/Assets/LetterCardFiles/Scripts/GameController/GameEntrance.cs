@@ -62,7 +62,14 @@ public class GameEntrance : MonoBehaviour
         {
             GameManager.Instance.StartChallenge();//开始挑战
         }
-        
+    }
+
+    /// <summary>
+    /// 添加金币按钮
+    /// </summary>
+    public void AddMoneyButton()
+    {
+        GetRewards.Instance.GetComponent<Canvas>().enabled = true;
     }
 
     /// <summary>

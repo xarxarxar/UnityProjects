@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class GameGuide : MonoBehaviour
 {
     public static GameGuide instance;
-    public static bool needGuide = false;//是否需要游戏教程
+    public static bool needGuide = true;//是否需要游戏教程
 
     //对话
     [SerializeField] private GameObject dialoguePanel;//对话Panel

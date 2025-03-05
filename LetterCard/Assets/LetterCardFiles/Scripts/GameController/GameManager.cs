@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
     private int currentScore;//当前总分数
     public int CurrentScore { get => currentScore; set { currentScore = value; scoreText.text = value.ToString(); } }
     private uint nextScore;//下一目标分数
-    public uint NextScore { get => nextScore; set { nextScore = value; nextScoreText.text =$"目标分数:{value}"; } }
+    public uint NextScore { get => nextScore; set { nextScore = value; nextScoreText.text =$"{value}"; } }
 
     [SerializeField]public Text coinText;//总金币数
 
@@ -45,8 +45,6 @@ public class GameManager : MonoBehaviour
     [SerializeField]private Text scoreText;//显示当前分数的Text
     [SerializeField]private Text nextScoreText;//显示下一个目标分数的Text
 
-    //局内UI
-    [SerializeField] private GameObject getCoinPanel;//获取金币的panel
 
     //游戏成功和游戏失败面板
     [SerializeField] private Canvas gameFailCanvas;//
@@ -103,7 +101,7 @@ public class GameManager : MonoBehaviour
     {
         if(GameEntrance.instance.CoinCount< DrawNeedCoin)
         {
-            getCoinPanel.transform.DOScale(Vector3.one, 0.1f);//打开获取金币面板
+            GetRewards.Instance.GetComponent<Canvas>().enabled = true;
             return;
         }
         DeckManager.instance.DrawLetterCard(1);
@@ -159,5 +157,8 @@ public class GameManager : MonoBehaviour
     }
 
 
-
+    public void AddMoneyButton()
+    {
+        GetRewards.Instance.GetComponent<Canvas>().enabled = true;
+    }
 }
