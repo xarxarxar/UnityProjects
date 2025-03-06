@@ -33,8 +33,11 @@ public class GameConfig : MonoBehaviour
             {SpecialEffectType.RandomBlueCard, 0.3f},
 
             {SpecialEffectType.ExtraScoreOnlyOne, 0.3f},
-            {SpecialEffectType.ExtraDrawLetter, 0.3f},
-            {SpecialEffectType.ExtraDrawSpecial, 0.3f},
-            {SpecialEffectType.ExtraScoreLevelOver, 0.3f},
+            {SpecialEffectType.CanPlayZeroCard, 0.3f},
+            {SpecialEffectType.AddScoreWhenDelete, 0.3f},
+            {SpecialEffectType.ExtraScoreRounOver, 0.3f},
+            {SpecialEffectType.CanContinuousDraw, 0.3f},
+            {SpecialEffectType.AddContinuousDraw, 0.3f},
+            {SpecialEffectType.AddContinuousLimit, 0.3f},
         };
 }

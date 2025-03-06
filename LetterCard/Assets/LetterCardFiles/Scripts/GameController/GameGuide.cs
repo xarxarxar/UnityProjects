@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class GameGuide : MonoBehaviour
 {
     public static GameGuide instance;
-    public static bool needGuide = true;//是否需要游戏教程
+    public static bool needGuide = false;//是否需要游戏教程
 
     //对话
     [SerializeField] private GameObject dialoguePanel;//对话Panel
@@ -131,6 +131,8 @@ public class GameGuide : MonoBehaviour
 
             GameEntrance.instance.CoinCount = 2;
             GameManager.Instance.DrawNeedCoin = 1;
+            cacheCards.GetComponent<HandCardContainer>().OnTransformChanged=null;
+            Debug.Log("游戏教程");
         }
     }
 
@@ -213,5 +215,6 @@ public class GameGuide : MonoBehaviour
     {
         GetComponent<Canvas>().enabled = false;
         GameManager.Instance.StartChallenge();
+        gameObject.SetActive(false);
     }
 }

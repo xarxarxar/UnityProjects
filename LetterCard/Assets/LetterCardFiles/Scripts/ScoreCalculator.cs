@@ -1,13 +1,16 @@
-using DG.Tweening;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using Unity.VisualScripting;
-using UnityEngine;
 using UnityEngine.Events;
+
 
 public class ScoreCalculator
 {
+    public static Dictionary<string, UnityAction> specialScoreDic = new Dictionary<string, UnityAction>();
+
+    public static int normalScore;
+    public static int extraScore;
+    public static int specialScore;
+
     /// <summary>
     /// 存在指定字母组合
     /// </summary>
@@ -47,7 +50,7 @@ public class ScoreCalculator
     // 计算玩家出牌后的总分数
     // 输入参数 playedCards 是玩家在当前回合打出的卡牌列表
     // 返回值是玩家在当前回合的得分
-    public static void CalculateScore(List<LetterCard> playedCards,ref int normalScore,ref int extraScore,ref int specialScore)
+    public static void CalculateScore(List<LetterCard> playedCards)
     {
         // 初始分数设为玩家出牌数量，即每张牌得1分
         normalScore = playedCards.Count;
@@ -60,8 +63,13 @@ public class ScoreCalculator
 
         extraScore = GetRuleScore(sequence, colorSequence);
         //int specialScore = CheckSpecialMissions(LevelController.instance.levelConfig.specialMissions, playedCards);
-        specialScore = 0;
-        
+
+        //计算specialScore
+        foreach (UnityAction value in specialScoreDic.Values)
+        {
+            value();
+        }
+
     }
 
     // 根据玩家出牌的卡牌，构建一个由字母组成的字符串序列

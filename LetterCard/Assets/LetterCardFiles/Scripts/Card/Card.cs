@@ -121,22 +121,28 @@ public enum CardType
 // 例如：移除卡牌、交换卡牌等。
 public enum SpecialEffectType
 {
-    RemoveCard,         //  移除一张卡牌
-    AddOneLetterHand,   //  增加一个字母手牌最大值
-    AddOneCacheHand,    //  增加一个缓存手牌最大值
-    AddOneSpecialHand,  //  增加一个特殊手牌最大值
-    AddOneStateHand,    //  增加一个状态最大值
-    RandomRedCard,      //  随机获取一张红色字母牌
+    RemoveCard,         //  字迹擦除,移除一张卡牌
+    AddOneLetterHand,   //  字库扩容,增加一个字母手牌最大值
+    AddOneCacheHand,    //  暂存书签,增加一个缓存手牌最大值
+    AddOneSpecialHand,  //  特殊字库,增加一个特殊手牌最大值
+    AddOneStateHand,    //  状态扩充,增加一个状态最大值
+
+    RandomRedCard,      //  随机抽取,随机获取一张红色字母牌
     RandomYellowCard,   //  随机获取一张黄色字母牌
     RandomBlueCard,     //  随机获取一张蓝色字母牌
     RandomGreenCard,    //  随机获取一张绿色字母牌
 
     //状态
-    ExtraScoreOnlyOne,  //  如果只出一张牌的话，每个额外加分，整个关卡起作用
-    ExtraDrawLetter,    //  每回合多一次抽字母牌次数
-    ExtraDrawSpecial,   //  每回合多一次抽功能牌次数
-    ExtraScoreLevelOver,//  关卡结束的时候额外加分，加分值为当前关卡中分值最大的一回合
+    ExtraScoreOnlyOne,  //  孤字成章,如果只出一张牌的话，每个额外加分，整个关卡起作用
+    //ExtraDrawLetter,    //  额外抽字,每回合多一次抽字母牌次数
+    CanPlayZeroCard,    //  空白书卷，可以在没有选择牌的时候结束当前回合
+    AddScoreWhenDelete, //  弃字生金，每丢弃三张牌，获取6分
+    ExtraScoreRounOver, //  字量结余，回合结束时，增加额外分数，分数为当前手牌的数量
 
 
+    //增加概率
+    CanContinuousDraw,  //  连抽不止，每次抽牌有概率连续抽牌，抽牌次数上限为两次
+    AddContinuousDraw,  //  抽运加成，增加连续抽牌的概率百分之5
+    AddContinuousLimit, //  抽卡极限，增加连续抽牌的次数上限，每次触发连续抽牌之后，概率变为当前概率一半，下一次抽牌时恢复至初始概率
 }
 

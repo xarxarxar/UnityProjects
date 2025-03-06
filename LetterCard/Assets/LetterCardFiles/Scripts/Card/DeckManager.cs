@@ -94,6 +94,38 @@ public class DeckManager : MonoBehaviour
     }
 
     /// <summary>
+    /// 抽卡，可能是字母牌，可能是特殊牌，可能是金币，可能是分数
+    /// </summary>
+    public void DrawCard()
+    {
+        float normalProb = 1.0f;//抽到正常字母卡的概率
+        float specialPrb = 1.0f;//抽到特殊卡的概率
+        float scorePrb = 0.2f;//抽到分数的概率
+        float cointProb = 0.2f;//抽到金币的概率
+        float totalWeight= normalProb+ specialPrb+ scorePrb+cointProb;
+        float randomPoint = UnityEngine.Random.Range(0, totalWeight);
+
+        // 判断落在哪个区间
+        if (randomPoint < normalProb)
+        {
+            DrawLetterCard(1);
+        }
+        else if (randomPoint < normalProb + specialPrb)
+        {
+            DrawSpecialCard(1);
+        }
+        else if (randomPoint < normalProb + specialPrb + scorePrb)
+        {
+            Debug.Log("抽到分数");
+        }
+        else
+        {
+            Debug.Log("抽到金币");
+        }
+    }
+
+
+    /// <summary>
     /// 抽取字母牌
     /// </summary>
     public void DrawLetterCard(int count)

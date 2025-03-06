@@ -59,107 +59,131 @@ public class SpecialCard : Card
         {
             case SpecialEffectType.RemoveCard:
                 // 实现移除卡牌的效果
-                largeLetter.text = "除";
+                largeLetter.text = "字迹\n擦除";
                 largeLetter.color = Color.black; 
-                bottomLetter.text = "-1";
+                //bottomLetter.text = "-1";
                 specialDescribe = "移除一张字母牌";
                 break;
             case SpecialEffectType.AddOneLetterHand:
                 // 实现增加一个字母手牌上限的效果
-                largeLetter.text = "字";
+                largeLetter.text = "字库\n扩容";
                 largeLetter.color = Color.black;
-                bottomLetter.text = "+1";
+                //bottomLetter.text = "+1";
 
                 specialDescribe = "字母牌上限+1";
                 break;
             case SpecialEffectType.AddOneCacheHand:
                 // 实现增加一个缓存手牌上限的效果
-                largeLetter.text = "出";
+                largeLetter.text = "暂存\n书签";
                 largeLetter.color = Color.black;
-                bottomLetter.text = "+1";
+                //bottomLetter.text = "+1";
 
                 specialDescribe = "出牌上限+1";
                 break;
             case SpecialEffectType.AddOneSpecialHand:
                 // 实现增加一个功能手牌上限的效果
-                largeLetter.text = "功";
+                largeLetter.text = "特殊\n字库";
                 largeLetter.color = Color.black;
-                bottomLetter.text = "+1";
+                //bottomLetter.text = "+1";
 
                 specialDescribe = "功能牌上限+1";
                 break;
 
             case SpecialEffectType.AddOneStateHand:
                 // 实现增加一个功能手牌上限的效果
-                largeLetter.text = "状";
+                largeLetter.text = "状态\n扩充";
                 largeLetter.color = Color.black;
-                bottomLetter.text = "+1";
+                //bottomLetter.text = "+1";
 
                 specialDescribe = "状态上限+1";
                 break;
             case SpecialEffectType.RandomRedCard:
                 // 实现获取一张随机红色卡牌的效果
-                largeLetter.text = "取";
+                largeLetter.text = "随机\n抽取";
                 largeLetter.color = colorMap['R'];
-                bottomLetter.text = "?";
+                //bottomLetter.text = "?";
 
                 specialDescribe = "随机抽取一张红色字母牌";
                 break;
             case SpecialEffectType.RandomYellowCard:
                 // 实现获取一张随机黄色卡牌的效果
-                largeLetter.text = "取";
+                largeLetter.text = "随机\n抽取";
                 largeLetter.color = colorMap['Y'];
-                bottomLetter.text = "?";
+                //bottomLetter.text = "?";
 
                 specialDescribe = "随机抽取一张黄色字母牌";
                 break;
             case SpecialEffectType.RandomBlueCard:
                 // 实现获取一张随机蓝色卡牌的效果
-                largeLetter.text = "取";
+                largeLetter.text = "随机\n抽取";
                 largeLetter.color = colorMap['B'];
-                bottomLetter.text = "?";
+                //bottomLetter.text = "?";
 
                 specialDescribe = "随机抽取一张蓝色字母牌";
                 break;
             case SpecialEffectType.RandomGreenCard:
                 // 实现获取一张随机绿色卡牌的效果
-                largeLetter.text = "取";
+                largeLetter.text = "随机\n抽取";
                 largeLetter.color = colorMap['G'];
-                bottomLetter.text = "?";
+                //bottomLetter.text = "?";
 
                 specialDescribe = "随机抽取一张绿色字母牌";
                 break;
             case SpecialEffectType.ExtraScoreOnlyOne:
-                // 实现获取一张随机绿色卡牌的效果
-                largeLetter.text = "单";
-                largeLetter.color = colorMap['G'];
-                bottomLetter.text = "+2";
+                // 孤字成章,如果只出一张牌的话，该回合额外加分，整个关卡起作用
+                largeLetter.text = "孤字\n成章";
+                largeLetter.color = Color.black;
+                //bottomLetter.text = "+2";
 
-                specialDescribe = "只出一张牌时，分数加2";
+                specialDescribe = "如果只出一张牌的话，该回合额外加分";
                 break;
-            case SpecialEffectType.ExtraDrawLetter:
-                // 实现获取一张随机绿色卡牌的效果
-                largeLetter.text = "抽";
-                largeLetter.color = colorMap['G'];
-                bottomLetter.text = "+1";
+            case SpecialEffectType.CanPlayZeroCard:
+                // 空白书卷，可以在没有选择牌的时候结束当前回合
+                largeLetter.text = "空白\n书卷";
+                largeLetter.color = Color.black;
+                //bottomLetter.text = "+2";
 
-                specialDescribe = "每回合多抽一次字母牌";
+                specialDescribe = "可以在没有选择牌的时候出牌来结束当前回合";
                 break;
-            case SpecialEffectType.ExtraDrawSpecial:
-                // 实现获取一张随机绿色卡牌的效果
-                largeLetter.text = "能";
-                largeLetter.color = colorMap['G'];
-                bottomLetter.text = "+1";
+            case SpecialEffectType.AddScoreWhenDelete:
+                // 弃字生金，每丢弃三张牌，获取6分
+                largeLetter.text = "弃字\n生金";
+                largeLetter.color = Color.black;
+                //bottomLetter.text = "+2";
 
-                specialDescribe = "每回合多抽一次功能牌";
+                specialDescribe = "每丢弃三张牌，获取6分";
                 break;
-            case SpecialEffectType.ExtraScoreLevelOver:
-                // 实现获取一张随机绿色卡牌的效果
-                largeLetter.text = "增";
-                largeLetter.color = colorMap['G'];
-                bottomLetter.text = "+1";
+            case SpecialEffectType.ExtraScoreRounOver:
+                // 字量结余，回合结束时，增加额外分数，分数为当前手牌的数量
+                largeLetter.text = "字量\n结余";
+                largeLetter.color = Color.black;
+                //bottomLetter.text = "+2";
 
-                specialDescribe = "关卡结束时额外加10分";
+                specialDescribe = "回合结束时，增加额外分数，分数为当前手牌的数量";
+                break;
+            case SpecialEffectType.CanContinuousDraw:
+                // 连抽不止，每次抽牌有概率连续抽牌，抽牌次数上限为两次
+                largeLetter.text = "连抽\n不止";
+                largeLetter.color = Color.black;
+                //bottomLetter.text = "+2";
+
+                specialDescribe = "每次抽牌有概率连续抽牌，抽牌次数上限为两次";
+                break;
+            case SpecialEffectType.AddContinuousDraw:
+                // 抽运加成，增加连续抽牌的概率百分之5
+                largeLetter.text = "抽运\n加成";
+                largeLetter.color = Color.black;
+                //bottomLetter.text = "+2";
+
+                specialDescribe = "增加连续抽牌的概率百分之5";
+                break;
+            case SpecialEffectType.AddContinuousLimit:
+                // 抽卡极限，增加连续抽牌的次数上限，每次触发连续抽牌之后，概率变为当前概率一半，下一次抽牌时恢复至初始概率
+                largeLetter.text = "抽卡\n极限";
+                largeLetter.color = Color.black;
+                //bottomLetter.text = "+2";
+
+                specialDescribe = "增加连续抽牌的次数上限，每次触发连续抽牌之后，概率变为当前概率一半，下一次抽牌时恢复至初始概率";
                 break;
 
         }
@@ -248,6 +272,45 @@ public class SpecialCard : Card
                     return;
                 }
                 break;
+                ///
+            case SpecialEffectType.ExtraScoreOnlyOne:
+                // 如果只出一张牌的话，每个额外加分，整个关卡起作用
+                ScoreCalculator.specialScoreDic.Add("孤字成章", () =>
+                {
+                    if (CacheText.instance.letterCards.Count == 1)
+                    {
+                        //加的分数为当前回合数
+                        ScoreCalculator.specialScore += GameManager.Instance.CurrentRound;
+                    }
+                });
+                break;
+           
+            case SpecialEffectType.CanPlayZeroCard:
+                // 空白书卷，可以在没有选择牌的时候结束当前回合
+                GameManager.Instance.MinPlayCardCount = 0;
+                break;
+            case SpecialEffectType.AddScoreWhenDelete:
+                GameManager.Instance.useAddScoreWhenDelete= true;
+                break;
+            case SpecialEffectType.CanContinuousDraw:
+                // 连抽不止，每次抽牌有概率连续抽牌，抽牌次数上限为两次
+                GameManager.Instance.useCanContinuousDraw = true;
+                break;
+            case SpecialEffectType.AddContinuousDraw:
+                // 抽运加成，增加连续抽牌的初始概率百分之5，当前为百分之5
+                GameManager.Instance.continuousProbability += 0.05f;
+                break;
+            case SpecialEffectType.AddContinuousLimit:
+                // 抽卡极限，增加连续抽牌的次数上限
+                if (!DeckManager.instance.DrawRandomLetterCardByColor('G'))
+                {
+                    SpecialCardState.instance.CardChoosing(null);
+                    SpecialCardState.instance.ChosenCard = null;//将选择的牌置为空
+                    //如果抽取不成功，则不要销毁这个卡牌
+                    return;
+                }
+                break;
+
 
         }
         SpecialCardState.instance.ChosenCard = null;//将选择的牌置为空
