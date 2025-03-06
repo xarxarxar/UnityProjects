@@ -210,7 +210,6 @@ public class SpecialCard : Card
     // 该方法会根据卡牌的类型来执行不同的效果。
     public override void ActivateEffect()
     {
-        
         // 这里是具体效果的实现，可能会根据 effectType 来执行不同的操作。
         // 例如，移除卡牌、交换卡牌等。
         switch (EffectType)

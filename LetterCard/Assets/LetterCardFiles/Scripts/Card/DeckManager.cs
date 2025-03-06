@@ -130,7 +130,6 @@ public class DeckManager : MonoBehaviour
     /// </summary>
     public void DrawLetterCard(int count)
     {
-        if (IsDrawing) return;//如果正在抽牌
         Sequence sequence = DOTween.Sequence();
 
         for (int i = 0; i < count; i++)
@@ -161,7 +160,6 @@ public class DeckManager : MonoBehaviour
     /// </summary>
     public void DrawSpecialCard(int count)
     {
-        if (IsDrawing) return;//如果正在抽牌
         Sequence sequence = DOTween.Sequence();
         for (int i = 0; i < count; i++)
         {
@@ -205,6 +203,25 @@ public class DeckManager : MonoBehaviour
             cardPool.ReturnCard(child);
             return true; // 删除所有元素
         });
+    }
+
+    /// <summary>
+    /// 丢弃卡牌
+    /// </summary>
+    /// <param name="card">丢弃的卡牌</param>
+    /// <param name="callback">丢弃玩之后触发的回调函数</param>
+    public void DropCard(Card card,UnityAction callback=null)
+    {
+        if (card is LetterCard)
+        {
+            letterHandCards.Remove(card);
+        }
+        else if (card is SpecialCard)
+        {
+            specialHandCards.Remove(card);
+        }
+        cardPool.ReturnCard(card);
+        callback?.Invoke();
     }
 
     /// <summary>
@@ -423,10 +440,10 @@ public class DeckManager : MonoBehaviour
         // 创建一个动画序列
         Sequence sequence = DOTween.Sequence();
 
-        sequence.AppendCallback(() =>
-        {
-            IsDrawing = true;
-        });
+        //sequence.AppendCallback(() =>
+        //{
+        //    IsDrawing = true;
+        //});
 
         sequence.AppendCallback(() =>
         {
@@ -450,7 +467,6 @@ public class DeckManager : MonoBehaviour
         sequence.AppendCallback(() =>
         {
             newCard.transform.SetParent(parents, worldPositionStays: true);
-            IsDrawing = false;
         });
 
         return sequence;

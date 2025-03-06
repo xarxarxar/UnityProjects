@@ -69,6 +69,18 @@ public class LetterCard : Card
 
     private void OnCardClick()
     {
+        //ÕýÔÚÉ¾³ý¿¨ÅÆ×´Ì¬
+        if (SpecialCardState.instance.IsDeleting)
+        {
+            transform.DOScale(0, 0.5f).SetEase(Ease.OutQuart).OnComplete(() =>
+            {
+                DeckManager.instance.DropCard(this);
+                GameManager.Instance.DropCardCount++;
+                SpecialCardState.instance.IsDeleting=false;
+            });
+            return;
+        }
+
         if (isInhand)
         {
             isInhand = false;

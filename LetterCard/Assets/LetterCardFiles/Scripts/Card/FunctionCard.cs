@@ -225,6 +225,7 @@ public class FunctionCard : Card
     public override void ActivateEffect()
     {
         
+        
         // 这里是具体效果的实现，可能会根据 effectType 来执行不同的操作。
         // 例如，移除卡牌、交换卡牌等。
         switch (EffectType)

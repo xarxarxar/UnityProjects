@@ -40,7 +40,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private uint minPlayCardCount;//最少出几张牌
+    private uint minPlayCardCount=1;//最少出几张牌
     public uint MinPlayCardCount { get => minPlayCardCount; set => minPlayCardCount = value; }
 
 
@@ -61,8 +61,8 @@ public class GameManager : MonoBehaviour
     }
 
     public bool useCanContinuousDraw=false;//是否启用连抽不止
-    public float continuousProbability;//连抽的概率
-    public int continuousCount;//连抽的次数上限
+    public float continuousProbability=0.3f;//连抽的概率
+    public int continuousCount=2;//连抽的次数上限
 
 
 
@@ -120,6 +120,12 @@ public class GameManager : MonoBehaviour
         CurrentRound = 0;
         CurrentScore = 0;
         NextScore = 100;
+        DrawNeedCoin = 1;
+        MinPlayCardCount = 1;
+        DropCardCount = 0;
+        useAddScoreWhenDelete = false;
+        continuousProbability = 0.3f;
+        continuousCount = 2;
         StartRound();//开始回合
     }
 
@@ -136,11 +142,15 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void DrawCards()
     {
-        if(GameEntrance.instance.CoinCount< DrawNeedCoin)
+        if (DeckManager.instance.IsDrawing) return;//如果正在抽牌
+
+        if (GameEntrance.instance.CoinCount< DrawNeedCoin)
         {
             GetRewards.Instance.GetComponent<Canvas>().enabled = true;
             return;
         }
+        DeckManager.instance.IsDrawing = true;
+
         DeckManager.instance.DrawCard();//抽卡
         //连抽
         float tmpContinuousProbability = continuousProbability;
@@ -151,7 +161,8 @@ public class GameManager : MonoBehaviour
                 DeckManager.instance.DrawCard();//抽卡
             }
         }
-        
+        DeckManager.instance.IsDrawing = false;
+
         GameEntrance.instance.CoinCount-= DrawNeedCoin;
     }
 
