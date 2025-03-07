@@ -117,7 +117,7 @@ public class HandCardContainer : MonoBehaviour
         foreach (var card in cards)
         {
             currentRow.Add(card);
-            if (currentRow.Count == 5)
+            if (currentRow.Count == sortCount)
             {
                 rows.Add(currentRow);
                 currentRow = new List<Transform>();
@@ -139,63 +139,8 @@ public class HandCardContainer : MonoBehaviour
                 float totalWidth = (cardsInRow - 1) * (1 + horizontalSpacing);
                 float xPosition = (i - (cardsInRow - 1) / 2f) * (1 + horizontalSpacing);
                 //row[i].localPosition = new Vector3(xPosition, yPosition, 0);
-                row[i].DOLocalMove(new Vector3(xPosition, yPosition, 0), 0.3f).SetEase(Ease.OutQuad);
+                row[i].DOLocalMove(new Vector3(xPosition, yPosition, 0), 0.2f).SetEase(Ease.OutQuad);
             }
         }
     }
-
-    // 水平排列手牌
-    private void ArrangeCardsHorizontally(float containerWidth)
-    {
-        // 获取容器的 RectTransform 并计算左端位置
-        RectTransform containerRect = GetComponent<RectTransform>();
-        float containerLeftEdge = containerRect.anchoredPosition.x - containerWidth / 2;
-
-        float currentX = containerLeftEdge; // 从容器左端开始
-        
-        // 将卡牌水平排列
-        foreach (Transform card in transform)
-        {
-            // 设置卡牌的位置
-            //card.GetComponent<RectTransform>().DOAnchorPosX(currentX + 0.5f * singleWidth, 0.5f).SetEase(Ease.OutQuad);// 设置缓动效果
-            
-            //card.GetComponent<RectTransform>().anchoredPosition = new Vector2(currentX + 0.5f * singleWidth, 0);
-
-            //currentX += singleWidth;
-            //Debug.Log($"card位置为{card.GetComponent<RectTransform>().anchoredPosition}");
-        }
-    }
-
-    // 叠放手牌
-    private void ArrangeCardsOverlapping(float containerWidth)
-    {
-        // 获取容器的 RectTransform 并计算左端位置
-        RectTransform containerRect = GetComponent<RectTransform>();
-        float containerLeftEdge = containerRect.anchoredPosition.x - containerWidth / 2;
-        
-        float overlapAmount;
-        // 如果只有一个卡牌，不需要重叠
-        if (transform.childCount == 1) overlapAmount = 0;
-        //else overlapAmount = (containerWidth - singleWidth) / (transform.childCount - 1);// 计算每张卡牌的重叠偏移量
-
-
-        // 从容器的左端开始叠放卡牌
-        for (int i = 0; i < transform.childCount; i++)
-        {
-            RectTransform card = transform.GetChild(i).GetComponent<RectTransform>();
-
-            // 计算每张卡牌的偏移量，并应用到卡牌位置
-            //float offsetX = containerLeftEdge + 0.5f * singleWidth + i* overlapAmount;
-
-            // 只在 Y 轴上移动 UI 元素
-           // card.GetComponent<RectTransform>().DOAnchorPosX(offsetX, 0.5f).SetEase(Ease.OutQuad);// 设置缓动效果
-            // 设置卡牌的位置
-            //card.anchoredPosition = new Vector2(offsetX, 0);
-            
-            //Debug.Log($"card位置为{card.anchoredPosition}");
-        }
-    }
-
-
-   
 }

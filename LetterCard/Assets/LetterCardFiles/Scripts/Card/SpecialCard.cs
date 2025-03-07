@@ -72,14 +72,14 @@ public class SpecialCard : Card
 
                 specialDescribe = "字母牌上限+1";
                 break;
-            case SpecialEffectType.AddOneCacheHand:
-                // 实现增加一个缓存手牌上限的效果
-                largeLetter.text = "暂存\n书签";
-                largeLetter.color = Color.black;
-                //bottomLetter.text = "+1";
+            //case SpecialEffectType.AddOneCacheHand:
+            //    // 实现增加一个缓存手牌上限的效果
+            //    largeLetter.text = "暂存\n书签";
+            //    largeLetter.color = Color.black;
+            //    //bottomLetter.text = "+1";
 
-                specialDescribe = "出牌上限+1";
-                break;
+            //    specialDescribe = "出牌上限+1";
+            //    break;
             case SpecialEffectType.AddOneSpecialHand:
                 // 实现增加一个功能手牌上限的效果
                 largeLetter.text = "特殊\n字库";
@@ -223,10 +223,10 @@ public class SpecialCard : Card
                 // 实现增加一个字母手牌上限的效果
                 //LevelController.instance.IncreaseHandLimit(1);
                 break;
-            case SpecialEffectType.AddOneCacheHand:
-                // 实现增加一个缓存手牌上限的效果
-                //LevelController.instance.IncreaseCacheLimit(1);
-                break;
+            //case SpecialEffectType.AddOneCacheHand:
+            //    // 实现增加一个缓存手牌上限的效果
+            //    //LevelController.instance.IncreaseCacheLimit(1);
+            //    break;
             case SpecialEffectType.AddOneSpecialHand:
                 // 实现增加一个特殊手牌上限的效果
                 //LevelController.instance.IncreaseSpecialLimit(1);
@@ -297,7 +297,7 @@ public class SpecialCard : Card
                 break;
             case SpecialEffectType.AddContinuousDraw:
                 // 抽运加成，增加连续抽牌的初始概率百分之5，当前为百分之5
-                GameManager.Instance.continuousProbability += 0.05f;
+                GameManager.Instance.ContinuousProbability += 0.05f;
                 break;
             case SpecialEffectType.AddContinuousLimit:
                 // 抽卡极限，增加连续抽牌的次数上限

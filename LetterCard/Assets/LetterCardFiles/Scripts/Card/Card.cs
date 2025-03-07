@@ -123,7 +123,7 @@ public enum SpecialEffectType
 {
     RemoveCard,         //  字迹擦除,移除一张卡牌
     AddOneLetterHand,   //  字库扩容,增加一个字母手牌最大值
-    AddOneCacheHand,    //  暂存书签,增加一个缓存手牌最大值
+    //AddOneCacheHand,    //  暂存书签,增加一个缓存手牌最大值
     AddOneSpecialHand,  //  特殊字库,增加一个特殊手牌最大值
     AddOneStateHand,    //  状态扩充,增加一个状态最大值
 

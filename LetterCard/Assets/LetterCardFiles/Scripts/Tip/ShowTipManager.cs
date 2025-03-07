@@ -21,19 +21,6 @@ public class ShowTipManager : MonoBehaviour
         instance = this;
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            ShowTip("ÄãºÃ");
-        }
-        if (Input.GetKeyDown(KeyCode.Y))
-        {
-            ShowTip("ÄãºÃ",10);
-        }
-    }
-
-
     public void ShowTip(string showText,UnityAction callback=null)
     {
         Instantiate(tipNomoney, tipParent).GetComponent<Tip>().showString = showText;
@@ -48,25 +35,6 @@ public class ShowTipManager : MonoBehaviour
         callback?.Invoke();
     }
 
-    public void ToggleDustbin(bool isShow)
-    {
-        dustbinGameobject.SetActive(isShow);
-    }
 
-    public void DustbinRed()
-    {
-        dustbinGameobject.transform.GetChild(0).GetComponent<Image>().color = new Color32(139, 0, 0, 255);
-        Text text = dustbinGameobject.transform.GetChild(0).GetChild(0).GetComponent<Text>();
-        text.text = "ËÉ¿ªÒÆ³ý¿¨ÅÆ";
-        text.color = new Color32(255, 255, 165, 255);
-    }
-
-    public void DustbinWhite()
-    {
-        dustbinGameobject.transform.GetChild(0).GetComponent<Image>().color = Color.white;
-        Text text = dustbinGameobject.transform.GetChild(0).GetChild(0).GetComponent<Text>();
-        text.text = "ÍÏµ½´Ë´¦ÒÆ³ý";
-        text.color = new Color32(139, 0, 0, 255);
-    }
 
 }

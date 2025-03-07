@@ -16,7 +16,6 @@ public class SpecialCardState : MonoBehaviour
             if (value != isDeleting)
             {
                 isDeleting = value;
-                ShowTipManager.instance.ToggleDustbin(value);
             }
         }
     }

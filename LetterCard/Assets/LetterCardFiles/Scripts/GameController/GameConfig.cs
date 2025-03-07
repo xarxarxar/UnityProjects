@@ -23,7 +23,7 @@ public class GameConfig : MonoBehaviour
         {
             {SpecialEffectType.RemoveCard, 0.2f},
             {SpecialEffectType.AddOneLetterHand, 0.2f},
-            {SpecialEffectType.AddOneCacheHand, 0.2f},
+            //{SpecialEffectType.AddOneCacheHand, 0.2f},
             {SpecialEffectType.AddOneSpecialHand, 0.2f},
             {SpecialEffectType.AddOneStateHand, 0.2f},
 

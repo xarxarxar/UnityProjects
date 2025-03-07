@@ -18,7 +18,7 @@ public class DeckManager : MonoBehaviour
     private List<(SpecialEffectType,float)> specialCardPool = new List<(SpecialEffectType, float)>();
     
     public FunctionCard specialCardPrefab;
-
+    public RewardCard rewardCardPrefab;
 
     // 手牌
     public Transform LetterHandCard;
@@ -98,6 +98,11 @@ public class DeckManager : MonoBehaviour
     /// </summary>
     public void DrawCard()
     {
+        if (!CanDrawNormalCard())
+        {
+            ShowTipManager.instance.ShowTip("字母牌数达到上限，请及时出牌");
+            return;
+        }
         float normalProb = 1.0f;//抽到正常字母卡的概率
         float specialPrb = 1.0f;//抽到特殊卡的概率
         float scorePrb = 0.2f;//抽到分数的概率
@@ -116,11 +121,13 @@ public class DeckManager : MonoBehaviour
         }
         else if (randomPoint < normalProb + specialPrb + scorePrb)
         {
-            Debug.Log("抽到分数");
+            Instantiate(rewardCardPrefab);
+            ShowTipManager.instance.ShowTip("抽到分数");
         }
         else
         {
             Debug.Log("抽到金币");
+            ShowTipManager.instance.ShowTip("抽到金币");
         }
     }
 
@@ -149,7 +156,7 @@ public class DeckManager : MonoBehaviour
                 // 牌数达到上限时显示提示
                 sequence.AppendCallback(() =>
                 {
-                    ShowTipManager.instance.ShowTip("牌数达到上限，请及时出牌");
+                    ShowTipManager.instance.ShowTip("字母牌数达到上限，请及时出牌");
                 });
                 break; // 如果达到手牌上限，终止循环
             }
@@ -216,7 +223,7 @@ public class DeckManager : MonoBehaviour
         {
             letterHandCards.Remove(card);
         }
-        else if (card is SpecialCard)
+        else if (card is FunctionCard)
         {
             specialHandCards.Remove(card);
         }
@@ -318,6 +325,7 @@ public class DeckManager : MonoBehaviour
         if(!CanDrawNormalCard())
         {
             Debug.Log($"达到手牌上限");
+            ShowTipManager.instance.ShowTip("达到手牌上限");
             return false;
         }
         // 先过滤字母牌堆，筛选符合颜色条件的卡牌
@@ -404,8 +412,6 @@ public class DeckManager : MonoBehaviour
             newCard.transform.position = Vector3.zero;
             newCard.transform.SetParent(LetterHandCard, worldPositionStays: true);
         }
-        
-
         //letterDeck.RemoveAt(letterCardIndex);//不用移出
         letterHandCards.Add(newCard);
         OnCardDrawn?.Invoke(newCard);
@@ -435,15 +441,11 @@ public class DeckManager : MonoBehaviour
         }
     }
 
-    Sequence DrawCardAnim(Card newCard,Transform parents)
+    Sequence DrawCardAnim(Card newCard, Transform parents)
     {
+        IsDrawing = true;
         // 创建一个动画序列
         Sequence sequence = DOTween.Sequence();
-
-        //sequence.AppendCallback(() =>
-        //{
-        //    IsDrawing = true;
-        //});
 
         sequence.AppendCallback(() =>
         {
@@ -457,9 +459,7 @@ public class DeckManager : MonoBehaviour
         sequence.Append(newCard.transform.DOScale(Vector3.one, 0.3f)
             .SetEase(Ease.InOutQuart));
 
-
-        // 第一个旋转动画：从当前角度旋转到目标角度
-        sequence.Append(newCard.FlipCardToFront(0.7f));//再翻到正面
+        sequence.Append(newCard.FlipCardToFront(0.5f));//再翻到正面
 
         // 添加停顿一秒
         sequence.AppendInterval(0.1f);  // 停顿
@@ -467,6 +467,10 @@ public class DeckManager : MonoBehaviour
         sequence.AppendCallback(() =>
         {
             newCard.transform.SetParent(parents, worldPositionStays: true);
+        });
+        sequence.OnComplete(() =>
+        {
+            IsDrawing = false;
         });
 
         return sequence;
@@ -499,7 +503,7 @@ public class DeckManager : MonoBehaviour
     /// <returns></returns>
     int GetCurrentMaxNormal()
     {
-        return 10;
+        return GameManager.Instance.MaxPlayCardCount;
     }
 
     /// <summary>
@@ -508,7 +512,7 @@ public class DeckManager : MonoBehaviour
     /// <returns></returns>
     int GetCurrentMaxSpecial()
     {
-        return 10;
+        return GameManager.Instance.MaxSpecialCaradCount;
     }
 
     /// <summary>

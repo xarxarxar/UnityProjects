@@ -50,9 +50,9 @@ public class LetterCard : Card
     private void OnEnable()
     {
         simpleTouch = GetComponent<SimpleTouch>();
-        simpleTouch.onBeginDrag += OnCardBeginDrag;//开始拖拽的方法
-        simpleTouch.onDrag += OnCardDrag;//拖拽中的方法
-        simpleTouch.onEndDrag += OnCardEndDrag;//拖拽中的方法
+        //simpleTouch.onBeginDrag += OnCardBeginDrag;//开始拖拽的方法
+        //simpleTouch.onDrag += OnCardDrag;//拖拽中的方法
+        //simpleTouch.onEndDrag += OnCardEndDrag;//拖拽中的方法
 
         simpleTouch.onClick+= OnCardClick;//单击的方法
 

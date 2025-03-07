@@ -56,6 +56,11 @@ public class FunctionCard : Card
         simpleTouch.onClick += OnCardClick;//单击的方法
     }
 
+    private void OnDisable()
+    {
+        simpleTouch.onClick = null;//单击的方法
+    }
+
     private void OnInstantiate()
     {
         // 这里是具体效果的实现，可能会根据 effectType 来执行不同的操作。
@@ -65,30 +70,30 @@ public class FunctionCard : Card
             case SpecialEffectType.RemoveCard:
                 // 实现移除卡牌的效果
                 largeLetter.text = "字迹\n擦除";
-                largeLetter.color = Color.black;
+                largeLetter.color = new Color32(67, 83, 108, 255);
                 //bottomLetter.text = "-1";
                 specialDescribe = "选择一张字母牌，将其丢弃";
                 break;
             case SpecialEffectType.AddOneLetterHand:
                 // 实现增加一个字母手牌上限的效果
                 largeLetter.text = "字库\n扩容";
-                largeLetter.color = Color.black;
+                largeLetter.color = new Color32(67, 83, 108, 255);
                 //bottomLetter.text = "+1";
 
                 specialDescribe = "字母牌上限+1";
                 break;
-            case SpecialEffectType.AddOneCacheHand:
-                // 实现增加一个缓存手牌上限的效果
-                largeLetter.text = "暂存\n书签";
-                largeLetter.color = Color.black;
-                //bottomLetter.text = "+1";
+            //case SpecialEffectType.AddOneCacheHand:
+            //    // 实现增加一个缓存手牌上限的效果
+            //    largeLetter.text = "暂存\n书签";
+            //    largeLetter.color = Color.black;
+            //    //bottomLetter.text = "+1";
 
-                specialDescribe = "出牌上限+1";
-                break;
+            //    specialDescribe = "出牌上限+1";
+            //    break;
             case SpecialEffectType.AddOneSpecialHand:
                 // 实现增加一个功能手牌上限的效果
                 largeLetter.text = "特殊\n字库";
-                largeLetter.color = Color.black;
+                largeLetter.color = new Color32(67, 83, 108, 255);
                 //bottomLetter.text = "+1";
 
                 specialDescribe = "功能牌上限+1";
@@ -97,7 +102,7 @@ public class FunctionCard : Card
             case SpecialEffectType.AddOneStateHand:
                 // 实现增加一个功能手牌上限的效果
                 largeLetter.text = "状态\n扩充";
-                largeLetter.color = Color.black;
+                largeLetter.color = new Color32(67, 83, 108, 255);
                 //bottomLetter.text = "+1";
 
                 specialDescribe = "状态上限+1";
@@ -137,7 +142,7 @@ public class FunctionCard : Card
             case SpecialEffectType.ExtraScoreOnlyOne:
                 // 孤字成章,如果只出一张牌的话，该回合额外加分，整个关卡起作用
                 largeLetter.text = "孤字\n成章";
-                largeLetter.color = Color.black;
+                largeLetter.color = new Color32(67, 83, 108, 255);
                 //bottomLetter.text = "+2";
 
                 specialDescribe = "如果只出一张牌的话，该回合额外加分";
@@ -145,7 +150,7 @@ public class FunctionCard : Card
             case SpecialEffectType.CanPlayZeroCard:
                 // 空白书卷，可以在没有选择牌的时候结束当前回合
                 largeLetter.text = "空白\n书卷";
-                largeLetter.color = Color.black;
+                largeLetter.color = new Color32(67, 83, 108, 255);
                 //bottomLetter.text = "+2";
 
                 specialDescribe = "可以在没有选择牌的时候出牌来结束当前回合";
@@ -153,7 +158,7 @@ public class FunctionCard : Card
             case SpecialEffectType.AddScoreWhenDelete:
                 // 弃字生金，每丢弃三张牌，获取6分
                 largeLetter.text = "弃字\n生金";
-                largeLetter.color = Color.black;
+                largeLetter.color = new Color32(67, 83, 108, 255);
                 //bottomLetter.text = "+2";
 
                 specialDescribe = "每丢弃三张牌，获取6分";
@@ -161,7 +166,7 @@ public class FunctionCard : Card
             case SpecialEffectType.ExtraScoreRounOver:
                 // 字量结余，回合结束时，增加额外分数，分数为当前手牌的数量
                 largeLetter.text = "字量\n结余";
-                largeLetter.color = Color.black;
+                largeLetter.color = new Color32(67, 83, 108, 255);
                 //bottomLetter.text = "+2";
 
                 specialDescribe = "回合结束时，增加额外分数，分数为当前手牌的数量";
@@ -169,7 +174,7 @@ public class FunctionCard : Card
             case SpecialEffectType.CanContinuousDraw:
                 // 连抽不止，每次抽牌有概率连续抽牌，抽牌次数上限为两次
                 largeLetter.text = "连抽\n不止";
-                largeLetter.color = Color.black;
+                largeLetter.color = new Color32(67, 83, 108, 255);
                 //bottomLetter.text = "+2";
 
                 specialDescribe = "每次抽牌有概率连续抽牌，抽牌次数上限为两次";
@@ -177,7 +182,7 @@ public class FunctionCard : Card
             case SpecialEffectType.AddContinuousDraw:
                 // 抽运加成，增加连续抽牌的概率百分之5
                 largeLetter.text = "抽运\n加成";
-                largeLetter.color = Color.black;
+                largeLetter.color = new Color32(67, 83, 108, 255);
                 //bottomLetter.text = "+2";
 
                 specialDescribe = "增加连续抽牌的概率百分之5";
@@ -185,7 +190,7 @@ public class FunctionCard : Card
             case SpecialEffectType.AddContinuousLimit:
                 // 抽卡极限，增加连续抽牌的次数上限，每次触发连续抽牌之后，概率变为当前概率一半，下一次抽牌时恢复至初始概率
                 largeLetter.text = "抽卡\n极限";
-                largeLetter.color = Color.black;
+                largeLetter.color = new Color32(67, 83, 108, 255);
                 //bottomLetter.text = "+2";
 
                 specialDescribe = "增加连续抽牌的次数上限，当前为{3}";
@@ -224,8 +229,6 @@ public class FunctionCard : Card
     // 该方法会根据卡牌的类型来执行不同的效果。
     public override void ActivateEffect()
     {
-        
-        
         // 这里是具体效果的实现，可能会根据 effectType 来执行不同的操作。
         // 例如，移除卡牌、交换卡牌等。
         switch (EffectType)
@@ -237,15 +240,15 @@ public class FunctionCard : Card
                 break;
             case SpecialEffectType.AddOneLetterHand:
                 // 实现增加一个字母手牌上限的效果
-                //LevelController.instance.IncreaseHandLimit(1);
+                GameManager.Instance.MaxPlayCardCount += 1;
                 break;
-            case SpecialEffectType.AddOneCacheHand:
-                // 实现增加一个缓存手牌上限的效果
-                //LevelController.instance.IncreaseCacheLimit(1);
-                break;
+            //case SpecialEffectType.AddOneCacheHand:
+            //    // 实现增加一个缓存手牌上限的效果
+                
+            //    break;
             case SpecialEffectType.AddOneSpecialHand:
                 // 实现增加一个特殊手牌上限的效果
-                //LevelController.instance.IncreaseSpecialLimit(1);
+                GameManager.Instance.MaxSpecialCaradCount += 1;
                 break;
             case SpecialEffectType.RandomRedCard:
                 // 实现获取一张随机红色卡牌的效果
@@ -287,7 +290,45 @@ public class FunctionCard : Card
                     return;
                 }
                 break;
+            ///
+            case SpecialEffectType.ExtraScoreOnlyOne:
+                // 如果只出一张牌的话，每个额外加分，整个关卡起作用
+                ScoreCalculator.specialScoreDic.Add("孤字成章", () =>
+                {
+                    if (CacheText.instance.letterCards.Count == 1)
+                    {
+                        //加的分数为当前回合数
+                        ScoreCalculator.specialScore += GameManager.Instance.CurrentRound;
+                    }
+                });
+                break;
 
+            case SpecialEffectType.CanPlayZeroCard:
+                // 空白书卷，可以在没有选择牌的时候结束当前回合
+                GameManager.Instance.MinPlayCardCount = 0;
+                break;
+            case SpecialEffectType.AddScoreWhenDelete:
+                //弃字生金，每丢弃三张牌，获取6分
+                GameManager.Instance.useAddScoreWhenDelete = true;
+                break;
+            case SpecialEffectType.CanContinuousDraw:
+                // 连抽不止，每次抽牌有概率连续抽牌，抽牌次数上限为两次
+                GameManager.Instance.useCanContinuousDraw = true;
+                break;
+            case SpecialEffectType.AddContinuousDraw:
+                // 抽运加成，增加连续抽牌的初始概率百分之5，当前为百分之5
+                GameManager.Instance.ContinuousProbability += 0.05f;
+                break;
+            case SpecialEffectType.AddContinuousLimit:
+                // 抽卡极限，增加连续抽牌的次数上限
+                if (!DeckManager.instance.DrawRandomLetterCardByColor('G'))
+                {
+                    SpecialCardState.instance.CardChoosing(null);
+                    SpecialCardState.instance.ChosenCard = null;//将选择的牌置为空
+                    //如果抽取不成功，则不要销毁这个卡牌
+                    return;
+                }
+                break;
         }
         SpecialCardState.instance.ChosenCard = null;//将选择的牌置为空
         DestroyCard();
@@ -301,7 +342,7 @@ public class FunctionCard : Card
         transform.DOScale(0, 0.3f).OnComplete(() =>
         {
             // 动画完成后可以销毁卡牌或执行其他操作
-            Destroy(gameObject);
+            DeckManager.instance.cardPool.ReturnCard(this);
         });
     }
 
