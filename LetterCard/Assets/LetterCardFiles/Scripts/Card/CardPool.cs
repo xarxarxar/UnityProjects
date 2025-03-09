@@ -6,11 +6,13 @@ public class CardPool : MonoBehaviour
 {
     public GameObject letterCardPrefab;      // 卡牌的预设（Prefab）
     public GameObject specialCardPrefab;      // 卡牌的预设（Prefab）
+    public GameObject rewardCardPrefab;      // 卡牌的预设（Prefab）
     private Transform poolParent;       // 暂时存放卡牌的卡牌池
     public int initialSize = 10;       // 初始池大小
 
     private Queue<LetterCard> letterCardPool = new Queue<LetterCard>();  // 存放卡牌的队列
     private Queue<FunctionCard> specialCardPool = new Queue<FunctionCard>();  // 存放卡牌的队列
+    private Queue<RewardCard> rewardCardPool = new Queue<RewardCard>();  // 存放奖励卡牌的队列
 
     void Start()
     {
@@ -33,6 +35,12 @@ public class CardPool : MonoBehaviour
             FunctionCard newSpecialCard = Instantiate(specialCardPrefab, poolParent).GetComponent<FunctionCard>();
             newSpecialCard.gameObject.SetActive(false);  // 默认情况下卡牌不可见
             specialCardPool.Enqueue(newSpecialCard);  // 将卡牌加入池中
+
+
+            // 实例化卡牌并设置父物体
+            RewardCard newRewardCard = Instantiate(rewardCardPrefab, poolParent).GetComponent<RewardCard>();
+            newRewardCard.gameObject.SetActive(false);  // 默认情况下卡牌不可见
+            rewardCardPool.Enqueue(newRewardCard);  // 将卡牌加入池中
         }
     }
 
@@ -56,8 +64,9 @@ public class CardPool : MonoBehaviour
                 return newCard;
             }
         }
-        else
+        else if(typeof(T) == typeof(FunctionCard))
         {
+            
             if (specialCardPool.Count > 0)
             {
                 Card card = specialCardPool.Dequeue();  // 从池中取出一个卡牌
@@ -73,6 +82,30 @@ public class CardPool : MonoBehaviour
                 return newCard;
             }
         }
+        else if (typeof(T) == typeof(RewardCard))
+        {
+            if (rewardCardPool.Count > 0)
+            {
+                Card card = rewardCardPool.Dequeue();  // 从池中取出一个卡牌
+                card.gameObject.SetActive(true);  // 激活卡牌
+                ResetCard(card);  // 重置卡牌状态
+                return card;
+            }
+            else
+            {
+                // 池子没有卡牌了，扩展池并返回新卡牌
+                Card newCard = Instantiate(specialCardPrefab, poolParent).GetComponent<Card>();
+                ResetCard(newCard);
+                return newCard;
+            }
+        }
+        else
+        {
+            return null;
+        }
+
+        
+
     }
 
     // 将卡牌返回池中，并隐藏它

@@ -1,10 +1,7 @@
 using DG.Tweening;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Schema;
-using System.Xml.Serialization;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -96,41 +93,73 @@ public class DeckManager : MonoBehaviour
     /// <summary>
     /// 抽卡，可能是字母牌，可能是特殊牌，可能是金币，可能是分数
     /// </summary>
-    public void DrawCard()
+    public Sequence DrawCard()
     {
+        IsDrawing = true;
         if (!CanDrawNormalCard())
         {
             ShowTipManager.instance.ShowTip("字母牌数达到上限，请及时出牌");
-            return;
+            return null;
         }
         float normalProb = 1.0f;//抽到正常字母卡的概率
         float specialPrb = 1.0f;//抽到特殊卡的概率
-        float scorePrb = 0.2f;//抽到分数的概率
-        float cointProb = 0.2f;//抽到金币的概率
+        float scorePrb = 0.1f;//抽到分数的概率
+        float cointProb = 5.0f;//抽到金币的概率
         float totalWeight= normalProb+ specialPrb+ scorePrb+cointProb;
         float randomPoint = UnityEngine.Random.Range(0, totalWeight);
 
+
+        Sequence sequence= DOTween.Sequence();
         // 判断落在哪个区间
         if (randomPoint < normalProb)
         {
-            DrawLetterCard(1);
+            sequence= DrawSingelLetterCard();
         }
         else if (randomPoint < normalProb + specialPrb)
         {
-            DrawSpecialCard(1);
+            sequence = DrawSpecialCardSequence();
         }
         else if (randomPoint < normalProb + specialPrb + scorePrb)
         {
             Instantiate(rewardCardPrefab);
             ShowTipManager.instance.ShowTip("抽到分数");
+            sequence = null;
         }
         else
         {
-            Debug.Log("抽到金币");
-            ShowTipManager.instance.ShowTip("抽到金币");
+            sequence = DrawRewadCard(RewardCardType.coinCard);
         }
+        sequence.OnComplete(() =>
+        {
+            //连抽
+            float tmpContinuousProbability =GameManager.Instance. ContinuousProbability;
+            
+            float random = UnityEngine.Random.Range(0, 1);
+            if (GameManager.Instance.useCanContinuousDraw && random < tmpContinuousProbability && GameManager.Instance.ContinuousCount > 0)
+            {
+                GameManager.Instance.ContinuousCount--;
+                DrawCard();//抽卡
+            }
+            else
+            {
+                IsDrawing = false;
+            }
+        });
+        return sequence;
     }
-
+    Sequence DrawSingelLetterCard()
+    {
+        if (CanDrawNormalCard())
+        {
+            return DrawLetterCardNoPool(true);
+        }
+        else
+        {
+            ShowTipManager.instance.ShowTip("字母牌数达到上限，请及时出牌");
+            return null;
+        }
+        
+    }
 
     /// <summary>
     /// 抽取字母牌
@@ -165,34 +194,29 @@ public class DeckManager : MonoBehaviour
     /// <summary>
     /// 抽取特殊牌
     /// </summary>
-    public void DrawSpecialCard(int count)
+    public Sequence DrawSpecialCardSequence()
     {
-        Sequence sequence = DOTween.Sequence();
-        for (int i = 0; i < count; i++)
+        if (CanDrawSpecialCard())
         {
-            //根据特殊牌出现的概率执行代码
-            if (UnityEngine.Random.value >= 0.8f)//抽到特殊牌的概率
-            {
-                continue;
-            }
-            if (CanDrawSpecialCard())
-            {
-                // 延迟后调用抽卡
-                sequence.AppendCallback(() => DrawSpecialCard());
-
-                // 设置每次抽卡后的间隔
-                sequence.AppendInterval(0.5f);
-            }
-            else
-            {
-                // 牌数达到上限时显示提示
-                sequence.AppendCallback(() =>
-                {
-                    ShowTipManager.instance.ShowTip("抽到了功能牌，但功能牌数量达到上限");
-                });
-                break; // 如果达到手牌上限，终止循环
-            }
+            return DrawSpecialCard();
         }
+        else
+        {
+            ShowTipManager.instance.ShowTip("抽到了功能牌，但功能牌数量达到上限");
+            return null;
+        }
+        
+    }
+
+    /// <summary>
+    /// 抽取奖励牌
+    /// </summary>
+    /// <param name="rewardCardTyep"></param>
+    public Sequence DrawRewadCard(RewardCardType rewardCardTyep)
+    {
+        RewardCard newCard = (RewardCard)cardPool.GetCard<RewardCard>();
+        newCard.OnSet(rewardCardTyep, GameManager.Instance.CurrentRound);
+        return DrawCardAnim(newCard, null);
     }
 
     /// <summary>
@@ -362,40 +386,15 @@ public class DeckManager : MonoBehaviour
 
 
     /// <summary>
-    /// 抽取字母牌
-    /// </summary>
-    void DrawLetterCard()
-    {
-        if (letterDeck.Count == 0)
-        {
-            Debug.LogWarning("Letter deck is empty!");
-            return;
-        }
-
-        int letterCardIndex = UnityEngine.Random.Range(0, letterDeck.Count);
-        LetterCard newCard = (LetterCard)cardPool.GetCard<LetterCard>();
-
-        newCard.Letter = letterDeck[letterCardIndex].Item1;
-        newCard.Color = letterDeck[letterCardIndex].Item2;
-
-        newCard.transform.SetParent(LetterHandCard);
-
-        letterDeck.RemoveAt(letterCardIndex);//移出这个卡牌
-        letterHandCards.Add(newCard);
-
-        OnCardDrawn?.Invoke(newCard);
-    }
-
-    /// <summary>
     /// 抽取字母牌,没有卡牌池，随机抽
     /// </summary>
     /// <param name="singleDraw">是否是单张地抽，如果不是单张的抽，那就没这么多动画</param>
-    void DrawLetterCardNoPool(bool singleDraw)
+    Sequence DrawLetterCardNoPool(bool singleDraw)
     {
         if (letterDeck.Count == 0)
         {
             Debug.LogWarning("Letter deck is empty!");
-            return ;
+            return null;
         }
         int letterCardIndex=UnityEngine.Random.Range(0, letterDeck.Count);
         LetterCard newCard =(LetterCard)cardPool.GetCard<LetterCard>();
@@ -403,24 +402,30 @@ public class DeckManager : MonoBehaviour
         newCard.Letter= letterDeck[letterCardIndex].Item1;
         newCard.Color= letterDeck[letterCardIndex].Item2;
 
+        //letterDeck.RemoveAt(letterCardIndex);//不用移出
+        
+
         if (singleDraw)
         {
-            DrawCardAnim(newCard,LetterHandCard);
+            letterHandCards.Add(newCard);
+            OnCardDrawn?.Invoke(newCard);
+            return  DrawCardAnim(newCard,LetterHandCard);
         }
         else
         {
             newCard.transform.position = Vector3.zero;
             newCard.transform.SetParent(LetterHandCard, worldPositionStays: true);
+            letterHandCards.Add(newCard);
+            OnCardDrawn?.Invoke(newCard);
+            return null;
         }
-        //letterDeck.RemoveAt(letterCardIndex);//不用移出
-        letterHandCards.Add(newCard);
-        OnCardDrawn?.Invoke(newCard);
+        
     }
 
     /// <summary>
     /// 抽取特殊牌
     /// </summary>
-    void DrawSpecialCard()
+    Sequence DrawSpecialCard()
     {
         // 根据权重随机选择特殊牌
         float totalWeight = specialCardPool.Sum(c => c.Item2);
@@ -432,18 +437,18 @@ public class DeckManager : MonoBehaviour
             {
                 FunctionCard newCard = (FunctionCard)cardPool.GetCard<FunctionCard>();
                 newCard.EffectType = card.Item1;
-                DrawCardAnim(newCard, SpecialHandCard);
                 specialHandCards.Add(newCard);
                 OnCardDrawn?.Invoke(newCard);
-                return;
+                return DrawCardAnim(newCard, SpecialHandCard);
             }
             randomPoint -= card.Item2;
         }
+        return null;
     }
 
     Sequence DrawCardAnim(Card newCard, Transform parents)
     {
-        IsDrawing = true;
+        
         // 创建一个动画序列
         Sequence sequence = DOTween.Sequence();
 
@@ -466,11 +471,14 @@ public class DeckManager : MonoBehaviour
 
         sequence.AppendCallback(() =>
         {
-            newCard.transform.SetParent(parents, worldPositionStays: true);
-        });
-        sequence.OnComplete(() =>
-        {
-            IsDrawing = false;
+            if(newCard is RewardCard)
+            {
+                newCard.gameObject.GetComponent<RewardCard>().OnInit();
+            }
+            else
+            {
+                newCard.transform.SetParent(parents, worldPositionStays: true);
+            }
         });
 
         return sequence;
@@ -538,7 +546,4 @@ public class DeckManager : MonoBehaviour
         return lowerCase.ToArray();
     }
 }
-
-
-
 

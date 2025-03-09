@@ -99,8 +99,8 @@ public class GameManager : MonoBehaviour
 
     
 
-    public bool useCanContinuousDraw=false;//是否启用连抽不止
-    private float continuousProbability = 0.3f;//连抽的概率
+    public bool useCanContinuousDraw=true;//是否启用连抽不止
+    private float continuousProbability = 0.9f;//连抽的概率
     public float ContinuousProbability 
     { 
         get => continuousProbability;
@@ -225,18 +225,8 @@ public class GameManager : MonoBehaviour
             return;
         }
         //DeckManager.instance.IsDrawing = true;
-
+        ContinuousCount = 2;
         DeckManager.instance.DrawCard();//抽卡
-        //连抽
-        float tmpContinuousProbability = ContinuousProbability;
-        for(int  i = 0; i < ContinuousCount; i++)
-        {
-            if (useCanContinuousDraw && Random.Range(0, 1) < tmpContinuousProbability)
-            {
-                DeckManager.instance.DrawCard();//抽卡
-            }
-        }
-        //DeckManager.instance.IsDrawing = false;
 
         GameEntrance.instance.CoinCount-= DrawNeedCoin;
     }
