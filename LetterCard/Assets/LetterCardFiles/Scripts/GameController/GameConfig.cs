@@ -25,7 +25,6 @@ public class GameConfig : MonoBehaviour
             {SpecialEffectType.AddOneLetterHand, 0.2f},
             //{SpecialEffectType.AddOneCacheHand, 0.2f},
             {SpecialEffectType.AddOneSpecialHand, 0.2f},
-            {SpecialEffectType.AddOneStateHand, 0.2f},
 
             {SpecialEffectType.RandomRedCard, 0.3f},
             {SpecialEffectType.RandomYellowCard, 0.3f},
@@ -38,6 +37,5 @@ public class GameConfig : MonoBehaviour
             {SpecialEffectType.ExtraScoreRounOver, 0.3f},
             {SpecialEffectType.CanContinuousDraw, 0.3f},
             {SpecialEffectType.AddContinuousDraw, 0.3f},
-            {SpecialEffectType.AddContinuousLimit, 0.3f},
         };
 }

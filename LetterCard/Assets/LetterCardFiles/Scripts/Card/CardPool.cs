@@ -66,7 +66,6 @@ public class CardPool : MonoBehaviour
         }
         else if(typeof(T) == typeof(FunctionCard))
         {
-            
             if (specialCardPool.Count > 0)
             {
                 Card card = specialCardPool.Dequeue();  // 从池中取出一个卡牌
@@ -94,7 +93,7 @@ public class CardPool : MonoBehaviour
             else
             {
                 // 池子没有卡牌了，扩展池并返回新卡牌
-                Card newCard = Instantiate(specialCardPrefab, poolParent).GetComponent<Card>();
+                Card newCard = Instantiate(rewardCardPrefab, poolParent).GetComponent<Card>();
                 ResetCard(newCard);
                 return newCard;
             }
@@ -121,6 +120,10 @@ public class CardPool : MonoBehaviour
         else if (card is FunctionCard)
         {
             specialCardPool.Enqueue((FunctionCard)card);
+        }
+        else if (card is RewardCard)
+        {
+            rewardCardPool.Enqueue((RewardCard)card);
         }
     }
 

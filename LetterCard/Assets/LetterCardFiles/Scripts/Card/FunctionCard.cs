@@ -2,7 +2,7 @@ using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
+
 using UnityEngine.UI;
 
 // FunctionCard 类是Card的子类，表示特殊卡牌。
@@ -80,32 +80,15 @@ public class FunctionCard : Card
                 largeLetter.color = new Color32(67, 83, 108, 255);
                 //bottomLetter.text = "+1";
 
-                specialDescribe = "字母牌上限+1";
+                specialDescribe = $"字母牌手牌上限+1,当前为{GameManager.Instance.MaxPlayCardCount}";
                 break;
-            //case SpecialEffectType.AddOneCacheHand:
-            //    // 实现增加一个缓存手牌上限的效果
-            //    largeLetter.text = "暂存\n书签";
-            //    largeLetter.color = Color.black;
-            //    //bottomLetter.text = "+1";
-
-            //    specialDescribe = "出牌上限+1";
-            //    break;
             case SpecialEffectType.AddOneSpecialHand:
                 // 实现增加一个功能手牌上限的效果
                 largeLetter.text = "特殊\n字库";
                 largeLetter.color = new Color32(67, 83, 108, 255);
                 //bottomLetter.text = "+1";
 
-                specialDescribe = "功能牌上限+1";
-                break;
-
-            case SpecialEffectType.AddOneStateHand:
-                // 实现增加一个功能手牌上限的效果
-                largeLetter.text = "状态\n扩充";
-                largeLetter.color = new Color32(67, 83, 108, 255);
-                //bottomLetter.text = "+1";
-
-                specialDescribe = "状态上限+1";
+                specialDescribe = $"功能牌手牌上限+1，当前为{GameManager.Instance.MaxSpecialCaradCount}";
                 break;
             case SpecialEffectType.RandomRedCard:
                 // 实现获取一张随机红色卡牌的效果
@@ -145,7 +128,7 @@ public class FunctionCard : Card
                 largeLetter.color = new Color32(67, 83, 108, 255);
                 //bottomLetter.text = "+2";
 
-                specialDescribe = "如果只出一张牌的话，该回合额外加分";
+                specialDescribe = $"如果只出一张牌，该回合额外加分，当前额外加{GameManager.Instance.ExtraScoreOnlyOneScore}分，每次使用孤字成章时，该额外分值+1";
                 break;
             case SpecialEffectType.CanPlayZeroCard:
                 // 空白书卷，可以在没有选择牌的时候结束当前回合
@@ -153,7 +136,7 @@ public class FunctionCard : Card
                 largeLetter.color = new Color32(67, 83, 108, 255);
                 //bottomLetter.text = "+2";
 
-                specialDescribe = "可以在没有选择牌的时候出牌来结束当前回合";
+                specialDescribe = $"使用之后最小出牌数量由1张降至0张，如果已有该效果，则使用该牌之后随机获取最多{GameManager.Instance.CanPlayZeroCardScore}金币，每次使用空白书卷时，该额外金币数+1";
                 break;
             case SpecialEffectType.AddScoreWhenDelete:
                 // 弃字生金，每丢弃三张牌，获取6分
@@ -161,7 +144,7 @@ public class FunctionCard : Card
                 largeLetter.color = new Color32(67, 83, 108, 255);
                 //bottomLetter.text = "+2";
 
-                specialDescribe = "每丢弃三张牌，获取6分";
+                specialDescribe = $"每丢弃三张牌，获取额外金币数，当前额外值为{GameManager.Instance.AddScoreWhenDeleteScore},每次使用弃字生金时，该额外金币数+1";
                 break;
             case SpecialEffectType.ExtraScoreRounOver:
                 // 字量结余，回合结束时，增加额外分数，分数为当前手牌的数量
@@ -169,7 +152,7 @@ public class FunctionCard : Card
                 largeLetter.color = new Color32(67, 83, 108, 255);
                 //bottomLetter.text = "+2";
 
-                specialDescribe = "回合结束时，增加额外分数，分数为当前手牌的数量";
+                specialDescribe = $"回合结束时，增加额外分数，当前额外值为{GameManager.Instance.ExtraScoreRounOverScore}分,每次使用字量结余时，该额外分值+1";
                 break;
             case SpecialEffectType.CanContinuousDraw:
                 // 连抽不止，每次抽牌有概率连续抽牌，抽牌次数上限为两次
@@ -177,7 +160,7 @@ public class FunctionCard : Card
                 largeLetter.color = new Color32(67, 83, 108, 255);
                 //bottomLetter.text = "+2";
 
-                specialDescribe = "每次抽牌有概率连续抽牌，抽牌次数上限为两次";
+                specialDescribe = $"每次抽牌的连抽次数上限+1，当前额外值为{GameManager.Instance.ContinuousCount}";
                 break;
             case SpecialEffectType.AddContinuousDraw:
                 // 抽运加成，增加连续抽牌的概率百分之5
@@ -185,15 +168,7 @@ public class FunctionCard : Card
                 largeLetter.color = new Color32(67, 83, 108, 255);
                 //bottomLetter.text = "+2";
 
-                specialDescribe = "增加连续抽牌的概率百分之5";
-                break;
-            case SpecialEffectType.AddContinuousLimit:
-                // 抽卡极限，增加连续抽牌的次数上限，每次触发连续抽牌之后，概率变为当前概率一半，下一次抽牌时恢复至初始概率
-                largeLetter.text = "抽卡\n极限";
-                largeLetter.color = new Color32(67, 83, 108, 255);
-                //bottomLetter.text = "+2";
-
-                specialDescribe = "增加连续抽牌的次数上限，当前为{3}";
+                specialDescribe = "增加连续抽牌的概率百分之5，连抽需要使用连抽不止卡牌进行开启";
                 break;
 
         }
@@ -235,17 +210,21 @@ public class FunctionCard : Card
         {
             case SpecialEffectType.RemoveCard:
                 // 实现移除卡牌的效果
-                SpecialCardState.instance.IsDeleting = true;
-                Debug.Log($"SpecialCardState.instance.IsDeleting is {SpecialCardState.instance.IsDeleting}");
+                if (DeckManager.instance.letterHandCards.Count <= 1)
+                {
+                    ShowTipManager.instance.ShowTip("至少保留一张字母牌手牌");
+                    return;
+                }
+                else
+                {
+                    SpecialCardState.instance.IsDeleting = true;
+                }
+                
                 break;
             case SpecialEffectType.AddOneLetterHand:
                 // 实现增加一个字母手牌上限的效果
                 GameManager.Instance.MaxPlayCardCount += 1;
                 break;
-            //case SpecialEffectType.AddOneCacheHand:
-            //    // 实现增加一个缓存手牌上限的效果
-                
-            //    break;
             case SpecialEffectType.AddOneSpecialHand:
                 // 实现增加一个特殊手牌上限的效果
                 GameManager.Instance.MaxSpecialCaradCount += 1;
@@ -293,41 +272,52 @@ public class FunctionCard : Card
             ///
             case SpecialEffectType.ExtraScoreOnlyOne:
                 // 如果只出一张牌的话，每个额外加分，整个关卡起作用
-                ScoreCalculator.specialScoreDic.Add("孤字成章", () =>
+                GameManager.Instance.ExtraScoreOnlyOneScore += 1;
+                ScoreCalculator.specialScoreDic["孤字成章"] = () =>
                 {
                     if (CacheText.instance.letterCards.Count == 1)
                     {
                         //加的分数为当前回合数
-                        ScoreCalculator.specialScore += GameManager.Instance.CurrentRound;
+                        ScoreCalculator.specialScore += GameManager.Instance.ExtraScoreOnlyOneScore;
+                        ShowTipManager.instance.ShowTip($"孤字成章+{GameManager.Instance.ExtraScoreOnlyOneScore}分");
                     }
-                });
+                };
                 break;
 
             case SpecialEffectType.CanPlayZeroCard:
                 // 空白书卷，可以在没有选择牌的时候结束当前回合
-                GameManager.Instance.MinPlayCardCount = 0;
+                if(GameManager.Instance.MinPlayCardCount != 0)
+                {
+                    GameManager.Instance.MinPlayCardCount = 0;
+                }
+                else
+                {
+                    int tmpCoinCount = Random.Range(1, GameManager.Instance.CanPlayZeroCardScore);
+                    GameEntrance.instance.CoinCount += (uint)tmpCoinCount;
+                    ShowTipManager.instance.ShowTip("空白书卷", tmpCoinCount);
+                }
                 break;
             case SpecialEffectType.AddScoreWhenDelete:
-                //弃字生金，每丢弃三张牌，获取6分
-                GameManager.Instance.useAddScoreWhenDelete = true;
+                //弃字生金，每丢弃三张牌，获取额外分数
+                GameManager.Instance.AddScoreWhenDeleteScore +=1;
+                break;
+            case SpecialEffectType.ExtraScoreRounOver:
+                //字量结余，回合结束时，增加额外分数，分数为当前手牌的数量
+                GameManager.Instance.ExtraScoreRounOverScore++;
+                ScoreCalculator.specialScoreDic["字量结余"] = () =>
+                {
+                    //加的分数为当前手牌数
+                    ScoreCalculator.specialScore += GameManager.Instance.ExtraScoreRounOverScore;
+                    ShowTipManager.instance.ShowTip($"字量结余+{GameManager.Instance.ExtraScoreRounOverScore}分");
+                };
                 break;
             case SpecialEffectType.CanContinuousDraw:
-                // 连抽不止，每次抽牌有概率连续抽牌，抽牌次数上限为两次
-                GameManager.Instance.useCanContinuousDraw = true;
+                // 连抽不止，每次抽牌有概率连续抽牌，增加连抽上限
+                GameManager.Instance.ContinuousCount +=1;
                 break;
             case SpecialEffectType.AddContinuousDraw:
                 // 抽运加成，增加连续抽牌的初始概率百分之5，当前为百分之5
                 GameManager.Instance.ContinuousProbability += 0.05f;
-                break;
-            case SpecialEffectType.AddContinuousLimit:
-                // 抽卡极限，增加连续抽牌的次数上限
-                if (!DeckManager.instance.DrawRandomLetterCardByColor('G'))
-                {
-                    SpecialCardState.instance.CardChoosing(null);
-                    SpecialCardState.instance.ChosenCard = null;//将选择的牌置为空
-                    //如果抽取不成功，则不要销毁这个卡牌
-                    return;
-                }
                 break;
         }
         SpecialCardState.instance.ChosenCard = null;//将选择的牌置为空
@@ -342,9 +332,8 @@ public class FunctionCard : Card
         transform.DOScale(0, 0.3f).OnComplete(() =>
         {
             // 动画完成后可以销毁卡牌或执行其他操作
+            DeckManager.instance.specialHandCards.Remove(this);
             DeckManager.instance.cardPool.ReturnCard(this);
         });
     }
-
-
 }

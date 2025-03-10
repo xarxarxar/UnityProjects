@@ -80,8 +80,17 @@ public class GameManager : MonoBehaviour
         } 
     }
 
-
-    public bool useAddScoreWhenDelete=false;//是否启用弃字生金的效果
+    //状态
+    private int addScoreWhenDeleteScore = 0;//是否启用弃字生金的效果
+    public int AddScoreWhenDeleteScore 
+    { 
+        get => addScoreWhenDeleteScore;
+        set
+        {
+            addScoreWhenDeleteScore = value;
+            CurrentInfo.Instance.addScoreWhenDeleteText.text=value.ToString() ;
+        } 
+    }
     private uint dropCardCount;//丢弃的牌的数量
     public uint DropCardCount 
     { 
@@ -89,55 +98,75 @@ public class GameManager : MonoBehaviour
         set
         {
             dropCardCount = value;
-            if(useAddScoreWhenDelete && value % 3 == 0)
+            if( value % 3 == 0)
             {
-                CurrentScore += 6;
-                GameEntrance.instance.CoinCount += 6;
+                GameEntrance.instance.CoinCount += (uint)AddScoreWhenDeleteScore;
+                if (AddScoreWhenDeleteScore != 0)
+                {
+                    ShowTipManager.instance.ShowTip($"弃字成金", AddScoreWhenDeleteScore);
+                }
             }
         } 
     }
 
-    
-
-    public bool useCanContinuousDraw=true;//是否启用连抽不止
-    private float continuousProbability = 0.9f;//连抽的概率
+    //public bool useCanContinuousDraw=false;//是否启用连抽不止
+    private float continuousProbability = 0.3f;//连抽的概率
     public float ContinuousProbability 
     { 
         get => continuousProbability;
         set 
         {
             continuousProbability = value;
-            if (useCanContinuousDraw)
-            {
-                CurrentInfo.Instance.continousProbText.text = $"{value * 100}%";
-            }
-            else
-            {
-                CurrentInfo.Instance.continousProbText.text = "0";
-            }
-            
+            CurrentInfo.Instance.continousProbText.text = $"{value * 100}%";
         }
     }
-
-    
-    private int continuousCount = 2;//连抽的次数上限
+    private int continuousCount = 0;//连抽的初始次数上限
     public int ContinuousCount 
     { 
         get => continuousCount;
         set 
         {
             continuousCount = value;
-            if (useCanContinuousDraw)
-            {
-                CurrentInfo.Instance.continousCountText.text = value.ToString();
-            }
-            else
-            {
-                CurrentInfo.Instance.continousCountText.text = "0";
-            }
-            
+            CurrentInfo.Instance.continousCountText.text = value.ToString();
         }
     }
+
+    private int extraScoreOnlyOneScore=0;//孤字成章额外加的分
+    public int ExtraScoreOnlyOneScore 
+    { 
+        get => extraScoreOnlyOneScore;
+        set
+        {
+            extraScoreOnlyOneScore = value;
+            CurrentInfo.Instance.extraScoreOnlyOneText.text = value.ToString();
+        } 
+    }
+   
+    private int extraScoreRounOverScore=0;//字量结余额外加的分
+    public int ExtraScoreRounOverScore 
+    { 
+        get => extraScoreRounOverScore; 
+        set
+        {
+            extraScoreRounOverScore = value;
+            CurrentInfo.Instance.extraScoreRounOverText.text = value.ToString();
+        } 
+    }
+
+    
+
+    private int canPlayZeroCardScore = 0;//空白书卷额外金币数
+    public int CanPlayZeroCardScore 
+    { 
+        get => canPlayZeroCardScore;
+        set
+        {
+            canPlayZeroCardScore = value;
+            CurrentInfo.Instance.canPlayZeroCardText.text = value.ToString();
+        }
+    }
+
+
 
 
     //局内文本
@@ -198,9 +227,13 @@ public class GameManager : MonoBehaviour
         DrawNeedCoin = 1;
         MinPlayCardCount = 1;
         DropCardCount = 0;
-        useAddScoreWhenDelete = false;
+
         ContinuousProbability = 0.3f;
-        ContinuousCount = 2;
+        ContinuousCount = 0;
+        ExtraScoreOnlyOneScore = 0;
+        AddScoreWhenDeleteScore = 0;
+        ExtraScoreRounOverScore = 0;
+        CanPlayZeroCardScore = 0;
         StartRound();//开始回合
     }
 
@@ -225,8 +258,8 @@ public class GameManager : MonoBehaviour
             return;
         }
         //DeckManager.instance.IsDrawing = true;
-        ContinuousCount = 2;
-        DeckManager.instance.DrawCard();//抽卡
+        //ContinuousCount = 2;
+        DeckManager.instance.DrawCard(ContinuousCount);//抽卡
 
         GameEntrance.instance.CoinCount-= DrawNeedCoin;
     }

@@ -93,19 +93,19 @@ public class DeckManager : MonoBehaviour
     /// <summary>
     /// 抽卡，可能是字母牌，可能是特殊牌，可能是金币，可能是分数
     /// </summary>
-    public Sequence DrawCard()
+    public Sequence DrawCard(int maxDrawCount)
     {
         IsDrawing = true;
         if (!CanDrawNormalCard())
         {
             ShowTipManager.instance.ShowTip("字母牌数达到上限，请及时出牌");
+            IsDrawing = false;
             return null;
         }
         float normalProb = 1.0f;//抽到正常字母卡的概率
-        float specialPrb = 1.0f;//抽到特殊卡的概率
-        float scorePrb = 0.1f;//抽到分数的概率
-        float cointProb = 5.0f;//抽到金币的概率
-        float totalWeight= normalProb+ specialPrb+ scorePrb+cointProb;
+        float specialPrb = 3.0f;//抽到特殊卡的概率
+        float cointProb = 0.5f;//抽到金币的概率
+        float totalWeight= normalProb+ specialPrb+cointProb;
         float randomPoint = UnityEngine.Random.Range(0, totalWeight);
 
 
@@ -119,15 +119,9 @@ public class DeckManager : MonoBehaviour
         {
             sequence = DrawSpecialCardSequence();
         }
-        else if (randomPoint < normalProb + specialPrb + scorePrb)
-        {
-            Instantiate(rewardCardPrefab);
-            ShowTipManager.instance.ShowTip("抽到分数");
-            sequence = null;
-        }
         else
         {
-            sequence = DrawRewadCard(RewardCardType.coinCard);
+            sequence = DrawRewardCard(RewardCardType.coinCard);
         }
         sequence.OnComplete(() =>
         {
@@ -135,10 +129,10 @@ public class DeckManager : MonoBehaviour
             float tmpContinuousProbability =GameManager.Instance. ContinuousProbability;
             
             float random = UnityEngine.Random.Range(0, 1);
-            if (GameManager.Instance.useCanContinuousDraw && random < tmpContinuousProbability && GameManager.Instance.ContinuousCount > 0)
+            if (random < tmpContinuousProbability && maxDrawCount > 0)
             {
-                GameManager.Instance.ContinuousCount--;
-                DrawCard();//抽卡
+                maxDrawCount--;
+                DrawCard(maxDrawCount);//抽卡
             }
             else
             {
@@ -155,6 +149,7 @@ public class DeckManager : MonoBehaviour
         }
         else
         {
+            IsDrawing = false;
             ShowTipManager.instance.ShowTip("字母牌数达到上限，请及时出牌");
             return null;
         }
@@ -202,20 +197,20 @@ public class DeckManager : MonoBehaviour
         }
         else
         {
+            IsDrawing=false;
             ShowTipManager.instance.ShowTip("抽到了功能牌，但功能牌数量达到上限");
             return null;
         }
-        
     }
 
     /// <summary>
     /// 抽取奖励牌
     /// </summary>
     /// <param name="rewardCardTyep"></param>
-    public Sequence DrawRewadCard(RewardCardType rewardCardTyep)
+    public Sequence DrawRewardCard(RewardCardType rewardCardType)
     {
-        RewardCard newCard = (RewardCard)cardPool.GetCard<RewardCard>();
-        newCard.OnSet(rewardCardTyep, GameManager.Instance.CurrentRound);
+        RewardCard newCard =cardPool.GetCard<RewardCard>() as RewardCard; ;
+        newCard.OnSet(rewardCardType, GameManager.Instance.CurrentRound);
         return DrawCardAnim(newCard, null);
     }
 

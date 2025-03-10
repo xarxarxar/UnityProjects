@@ -125,7 +125,7 @@ public enum SpecialEffectType
     AddOneLetterHand,   //  字库扩容,增加一个字母手牌最大值
     //AddOneCacheHand,    //  暂存书签,增加一个缓存手牌最大值
     AddOneSpecialHand,  //  特殊字库,增加一个特殊手牌最大值
-    AddOneStateHand,    //  状态扩充,增加一个状态最大值
+    //AddOneStateHand,    //  状态扩充,增加一个状态最大值
 
     RandomRedCard,      //  随机抽取,随机获取一张红色字母牌
     RandomYellowCard,   //  随机获取一张黄色字母牌
@@ -143,6 +143,6 @@ public enum SpecialEffectType
     //增加概率
     CanContinuousDraw,  //  连抽不止，每次抽牌有概率连续抽牌，抽牌次数上限为两次
     AddContinuousDraw,  //  抽运加成，增加连续抽牌的概率百分之5
-    AddContinuousLimit, //  抽卡极限，增加连续抽牌的次数上限，每次触发连续抽牌之后，概率变为当前概率一半，下一次抽牌时恢复至初始概率
+    //AddContinuousLimit, //  抽卡极限，增加连续抽牌的次数上限，每次触发连续抽牌之后，概率变为当前概率一半，下一次抽牌时恢复至初始概率
 }
 

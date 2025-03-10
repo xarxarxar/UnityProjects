@@ -3187,7 +3187,7 @@ SpriteRenderer:
   m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 1
-  m_Size: {x: 10, y: 5}
+  m_Size: {x: 12.363015, y: 6.1815076}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -3708,7 +3708,7 @@ SpriteRenderer:
   m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 1
-  m_Size: {x: 10, y: 5}
+  m_Size: {x: 14.034005, y: 7.0170026}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -4099,7 +4099,7 @@ Camera:
   far clip plane: 10
   field of view: 60
   orthographic: 1
-  orthographic size: 6.5
+  orthographic size: 7.5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -10992,7 +10992,7 @@ MonoBehaviour:
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
-    m_LineSpacing: 1
+    m_LineSpacing: 1.1
   m_Text: "\u6BCF\u6B21\u62BD\u724C\u6709\u6982\u7387\u8FDE\u7EED\u62BD\u724C\uFF0C\u5F53\u524D\u62BD\u724C\u6B21\u6570\u4E0A\u9650\u4E3A2\u6B21"
 --- !u!222 &1165054185
 CanvasRenderer:
@@ -16517,8 +16517,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   coinText: {fileID: 821683931}
   needCoinText: {fileID: 1979938615}
-  useAddScoreWhenDelete: 0
-  useCanContinuousDraw: 1
   roundText: {fileID: 868202576}
   scoreText: {fileID: 44485141}
   nextScoreText: {fileID: 1777516002}
@@ -18076,6 +18074,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1942258246}
+  - component: {fileID: 1942258247}
   m_Layer: 0
   m_Name: "\u51FA\u724C\u6682\u5B58\u6C60"
   m_TagString: Untagged
@@ -18098,6 +18097,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1942258247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1942258245}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52f4da6a3329d474395b22dddac8d5fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isSorted: 0
+  currentSortOrder: 0
+  sortCount: 7
+  horizontalSpacing: 0
+  verticalSpacing: 1
 --- !u!1 &1943362827
 GameObject:
   m_ObjectHideFlags: 0
