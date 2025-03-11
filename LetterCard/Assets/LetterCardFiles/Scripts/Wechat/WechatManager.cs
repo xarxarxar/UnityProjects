@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -29,13 +30,18 @@ public class WechatManager : MonoBehaviour
 
     public static double DPR { get=>WX.GetWindowInfo().pixelRatio;}
 
+    public RawImage RankBody;
+    public Image imageLeftTop;
+    public Image imageRightBottom;
+    public GameObject RankObject;
+
     private void Start()
     {
         // 初始化微信 SDK
         WX.InitSDK(
             (code) =>
             {
-
+                WX.cloud.Init();
             }
         );
     }
@@ -131,12 +137,11 @@ public class WechatManager : MonoBehaviour
     /// <param name="score"></param>
     public static void UploadScore(int score)
     {
-        //MyOpendataMessage message = new MyOpendataMessage();
-        //message.type = "setUserRecord";
-        //message.score = score;
-        //string msg = JsonUtility.ToJson(message);
-        //WX.GetOpenDataContext().PostMessage(msg);
-        Debug.Log("执行UploadScore(50)");
+        MyOpendataMessage message = new MyOpendataMessage();
+        message.type = "setUserRecord";
+        message.score = score;
+        string msg = JsonUtility.ToJson(message);
+        WX.GetOpenDataContext().PostMessage(msg);
     }
 
     /// <summary>
@@ -144,33 +149,17 @@ public class WechatManager : MonoBehaviour
     /// </summary>
     public void ShowScore()
     {
-        //CanvasScaler scaler = RankObject.GetComponent<CanvasScaler>();
-        //var referenceResoultion = scaler.referenceResolution;
-        //var p = RankBody.transform.position;
-
-        //var x = (int)(p.x - 0.5f * RankBody.rectTransform.rect.width);
-        //var y = (int)(referenceResoultion.y-(int)p.y - 0.5f * RankBody.rectTransform.rect.height);
-        //var width = (int)RankBody.rectTransform.rect.width;
-        //var height = (int)RankBody.rectTransform.rect.height;
-
-
+        var p = RankBody.transform.position;
         float h = (float)Screen.height * 1080 / Screen.width;
         float delta = Screen.height - h;
-        //float y = (h - (p.y - delta) /*- (buttonPosition.rect.height / 2)*/);
-        //float tensileWidth = (((float)Screen.width / 1080) * RankBody.rectTransform.rect.width);
-        //float tensileHeight = (((float)Screen.height / h) * RankBody.rectTransform.rect.height);
-        //WX.ShowOpenData(RankBody.texture, (int)p.x, (int)y, (int)tensileWidth, (int)tensileHeight); //高 值变小 拉伸    小拉伸 所以 宽 大点  或者 高小点
-        //WX.ShowOpenData(RankBody.texture, (int)imageLeftTop.transform.position.x, Screen.height - (int)imageLeftTop.transform.position.y,
-        //GetWidth(), GetHeight()); //高 值变小 拉伸    小拉伸 所以 宽 大点  或者 高小点
+        float y = (h - (p.y - delta) /*- (buttonPosition.rect.height / 2)*/);
+        WX.ShowOpenData(RankBody.texture, (int)imageLeftTop.transform.position.x, Screen.height - (int)imageLeftTop.transform.position.y,
+        GetWidth(), GetHeight()); //高 值变小 拉伸    小拉伸 所以 宽 大点  或者 高小点
 
-        //WX.ShowOpenData(RankBody.texture, x, y,
-        //    width,
-        //    height);
-
-        //MyOpendataMessage msgData = new MyOpendataMessage();
-        //msgData.type = "showFriendsRank";
-        //string msg = JsonUtility.ToJson(msgData);
-        //WX.GetOpenDataContext().PostMessage(msg);
+        MyOpendataMessage msgData = new MyOpendataMessage();
+        msgData.type = "showFriendsRank";
+        string msg = JsonUtility.ToJson(msgData);
+        WX.GetOpenDataContext().PostMessage(msg);
     }
 
     /// <summary>
@@ -178,12 +167,10 @@ public class WechatManager : MonoBehaviour
     /// </summary>
     public void RankButton()
     {
-        WX.HideOpenData();
-        //RankObject.transform.position -= new Vector3(10000, 0, 0);
-        //LevelSave levelSave = SaveController.GetSaveObject<LevelSave>("level");
-        //Debug.Log("最高通关："+levelSave.MaxReachedLevelIndex);
-        //Debug.Log(" RankObject.transform.position：" + RankObject.transform.position);
-        //UploadScore(levelSave.MaxReachedLevelIndex);
+        RankObject.SetActive(true);
+        RankObject.transform.DOScale(1, 0.5f).SetEase(Ease.OutQuart);
+        UploadScore(10);
+        ShowScore();
     }
 
     /// <summary>
@@ -192,12 +179,46 @@ public class WechatManager : MonoBehaviour
     public void CloseRankPanel()
     {
         WX.HideOpenData();
-        //RankObject.SetActive(false);
+        RankObject.transform.DOScale(0, 0.5f).SetEase(Ease.OutQuart).OnComplete(() =>
+        {
+            RankObject.SetActive(false);
+        });
         //RankObject.transform.position += new Vector3(10000, 0, 0);
     }
 
-    
 
-    
-    
+
+    //获取排行榜显示区域的宽
+    int GetWidth()
+    {
+        // 获取 RectTransform
+        RectTransform rect1 = imageLeftTop.GetComponent<RectTransform>();
+        RectTransform rect2 = imageRightBottom.GetComponent<RectTransform>();
+
+        // 获取两个 Image 的世界坐标
+        Vector3 worldPos1 = rect1.position;
+        Vector3 worldPos2 = rect2.position;
+
+        // 计算水平距离和竖直距离
+        float horizontalDistance = Mathf.Abs(worldPos1.x - worldPos2.x);
+        float verticalDistance = Mathf.Abs(worldPos1.y - worldPos2.y);
+        return (int)horizontalDistance;
+    }
+    //获取排行榜显示区域的高
+    int GetHeight()
+    {
+        // 获取 RectTransform
+        RectTransform rect1 = imageLeftTop.GetComponent<RectTransform>();
+        RectTransform rect2 = imageRightBottom.GetComponent<RectTransform>();
+
+        // 获取两个 Image 的世界坐标
+        Vector3 worldPos1 = rect1.position;
+        Vector3 worldPos2 = rect2.position;
+
+        // 计算水平距离和竖直距离
+        float horizontalDistance = Mathf.Abs(worldPos1.x - worldPos2.x);
+        float verticalDistance = Mathf.Abs(worldPos1.y - worldPos2.y);
+        return (int)verticalDistance;
+    }
+
 }
