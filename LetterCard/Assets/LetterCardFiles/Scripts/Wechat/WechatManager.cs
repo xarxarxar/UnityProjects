@@ -103,6 +103,19 @@ public class WechatManager : MonoBehaviour
     //    });
     //}
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            GetWidth();
+        }
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            GetHeight();
+        }
+    }
+
+
     /// <summary>
     /// 从云数据库获取卡牌数据
     /// </summary>
@@ -155,7 +168,6 @@ public class WechatManager : MonoBehaviour
         float y = (h - (p.y - delta) /*- (buttonPosition.rect.height / 2)*/);
         WX.ShowOpenData(RankBody.texture, (int)imageLeftTop.transform.position.x, Screen.height - (int)imageLeftTop.transform.position.y,
         GetWidth(), GetHeight()); //高 值变小 拉伸    小拉伸 所以 宽 大点  或者 高小点
-
         MyOpendataMessage msgData = new MyOpendataMessage();
         msgData.type = "showFriendsRank";
         string msg = JsonUtility.ToJson(msgData);
@@ -167,10 +179,13 @@ public class WechatManager : MonoBehaviour
     /// </summary>
     public void RankButton()
     {
-        RankObject.SetActive(true);
-        RankObject.transform.DOScale(1, 0.5f).SetEase(Ease.OutQuart);
         UploadScore(10);
+        RankObject.SetActive(true);
         ShowScore();
+        //RankObject.transform.DOScale(1, 0.5f).SetEase(Ease.OutQuart).OnComplete(() =>
+        //{
+            
+        //});
     }
 
     /// <summary>
@@ -179,10 +194,11 @@ public class WechatManager : MonoBehaviour
     public void CloseRankPanel()
     {
         WX.HideOpenData();
-        RankObject.transform.DOScale(0, 0.5f).SetEase(Ease.OutQuart).OnComplete(() =>
-        {
-            RankObject.SetActive(false);
-        });
+        RankObject.SetActive(false);
+        //RankObject.transform.DOScale(0, 0.5f).SetEase(Ease.OutQuart).OnComplete(() =>
+        //{
+            
+        //});
         //RankObject.transform.position += new Vector3(10000, 0, 0);
     }
 
@@ -202,6 +218,8 @@ public class WechatManager : MonoBehaviour
         // 计算水平距离和竖直距离
         float horizontalDistance = Mathf.Abs(worldPos1.x - worldPos2.x);
         float verticalDistance = Mathf.Abs(worldPos1.y - worldPos2.y);
+
+        Debug.Log($"宽度为{(int)horizontalDistance}");
         return (int)horizontalDistance;
     }
     //获取排行榜显示区域的高
@@ -218,6 +236,8 @@ public class WechatManager : MonoBehaviour
         // 计算水平距离和竖直距离
         float horizontalDistance = Mathf.Abs(worldPos1.x - worldPos2.x);
         float verticalDistance = Mathf.Abs(worldPos1.y - worldPos2.y);
+
+        Debug.Log($"长度为{(int)verticalDistance}");
         return (int)verticalDistance;
     }
 
