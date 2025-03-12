@@ -41,7 +41,11 @@ public class WechatManager : MonoBehaviour
         WX.InitSDK(
             (code) =>
             {
-                WX.cloud.Init();
+                 WX.cloud.Init(new ICloudConfig()
+                {
+                    env = "test01cloud-8g9b0glp7aab2737", // 云环境 ID
+                    traceUser = false
+                });
             }
         );
     }
@@ -63,17 +67,6 @@ public class WechatManager : MonoBehaviour
         // 设置 OnShow 监听
         WX.OnShow(res);
     }
-
-    /*
-     * CallWechat.ShareApp(() =>
-            {
-                // 更新保存的计时器开始时间
-                save.Value = DateTime.Now.ToBinary();
-                timerStartTime = DateTime.Now;
-                PUController.AddPowerUp(PUType.Undo, 1);//添加一个“提示”道具的事例
-                AudioController.PlaySound(AudioController.Sounds.buySuccess);
-            });
-     */
 
 
     /// <summary>
