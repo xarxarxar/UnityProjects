@@ -12,19 +12,16 @@ public class GameSettings
     [Range(0f, 1f)]
     public float soundEffectVolume;
 
-    // 游戏语言
-    public string language;
-
     public GameSettings()
     {
-
+        musicVolume = 0.5f;
+        soundEffectVolume = 0.5f;
     }
 
     // 构造函数
-    public GameSettings(float musicVolume, float soundEffectVolume, string language)
+    public GameSettings(float musicVolume, float soundEffectVolume)
     {
         this.musicVolume = musicVolume;
         this.soundEffectVolume = soundEffectVolume;
-        this.language = language;
     }
 }

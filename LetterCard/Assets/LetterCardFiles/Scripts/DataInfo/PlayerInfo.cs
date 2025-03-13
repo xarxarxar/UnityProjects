@@ -32,10 +32,10 @@ public class PlayerInfo
     // 玩家游戏设置
     public GameSettings settings;
 
-    //玩家残局信息
+    //玩家残局信息,就是玩家自己上线之后继续玩
     public EndGameInfo endGameInfo;
 
-    //玩家挑战信息
+    //玩家挑战信息，就是分享给好友进行继续挑战
     public PlayerChallenge playerChallenge;
 
     /// <summary>
