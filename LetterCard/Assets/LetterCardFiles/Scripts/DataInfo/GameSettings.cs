@@ -15,6 +15,11 @@ public class GameSettings
     // 游戏语言
     public string language;
 
+    public GameSettings()
+    {
+
+    }
+
     // 构造函数
     public GameSettings(float musicVolume, float soundEffectVolume, string language)
     {

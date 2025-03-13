@@ -32,80 +32,47 @@ public class CurrentInfo : MonoBehaviour
         GetComponent<Canvas>().enabled = false;
     }
 
-    //下面是设置相关
-    [Header("音量设置")]
-    [SerializeField] private GameObject TurnOnSoundImage;
-    [SerializeField] private GameObject TurnOffSoundImage;
-    /// <summary>
-    /// 切换音效开关
-    /// </summary>
-    public void ToggleSoundButton()
-    {
-        TurnOnSoundImage.SetActive(!TurnOnSoundImage.activeSelf);
-        TurnOffSoundImage.SetActive(!TurnOffSoundImage.activeSelf);
+    [Header("暂停相关")]
+    [SerializeField] private Button settingButton;
+    [SerializeField] private Button continueButton;
+    [SerializeField] private Button restartButton;
+    [SerializeField] private Button homeButton;
 
-        if (TurnOnSoundImage.activeSelf)
-        {
-            AudioManager.instance.SetSoundEffectsVolume(0.5f / 2);
-            soundSlider.value = 0.5f;
-        }
-        else
-        {
-            AudioManager.instance.SetSoundEffectsVolume(0);
-            soundSlider.value = 0;
-        }
-        
+    /// <summary>
+    /// 设置按钮
+    /// </summary>
+    public void SettingButton()
+    {
+        SettingManager.Instance.OpenCurrentPanel();
+    }
+    
+    /// <summary>
+    /// 继续按钮
+    /// </summary>
+    public void ContinueButton()
+    {
+        GetComponent<Canvas>().enabled = false;
     }
 
-    [SerializeField] private GameObject TurnOnMusicImage;
-    [SerializeField] private GameObject TurnOffMusicImage;
     /// <summary>
-    /// 切换音乐开关
+    /// 重新开始按钮
     /// </summary>
-    public void ToggleMusicButton()
+    public void RestartButton()
     {
-        TurnOnMusicImage.SetActive(!TurnOnMusicImage.activeSelf);
-        TurnOffMusicImage.SetActive(!TurnOffMusicImage.activeSelf);
-
-        if (TurnOnMusicImage.activeSelf)
-        {
-            AudioManager.instance.SetBackgroundMusicVolume(0.5f/10);
-            musicSlider.value = 0.5f;
-        }
-        else
-        {
-            AudioManager.instance.SetBackgroundMusicVolume(0);
-            musicSlider.value = 0;
-        }
+        GetComponent<Canvas>().enabled = false;
+        GameManager.Instance.StartChallenge();
     }
 
-    [SerializeField] private Text soundValueText;
-    [SerializeField] private Slider soundSlider;
     /// <summary>
-    /// 音效slider
+    /// 主页按钮
     /// </summary>
-    public void OnSoundSliderChange()
+    public void HomeButton()
     {
-        //切换图标状态
-        TurnOnSoundImage.SetActive(soundSlider.value != 0);
-        TurnOffSoundImage.SetActive(soundSlider.value == 0);
+        DeckManager.instance.ClearHandCards();
+        GameEntrance.instance.GetComponent<Canvas>().enabled = true;
+        GameManager.Instance.GetComponent<Canvas>().enabled = false;
+        GetComponent<Canvas>().enabled = false;
 
-        soundValueText.text= ((int)(100*soundSlider.value)).ToString();
-        AudioManager.instance.SetSoundEffectsVolume(soundSlider.value/2);
     }
 
-    [SerializeField] private Text musicValueText;
-    [SerializeField] private Slider musicSlider;
-    /// <summary>
-    /// 音乐slider
-    /// </summary>
-    public void OnMusicSliderChange()
-    {
-        //切换图标状态
-        TurnOnMusicImage.SetActive(musicSlider.value != 0);
-        TurnOffMusicImage.SetActive(musicSlider.value == 0);
-
-        musicValueText.text = ((int)(100 * musicSlider.value)).ToString();
-        AudioManager.instance.SetBackgroundMusicVolume(musicSlider.value/10);
-    }
 }
