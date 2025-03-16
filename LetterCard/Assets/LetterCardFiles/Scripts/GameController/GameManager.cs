@@ -166,9 +166,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
-
-
     //局内文本
     [SerializeField]private Text roundText;//显示回合数的Text
     [SerializeField]private Text scoreText;//显示当前分数的Text
@@ -351,5 +348,10 @@ public class GameManager : MonoBehaviour
     {
         CurrentInfo.Instance.GetComponent<Canvas>().enabled = true;
         CurrentInfo.Instance.transform.DOScale(1, 0.5f).SetEase(Ease.OutQuart);
+    }
+
+    public void PausePanel()
+    {
+        CurrentInfo.Instance.GetComponent <Canvas>().enabled = true;
     }
 }
