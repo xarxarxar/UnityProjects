@@ -43,7 +43,7 @@ public class WechatManager : MonoBehaviour
             {
                  WX.cloud.Init(new ICloudConfig()
                 {
-                    env = "test01cloud-8g9b0glp7aab2737", // 云环境 ID
+                    env = "cloud1-1g93cld7637aacb4", // 云环境 ID
                     traceUser = false
                 });
             }
@@ -72,40 +72,29 @@ public class WechatManager : MonoBehaviour
     /// <summary>
     /// 上传用户数据到云端
     /// </summary>
-    /// <param name="gameUserData">游戏用户数据</param>
-    //public static void CallSetUserData(LocalUserData gameUserData)
-    //{
-    //    Debug.Log("调用上传用户数据");
-    //    WX.cloud.CallFunction(new CallFunctionParam()
-    //    {
-    //        name = "upload-userdata",
-    //        data = JsonUtility.ToJson(gameUserData), // 用户数据类转为 JSON
-
-    //        success = (res) =>
-    //        {
-    //            Debug.Log("上传用户数据成功");
-    //        },
-    //        fail = (res) =>
-    //        {
-    //            Debug.Log("上传用户数据失败");
-    //        },
-    //        complete = (res) =>
-    //        {
-    //            Debug.Log("上传用户数据操作完成");
-    //        }
-    //    });
-    //}
-
-    private void Update()
+    /// <param name="playerInfo">游戏用户数据</param>
+    public static void CallSetUserData(PlayerInfo playerInfo)
     {
-        if (Input.GetKeyDown(KeyCode.W))
+        Debug.Log("调用上传用户数据");
+        WX.cloud.CallFunction(new CallFunctionParam()
         {
-            GetWidth();
-        }
-        if (Input.GetKeyDown(KeyCode.H))
-        {
-            GetHeight();
-        }
+            name = "UploadPlayerInfo",
+            //data = JsonUtility.ToJson(playerInfo), // 用户数据类转为 JSON
+            data = playerInfo, // 用户数据类转为 JSON
+
+            success = (res) =>
+            {
+                Debug.Log("上传用户数据成功");
+            },
+            fail = (res) =>
+            {
+                Debug.Log($"上传用户数据失败,+{res.errMsg}");
+            },
+            complete = (res) =>
+            {
+                Debug.Log("上传用户数据操作完成");
+            }
+        });
     }
 
 

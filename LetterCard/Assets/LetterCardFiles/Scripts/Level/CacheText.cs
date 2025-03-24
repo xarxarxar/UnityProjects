@@ -44,14 +44,6 @@ public class CacheText : MonoBehaviour
         ImageAdapt();
     }
 
-    private void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.V))
-        {
-            ToggleTextShow();
-        }
-    }
-
     // 方法：添加字符并设置颜色
     public void AddCharacterWithColor(LetterCard card)
     {
