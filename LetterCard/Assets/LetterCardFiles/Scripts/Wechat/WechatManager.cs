@@ -79,7 +79,6 @@ public class WechatManager : MonoBehaviour
         WX.cloud.CallFunction(new CallFunctionParam()
         {
             name = "UploadPlayerInfo",
-            //data = JsonUtility.ToJson(playerInfo), // 用户数据类转为 JSON
             data = playerInfo, // 用户数据类转为 JSON
 
             success = (res) =>
@@ -102,17 +101,23 @@ public class WechatManager : MonoBehaviour
     /// 从云数据库获取卡牌数据
     /// </summary>
     /// <param name="successAction">获取成功后的回调函数</param>
-    public static void GetUserData(UnityAction successAction)
+    public static void GetUserData(UnityAction<PlayerInfo> successAction)
     {
         WX.cloud.CallFunction(new CallFunctionParam()
         {
-            name = "get-userdata",
-            data = "{\"player_data\":0}", // 下载时需要随便传一个 JSON，否则会报错
+            name = "DownloadPlayerInfo",
+            //data = "{\"player_data\":0}", // 下载时需要随便传一个 JSON，否则会报错
 
             success = (res) =>
             {
                 Debug.Log("获取卡牌数据成功");
-                
+                // 解析从云函数返回的结果
+                if (res.result != null)
+                {
+                    PlayerInfo localUserData = JsonUtility.FromJson<PlayerInfo>(res.result);
+                    Debug.Log($"用户result为：{localUserData.playerName}");
+                    successAction?.Invoke(localUserData);
+                }
             },
             fail = (res) =>
             {

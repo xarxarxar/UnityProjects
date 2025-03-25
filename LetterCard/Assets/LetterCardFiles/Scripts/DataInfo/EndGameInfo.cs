@@ -1,11 +1,13 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 [Serializable]
 public class EndGameInfo
 {
+    /// <summary>
+    /// 玩家剩余的挑战信息
+    /// </summary>
+
     //当前回合数
     public int currentRound;
 
@@ -22,15 +24,18 @@ public class EndGameInfo
 
     public EndGameInfo()
     {
-        
+        currentRound = 0;
+        currentScore = 0;
     }
 
 }
 
 public class PlayerChallenge
 {
+    public uint playerChallengeId;//玩家挑战的本局挑战ID
+
     public PlayerChallenge()
     {
-
+        playerChallengeId = 489635;
     }
 }

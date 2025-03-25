@@ -181,6 +181,12 @@ public class FunctionCard : Card
         GameManager.Instance.specialCardNameText.color = largeLetter.color;
         GameManager.Instance.specialCardDescriptionText.text = specialDescribe;
         GameManager.Instance.useSpecialCard = ActivateEffect;
+        GameManager.Instance.sellSpecialCard = ()=>
+        {
+            SpecialCardState.instance.ChosenCard = null;//将选择的牌置为空
+            GameEntrance.instance.CoinCount += 3;
+            DestroyCard();
+        };
     }
 
     // 当点击 UI 时触发的方法

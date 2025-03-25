@@ -72,6 +72,7 @@ public class SimpleTouch : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     // 在按下时处理单击、双击和长按逻辑
     public void OnPointerDown(PointerEventData eventData)
     {
+        Debug.Log("OnPointerDown");
         // 启动 DOTween 来检测长按
         if (holdTween != null)
         {
@@ -93,6 +94,7 @@ public class SimpleTouch : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     // 延时触发单击事件
     private void TriggerSingleClick()
     {
+        
         if (waitingForSecondClick)
         {
             OnClick();  // 单击事件
@@ -110,7 +112,6 @@ public class SimpleTouch : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         }
 
         float currentTime = Time.time;
-
         // 如果在双击时间窗口内检测到第二次点击
         if (waitingForSecondClick && currentTime - lastClickTime < doubleClickTime)
         {

@@ -14,12 +14,18 @@ public class GameManager : MonoBehaviour
     private int currentRound;//当前回合数
     public int CurrentRound { get => currentRound; set { currentRound = value; roundText.text = $"{value}"; } }
     private int currentScore;//当前总分数
-    public int CurrentScore { get => currentScore; set 
+    public int CurrentScore 
+    { 
+        get => currentScore; 
+        set 
         { 
             currentScore = value;
             scoreText.text = value.ToString(); 
             CurrentInfo.Instance.currentScoreText.text=value.ToString();
-        } }
+
+            AdaptSlider();
+        }
+    }
     private uint nextScore;//下一目标分数
     public uint NextScore 
     { 
@@ -27,9 +33,13 @@ public class GameManager : MonoBehaviour
         set 
         { 
             nextScore = value;
-            nextScoreText.text =$"{value}"; 
+            nextScoreText.text = value.ToString();
+            
             CurrentInfo.Instance.nextScoreText.text=value.ToString();
-        } }
+
+            AdaptSlider();
+        } 
+    }
 
     [SerializeField]public Text coinText;//总金币数
 
@@ -154,7 +164,6 @@ public class GameManager : MonoBehaviour
     }
 
     
-
     private int canPlayZeroCardScore = 0;//空白书卷额外金币数
     public int CanPlayZeroCardScore 
     { 
@@ -169,7 +178,9 @@ public class GameManager : MonoBehaviour
     //局内文本
     [SerializeField]private Text roundText;//显示回合数的Text
     [SerializeField]private Text scoreText;//显示当前分数的Text
+    [SerializeField]private Slider scoreSlider;//显示当前分数的Text
     [SerializeField]private Text nextScoreText;//显示下一个目标分数的Text
+    [SerializeField]private Text previousScoreText;//显示上一个目标分数的Text
 
 
     //游戏成功和游戏失败面板
@@ -180,6 +191,7 @@ public class GameManager : MonoBehaviour
     public Text specialCardNameText;//特殊牌名称Text
     public Text specialCardDescriptionText;//特殊牌描述Text
     public UnityAction useSpecialCard;//使用特殊牌
+    public UnityAction sellSpecialCard;//出售特殊牌
 
     private void Awake()
     {
@@ -293,7 +305,7 @@ public class GameManager : MonoBehaviour
     {
         CurrentRound++;//回合数+1
 
-        if (CurrentRound % 5 == 1) NextScore = 30 * (uint)CurrentRound;//每过5关设置一次目标分数
+        if (CurrentRound % 5 == 1) NextScore = TargetScore(CurrentRound);//每过5关设置一次目标分数
 
         DrawNeedCoin = (uint)(CurrentRound/5.0f)+1;//抽取一次所需要的金币数量就是当前的回合数
 
@@ -334,6 +346,15 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
+    /// 出售特殊牌
+    /// </summary>
+    public void SellSpecialCard()
+    {
+        sellSpecialCard();
+        CloseSpecialCardPanel();
+    }
+
+    /// <summary>
     /// 关闭当前面板按钮
     /// </summary>
     public void CloseSpecialCardPanel()
@@ -350,8 +371,30 @@ public class GameManager : MonoBehaviour
         CurrentInfo.Instance.transform.DOScale(1, 0.5f).SetEase(Ease.OutQuart);
     }
 
+    /// <summary>
+    /// 打开暂停面板
+    /// </summary>
     public void PausePanel()
     {
-        CurrentInfo.Instance.GetComponent <Canvas>().enabled = true;
+        CurrentInfo.Instance.GetComponent<Canvas>().enabled = true;
+    }
+
+    private uint TargetScore(int round)
+    {
+        if (round<=0) return 0;
+        int roundStep = (round-1) / 5 +1;
+        return (uint)(50*(1+(roundStep-1)*(roundStep-1)));
+    }
+
+    private void AdaptSlider()
+    {
+        if (CurrentRound == 0) return;
+        uint currentTargetScore = NextScore;
+        uint previousTargetScore = TargetScore(CurrentRound - 5);
+        previousScoreText.text = previousTargetScore.ToString();
+
+        float sliderValue= (float)(CurrentScore - previousTargetScore) / (currentTargetScore - previousTargetScore);
+        scoreSlider.value = sliderValue;
+        //Debug.Log($"CurrentScore - previousTargetScore is {CurrentScore - previousTargetScore},currentTargetScore - previousTargetScore is {currentTargetScore - previousTargetScore},sliderValue is {sliderValue}");
     }
 }

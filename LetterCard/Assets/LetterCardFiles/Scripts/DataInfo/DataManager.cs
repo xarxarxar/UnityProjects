@@ -5,26 +5,23 @@ public class DataManager : MonoBehaviour
 {
     public static DataManager instance;
 
+    public PlayerInfo globalPlayerInfo=new PlayerInfo();
+
     private void Awake()
     {
         instance = this;
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.U))
-        {
-            WechatManager.CallSetUserData(new PlayerInfo());
-        }
     }
 
     /// <summary>
     /// 获取玩家信息
     /// </summary>
     /// <returns></returns>
-    public PlayerInfo DownloadPlayerInfo()
+    public void DownloadPlayerInfo()
     {
-        return null;
+        WechatManager.GetUserData((playerInfo) =>
+        {
+            globalPlayerInfo= playerInfo;
+        });
     }
 
     /// <summary>
@@ -32,6 +29,6 @@ public class DataManager : MonoBehaviour
     /// </summary>
     public void UploadPlayerInfo()
     {
-        WechatManager.CallSetUserData(new PlayerInfo());
+        WechatManager.CallSetUserData(globalPlayerInfo);
     }
 }

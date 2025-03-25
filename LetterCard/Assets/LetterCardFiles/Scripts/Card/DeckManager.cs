@@ -103,8 +103,8 @@ public class DeckManager : MonoBehaviour
             return null;
         }
         float normalProb = 1.0f;//抽到正常字母卡的概率
-        float specialPrb = 3.0f;//抽到特殊卡的概率
-        float cointProb = 0.5f;//抽到金币的概率
+        float specialPrb = 0.3f;//抽到特殊卡的概率
+        float cointProb = 0.3f;//抽到金币的概率
         float totalWeight= normalProb+ specialPrb+cointProb;
         float randomPoint = UnityEngine.Random.Range(0, totalWeight);
 
