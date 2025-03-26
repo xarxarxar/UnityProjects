@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
-
     public static AudioManager instance;
     public AudioSettings audioSettings; // 引用 AudioSettings ScriptableObject
 
@@ -79,6 +78,18 @@ public class AudioManager : MonoBehaviour
         {
             effectsSource.volume = volume;
         }
+    }
+
+    // 获取BGM音量
+    public float GetBackgroundMusicVolume()
+    {
+        return musicSource.volume;
+    }
+
+    //获取音效音量
+    public float GetSoundEffectsVolume()
+    {
+        return effectsSource.volume;
     }
 
     // 停止背景音乐

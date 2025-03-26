@@ -13,18 +13,21 @@ public enum PlayerPlatform
 public class PlayerInfo
 {
     // 玩家唯一ID，可以是微信ID、抖音ID等
-    public string playerID;
+    //public string playerID;
 
-    public PlayerPlatform playerPlatform;
+    //public PlayerPlatform playerPlatform;
 
     // 玩家昵称
-    public string playerName;
+   // public string playerName;
 
     // 玩家头像URL
-    public string avatarUrl;
+    //public string avatarUrl;
 
     // 玩家最佳回合数
     public int maxRound;
+
+    // 玩家最佳分数
+    public int maxScore;
 
     // 玩家的金币数
     public int coinCount;
@@ -33,40 +36,48 @@ public class PlayerInfo
     public GameSettings settings;
 
     //玩家残局信息,就是玩家自己上线之后继续玩
-    public EndGameInfo endGameInfo;
+    //public EndGameInfo endGameInfo;
 
     //玩家挑战信息，就是分享给好友进行继续挑战
-    public PlayerChallenge playerChallenge;
+    //public PlayerChallenge playerChallenge;
 
     /// <summary>
     /// 无参数构造函数（默认初始化）
     /// </summary>
     public PlayerInfo()
     {
-        playerID = "";
-        playerPlatform = PlayerPlatform.Unknown; // 默认平台类型
-        playerName = "游客";
-        avatarUrl = "";
+        //playerID = "";
+        //playerPlatform = PlayerPlatform.Unknown; // 默认平台类型
+        //playerName = "游客";
+        //avatarUrl = "";
         maxRound = 0;
-        coinCount = 0;
+        maxScore = 1;
+        coinCount = 10;
         settings = new GameSettings();
-        endGameInfo = new EndGameInfo();
-        playerChallenge = new PlayerChallenge();
+        //endGameInfo = new EndGameInfo();
+        //playerChallenge = new PlayerChallenge();
     }
 
     /// <summary>
     /// 带参数构造函数（初始化玩家信息）
     /// </summary>
-    public PlayerInfo(string playerID, PlayerPlatform playerPlatform, string playerName, string avatarUrl, int maxRound, int coinCount, GameSettings settings, EndGameInfo endGameInfo, PlayerChallenge playerChallenge)
+    public PlayerInfo(int maxRound, int maxScore, int coinCount, GameSettings settings)
     {
-        this.playerID = playerID;
+        //this.playerID = playerID;
         //this.playerPlatform = playerPlatform;
-        this.playerName = playerName;
-        this.avatarUrl = avatarUrl;
+        //this.playerName = playerName;
+        //this.avatarUrl = avatarUrl;
         this.maxRound = maxRound;
+        this.maxScore = maxScore;
         this.coinCount = coinCount;
-        //this.settings = settings ?? new GameSettings(); // 避免传入null
+        this.settings = settings ?? new GameSettings(); // 避免传入null
         //this.endGameInfo = endGameInfo ?? new EndGameInfo();
         //this.playerChallenge = playerChallenge ?? new PlayerChallenge();
     }
+}
+
+[Serializable]
+public class CloudResponse
+{
+    public PlayerInfo data; // 对应云函数返回的 "data" 字段
 }

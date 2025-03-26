@@ -299,7 +299,7 @@ public class FunctionCard : Card
                 else
                 {
                     int tmpCoinCount = Random.Range(1, GameManager.Instance.CanPlayZeroCardScore);
-                    GameEntrance.instance.CoinCount += (uint)tmpCoinCount;
+                    GameEntrance.instance.CoinCount += tmpCoinCount;
                     ShowTipManager.instance.ShowTip("¿Õ°×Êé¾í", tmpCoinCount);
                 }
                 break;

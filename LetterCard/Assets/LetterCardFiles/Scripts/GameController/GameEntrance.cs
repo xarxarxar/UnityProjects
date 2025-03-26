@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using WeChatWASM;
 
 /// <summary>
 /// 游戏入口
@@ -9,14 +10,22 @@ using UnityEngine.UI;
 public class GameEntrance : MonoBehaviour
 {
     public static GameEntrance instance;
-    private uint coinCount;//金币的数量
-    public uint CoinCount 
+    private int coinCount;//金币的数量
+    public int CoinCount 
     { 
         get => coinCount;
         set 
         { 
             coinCount = value;
-            coinText.text = coinCount.ToString();
+            if (value < 0)
+            {
+                coinText.text = "--";
+            }
+            else
+            {
+                coinText.text = coinCount.ToString();
+            }
+            
             GameManager.Instance.coinText.text = coinCount.ToString();
             if (value < GameManager.Instance.DrawNeedCoin)
             {
@@ -41,7 +50,23 @@ public class GameEntrance : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        CoinCount = 10;
+        CoinCount = -1;
+        // 初始化微信 SDK
+        WX.InitSDK(
+            (code) =>
+            {
+                WX.cloud.Init(new ICloudConfig()
+                {
+                    env = "cloud1-1g93cld7637aacb4", // 云环境 ID
+                    traceUser = false
+                });
+
+                DataManager.instance.DownloadPlayerInfo();
+            }
+        );
+
+
+        
         ButtonManager.instance.startGameButton.onClick.AddListener(SartGame);
     }
 

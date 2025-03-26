@@ -32,7 +32,7 @@ public class EndGameInfo
 
 public class PlayerChallenge
 {
-    public uint playerChallengeId;//玩家挑战的本局挑战ID
+    public int playerChallengeId;//玩家挑战的本局挑战ID
 
     public PlayerChallenge()
     {

@@ -37,17 +37,7 @@ public class WechatManager : MonoBehaviour
 
     private void Start()
     {
-        // 初始化微信 SDK
-        WX.InitSDK(
-            (code) =>
-            {
-                 WX.cloud.Init(new ICloudConfig()
-                {
-                    env = "cloud1-1g93cld7637aacb4", // 云环境 ID
-                    traceUser = false
-                });
-            }
-        );
+       
     }
 
     public static void ShareApp(UnityAction callback)
@@ -110,12 +100,16 @@ public class WechatManager : MonoBehaviour
 
             success = (res) =>
             {
-                Debug.Log("获取卡牌数据成功");
+                Debug.Log($"获取卡牌数据成功:{res.result}");
                 // 解析从云函数返回的结果
                 if (res.result != null)
                 {
-                    PlayerInfo localUserData = JsonUtility.FromJson<PlayerInfo>(res.result);
-                    Debug.Log($"用户result为：{localUserData.playerName}");
+                    CloudResponse response = JsonUtility.FromJson<CloudResponse>(res.result);
+                    // 再提取实际数据
+                    PlayerInfo localUserData = response.data;
+                    Debug.Log($"用户coinCount为：{localUserData.coinCount}");
+                    Debug.Log($"用户maxRound为：{localUserData.maxRound}");
+                    Debug.Log($"用户maxScore为：{localUserData.maxScore}");
                     successAction?.Invoke(localUserData);
                 }
             },
@@ -166,7 +160,7 @@ public class WechatManager : MonoBehaviour
     /// </summary>
     public void RankButton()
     {
-        UploadScore(10);
+        UploadScore(DataManager.instance.globalPlayerInfo.maxRound);
         RankObject.SetActive(true);
         ShowScore();
         //RankObject.transform.DOScale(1, 0.5f).SetEase(Ease.OutQuart).OnComplete(() =>

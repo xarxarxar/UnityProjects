@@ -26,8 +26,8 @@ public class GameManager : MonoBehaviour
             AdaptSlider();
         }
     }
-    private uint nextScore;//下一目标分数
-    public uint NextScore 
+    private int nextScore;//下一目标分数
+    public int NextScore 
     { 
         get => nextScore; 
         set 
@@ -44,8 +44,8 @@ public class GameManager : MonoBehaviour
     [SerializeField]public Text coinText;//总金币数
 
     public Text needCoinText;//抽卡需要的金币数
-    private uint drawNeedCoin;//抽一次卡需要的金币数
-    public uint DrawNeedCoin 
+    private int drawNeedCoin;//抽一次卡需要的金币数
+    public int DrawNeedCoin 
     { 
         get => drawNeedCoin;
         set
@@ -63,8 +63,8 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private uint minPlayCardCount=1;//最少出几张牌
-    public uint MinPlayCardCount { get => minPlayCardCount; set => minPlayCardCount = value; }
+    private int minPlayCardCount=1;//最少出几张牌
+    public int MinPlayCardCount { get => minPlayCardCount; set => minPlayCardCount = value; }
     
     //字母手牌数量
     private int maxPlayCardCount=10;
@@ -101,8 +101,8 @@ public class GameManager : MonoBehaviour
             CurrentInfo.Instance.addScoreWhenDeleteText.text=value.ToString() ;
         } 
     }
-    private uint dropCardCount;//丢弃的牌的数量
-    public uint DropCardCount 
+    private int dropCardCount;//丢弃的牌的数量
+    public int DropCardCount 
     { 
         get => dropCardCount;
         set
@@ -110,7 +110,7 @@ public class GameManager : MonoBehaviour
             dropCardCount = value;
             if( value % 3 == 0)
             {
-                GameEntrance.instance.CoinCount += (uint)AddScoreWhenDeleteScore;
+                GameEntrance.instance.CoinCount += AddScoreWhenDeleteScore;
                 if (AddScoreWhenDeleteScore != 0)
                 {
                     ShowTipManager.instance.ShowTip($"弃字成金", AddScoreWhenDeleteScore);
@@ -252,6 +252,22 @@ public class GameManager : MonoBehaviour
     public void EndChallenge()
     {
         gameFailCanvas.enabled = true;
+        bool infoChanged = false;
+
+        if (DataManager.instance.globalPlayerInfo.maxRound < currentRound)
+        {
+            DataManager.instance.globalPlayerInfo.maxRound = currentRound;
+            infoChanged = true;
+        }
+        if (GameEntrance.instance.CoinCount != DataManager.instance.globalPlayerInfo.coinCount)
+        {
+            infoChanged = true;
+            DataManager.instance.globalPlayerInfo.coinCount = (int)GameEntrance.instance.CoinCount;
+        }
+        if (infoChanged)
+        {
+            DataManager.instance.UploadPlayerInfo();
+        }
     }
 
     /// <summary>
@@ -292,7 +308,7 @@ public class GameManager : MonoBehaviour
         int specialScore = ScoreCalculator.specialScore;//特殊分数
         int totalRoundScore= normalScore+ extraScore+specialScore;
         CurrentScore += totalRoundScore;//当前总分数
-        GameEntrance.instance.CoinCount+= (uint)totalRoundScore;//当前总金币
+        GameEntrance.instance.CoinCount+= totalRoundScore;//当前总金币
 
         CacheText.instance.ClearCacheCard();
         EndRound();//回合结束
@@ -307,7 +323,7 @@ public class GameManager : MonoBehaviour
 
         if (CurrentRound % 5 == 1) NextScore = TargetScore(CurrentRound);//每过5关设置一次目标分数
 
-        DrawNeedCoin = (uint)(CurrentRound/5.0f)+1;//抽取一次所需要的金币数量就是当前的回合数
+        DrawNeedCoin = (int)(CurrentRound/5.0f)+1;//抽取一次所需要的金币数量就是当前的回合数
 
         DeckManager.instance.DrawLetterCard(2);//每回合开始抽两张卡牌
     }
@@ -379,18 +395,18 @@ public class GameManager : MonoBehaviour
         CurrentInfo.Instance.GetComponent<Canvas>().enabled = true;
     }
 
-    private uint TargetScore(int round)
+    private int TargetScore(int round)
     {
         if (round<=0) return 0;
         int roundStep = (round-1) / 5 +1;
-        return (uint)(50*(1+(roundStep-1)*(roundStep-1)));
+        return (int)(50*(1+(roundStep-1)*(roundStep-1)));
     }
 
     private void AdaptSlider()
     {
         if (CurrentRound == 0) return;
-        uint currentTargetScore = NextScore;
-        uint previousTargetScore = TargetScore(CurrentRound - 5);
+        int currentTargetScore = NextScore;
+        int previousTargetScore = TargetScore(CurrentRound - 5);
         previousScoreText.text = previousTargetScore.ToString();
 
         float sliderValue= (float)(CurrentScore - previousTargetScore) / (currentTargetScore - previousTargetScore);
