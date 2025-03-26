@@ -26,12 +26,12 @@ public class SettingManager : MonoBehaviour
 
         if (TurnOnSoundImage.activeSelf)
         {
-            AudioManager.instance.SetSoundEffectsVolume(0.5f / 2);
+            AudioManager.instance.SoundVolume=0.5f;
             soundSlider.value = 0.5f;
         }
         else
         {
-            AudioManager.instance.SetSoundEffectsVolume(0);
+            AudioManager.instance.SoundVolume=0;
             soundSlider.value = 0;
         }
 
@@ -49,18 +49,18 @@ public class SettingManager : MonoBehaviour
 
         if (TurnOnMusicImage.activeSelf)
         {
-            AudioManager.instance.SetBackgroundMusicVolume(0.5f / 10);
+            AudioManager.instance.MusicVolume=0.5f;
             musicSlider.value = 0.5f;
         }
         else
         {
-            AudioManager.instance.SetBackgroundMusicVolume(0);
+            AudioManager.instance.MusicVolume=0;
             musicSlider.value = 0;
         }
     }
 
     [SerializeField] private Text soundValueText;
-    [SerializeField] private Slider soundSlider;
+    [SerializeField] public Slider soundSlider;
     /// <summary>
     /// “Ù–ßslider
     /// </summary>
@@ -71,11 +71,12 @@ public class SettingManager : MonoBehaviour
         TurnOffSoundImage.SetActive(soundSlider.value == 0);
 
         soundValueText.text = ((int)(100 * soundSlider.value)).ToString();
-        AudioManager.instance.SetSoundEffectsVolume(soundSlider.value / 2);
+        AudioManager.instance.SoundVolume=soundSlider.value;
     }
 
+
     [SerializeField] private Text musicValueText;
-    [SerializeField] private Slider musicSlider;
+    [SerializeField] public Slider musicSlider;
     /// <summary>
     /// “Ù¿÷slider
     /// </summary>
@@ -86,7 +87,7 @@ public class SettingManager : MonoBehaviour
         TurnOffMusicImage.SetActive(musicSlider.value == 0);
 
         musicValueText.text = ((int)(100 * musicSlider.value)).ToString();
-        AudioManager.instance.SetBackgroundMusicVolume(musicSlider.value / 10);
+        AudioManager.instance.MusicVolume=musicSlider.value;
     }
 
     /// <summary>

@@ -23,6 +23,9 @@ public class PlayerInfo
     // 玩家头像URL
     //public string avatarUrl;
 
+    // 玩家是否需要进行新手引导
+    public bool needGuide;
+
     // 玩家最佳回合数
     public int maxRound;
 
@@ -50,6 +53,7 @@ public class PlayerInfo
         //playerPlatform = PlayerPlatform.Unknown; // 默认平台类型
         //playerName = "游客";
         //avatarUrl = "";
+        needGuide = true;
         maxRound = 0;
         maxScore = 1;
         coinCount = 10;
@@ -61,12 +65,13 @@ public class PlayerInfo
     /// <summary>
     /// 带参数构造函数（初始化玩家信息）
     /// </summary>
-    public PlayerInfo(int maxRound, int maxScore, int coinCount, GameSettings settings)
+    public PlayerInfo( bool needGuide,int maxRound, int maxScore, int coinCount, GameSettings settings)
     {
         //this.playerID = playerID;
         //this.playerPlatform = playerPlatform;
         //this.playerName = playerName;
         //this.avatarUrl = avatarUrl;
+        this.needGuide = needGuide;
         this.maxRound = maxRound;
         this.maxScore = maxScore;
         this.coinCount = coinCount;

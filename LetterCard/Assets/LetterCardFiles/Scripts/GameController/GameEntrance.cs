@@ -79,7 +79,7 @@ public class GameEntrance : MonoBehaviour
         GetComponent<Canvas>().enabled = false;//关闭主界面
 
         GameManager.Instance.GetComponent<Canvas>().enabled = true;
-        if (GameGuide.needGuide)
+        if (DataManager.instance.globalPlayerInfo.needGuide)
         {
             GameGuide.instance.Init();
         }

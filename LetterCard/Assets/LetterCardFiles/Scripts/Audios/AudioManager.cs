@@ -8,6 +8,36 @@ public class AudioManager : MonoBehaviour
     [SerializeField]private AudioSource musicSource;  // 用于播放背景音乐
     [SerializeField]private AudioSource effectsSource;  // 用于播放音效
 
+    private float musicVolume;
+    public float MusicVolume 
+    { 
+        get => musicVolume;
+        set
+        {
+            if (musicVolume != value)
+            {
+                musicVolume = value;
+                SetBackgroundMusicVolume(value/10);
+                SettingManager.Instance.musicSlider.value = value;
+            }
+        } 
+    }
+
+    private float soundVolume;
+    public float SoundVolume 
+    { 
+        get => soundVolume; 
+        set 
+        {
+            if (soundVolume != value)
+            {
+                soundVolume = value;
+                SetSoundEffectsVolume(value / 2);
+                SettingManager.Instance.soundSlider.value = value;
+            }
+        }
+    }
+
     private void Awake()
     {
         instance = this;
@@ -17,7 +47,6 @@ public class AudioManager : MonoBehaviour
     // Start 用于初始化
     private void Start()
     {
-
         // 初始化音源设置
         InitializeAudio();
     }
@@ -28,10 +57,10 @@ public class AudioManager : MonoBehaviour
         if (audioSettings != null)
         {
             // 设置背景音乐音量
-            musicSource.volume = audioSettings.backgroundMusicVolume;
+            musicSource.volume = MusicVolume;
 
             // 设置音效音量
-            effectsSource.volume = audioSettings.soundEffectVolume;
+            effectsSource.volume = SoundVolume;
 
             // 设置背景音乐循环播放
             musicSource.loop = true;
@@ -78,18 +107,6 @@ public class AudioManager : MonoBehaviour
         {
             effectsSource.volume = volume;
         }
-    }
-
-    // 获取BGM音量
-    public float GetBackgroundMusicVolume()
-    {
-        return musicSource.volume;
-    }
-
-    //获取音效音量
-    public float GetSoundEffectsVolume()
-    {
-        return effectsSource.volume;
     }
 
     // 停止背景音乐

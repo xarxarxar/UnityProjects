@@ -22,8 +22,8 @@ public class DataManager : MonoBehaviour
         {
             globalPlayerInfo= playerInfo;
             GameEntrance.instance.CoinCount =globalPlayerInfo.coinCount;
-            AudioManager.instance.SetBackgroundMusicVolume(globalPlayerInfo.settings.musicVolume);
-            AudioManager.instance.SetSoundEffectsVolume(globalPlayerInfo.settings.soundEffectVolume);
+            AudioManager.instance.MusicVolume=globalPlayerInfo.settings.musicVolume;
+            AudioManager.instance.SoundVolume=globalPlayerInfo.settings.soundEffectVolume;
         });
     }
 
@@ -33,7 +33,7 @@ public class DataManager : MonoBehaviour
     public void UploadPlayerInfo()
     {
         globalPlayerInfo.coinCount =(int) GameEntrance.instance.CoinCount;
-        globalPlayerInfo.settings = new GameSettings(AudioManager.instance.GetBackgroundMusicVolume(), AudioManager.instance.GetSoundEffectsVolume());
+        globalPlayerInfo.settings = new GameSettings(AudioManager.instance.MusicVolume, AudioManager.instance.SoundVolume);
         WechatManager.CallSetUserData(globalPlayerInfo);
     }
 }

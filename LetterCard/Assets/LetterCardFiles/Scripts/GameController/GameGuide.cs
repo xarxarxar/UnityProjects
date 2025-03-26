@@ -7,7 +7,6 @@ using UnityEngine.UI;
 public class GameGuide : MonoBehaviour
 {
     public static GameGuide instance;
-    public static bool needGuide = false;//是否需要游戏教程
 
     //对话
     [SerializeField] private GameObject dialoguePanel;//对话Panel
@@ -61,6 +60,7 @@ public class GameGuide : MonoBehaviour
         DeckManager.instance.Init();//初始化牌堆
         GetComponent<Canvas>().enabled= true;
         ShowGuideDialogue(dialogues[dialogueIndex]);
+        dialoguePanel.GetComponent<Image>().color = new Color32(0, 0, 0, 120);
         dialogueBoxButton.onClick.AddListener(NextOperation);
     }
 
@@ -72,6 +72,7 @@ public class GameGuide : MonoBehaviour
             dialoguePanel.SetActive(true);
         }
         dialogueText.text = dialogue;
+        
     }
 
     private void NextOperation()
@@ -80,11 +81,12 @@ public class GameGuide : MonoBehaviour
         {
             dialogueIndex++;
             ShowGuideDialogue(dialogues[dialogueIndex]);
+            
         }
 
         if (dialogueIndex == 2)
         {
-            dialoguePanel.GetComponent<Image>().color = new Color32(0, 0, 0, 120);
+            //dialoguePanel.GetComponent<Image>().color = new Color32(0, 0, 0, 120);
             targetScoreText.SetActive(true);
         }
 
@@ -215,6 +217,10 @@ public class GameGuide : MonoBehaviour
     {
         GetComponent<Canvas>().enabled = false;
         GameManager.Instance.StartChallenge();
+        GameEntrance.instance.CoinCount = DataManager.instance.globalPlayerInfo.coinCount;
         gameObject.SetActive(false);
+
+        DataManager.instance.globalPlayerInfo.needGuide = false;
+        DataManager.instance.UploadPlayerInfo();
     }
 }
