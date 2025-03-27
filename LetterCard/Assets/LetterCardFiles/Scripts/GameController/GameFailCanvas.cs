@@ -36,7 +36,10 @@ public class GameFailCanvas : MonoBehaviour
     public void ContinueChallenge()
     {
         //GameManager.Instance.StartChallenge();
-        GetComponent<Canvas>().enabled = false;
+        WechatManager.ShareApp(() =>{
+            GetComponent<Canvas>().enabled = false;
+        });
+        
     }
 
 }

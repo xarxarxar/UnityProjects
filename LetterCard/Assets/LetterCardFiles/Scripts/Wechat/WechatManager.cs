@@ -1,7 +1,3 @@
-using DG.Tweening;
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -15,6 +11,8 @@ public class MyOpendataMessage
 
 public class WechatManager : MonoBehaviour
 {
+
+    public static WechatManager instance;
     /// <summary>
     /// 屏幕宽度
     /// </summary>
@@ -34,10 +32,11 @@ public class WechatManager : MonoBehaviour
     public Image imageLeftTop;
     public Image imageRightBottom;
     public GameObject RankObject;
+    WXUserInfoButton wxUserInfoButton;
 
-    private void Start()
+    private void Awake()
     {
-       
+        instance = this;
     }
 
     public static void ShareApp(UnityAction callback)
@@ -87,6 +86,104 @@ public class WechatManager : MonoBehaviour
     }
 
 
+    public void CreateUserInfoButton()
+    {
+        WX.GetSetting(new GetSettingOption()
+        {
+            success = (res) =>
+            {
+                Debug.Log($"获取Setting成功");
+                //已经授权过
+                if (res.authSetting["scope.userInfo"] == true)
+                {
+                    wxUserInfoButton.Hide();
+                    Debug.Log($"已经获取过权限");
+                    WX.GetUserInfo(new GetUserInfoOption()
+                    {
+                        success = (res) =>
+                        {
+                            Debug.Log($"获取用户信息成功:{res.userInfo.nickName}");
+                            if (res.userInfo.nickName != DataManager.instance.globalPlayerInfo.playerName
+                            || res.userInfo.avatarUrl!= DataManager.instance.globalPlayerInfo.avatarUrl)
+                            {
+                                DataManager.instance.globalPlayerInfo.playerName=res.userInfo.nickName;
+                                DataManager.instance.globalPlayerInfo.avatarUrl=res.userInfo.avatarUrl;
+                                DataManager.instance.UploadPlayerInfo();
+                            }
+                            //ShowTipManager.instance.ShowLoading(false);
+                        },
+                        fail = (res) =>
+                        {
+                            Debug.LogError("获取用户信息失败：" + res.errMsg);
+                            ShowTipManager.instance.ShowTip("获取用户信息失败");
+                            //ShowTipManager.instance.ShowLoading(false);
+                        },
+                        complete = (res) =>
+                        {
+                            Debug.Log("获取用户信息操作完成");
+                        }
+                    }); 
+                }
+                else
+                {
+                    Debug.Log($"还未获取过权限");
+                    wxUserInfoButton.Show();
+                }
+            },
+
+            fail = (res) =>
+            {
+                Debug.Log($"获取Setting失败：{res.errMsg}");
+            }
+        });
+        
+    }
+
+    public void CreateUserInfoButtonBefore()
+    {
+        Rect rect = GetStartButtonRect();
+        wxUserInfoButton = WX.CreateUserInfoButton((int)rect.x, Screen.height - (int)rect.y - (int)rect.height, (int)rect.width, (int)rect.height, "", true);
+        wxUserInfoButton.OnTap((res) =>
+        {
+            if (res.errCode == 0)
+            {
+                wxUserInfoButton.Hide();
+                WX.GetUserInfo(new GetUserInfoOption()
+                {
+                    success = (res) =>
+                    {
+                        Debug.Log($"获取用户信息成功:{res.userInfo.nickName}");
+                        if (res.userInfo.nickName != DataManager.instance.globalPlayerInfo.playerName
+                        || res.userInfo.avatarUrl != DataManager.instance.globalPlayerInfo.avatarUrl)
+                        {
+                            DataManager.instance.globalPlayerInfo.playerName = res.userInfo.nickName;
+                            DataManager.instance.globalPlayerInfo.avatarUrl = res.userInfo.avatarUrl;
+                            DataManager.instance.UploadPlayerInfo();
+                            ButtonManager.instance.startGameButton.onClick.AddListener(GameEntrance.instance.SartGame);
+                            GameEntrance.instance.SartGame();
+                        }
+                    },
+                    fail = (res) =>
+                    {
+                        Debug.LogError("获取用户信息失败：" + res.errMsg);
+                        ShowTipManager.instance.ShowTip("获取用户信息失败");
+                    },
+                    complete = (res) =>
+                    {
+                        Debug.Log("获取用户信息操作完成");
+                    }
+                });
+            }
+            else
+            {
+                ShowTipManager.instance.ShowTip("请先授权");
+            }
+        });
+        wxUserInfoButton.Hide();
+
+    }
+
+
     /// <summary>
     /// 从云数据库获取卡牌数据
     /// </summary>
@@ -104,9 +201,11 @@ public class WechatManager : MonoBehaviour
                 // 解析从云函数返回的结果
                 if (res.result != null)
                 {
-                    CloudResponse response = JsonUtility.FromJson<CloudResponse>(res.result);
+                    CloudResponse response = new CloudResponse();
+                    response = JsonUtility.FromJson<CloudResponse>(res.result);
                     // 再提取实际数据
-                    PlayerInfo localUserData = response.data;
+                    PlayerInfo localUserData = new PlayerInfo();
+                    localUserData = response.data;
                     Debug.Log($"用户coinCount为：{localUserData.coinCount}");
                     Debug.Log($"用户maxRound为：{localUserData.maxRound}");
                     Debug.Log($"用户maxScore为：{localUserData.maxScore}");
@@ -222,4 +321,22 @@ public class WechatManager : MonoBehaviour
         return (int)verticalDistance;
     }
 
+
+    Rect GetStartButtonRect()
+    {
+        var rectTransform = GameEntrance.instance.startGameButton.GetComponent<RectTransform>();
+        // 获取 RectTransform 的四个角的世界坐标
+        Vector3[] worldCorners = new Vector3[4];
+        rectTransform.GetWorldCorners(worldCorners);
+
+        // 创建屏幕矩形
+        var screenRect = new Rect(
+                        worldCorners[0].x,
+                        worldCorners[0].y,
+                        worldCorners[2].x - worldCorners[0].x,
+                        worldCorners[2].y - worldCorners[0].y);
+
+        Debug.Log($"Screen Rect: {screenRect}");
+        return screenRect;
+    }
 }

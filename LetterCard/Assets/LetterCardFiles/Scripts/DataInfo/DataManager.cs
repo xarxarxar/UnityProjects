@@ -24,6 +24,9 @@ public class DataManager : MonoBehaviour
             GameEntrance.instance.CoinCount =globalPlayerInfo.coinCount;
             AudioManager.instance.MusicVolume=globalPlayerInfo.settings.musicVolume;
             AudioManager.instance.SoundVolume=globalPlayerInfo.settings.soundEffectVolume;
+
+            ShowTipManager.instance.ShowLoading(false);
+            WechatManager.instance.CreateUserInfoButton();
         });
     }
 

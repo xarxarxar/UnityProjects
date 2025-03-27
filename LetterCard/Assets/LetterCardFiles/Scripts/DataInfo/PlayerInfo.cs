@@ -18,10 +18,10 @@ public class PlayerInfo
     //public PlayerPlatform playerPlatform;
 
     // 玩家昵称
-   // public string playerName;
+    public string playerName;
 
     // 玩家头像URL
-    //public string avatarUrl;
+    public string avatarUrl;
 
     // 玩家是否需要进行新手引导
     public bool needGuide;
@@ -51,8 +51,8 @@ public class PlayerInfo
     {
         //playerID = "";
         //playerPlatform = PlayerPlatform.Unknown; // 默认平台类型
-        //playerName = "游客";
-        //avatarUrl = "";
+        playerName = "游客";
+        avatarUrl = "";
         needGuide = true;
         maxRound = 0;
         maxScore = 1;
@@ -65,12 +65,12 @@ public class PlayerInfo
     /// <summary>
     /// 带参数构造函数（初始化玩家信息）
     /// </summary>
-    public PlayerInfo( bool needGuide,int maxRound, int maxScore, int coinCount, GameSettings settings)
+    public PlayerInfo( string playerName, string avatarUrl, bool needGuide,int maxRound, int maxScore, int coinCount, GameSettings settings)
     {
         //this.playerID = playerID;
         //this.playerPlatform = playerPlatform;
-        //this.playerName = playerName;
-        //this.avatarUrl = avatarUrl;
+        this.playerName = playerName;
+        this.avatarUrl = avatarUrl;
         this.needGuide = needGuide;
         this.maxRound = maxRound;
         this.maxScore = maxScore;
@@ -85,4 +85,9 @@ public class PlayerInfo
 public class CloudResponse
 {
     public PlayerInfo data; // 对应云函数返回的 "data" 字段
+
+    public CloudResponse() 
+    {
+        data = new PlayerInfo();
+    }
 }

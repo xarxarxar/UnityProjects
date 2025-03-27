@@ -14,6 +14,8 @@ public class ShowTipManager : MonoBehaviour
 
     public GameObject dustbinGameobject;
 
+    public GameObject loadingObject;
+
     private Queue<(string,UnityAction)> tipTexts = new Queue<(string, UnityAction)>();
 
     private void Awake()
@@ -35,6 +37,9 @@ public class ShowTipManager : MonoBehaviour
         callback?.Invoke();
     }
 
-
+    public void ShowLoading(bool active)
+    {
+        loadingObject.SetActive(active);
+    }
 
 }

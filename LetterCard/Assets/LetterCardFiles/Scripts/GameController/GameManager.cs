@@ -399,7 +399,7 @@ public class GameManager : MonoBehaviour
     {
         if (round<=0) return 0;
         int roundStep = (round-1) / 5 +1;
-        return (int)(50*(1+(roundStep-1)*(roundStep-1)));
+        return (int)(30*(1+(roundStep-1)*(roundStep-1)));
     }
 
     private void AdaptSlider()
