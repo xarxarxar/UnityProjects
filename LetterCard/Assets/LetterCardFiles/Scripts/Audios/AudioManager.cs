@@ -8,7 +8,7 @@ public class AudioManager : MonoBehaviour
     [SerializeField]private AudioSource musicSource;  // 用于播放背景音乐
     [SerializeField]private AudioSource effectsSource;  // 用于播放音效
 
-    private float musicVolume;
+    private float musicVolume=-1;
     public float MusicVolume 
     { 
         get => musicVolume;
@@ -23,7 +23,7 @@ public class AudioManager : MonoBehaviour
         } 
     }
 
-    private float soundVolume;
+    private float soundVolume=-1;
     public float SoundVolume 
     { 
         get => soundVolume; 
@@ -57,10 +57,10 @@ public class AudioManager : MonoBehaviour
         if (audioSettings != null)
         {
             // 设置背景音乐音量
-            musicSource.volume = MusicVolume;
+            MusicVolume=0.5f;
 
             // 设置音效音量
-            effectsSource.volume = SoundVolume;
+            SoundVolume = 0.5f;
 
             // 设置背景音乐循环播放
             musicSource.loop = true;

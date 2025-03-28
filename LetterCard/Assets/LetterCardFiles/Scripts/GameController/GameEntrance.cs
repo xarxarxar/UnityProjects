@@ -42,6 +42,8 @@ public class GameEntrance : MonoBehaviour
 
     public Image startGameButton;//一开始的开始游戏按钮
 
+    [SerializeField] private GameObject enterGamePanel;//进入游戏界面
+
     //UI
 
     private void Awake()
@@ -52,8 +54,6 @@ public class GameEntrance : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        CoinCount = -1;
-        ShowTipManager.instance.ShowLoading(true);
         // 初始化微信 SDK
         WX.InitSDK(
             (code) =>
@@ -64,7 +64,6 @@ public class GameEntrance : MonoBehaviour
                     traceUser = false
                 });
                 WechatManager.instance.CreateUserInfoButtonBefore();//先创建获取用户信息按钮
-                DataManager.instance.DownloadPlayerInfo();
                 
             }
         );
@@ -77,7 +76,7 @@ public class GameEntrance : MonoBehaviour
     /// </summary>
     public void SartGame()
     {
-
+        AudioManager.instance.PlaySoundEffect("ClickButton");
         GetComponent<Canvas>().enabled = false;//关闭主界面
 
         GameManager.Instance.GetComponent<Canvas>().enabled = true;
@@ -105,6 +104,11 @@ public class GameEntrance : MonoBehaviour
     private void SetCoinText()
     {
         
+    }
+
+    public void CloseEnterGamePanel()
+    {
+        enterGamePanel.SetActive(false);
     }
 
 }

@@ -187,6 +187,7 @@ public class FunctionCard : Card
             GameEntrance.instance.CoinCount += 3;
             DestroyCard();
         };
+        ChooseCard();
     }
 
     // 当点击 UI 时触发的方法

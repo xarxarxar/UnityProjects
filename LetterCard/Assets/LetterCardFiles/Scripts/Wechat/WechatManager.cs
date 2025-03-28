@@ -103,13 +103,20 @@ public class WechatManager : MonoBehaviour
                         success = (res) =>
                         {
                             Debug.Log($"获取用户信息成功:{res.userInfo.nickName}");
-                            if (res.userInfo.nickName != DataManager.instance.globalPlayerInfo.playerName
-                            || res.userInfo.avatarUrl!= DataManager.instance.globalPlayerInfo.avatarUrl)
+                            ShowTipManager.instance.ShowLoading(true);
+                            DataManager.instance.DownloadPlayerInfo(() =>
                             {
-                                DataManager.instance.globalPlayerInfo.playerName=res.userInfo.nickName;
-                                DataManager.instance.globalPlayerInfo.avatarUrl=res.userInfo.avatarUrl;
+                                if (res.userInfo.nickName != DataManager.instance.globalPlayerInfo.playerName
+                            || res.userInfo.avatarUrl != DataManager.instance.globalPlayerInfo.avatarUrl)
+                                {
+                                    DataManager.instance.globalPlayerInfo.playerName = res.userInfo.nickName;
+                                    DataManager.instance.globalPlayerInfo.avatarUrl = res.userInfo.avatarUrl;
+                                }
                                 DataManager.instance.UploadPlayerInfo();
-                            }
+                                ShowTipManager.instance.ShowLoading(false);
+                                GameEntrance.instance.CloseEnterGamePanel();
+                            });
+
                             //ShowTipManager.instance.ShowLoading(false);
                         },
                         fail = (res) =>
@@ -153,15 +160,19 @@ public class WechatManager : MonoBehaviour
                     success = (res) =>
                     {
                         Debug.Log($"获取用户信息成功:{res.userInfo.nickName}");
-                        if (res.userInfo.nickName != DataManager.instance.globalPlayerInfo.playerName
-                        || res.userInfo.avatarUrl != DataManager.instance.globalPlayerInfo.avatarUrl)
+                        ShowTipManager.instance.ShowLoading(true);
+                        DataManager.instance.DownloadPlayerInfo(() =>
                         {
-                            DataManager.instance.globalPlayerInfo.playerName = res.userInfo.nickName;
-                            DataManager.instance.globalPlayerInfo.avatarUrl = res.userInfo.avatarUrl;
+                            if (res.userInfo.nickName != DataManager.instance.globalPlayerInfo.playerName
+                        || res.userInfo.avatarUrl != DataManager.instance.globalPlayerInfo.avatarUrl)
+                            {
+                                DataManager.instance.globalPlayerInfo.playerName = res.userInfo.nickName;
+                                DataManager.instance.globalPlayerInfo.avatarUrl = res.userInfo.avatarUrl;
+                            }
                             DataManager.instance.UploadPlayerInfo();
-                            ButtonManager.instance.startGameButton.onClick.AddListener(GameEntrance.instance.SartGame);
-                            GameEntrance.instance.SartGame();
-                        }
+                            ShowTipManager.instance.ShowLoading(false);
+                            GameEntrance.instance.CloseEnterGamePanel();
+                        });
                     },
                     fail = (res) =>
                     {
@@ -259,6 +270,7 @@ public class WechatManager : MonoBehaviour
     /// </summary>
     public void RankButton()
     {
+        AudioManager.instance.PlaySoundEffect("ClickButton");
         UploadScore(DataManager.instance.globalPlayerInfo.maxRound);
         RankObject.SetActive(true);
         ShowScore();
@@ -273,6 +285,7 @@ public class WechatManager : MonoBehaviour
     /// </summary>
     public void CloseRankPanel()
     {
+        AudioManager.instance.PlaySoundEffect("ClickButton");
         WX.HideOpenData();
         RankObject.SetActive(false);
         //RankObject.transform.DOScale(0, 0.5f).SetEase(Ease.OutQuart).OnComplete(() =>

@@ -15,6 +15,7 @@ public class GameFailCanvas : MonoBehaviour
     /// </summary>
     public void BackToMenu()
     {
+        AudioManager.instance.PlaySoundEffect("ClickButton");
         DeckManager.instance.ClearHandCards();
         GameEntrance.instance.GetComponent<Canvas>().enabled = true;
         GameManager.Instance.GetComponent<Canvas>().enabled = false;
@@ -26,6 +27,7 @@ public class GameFailCanvas : MonoBehaviour
     /// </summary>
     public void RestartChallenge()
     {
+        AudioManager.instance.PlaySoundEffect("ClickButton");
         GameManager.Instance.StartChallenge();
         GetComponent<Canvas>().enabled = false;
     }
@@ -36,6 +38,7 @@ public class GameFailCanvas : MonoBehaviour
     public void ContinueChallenge()
     {
         //GameManager.Instance.StartChallenge();
+        AudioManager.instance.PlaySoundEffect("ClickButton");
         WechatManager.ShareApp(() =>{
             GetComponent<Canvas>().enabled = false;
         });

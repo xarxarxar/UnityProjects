@@ -93,7 +93,7 @@ public class LetterCard : Card
             isInhand = true;
             CacheText.instance.RemoveCharacterWithColor(this);
         }
-        
+        AudioManager.instance.PlaySoundEffect("ClickCard");
     }
 
     /// <summary>

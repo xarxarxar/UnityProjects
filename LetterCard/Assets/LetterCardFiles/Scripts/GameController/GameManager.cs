@@ -251,6 +251,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void EndChallenge()
     {
+        AudioManager.instance.PlaySoundEffect("Fail");
         gameFailCanvas.enabled = true;
         bool infoChanged = false;
 
@@ -282,6 +283,7 @@ public class GameManager : MonoBehaviour
             GetRewards.Instance.GetComponent<Canvas>().enabled = true;
             return;
         }
+        AudioManager.instance.PlaySoundEffect("ClickButton");
         //DeckManager.instance.IsDrawing = true;
         //ContinuousCount = 2;
         DeckManager.instance.DrawCard(ContinuousCount);//³é¿¨
@@ -294,7 +296,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void PlayCard()
     {
-        AudioManager.instance.PlaySoundEffect("PlayCard");
+        AudioManager.instance.PlaySoundEffect("GetScore");
 
         if (CacheText.instance.letterCards.Count < MinPlayCardCount)
         {
@@ -349,6 +351,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void AddMoneyButton()
     {
+        AudioManager.instance.PlaySoundEffect("ClickButton");
         GetRewards.Instance.GetComponent<Canvas>().enabled = true;
     }
 
@@ -357,6 +360,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void UseSpecialCard()
     {
+        AudioManager.instance.PlaySoundEffect("ClickButton");
         useSpecialCard();
         CloseSpecialCardPanel();
     }
@@ -366,6 +370,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void SellSpecialCard()
     {
+        AudioManager.instance.PlaySoundEffect("ClickButton");
         sellSpecialCard();
         CloseSpecialCardPanel();
     }
@@ -375,6 +380,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void CloseSpecialCardPanel()
     {
+        AudioManager.instance.PlaySoundEffect("ClickButton");
         specialIntroductionPanel.DOScale(Vector3.zero, 0.5f).SetEase(Ease.OutQuart);
     }
 
@@ -383,6 +389,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void OpenCurrentInfoPanel()
     {
+        AudioManager.instance.PlaySoundEffect("ClickButton");
         CurrentInfo.Instance.GetComponent<Canvas>().enabled = true;
         CurrentInfo.Instance.transform.DOScale(1, 0.5f).SetEase(Ease.OutQuart);
     }
@@ -392,6 +399,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void PausePanel()
     {
+        AudioManager.instance.PlaySoundEffect("ClickButton");
         CurrentInfo.Instance.GetComponent<Canvas>().enabled = true;
     }
 

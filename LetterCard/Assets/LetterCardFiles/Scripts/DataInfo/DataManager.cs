@@ -1,5 +1,6 @@
 
 using UnityEngine;
+using UnityEngine.Events;
 
 public class DataManager : MonoBehaviour
 {
@@ -16,7 +17,7 @@ public class DataManager : MonoBehaviour
     /// 获取玩家信息
     /// </summary>
     /// <returns></returns>
-    public void DownloadPlayerInfo()
+    public void DownloadPlayerInfo(UnityAction callback)
     {
         WechatManager.GetUserData((playerInfo) =>
         {
@@ -25,8 +26,7 @@ public class DataManager : MonoBehaviour
             AudioManager.instance.MusicVolume=globalPlayerInfo.settings.musicVolume;
             AudioManager.instance.SoundVolume=globalPlayerInfo.settings.soundEffectVolume;
 
-            ShowTipManager.instance.ShowLoading(false);
-            WechatManager.instance.CreateUserInfoButton();
+            callback?.Invoke();
         });
     }
 

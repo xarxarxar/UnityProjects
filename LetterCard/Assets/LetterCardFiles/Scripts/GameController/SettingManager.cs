@@ -21,6 +21,7 @@ public class SettingManager : MonoBehaviour
     /// </summary>
     public void ToggleSoundButton()
     {
+        AudioManager.instance.PlaySoundEffect("ClickButton");
         TurnOnSoundImage.SetActive(!TurnOnSoundImage.activeSelf);
         TurnOffSoundImage.SetActive(!TurnOffSoundImage.activeSelf);
 
@@ -44,6 +45,7 @@ public class SettingManager : MonoBehaviour
     /// </summary>
     public void ToggleMusicButton()
     {
+        AudioManager.instance.PlaySoundEffect("ClickButton");
         TurnOnMusicImage.SetActive(!TurnOnMusicImage.activeSelf);
         TurnOffMusicImage.SetActive(!TurnOffMusicImage.activeSelf);
 
@@ -95,6 +97,7 @@ public class SettingManager : MonoBehaviour
     /// </summary>
     public void CloseCurrentPanel()
     {
+        AudioManager.instance.PlaySoundEffect("ClickButton");
         GetComponent<Canvas>().enabled = false;
     }
 

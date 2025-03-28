@@ -50,11 +50,6 @@ public class GameGuide : MonoBehaviour
         instance = this;
     }
 
-    private void Start()
-    {
-
-    }
-
     public void Init()
     {
         DeckManager.instance.Init();//≥ı ºªØ≈∆∂—
@@ -77,6 +72,7 @@ public class GameGuide : MonoBehaviour
 
     private void NextOperation()
     {
+        AudioManager.instance.PlaySoundEffect("ClickButton");
         if (dialogueIndex < dialogues.Count-1)
         {
             dialogueIndex++;
@@ -176,6 +172,7 @@ public class GameGuide : MonoBehaviour
 
     public void NextGuide()
     {
+        AudioManager.instance.PlaySoundEffect("ClickButton");
         imageGuidesIndex++;
         if(imageGuidesIndex>= imageGuides.Count-1)
         {
@@ -195,6 +192,7 @@ public class GameGuide : MonoBehaviour
 
     public void PreciousGuide()
     {
+        AudioManager.instance.PlaySoundEffect("ClickButton");
         imageGuidesIndex--;
         if (imageGuidesIndex <= 0)
         {
@@ -215,11 +213,12 @@ public class GameGuide : MonoBehaviour
 
     public void SkipGuide()
     {
+        AudioManager.instance.PlaySoundEffect("ClickButton");
         GetComponent<Canvas>().enabled = false;
         GameManager.Instance.StartChallenge();
         GameEntrance.instance.CoinCount = DataManager.instance.globalPlayerInfo.coinCount;
         gameObject.SetActive(false);
-
+        
         DataManager.instance.globalPlayerInfo.needGuide = false;
         DataManager.instance.UploadPlayerInfo();
     }

@@ -1,6 +1,4 @@
 using DG.Tweening;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -43,6 +41,7 @@ public class CurrentInfo : MonoBehaviour
     /// </summary>
     public void SettingButton()
     {
+        AudioManager.instance.PlaySoundEffect("ClickButton");
         SettingManager.Instance.OpenCurrentPanel();
     }
     
@@ -51,6 +50,7 @@ public class CurrentInfo : MonoBehaviour
     /// </summary>
     public void ContinueButton()
     {
+        AudioManager.instance.PlaySoundEffect("ClickButton");
         GetComponent<Canvas>().enabled = false;
     }
 
@@ -59,6 +59,7 @@ public class CurrentInfo : MonoBehaviour
     /// </summary>
     public void RestartButton()
     {
+        AudioManager.instance.PlaySoundEffect("ClickButton");
         GetComponent<Canvas>().enabled = false;
         GameManager.Instance.StartChallenge();
     }
@@ -68,11 +69,11 @@ public class CurrentInfo : MonoBehaviour
     /// </summary>
     public void HomeButton()
     {
+        AudioManager.instance.PlaySoundEffect("ClickButton");
         DeckManager.instance.ClearHandCards();
         GameEntrance.instance.GetComponent<Canvas>().enabled = true;
         GameManager.Instance.GetComponent<Canvas>().enabled = false;
         GetComponent<Canvas>().enabled = false;
-
     }
 
 }
