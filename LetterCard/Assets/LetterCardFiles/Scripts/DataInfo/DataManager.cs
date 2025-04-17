@@ -22,7 +22,7 @@ public class DataManager : MonoBehaviour
         WechatManager.GetUserData((playerInfo) =>
         {
             globalPlayerInfo= playerInfo;
-            GameEntrance.instance.CoinCount =globalPlayerInfo.coinCount;
+            //GameEntrance.instance.CoinCount =globalPlayerInfo.coinCount;
             AudioManager.instance.MusicVolume=globalPlayerInfo.settings.musicVolume;
             AudioManager.instance.SoundVolume=globalPlayerInfo.settings.soundEffectVolume;
 
@@ -35,7 +35,7 @@ public class DataManager : MonoBehaviour
     /// </summary>
     public void UploadPlayerInfo()
     {
-        globalPlayerInfo.coinCount =(int) GameEntrance.instance.CoinCount;
+        //globalPlayerInfo.coinCount =(int) GameEntrance.instance.CoinCount;
         globalPlayerInfo.settings = new GameSettings(AudioManager.instance.MusicVolume, AudioManager.instance.SoundVolume);
         WechatManager.CallSetUserData(globalPlayerInfo);
     }

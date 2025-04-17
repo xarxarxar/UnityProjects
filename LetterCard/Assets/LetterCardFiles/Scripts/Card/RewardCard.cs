@@ -46,7 +46,7 @@ public class RewardCard : Card
     /// </summary>
     public void OnInit()
     {
-        GameEntrance.instance.CoinCount += 1;
+        GameEntrance.instance.CoinCount += count;
         ShowTipManager.instance.ShowTip(tipString, count);
         transform.DOScale(0, 0.5f).SetEase(Ease.OutQuart).OnComplete(() =>
         {

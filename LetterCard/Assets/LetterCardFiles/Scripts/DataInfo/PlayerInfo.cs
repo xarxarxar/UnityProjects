@@ -55,8 +55,8 @@ public class PlayerInfo
         avatarUrl = "";
         needGuide = true;
         maxRound = 0;
-        maxScore = 1;
-        coinCount = 10;
+        maxScore = 0;
+        //coinCount = 10;
         settings = new GameSettings();
         //endGameInfo = new EndGameInfo();
         //playerChallenge = new PlayerChallenge();
@@ -65,7 +65,7 @@ public class PlayerInfo
     /// <summary>
     /// 带参数构造函数（初始化玩家信息）
     /// </summary>
-    public PlayerInfo( string playerName, string avatarUrl, bool needGuide,int maxRound, int maxScore, int coinCount, GameSettings settings)
+    public PlayerInfo( string playerName, string avatarUrl, bool needGuide,int maxRound, int maxScore, GameSettings settings)
     {
         //this.playerID = playerID;
         //this.playerPlatform = playerPlatform;
@@ -74,7 +74,7 @@ public class PlayerInfo
         this.needGuide = needGuide;
         this.maxRound = maxRound;
         this.maxScore = maxScore;
-        this.coinCount = coinCount;
+        //this.coinCount = coinCount;
         this.settings = settings ?? new GameSettings(); // 避免传入null
         //this.endGameInfo = endGameInfo ?? new EndGameInfo();
         //this.playerChallenge = playerChallenge ?? new PlayerChallenge();

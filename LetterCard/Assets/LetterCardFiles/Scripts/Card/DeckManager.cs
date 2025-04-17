@@ -210,7 +210,7 @@ public class DeckManager : MonoBehaviour
     public Sequence DrawRewardCard(RewardCardType rewardCardType)
     {
         RewardCard newCard =cardPool.GetCard<RewardCard>() as RewardCard; ;
-        newCard.OnSet(rewardCardType, GameManager.Instance.CurrentRound);
+        newCard.OnSet(rewardCardType, GameManager.Instance.DrawNeedCoin);
         return DrawCardAnim(newCard, null);
     }
 
@@ -483,7 +483,7 @@ public class DeckManager : MonoBehaviour
     /// 检查能否抽取普通牌
     /// </summary>
     /// <returns></returns>
-    bool CanDrawNormalCard()
+    public bool CanDrawNormalCard()
     {
         int currentNormal = letterHandCards.Count();
         return currentNormal < GetCurrentMaxNormal();

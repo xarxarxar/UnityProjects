@@ -69,7 +69,7 @@ public class ScoreCalculator
         {
             value();
         }
-
+        
     }
 
     // 根据玩家出牌的卡牌，构建一个由字母组成的字符串序列

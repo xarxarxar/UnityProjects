@@ -1,7 +1,11 @@
 using DG.Tweening;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Playables;
 using UnityEngine.UI;
+using static UnityEditor.Progress;
 
 /// <summary>
 /// 当游戏开始的时候，控制游戏的逻辑，并非整个游戏的逻辑，整个游戏的逻辑控制在GameEntrance里
@@ -119,7 +123,6 @@ public class GameManager : MonoBehaviour
         } 
     }
 
-    //public bool useCanContinuousDraw=false;//是否启用连抽不止
     private float continuousProbability = 0.3f;//连抽的概率
     public float ContinuousProbability 
     { 
@@ -175,12 +178,26 @@ public class GameManager : MonoBehaviour
         }
     }
 
+
+    private int tipWordCount;
+    public int TipWordCount //单词提示的个数
+    { 
+        get => tipWordCount; 
+        set
+        {
+            tipWordCount = value;
+            tipWordCountText.text=value.ToString();
+            tipWordButton.image.color = value ==0?Color.grey:new Color32(97,140,255,255);
+        } 
+    }
+
     //局内文本
     [SerializeField]private Text roundText;//显示回合数的Text
     [SerializeField]private Text scoreText;//显示当前分数的Text
     [SerializeField]private Slider scoreSlider;//显示当前分数的Text
     [SerializeField]private Text nextScoreText;//显示下一个目标分数的Text
     [SerializeField]private Text previousScoreText;//显示上一个目标分数的Text
+    [SerializeField]private Text tipWordCountText;//显示单词提示的个数的Text
 
 
     //游戏成功和游戏失败面板
@@ -192,6 +209,9 @@ public class GameManager : MonoBehaviour
     public Text specialCardDescriptionText;//特殊牌描述Text
     public UnityAction useSpecialCard;//使用特殊牌
     public UnityAction sellSpecialCard;//出售特殊牌
+
+    //删除字母牌提示
+    public GameObject deleteTip;
 
     private void Awake()
     {
@@ -218,7 +238,34 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void ContinueChallenge()
     {
+        if (!director.playableGraph.IsValid())
+            director.RebuildGraph();
+        // 设置播放速度为-1（倒放）
+        director.playableGraph.GetRootPlayable(0).SetSpeed(-1);
 
+        // 跳转到结尾开始倒放
+        director.time = director.duration - 0.001f;
+        director.Play();
+
+        // 延迟2秒后执行代码
+        DOVirtual.DelayedCall((float)director.duration, () =>
+        {
+            Debug.Log("延迟后执行的代码");
+            SendScore();
+        });
+
+        void SendScore()//赠送分数
+        {
+            DOTween.To(() => CurrentScore,
+            x => CurrentScore = x,
+            NextScore,
+            1.0f)
+            .SetEase(Ease.Linear); // 设置缓动类型
+
+            ShowTipManager.instance.ShowTip("复活之后获取额外分数");
+
+            director.Stop();
+        }
     }
 
     /// <summary>
@@ -228,6 +275,9 @@ public class GameManager : MonoBehaviour
     {
         DeckManager.instance.Init();//初始化DeckManager
         DeckManager.instance.ClearHandCards();//清空手牌
+        GameEntrance.instance.CoinCount = 10;//每局初始十个金币
+        useTipWord = false;
+        TipWordCount = 1;
         MaxPlayCardCount = 10;
         MaxSpecialCaradCount = 10;
         CurrentRound = 0;
@@ -237,22 +287,30 @@ public class GameManager : MonoBehaviour
         MinPlayCardCount = 1;
         DropCardCount = 0;
 
-        ContinuousProbability = 0.3f;
-        ContinuousCount = 0;
+        ContinuousProbability = 0.0f;
+        ContinuousCount = 1;
         ExtraScoreOnlyOneScore = 0;
         AddScoreWhenDeleteScore = 0;
         ExtraScoreRounOverScore = 0;
-        CanPlayZeroCardScore = 0;
+        CanPlayZeroCardScore = 1;
         StartRound();//开始回合
     }
 
+
+    [SerializeField] private PlayableDirector director;
     /// <summary>
     /// 挑战结束
     /// </summary>
     public void EndChallenge()
     {
         AudioManager.instance.PlaySoundEffect("Fail");
-        gameFailCanvas.enabled = true;
+        //gameFailCanvas.enabled = true;
+        director.Play();
+        UploadPlayerInfo();
+    }
+
+    private void UploadPlayerInfo()
+    {
         bool infoChanged = false;
 
         if (DataManager.instance.globalPlayerInfo.maxRound < currentRound)
@@ -260,11 +318,18 @@ public class GameManager : MonoBehaviour
             DataManager.instance.globalPlayerInfo.maxRound = currentRound;
             infoChanged = true;
         }
-        if (GameEntrance.instance.CoinCount != DataManager.instance.globalPlayerInfo.coinCount)
+
+        if (DataManager.instance.globalPlayerInfo.maxScore < currentScore)
         {
+            DataManager.instance.globalPlayerInfo.maxScore = currentScore;
             infoChanged = true;
-            DataManager.instance.globalPlayerInfo.coinCount = (int)GameEntrance.instance.CoinCount;
         }
+        ///金币变为单局资源
+        //if (GameEntrance.instance.CoinCount != DataManager.instance.globalPlayerInfo.coinCount)
+        //{
+        //    infoChanged = true;
+        //    DataManager.instance.globalPlayerInfo.coinCount = (int)GameEntrance.instance.CoinCount;
+        //}
         if (infoChanged)
         {
             DataManager.instance.UploadPlayerInfo();
@@ -286,9 +351,17 @@ public class GameManager : MonoBehaviour
         AudioManager.instance.PlaySoundEffect("ClickButton");
         //DeckManager.instance.IsDrawing = true;
         //ContinuousCount = 2;
-        DeckManager.instance.DrawCard(ContinuousCount);//抽卡
 
-        GameEntrance.instance.CoinCount-= DrawNeedCoin;
+        if (!DeckManager.instance.CanDrawNormalCard())
+        {
+            ShowTipManager.instance.ShowTip("字母牌数达到上限，请及时出牌");
+            DeckManager.instance.IsDrawing = false;
+        }
+        else
+        {
+            DeckManager.instance.DrawCard(ContinuousCount);//抽卡
+            GameEntrance.instance.CoinCount -= DrawNeedCoin;
+        }
     }
 
     /// <summary>
@@ -308,6 +381,7 @@ public class GameManager : MonoBehaviour
         int normalScore = ScoreCalculator.normalScore;//基础分
         int extraScore = ScoreCalculator.extraScore;//额外分，如颜色相同，字母相同，组成单词
         int specialScore = ScoreCalculator.specialScore;//特殊分数
+        ScoreCalculator.specialScore = 0;//特殊分数归0
         int totalRoundScore= normalScore+ extraScore+specialScore;
         CurrentScore += totalRoundScore;//当前总分数
         GameEntrance.instance.CoinCount+= totalRoundScore;//当前总金币
@@ -321,7 +395,15 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void StartRound()
     {
+        UploadPlayerInfo();
+
         CurrentRound++;//回合数+1
+
+        if(useTipWord)
+        {
+            useTipWord = false;
+            TipWordCount--;
+        }
 
         if (CurrentRound % 5 == 1) NextScore = TargetScore(CurrentRound);//每过5关设置一次目标分数
 
@@ -420,5 +502,126 @@ public class GameManager : MonoBehaviour
         float sliderValue= (float)(CurrentScore - previousTargetScore) / (currentTargetScore - previousTargetScore);
         scoreSlider.value = sliderValue;
         //Debug.Log($"CurrentScore - previousTargetScore is {CurrentScore - previousTargetScore},currentTargetScore - previousTargetScore is {currentTargetScore - previousTargetScore},sliderValue is {sliderValue}");
+    }
+
+
+    public GameObject questionPanel;//问号面板
+    /// <summary>
+    /// 打开问号面板
+    /// </summary>
+    public void OpenQuesPanel()
+    {
+        questionPanel.SetActive(true);
+        if (tipTexts == null || tipTexts.Count == 0)
+        {
+            return;
+        }
+        tipText.text = tipTexts[Random.Range(0, tipTexts.Count)];
+    }
+
+    /// <summary>
+    /// 关闭问号面板
+    /// </summary>
+    public void CloseQuesPanel()
+    {
+        questionPanel.SetActive(false);
+    }
+
+    private int imageGuidesIndex = 0;
+    [SerializeField] private List<GameObject> imageGuides;//图文导航
+    [SerializeField] private Button nextButton;
+    [SerializeField] private Button previousButton;
+    [SerializeField] private Text tipText;//问号面板里的提示文本
+    [SerializeField] private List<string> tipTexts;//问号面板里的提示文本的数组
+
+
+
+    /// <summary>
+    /// 问号面板的下一个按钮
+    /// </summary>
+    public void NextGuide()
+    {
+        AudioManager.instance.PlaySoundEffect("ClickButton");
+        imageGuidesIndex++;
+        if (imageGuidesIndex >= imageGuides.Count - 1)
+        {
+            nextButton.interactable = false;
+        }
+        previousButton.interactable = true;
+
+        imageGuides[imageGuidesIndex - 1].GetComponent<RectTransform>().DOAnchorPosX(-1000, 0.5f).SetEase(Ease.OutQuad);
+        imageGuides[imageGuidesIndex - 1].GetComponent<RectTransform>().DOScale(0, 0.5f).SetEase(Ease.OutQuad);
+
+        imageGuides[imageGuidesIndex].GetComponent<RectTransform>().anchoredPosition = new Vector2(1000, 0);
+        imageGuides[imageGuidesIndex].GetComponent<RectTransform>().DOScale(0, 0.01f).SetEase(Ease.OutQuad);
+        imageGuides[imageGuidesIndex].GetComponent<RectTransform>().DOScale(1, 0.5f).SetEase(Ease.OutQuad);
+        imageGuides[imageGuidesIndex].GetComponent<RectTransform>().DOAnchorPosX(0, 0.5f).SetEase(Ease.OutQuad);
+
+        if (tipTexts == null || tipTexts.Count == 0)
+        {
+            return;
+        }
+        tipText.text = tipTexts[Random.Range(0, tipTexts.Count)];
+    }
+
+    /// <summary>
+    /// 问号面板的上一个按钮
+    /// </summary>
+    public void PreciousGuide()
+    {
+        AudioManager.instance.PlaySoundEffect("ClickButton");
+        imageGuidesIndex--;
+        if (imageGuidesIndex <= 0)
+        {
+            previousButton.interactable = false;
+        }
+        nextButton.interactable = true;
+
+        imageGuides[imageGuidesIndex + 1].GetComponent<RectTransform>().DOAnchorPosX(1000, 0.5f).SetEase(Ease.OutQuad);
+        imageGuides[imageGuidesIndex + 1].GetComponent<RectTransform>().DOScale(0, 0.5f).SetEase(Ease.OutQuad);
+
+        imageGuides[imageGuidesIndex].GetComponent<RectTransform>().anchoredPosition = new Vector2(-1000, 0);
+        imageGuides[imageGuidesIndex].GetComponent<RectTransform>().DOScale(0, 0.01f).SetEase(Ease.OutQuad);
+        imageGuides[imageGuidesIndex].GetComponent<RectTransform>().DOScale(1, 0.5f).SetEase(Ease.OutQuad);
+        imageGuides[imageGuidesIndex].GetComponent<RectTransform>().DOAnchorPosX(0, 0.5f).SetEase(Ease.OutQuad);
+
+        if (tipTexts == null || tipTexts.Count == 0)
+        {
+            return;
+        }
+        tipText.text = tipTexts[Random.Range(0, tipTexts.Count)];
+    }
+
+
+    [SerializeField] private Button tipWordButton;//显示单词提示的个数的Text
+    [SerializeField] private GameObject getTipWordCanvas;//显示单词提示的个数的Text
+    [SerializeField] private GameObject tipWordShowPanel;//显示单词提示
+    private bool useTipWord = false;
+    /// <summary>
+    /// 提示按钮
+    /// </summary>
+    public void TipWordButton()
+    {
+        if (TipWordCount == 0)
+        {
+            getTipWordCanvas.SetActive(true);
+        }
+        else
+        {
+            List<char> availableLetters = DeckManager.instance.letterHandCards.OfType<LetterCard>()               // 安全转换为 LetterCard 类型
+                                        .Select(card => card.Letter)        // 提取 Letter 属性
+                                        .ToList();                          // 转为 List<char>
+            List<string> matched = WordFinder.instance.FindAllWords(availableLetters, WordChecker.Instance.wordList.Words);
+
+            if (matched.Count == 0)
+            {
+                ShowTipManager.instance.ShowTip("当前无法组成单词");
+            }
+            else
+            {
+                tipWordShowPanel.SetActive(true);
+                useTipWord = true;
+            }
+        }
     }
 }

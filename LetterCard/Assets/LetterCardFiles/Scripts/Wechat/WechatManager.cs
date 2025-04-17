@@ -217,8 +217,8 @@ public class WechatManager : MonoBehaviour
                     // 再提取实际数据
                     PlayerInfo localUserData = new PlayerInfo();
                     localUserData = response.data;
-                    Debug.Log($"用户coinCount为：{localUserData.coinCount}");
-                    Debug.Log($"用户maxRound为：{localUserData.maxRound}");
+                    //Debug.Log($"用户coinCount为：{localUserData.coinCount}");
+                    //Debug.Log($"用户maxRound为：{localUserData.maxRound}");
                     Debug.Log($"用户maxScore为：{localUserData.maxScore}");
                     successAction?.Invoke(localUserData);
                 }

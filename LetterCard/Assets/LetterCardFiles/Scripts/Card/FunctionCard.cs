@@ -74,101 +74,120 @@ public class FunctionCard : Card
                 //bottomLetter.text = "-1";
                 specialDescribe = "选择一张字母牌，将其丢弃";
                 break;
+
             case SpecialEffectType.AddOneLetterHand:
                 // 实现增加一个字母手牌上限的效果
                 largeLetter.text = "字库\n扩容";
                 largeLetter.color = new Color32(67, 83, 108, 255);
                 //bottomLetter.text = "+1";
-
                 specialDescribe = $"字母牌手牌上限+1,当前为{GameManager.Instance.MaxPlayCardCount}";
                 break;
+
             case SpecialEffectType.AddOneSpecialHand:
                 // 实现增加一个功能手牌上限的效果
                 largeLetter.text = "特殊\n字库";
                 largeLetter.color = new Color32(67, 83, 108, 255);
                 //bottomLetter.text = "+1";
-
                 specialDescribe = $"功能牌手牌上限+1，当前为{GameManager.Instance.MaxSpecialCaradCount}";
                 break;
+
             case SpecialEffectType.RandomRedCard:
                 // 实现获取一张随机红色卡牌的效果
                 largeLetter.text = "随机\n抽取";
                 largeLetter.color = colorMap['R'];
                 //bottomLetter.text = "?";
-
                 specialDescribe = "随机抽取一张红色字母牌";
                 break;
+
             case SpecialEffectType.RandomYellowCard:
                 // 实现获取一张随机黄色卡牌的效果
                 largeLetter.text = "随机\n抽取";
                 largeLetter.color = colorMap['Y'];
                 //bottomLetter.text = "?";
-
                 specialDescribe = "随机抽取一张黄色字母牌";
                 break;
+
             case SpecialEffectType.RandomBlueCard:
                 // 实现获取一张随机蓝色卡牌的效果
                 largeLetter.text = "随机\n抽取";
                 largeLetter.color = colorMap['B'];
                 //bottomLetter.text = "?";
-
                 specialDescribe = "随机抽取一张蓝色字母牌";
                 break;
+
             case SpecialEffectType.RandomGreenCard:
                 // 实现获取一张随机绿色卡牌的效果
                 largeLetter.text = "随机\n抽取";
                 largeLetter.color = colorMap['G'];
                 //bottomLetter.text = "?";
-
                 specialDescribe = "随机抽取一张绿色字母牌";
                 break;
+
             case SpecialEffectType.ExtraScoreOnlyOne:
                 // 孤字成章,如果只出一张牌的话，该回合额外加分，整个关卡起作用
                 largeLetter.text = "孤字\n成章";
                 largeLetter.color = new Color32(67, 83, 108, 255);
                 //bottomLetter.text = "+2";
-
-                specialDescribe = $"如果只出一张牌，该回合额外加分，当前额外加{GameManager.Instance.ExtraScoreOnlyOneScore}分，每次使用孤字成章时，该额外分值+1";
+                if (GameManager.Instance.ExtraScoreOnlyOneScore == 0)
+                {
+                    specialDescribe = $"若只出一张牌，则该回合额外加1分，效果可累加";
+                }
+                else
+                {
+                    specialDescribe = $"若只出一张牌，该回合额外加{GameManager.Instance.ExtraScoreOnlyOneScore}分，每次使用此卡牌时，额外分值+1";
+                }
                 break;
+
             case SpecialEffectType.CanPlayZeroCard:
                 // 空白书卷，可以在没有选择牌的时候结束当前回合
                 largeLetter.text = "空白\n书卷";
                 largeLetter.color = new Color32(67, 83, 108, 255);
                 //bottomLetter.text = "+2";
-
-                specialDescribe = $"使用之后最小出牌数量由1张降至0张，如果已有该效果，则使用该牌之后随机获取最多{GameManager.Instance.CanPlayZeroCardScore}金币，每次使用空白书卷时，该额外金币数+1";
+                if (GameManager.Instance.MinPlayCardCount != 0)
+                {
+                    specialDescribe = $"使用之后可以不出牌来结束当前回合";
+                }
+                else
+                {
+                    specialDescribe = $"使用之后可以不出牌来结束当前回合，\n已有该效果,替换为：使用后随机获取0~{GameManager.Instance.CanPlayZeroCardScore}个金币,每次使用此卡牌，金币上限+1";
+                }
+                
                 break;
+
             case SpecialEffectType.AddScoreWhenDelete:
                 // 弃字生金，每丢弃三张牌，获取6分
                 largeLetter.text = "弃字\n生金";
                 largeLetter.color = new Color32(67, 83, 108, 255);
                 //bottomLetter.text = "+2";
-
-                specialDescribe = $"每丢弃三张牌，获取额外金币数，当前额外值为{GameManager.Instance.AddScoreWhenDeleteScore},每次使用弃字生金时，该额外金币数+1";
+                //specialDescribe = $"每丢弃三张牌，额外金币+1，当前额外值为{GameManager.Instance.AddScoreWhenDeleteScore},每次使用弃字生金时，该额外金币数+1";
+                specialDescribe = $"每丢弃三张牌，额外金币+1，效果可累加";
                 break;
+
             case SpecialEffectType.ExtraScoreRounOver:
                 // 字量结余，回合结束时，增加额外分数，分数为当前手牌的数量
                 largeLetter.text = "字量\n结余";
                 largeLetter.color = new Color32(67, 83, 108, 255);
                 //bottomLetter.text = "+2";
-
-                specialDescribe = $"回合结束时，增加额外分数，当前额外值为{GameManager.Instance.ExtraScoreRounOverScore}分,每次使用字量结余时，该额外分值+1";
+                //specialDescribe = $"回合结束时，额外+1分，当前额外值为{GameManager.Instance.ExtraScoreRounOverScore}分,每次使用字量结余时，该额外分值+1";
+                specialDescribe = $"回合结束时，额外+1分，效果可累加";
                 break;
+
             case SpecialEffectType.CanContinuousDraw:
                 // 连抽不止，每次抽牌有概率连续抽牌，抽牌次数上限为两次
                 largeLetter.text = "连抽\n不止";
                 largeLetter.color = new Color32(67, 83, 108, 255);
                 //bottomLetter.text = "+2";
-
-                specialDescribe = $"每次抽牌的连抽次数上限+1，当前额外值为{GameManager.Instance.ContinuousCount}";
+                //specialDescribe = $"每次抽牌的连抽次数上限+1，当前额外值为{GameManager.Instance.ContinuousCount}";
+                specialDescribe = $"每次抽牌连抽次数上限+1,效果可以累加\nTip:每次抽牌有一定概率触发连抽";
                 break;
+
             case SpecialEffectType.AddContinuousDraw:
                 // 抽运加成，增加连续抽牌的概率百分之5
                 largeLetter.text = "抽运\n加成";
                 largeLetter.color = new Color32(67, 83, 108, 255);
                 //bottomLetter.text = "+2";
-
-                specialDescribe = "增加连续抽牌的概率百分之5，连抽需要使用连抽不止卡牌进行开启";
+                //specialDescribe = "增加连续抽牌的概率百分之5，连抽需要使用连抽不止卡牌进行开启";
+                specialDescribe = "增加连续抽牌的概率百分之2";
                 break;
 
         }
@@ -176,6 +195,7 @@ public class FunctionCard : Card
 
     private void OnCardClick()
     {
+        AudioManager.instance.PlaySoundEffect("ClickCard");
         GameManager.Instance.specialIntroductionPanel.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutQuart);
         GameManager.Instance.specialCardNameText.text = largeLetter.text;
         GameManager.Instance.specialCardNameText.color = largeLetter.color;
@@ -183,29 +203,12 @@ public class FunctionCard : Card
         GameManager.Instance.useSpecialCard = ActivateEffect;
         GameManager.Instance.sellSpecialCard = ()=>
         {
-            SpecialCardState.instance.ChosenCard = null;//将选择的牌置为空
+            //SpecialCardState.instance.ChosenCard = null;//将选择的牌置为空
             GameEntrance.instance.CoinCount += 3;
             DestroyCard();
         };
-        ChooseCard();
     }
 
-    // 当点击 UI 时触发的方法
-    public void ChooseCard()
-    {
-        AudioManager.instance.PlaySoundEffect("ClickCard");
-        SpecialCardState.instance.CardChoosing(transform);
-    }
-
-    public void UpCard()
-    {
-        GetComponent<RectTransform>().DOAnchorPosY(100, 0.3f).SetEase(Ease.OutQuad);
-    }
-
-    public void DownCard()
-    { 
-        GetComponent<RectTransform>().DOAnchorPosY(0, 0.3f).SetEase(Ease.OutQuad);
-    }
 
     // 重写 ActivateEffect 方法，执行特殊卡牌的具体效果。
     // 该方法会根据卡牌的类型来执行不同的效果。
@@ -225,23 +228,41 @@ public class FunctionCard : Card
                 else
                 {
                     SpecialCardState.instance.IsDeleting = true;
+
                 }
                 
                 break;
             case SpecialEffectType.AddOneLetterHand:
                 // 实现增加一个字母手牌上限的效果
-                GameManager.Instance.MaxPlayCardCount += 1;
+                if (GameManager.Instance.MaxPlayCardCount < 14)
+                {
+                    GameManager.Instance.MaxPlayCardCount += 1;
+                }
+                else
+                {
+                    ShowTipManager.instance.ShowTip("已达最大上限，自动出售此功能牌");
+                    GameEntrance.instance.CoinCount += 3;
+                }
+                
                 break;
             case SpecialEffectType.AddOneSpecialHand:
                 // 实现增加一个特殊手牌上限的效果
-                GameManager.Instance.MaxSpecialCaradCount += 1;
+                if(GameManager.Instance.MaxSpecialCaradCount < 14)
+                {
+                    GameManager.Instance.MaxSpecialCaradCount += 1;
+                }
+                else
+                {
+                    ShowTipManager.instance.ShowTip("已达最大上限，自动出售此功能牌");
+                    GameEntrance.instance.CoinCount += 3;
+                }
                 break;
             case SpecialEffectType.RandomRedCard:
                 // 实现获取一张随机红色卡牌的效果
                 if (!DeckManager.instance.DrawRandomLetterCardByColor('R'))
                 {
-                    SpecialCardState.instance.CardChoosing(null);
-                    SpecialCardState.instance.ChosenCard = null;//将选择的牌置为空
+                    //SpecialCardState.instance.CardChoosing(null);
+                    //SpecialCardState.instance.ChosenCard = null;//将选择的牌置为空
                     //如果抽取不成功，则不要销毁这个卡牌
                     return;
                 }
@@ -250,8 +271,8 @@ public class FunctionCard : Card
                 // 实现获取一张随机黄色卡牌的效果
                 if (!DeckManager.instance.DrawRandomLetterCardByColor('Y'))
                 {
-                    SpecialCardState.instance.CardChoosing(null);
-                    SpecialCardState.instance.ChosenCard = null;//将选择的牌置为空
+                    //SpecialCardState.instance.CardChoosing(null);
+                    //SpecialCardState.instance.ChosenCard = null;//将选择的牌置为空
                     //如果抽取不成功，则不要销毁这个卡牌
                     return;
                 }
@@ -260,8 +281,8 @@ public class FunctionCard : Card
                 // 实现获取一张随机蓝色卡牌的效果
                 if (!DeckManager.instance.DrawRandomLetterCardByColor('B'))
                 {
-                    SpecialCardState.instance.CardChoosing(null);
-                    SpecialCardState.instance.ChosenCard = null;//将选择的牌置为空
+                    //SpecialCardState.instance.CardChoosing(null);
+                    //SpecialCardState.instance.ChosenCard = null;//将选择的牌置为空
                     //如果抽取不成功，则不要销毁这个卡牌
                     return;
                 }
@@ -270,8 +291,8 @@ public class FunctionCard : Card
                 // 实现获取一张随机绿色卡牌的效果
                 if (!DeckManager.instance.DrawRandomLetterCardByColor('G'))
                 {
-                    SpecialCardState.instance.CardChoosing(null);
-                    SpecialCardState.instance.ChosenCard = null;//将选择的牌置为空
+                    //SpecialCardState.instance.CardChoosing(null);
+                    //SpecialCardState.instance.ChosenCard = null;//将选择的牌置为空
                     //如果抽取不成功，则不要销毁这个卡牌
                     return;
                 }
@@ -299,6 +320,7 @@ public class FunctionCard : Card
                 }
                 else
                 {
+                    GameManager.Instance.CanPlayZeroCardScore++;
                     int tmpCoinCount = Random.Range(1, GameManager.Instance.CanPlayZeroCardScore);
                     GameEntrance.instance.CoinCount += tmpCoinCount;
                     ShowTipManager.instance.ShowTip("空白书卷", tmpCoinCount);
@@ -309,6 +331,7 @@ public class FunctionCard : Card
                 GameManager.Instance.AddScoreWhenDeleteScore +=1;
                 break;
             case SpecialEffectType.ExtraScoreRounOver:
+                Debug.Log("字量结余");
                 //字量结余，回合结束时，增加额外分数，分数为当前手牌的数量
                 GameManager.Instance.ExtraScoreRounOverScore++;
                 ScoreCalculator.specialScoreDic["字量结余"] = () =>
@@ -323,11 +346,11 @@ public class FunctionCard : Card
                 GameManager.Instance.ContinuousCount +=1;
                 break;
             case SpecialEffectType.AddContinuousDraw:
-                // 抽运加成，增加连续抽牌的初始概率百分之5，当前为百分之5
-                GameManager.Instance.ContinuousProbability += 0.05f;
+                // 抽运加成，增加连续抽牌的初始概率百分之2，当前为百分之2
+                GameManager.Instance.ContinuousProbability += 0.02f;
                 break;
         }
-        SpecialCardState.instance.ChosenCard = null;//将选择的牌置为空
+        //SpecialCardState.instance.ChosenCard = null;//将选择的牌置为空
         DestroyCard();
     }
 

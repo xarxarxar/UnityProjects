@@ -216,7 +216,7 @@ public class GameGuide : MonoBehaviour
         AudioManager.instance.PlaySoundEffect("ClickButton");
         GetComponent<Canvas>().enabled = false;
         GameManager.Instance.StartChallenge();
-        GameEntrance.instance.CoinCount = DataManager.instance.globalPlayerInfo.coinCount;
+        GameEntrance.instance.CoinCount = 10;
         gameObject.SetActive(false);
         
         DataManager.instance.globalPlayerInfo.needGuide = false;

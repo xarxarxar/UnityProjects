@@ -65,6 +65,8 @@ public class LetterCard : Card
         simpleTouch.onDrag = null;//拖拽中的方法
         simpleTouch.onEndDrag = null;//拖拽中的方法
         simpleTouch.onClick = null;//单击的方法
+        isInhand = true;
+        GetComponent<Transform>().localScale = Vector3.one;
     }
 
     private void OnCardClick()

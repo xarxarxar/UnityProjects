@@ -31,4 +31,17 @@ public class GetRewards : MonoBehaviour
     {
         GetComponent<Canvas>().enabled = false;
     }
+
+    /// <summary>
+    /// 分享获取单词提示
+    /// </summary>
+    public void ShareForWordTip()
+    {
+        WechatManager.ShareApp(() =>
+        {
+            GameEntrance.instance.CoinCount += 50;
+            ShowTipManager.instance.ShowTip("获得提示");
+            GetComponent<Canvas>().enabled = false;
+        });
+    }
 }

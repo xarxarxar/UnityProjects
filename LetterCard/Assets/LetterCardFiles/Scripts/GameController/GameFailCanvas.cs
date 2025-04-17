@@ -37,10 +37,9 @@ public class GameFailCanvas : MonoBehaviour
     /// </summary>
     public void ContinueChallenge()
     {
-        //GameManager.Instance.StartChallenge();
         AudioManager.instance.PlaySoundEffect("ClickButton");
         WechatManager.ShareApp(() =>{
-            GetComponent<Canvas>().enabled = false;
+            GameManager.Instance.ContinueChallenge();
         });
         
     }
