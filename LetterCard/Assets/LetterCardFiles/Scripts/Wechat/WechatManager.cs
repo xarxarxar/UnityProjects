@@ -16,17 +16,17 @@ public class WechatManager : MonoBehaviour
     /// <summary>
     /// 屏幕宽度
     /// </summary>
-    public static double ScreenWidth { get => WX.GetWindowInfo().screenWidth;}
+    public static double ScreenWidth { get => WX.GetWindowInfo().screenWidth; }
     /// <summary>
     /// 屏幕高度
     /// </summary>
-    public static double ScreenHeight {  get => WX.GetWindowInfo().screenHeight;}
-    
-    public static double WindowWidth {  get => WX.GetWindowInfo().windowWidth;}
+    public static double ScreenHeight { get => WX.GetWindowInfo().screenHeight; }
 
-    public static double WindowHeight {  get => WX.GetWindowInfo().windowHeight;}
+    public static double WindowWidth { get => WX.GetWindowInfo().windowWidth; }
 
-    public static double DPR { get=>WX.GetWindowInfo().pixelRatio;}
+    public static double WindowHeight { get => WX.GetWindowInfo().windowHeight; }
+
+    public static double DPR { get => WX.GetWindowInfo().pixelRatio; }
 
     public RawImage RankBody;
     public Image imageLeftTop;
@@ -88,13 +88,14 @@ public class WechatManager : MonoBehaviour
 
     public void CreateUserInfoButton()
     {
+        ShowTipManager.instance.ShowLoading(true);
         WX.GetSetting(new GetSettingOption()
         {
             success = (res) =>
             {
                 Debug.Log($"获取Setting成功");
                 //已经授权过
-                if (res.authSetting["scope.userInfo"] == true)
+                if (res.authSetting.ContainsKey("scope.userInfo") && res.authSetting["scope.userInfo"] == true)
                 {
                     wxUserInfoButton.Hide();
                     Debug.Log($"已经获取过权限");
@@ -103,7 +104,6 @@ public class WechatManager : MonoBehaviour
                         success = (res) =>
                         {
                             Debug.Log($"获取用户信息成功:{res.userInfo.nickName}");
-                            ShowTipManager.instance.ShowLoading(true);
                             DataManager.instance.DownloadPlayerInfo(() =>
                             {
                                 if (res.userInfo.nickName != DataManager.instance.globalPlayerInfo.playerName
@@ -123,17 +123,18 @@ public class WechatManager : MonoBehaviour
                         {
                             Debug.LogError("获取用户信息失败：" + res.errMsg);
                             ShowTipManager.instance.ShowTip("获取用户信息失败");
-                            //ShowTipManager.instance.ShowLoading(false);
+                            ShowTipManager.instance.ShowLoading(false);
                         },
                         complete = (res) =>
                         {
                             Debug.Log("获取用户信息操作完成");
                         }
-                    }); 
+                    });
                 }
                 else
                 {
                     Debug.Log($"还未获取过权限");
+                    ShowTipManager.instance.ShowLoading(false);
                     wxUserInfoButton.Show();
                 }
             },
@@ -143,7 +144,7 @@ public class WechatManager : MonoBehaviour
                 Debug.Log($"获取Setting失败：{res.errMsg}");
             }
         });
-        
+
     }
 
     public void CreateUserInfoButtonBefore()
@@ -155,12 +156,13 @@ public class WechatManager : MonoBehaviour
             if (res.errCode == 0)
             {
                 wxUserInfoButton.Hide();
+                ShowTipManager.instance.ShowLoading(true);
                 WX.GetUserInfo(new GetUserInfoOption()
                 {
                     success = (res) =>
                     {
                         Debug.Log($"获取用户信息成功:{res.userInfo.nickName}");
-                        ShowTipManager.instance.ShowLoading(true);
+                        
                         DataManager.instance.DownloadPlayerInfo(() =>
                         {
                             if (res.userInfo.nickName != DataManager.instance.globalPlayerInfo.playerName
@@ -177,6 +179,7 @@ public class WechatManager : MonoBehaviour
                     fail = (res) =>
                     {
                         Debug.LogError("获取用户信息失败：" + res.errMsg);
+                        ShowTipManager.instance.ShowLoading(false);
                         ShowTipManager.instance.ShowTip("获取用户信息失败");
                     },
                     complete = (res) =>
@@ -217,9 +220,7 @@ public class WechatManager : MonoBehaviour
                     // 再提取实际数据
                     PlayerInfo localUserData = new PlayerInfo();
                     localUserData = response.data;
-                    //Debug.Log($"用户coinCount为：{localUserData.coinCount}");
-                    //Debug.Log($"用户maxRound为：{localUserData.maxRound}");
-                    Debug.Log($"用户maxScore为：{localUserData.maxScore}");
+
                     successAction?.Invoke(localUserData);
                 }
             },
@@ -276,7 +277,7 @@ public class WechatManager : MonoBehaviour
         ShowScore();
         //RankObject.transform.DOScale(1, 0.5f).SetEase(Ease.OutQuart).OnComplete(() =>
         //{
-            
+
         //});
     }
 
@@ -290,7 +291,7 @@ public class WechatManager : MonoBehaviour
         RankObject.SetActive(false);
         //RankObject.transform.DOScale(0, 0.5f).SetEase(Ease.OutQuart).OnComplete(() =>
         //{
-            
+
         //});
         //RankObject.transform.position += new Vector3(10000, 0, 0);
     }

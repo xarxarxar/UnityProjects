@@ -37,11 +37,15 @@ public class GameFailCanvas : MonoBehaviour
     /// </summary>
     public void ContinueChallenge()
     {
+        //GameManager.Instance.ContinueChallenge();
+        //GameManager.Instance.DoubleScoreRoundCount = 5;
         AudioManager.instance.PlaySoundEffect("ClickButton");
-        WechatManager.ShareApp(() =>{
+        WechatManager.ShareApp(() =>
+        {
             GameManager.Instance.ContinueChallenge();
+            GameManager.Instance.DoubleScoreRoundCount = 5;
         });
-        
+
     }
 
 }

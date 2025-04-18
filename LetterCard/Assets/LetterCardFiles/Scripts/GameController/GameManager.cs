@@ -1,11 +1,11 @@
 using DG.Tweening;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Playables;
 using UnityEngine.UI;
-using static UnityEditor.Progress;
 
 /// <summary>
 /// 当游戏开始的时候，控制游戏的逻辑，并非整个游戏的逻辑，整个游戏的逻辑控制在GameEntrance里
@@ -191,6 +191,9 @@ public class GameManager : MonoBehaviour
         } 
     }
 
+    private int doubleScoreRoundCount;//复活之后奖励的回合数
+    public int DoubleScoreRoundCount { get => doubleScoreRoundCount; set => doubleScoreRoundCount = value; }
+
     //局内文本
     [SerializeField]private Text roundText;//显示回合数的Text
     [SerializeField]private Text scoreText;//显示当前分数的Text
@@ -240,32 +243,37 @@ public class GameManager : MonoBehaviour
     {
         if (!director.playableGraph.IsValid())
             director.RebuildGraph();
-        // 设置播放速度为-1（倒放）
-        director.playableGraph.GetRootPlayable(0).SetSpeed(-1);
 
-        // 跳转到结尾开始倒放
+        director.playableGraph.GetRootPlayable(0).SetSpeed(-2);
         director.time = director.duration - 0.001f;
         director.Play();
 
-        // 延迟2秒后执行代码
-        DOVirtual.DelayedCall((float)director.duration, () =>
-        {
-            Debug.Log("延迟后执行的代码");
-            SendScore();
-        });
+        // 启动协程监测倒放结束
+        StartCoroutine(WaitForDirectorReverseEnd());
+    }
 
-        void SendScore()//赠送分数
+    private IEnumerator WaitForDirectorReverseEnd()
+    {
+        // 等待直到 time <= 0 或 director 不再播放
+        while (director.time > 0 && director.state == PlayState.Playing)
         {
-            DOTween.To(() => CurrentScore,
+            yield return null;
+        }
+
+        SendScore();
+    }
+
+    private void SendScore()
+    {
+        DOTween.To(() => CurrentScore,
             x => CurrentScore = x,
             NextScore,
             1.0f)
-            .SetEase(Ease.Linear); // 设置缓动类型
+            .SetEase(Ease.Linear);
 
-            ShowTipManager.instance.ShowTip("复活之后获取额外分数");
+        ShowTipManager.instance.ShowTip("复活之后获取额外分数");
 
-            director.Stop();
-        }
+        //director.Stop(); // 可加可不加，已结束的话其实不影响
     }
 
     /// <summary>
@@ -286,6 +294,8 @@ public class GameManager : MonoBehaviour
         DrawNeedCoin = 1;
         MinPlayCardCount = 1;
         DropCardCount = 0;
+
+        DoubleScoreRoundCount = 0;
 
         ContinuousProbability = 0.0f;
         ContinuousCount = 1;
@@ -383,6 +393,14 @@ public class GameManager : MonoBehaviour
         int specialScore = ScoreCalculator.specialScore;//特殊分数
         ScoreCalculator.specialScore = 0;//特殊分数归0
         int totalRoundScore= normalScore+ extraScore+specialScore;
+
+        if (DoubleScoreRoundCount > 0)
+        {
+            totalRoundScore *= 2;//奖励翻倍
+            DoubleScoreRoundCount--;
+            ShowTipManager.instance.ShowTip($"复活翻倍奖励,+{totalRoundScore/2}分,剩余{DoubleScoreRoundCount}回合");
+        }
+
         CurrentScore += totalRoundScore;//当前总分数
         GameEntrance.instance.CoinCount+= totalRoundScore;//当前总金币
 

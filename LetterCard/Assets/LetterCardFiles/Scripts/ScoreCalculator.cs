@@ -130,7 +130,7 @@ public class ScoreCalculator
     }
 
     /// <summary>
-    /// 如果字母序列在单词表中，那么获取的额外分数，额外获取卡牌数量*2的分数
+    /// 如果字母序列在单词表中，那么获取的额外分数，额外获取卡牌数量*2的分数,2025-04-18改成获取卡牌数量*3的分数
     /// </summary>
     /// <param name="sequence">字母序列</param>
     /// <returns></returns>
@@ -139,8 +139,8 @@ public class ScoreCalculator
         bool isInWordList=WordChecker.Instance.IsWordInList(sequence.ToLower());
         if (isInWordList)
         {
-            ShowTipManager.instance.ShowTip($"组成单词+{sequence.Length * 2}分");
-            return sequence.Length * 2;
+            ShowTipManager.instance.ShowTip($"组成单词+{sequence.Length * 3}分");
+            return sequence.Length * 3;
         }
         
         return 0;

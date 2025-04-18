@@ -33,7 +33,7 @@ public class PlayerInfo
     public int maxScore;
 
     // 玩家的金币数
-    public int coinCount;
+    //public int coinCount;
 
     // 玩家游戏设置
     public GameSettings settings;
