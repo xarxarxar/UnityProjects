@@ -133,7 +133,7 @@ public class CardPool : MonoBehaviour
         // 重置位置、旋转和缩放
         card.transform.localPosition = Vector3.zero;
         card.transform.localRotation = Quaternion.identity;
-        //card.transform.localScale = Vector3.one;
+        card.transform.localScale = Vector3.one;
         card.gameObject.SetActive(true);
 
         // 可以在这里重置其他需要初始化的状态

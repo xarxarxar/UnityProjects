@@ -1,0 +1,36 @@
+local M = {}
+
+function M.BindRelifeButton(button, canvasInstance)
+    button.onClick:AddListener(function()
+        print("按钮点击了，调用 ContinueChallenge")
+        canvasInstance:ContinueChallenge()
+    end)
+end
+
+function M.BindGetTipButton(button, getReward)
+    button.onClick:AddListener(function()
+        print("按钮点击了，调用 ContinueChallenge")
+        getReward:ShareForWordTip()
+    end)
+end
+
+function M.InitAds(canvasInstance)
+    print("InitAds 已执行") -- 可以调试用
+    --canvasInstance:InitAds("adunit-grid-123", "adunit-banner-456", "adunit-interstitial-789", "adunit-inspire-000")
+end
+
+return M
+
+--[[
+local M = {}
+
+function M.BindRelifeButton(button, canvasInstance)
+    button.onClick:AddListener(function()
+        print("按钮点击了，准备调用 ContinueChallengeByAd")
+        canvasInstance:ContinueChallengeByAd()
+    end)
+end
+
+return M
+]]
+

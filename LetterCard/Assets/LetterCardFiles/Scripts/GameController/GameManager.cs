@@ -271,10 +271,11 @@ public class GameManager : MonoBehaviour
             1.0f)
             .SetEase(Ease.Linear);
 
-        ShowTipManager.instance.ShowTip("复活之后获取额外分数");
+        ShowTipManager.instance.ShowTip("复活后赠送额外分数");
 
         //director.Stop(); // 可加可不加，已结束的话其实不影响
     }
+
 
     /// <summary>
     /// 开始游戏
@@ -303,6 +304,9 @@ public class GameManager : MonoBehaviour
         AddScoreWhenDeleteScore = 0;
         ExtraScoreRounOverScore = 0;
         CanPlayZeroCardScore = 1;
+
+        director.time = 0;
+        director.Evaluate();
         StartRound();//开始回合
     }
 
@@ -315,6 +319,11 @@ public class GameManager : MonoBehaviour
     {
         AudioManager.instance.PlaySoundEffect("Fail");
         //gameFailCanvas.enabled = true;
+        if (!director.playableGraph.IsValid())
+            director.RebuildGraph();
+
+        director.playableGraph.GetRootPlayable(0).SetSpeed(1);
+        director.time = 0;
         director.Play();
         UploadPlayerInfo();
     }
@@ -371,6 +380,8 @@ public class GameManager : MonoBehaviour
         {
             DeckManager.instance.DrawCard(ContinuousCount);//抽卡
             GameEntrance.instance.CoinCount -= DrawNeedCoin;
+
+            tipWordShowPanel.GetComponent<WordTip>().matched.Clear();//清空提示单词的列表
         }
     }
 
@@ -420,6 +431,7 @@ public class GameManager : MonoBehaviour
         if(useTipWord)
         {
             useTipWord = false;
+            tipWordShowPanel.GetComponent<WordTip>().matched.Clear();//清空提示单词的列表
             TipWordCount--;
         }
 
@@ -614,6 +626,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Button tipWordButton;//显示单词提示的个数的Text
     [SerializeField] private GameObject getTipWordCanvas;//显示单词提示的个数的Text
     [SerializeField] private GameObject tipWordShowPanel;//显示单词提示
+
     private bool useTipWord = false;
     /// <summary>
     /// 提示按钮
@@ -629,17 +642,36 @@ public class GameManager : MonoBehaviour
             List<char> availableLetters = DeckManager.instance.letterHandCards.OfType<LetterCard>()               // 安全转换为 LetterCard 类型
                                         .Select(card => card.Letter)        // 提取 Letter 属性
                                         .ToList();                          // 转为 List<char>
-            List<string> matched = WordFinder.instance.FindAllWords(availableLetters, WordChecker.Instance.wordList.Words);
 
-            if (matched.Count == 0)
+
+            if (tipWordShowPanel.GetComponent<WordTip>().matched.Count == 0)
             {
-                ShowTipManager.instance.ShowTip("当前无法组成单词");
+                //tipWordShowPanel.GetComponent<WordTip>().matched = WordFinder.instance.FindAllWords(availableLetters, WordChecker.Instance.wordList.Words);
+
+                StartCoroutine(WordFinder.instance.FindAllWordsCoroutine(availableLetters, WordChecker.Instance.wordList.Words, callback));
             }
             else
             {
                 tipWordShowPanel.SetActive(true);
                 useTipWord = true;
             }
+
+            void callback(List<string> res)
+            {
+                tipWordShowPanel.GetComponent<WordTip>().matched= res;
+                if (tipWordShowPanel.GetComponent<WordTip>().matched.Count == 0)
+                {
+                    ShowTipManager.instance.ShowTip("当前无法组成单词");
+                }
+                else
+                {
+                    tipWordShowPanel.SetActive(true);
+                    useTipWord = true;
+                }
+            }
+            
+
+            
         }
     }
 }

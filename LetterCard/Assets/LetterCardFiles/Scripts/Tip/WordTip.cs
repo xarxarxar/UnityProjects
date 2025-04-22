@@ -11,13 +11,14 @@ public class WordTip : MonoBehaviour
     [SerializeField] private WordList sixWordList;
     [SerializeField] private ScrollRect scrollRect;
 
+    public  List<string> matched=new List<string>();
+
 
     private void OnEnable()
     {
         List<char> availableLetters = DeckManager.instance.letterHandCards.OfType<LetterCard>()               // 安全转换为 LetterCard 类型
                                         .Select(card => card.Letter)        // 提取 Letter 属性
                                         .ToList();                          // 转为 List<char>
-        List<string> matched = WordFinder.instance.FindAllWords(availableLetters, sixWordList.Words);
 
         for (int i = 0; i < matched.Count; i++)
         {

@@ -1,3 +1,5 @@
+using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
@@ -20,73 +22,7 @@ public class WordFinder : MonoBehaviour
         instance = this;
     }
     public WordList sixWordList;
-    void Start()
-    {
-        // 构建示例字母池
-        List<char> availableLetters = new List<char> { 'h', 'e', 'l', 'l', 'o', 'w', 'r', 'd' };
 
-        // 假设 sixWordList.Words 已经是 HashSet<string>
-        HashSet<string> wordSet = sixWordList.Words;
-
-
-        // 调用 FindAllWords
-        List<string> matched = FindAllWords(availableLetters, wordSet);
-
-        // 输出结果
-        if (matched.Count > 0)
-        {
-            Debug.Log("可组成的单词： " + string.Join(", ", matched));
-        }
-        else
-        {
-            Debug.Log("没有可组成的单词");
-        }
-    }
-
-    private void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.Space))
-        {
-            // 构建一个示例字母池
-            List<Letter> availableLetters = new List<Letter>
-        {
-            new Letter { Character = 'h', Color = Color.red },
-            new Letter { Character = 'e', Color = Color.green },
-            new Letter { Character = 'l', Color = Color.blue },
-            new Letter { Character = 'l', Color = Color.yellow },
-            new Letter { Character = 'o', Color = Color.red },
-            new Letter { Character = 'w', Color = Color.red },
-            new Letter { Character = 'r', Color = Color.red },
-            new Letter { Character = 'l', Color = Color.red },
-            new Letter { Character = 'd', Color = Color.red },
-            new Letter { Character = 'a', Color = Color.red },
-            new Letter { Character = 'b', Color = Color.black },
-            new Letter { Character = 'u', Color = Color.red },
-            new Letter { Character = 'n', Color = Color.gray },
-            new Letter { Character = 'd', Color = Color.red },
-            new Letter { Character = 'a', Color = Color.red },
-            new Letter { Character = 'n', Color = Color.yellow },
-            new Letter { Character = 'c', Color = Color.red },
-        };
-
-            // 构建词库（HashSet 更快，防止重复）
-            HashSet<string> wordSet = sixWordList.Words;
-
-
-            List<Letter> best = CheckHighestScoreWord(availableLetters, wordSet);
-
-            // 4. 输出结果
-            if (best != null)
-            {
-                string word = string.Concat(best.Select(l => l.Character));
-                Debug.Log($"得分最高的单词：{word}");
-            }
-            else
-            {
-                Debug.Log("无法组成任何单词");
-            }
-        }
-    }
 
     /// <summary>
     /// 在可用字母池中，找出能组成的单词，并根据规则打分，返回最高分的 Letter 列表
@@ -233,40 +169,71 @@ public class WordFinder : MonoBehaviour
 
 
     /// <summary>
-    /// 找出所有能由 availableLetters 组成的单词（不消耗字母，可跨单词复用）
+    /// 协程：找出所有能由 availableLetters 组成的单词（不消耗字母，可跨单词复用）
+    /// 每帧检查一定数量的词，避免主线程卡顿
     /// </summary>
-    /// <param name="availableLetters">可用的字母池（只包含字符，不含颜色）</param>
-    /// <param name="wordSet">单词词库（HashSet，自动去重）</param>
-    /// <returns>所有能组成的单词列表，若无则返回空列表</returns>
-    public List<string> FindAllWords(List<char> availableLetters, HashSet<string> wordSet)
+    public IEnumerator FindAllWordsCoroutine(
+        List<char> availableLetters,
+        HashSet<string> wordSet,
+        Action<List<string>> onComplete,
+        int wordsPerFrame = 500)
     {
-        // 1. 统计每个可用字母的数量
-        var availableCharCounts = availableLetters
-            .GroupBy(c => c)
-            .ToDictionary(g => g.Key, g => g.Count());
-
-        var results = new List<string>();
-
-        // 2. 遍历词库
-        foreach (var word in wordSet)
+        if (availableLetters == null || wordSet == null)
         {
-            // 2.1 统计该单词需要的字符及数量
-            var wordReq = word
-                .GroupBy(c => c)
-                .ToDictionary(g => g.Key, g => g.Count());
-
-            // 2.2 判断是否可以组成该单词
-            bool canForm = wordReq.All(kv =>
-                availableCharCounts.ContainsKey(kv.Key) &&
-                availableCharCounts[kv.Key] >= kv.Value
-            );
-
-            // 2.3 可以组成则加入结果
-            if (canForm)
-                results.Add(word);
+            onComplete?.Invoke(new List<string>());
+            yield break;
         }
 
-        return results;
+        // 1. 统计每个可用字母的数量（非 LINQ）
+        var availableCharCounts = new Dictionary<char, int>();
+        foreach (char c in availableLetters)
+        {
+            if (!availableCharCounts.TryAdd(c, 1))
+                availableCharCounts[c]++;
+        }
+
+        var results = new List<string>();
+        int count = 0;
+
+        foreach (var word in wordSet)
+        {
+            // 优化 1：长度比可用字母还长，跳过
+            if (word.Length > availableLetters.Count)
+                continue;
+
+            // 优化 2：含有不可用字母，跳过
+            if (word.Any(c => !availableCharCounts.ContainsKey(c)))
+                continue;
+
+            // 2.1 统计单词所需字符（非 LINQ）
+            var wordReq = new Dictionary<char, int>();
+            foreach (char c in word)
+            {
+                if (!wordReq.TryAdd(c, 1))
+                    wordReq[c]++;
+            }
+
+            // 2.2 判断是否可以组成
+            bool canForm = true;
+            foreach (var kv in wordReq)
+            {
+                if (!availableCharCounts.TryGetValue(kv.Key, out int countAvailable) || countAvailable < kv.Value)
+                {
+                    canForm = false;
+                    break;
+                }
+            }
+
+            if (canForm)
+                results.Add(word);
+
+            count++;
+            if (count % wordsPerFrame == 0)
+                yield return null;
+        }
+
+        // 4. 回调结果
+        onComplete?.Invoke(results);
     }
 
 }

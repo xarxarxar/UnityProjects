@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 [Serializable]
 public enum PlayerPlatform
@@ -12,11 +13,6 @@ public enum PlayerPlatform
 [Serializable]
 public class PlayerInfo
 {
-    // 玩家唯一ID，可以是微信ID、抖音ID等
-    //public string playerID;
-
-    //public PlayerPlatform playerPlatform;
-
     // 玩家昵称
     public string playerName;
 
@@ -32,52 +28,38 @@ public class PlayerInfo
     // 玩家最佳分数
     public int maxScore;
 
-    // 玩家的金币数
-    //public int coinCount;
+    // 音乐音量
+    [Range(0f, 1f)]
+    public float musicVolume;
 
-    // 玩家游戏设置
-    public GameSettings settings;
-
-    //玩家残局信息,就是玩家自己上线之后继续玩
-    //public EndGameInfo endGameInfo;
-
-    //玩家挑战信息，就是分享给好友进行继续挑战
-    //public PlayerChallenge playerChallenge;
+    // 音效音量
+    [Range(0f, 1f)]
+    public float soundEffectVolume;
 
     /// <summary>
     /// 无参数构造函数（默认初始化）
     /// </summary>
     public PlayerInfo()
     {
-        //playerID = "";
-        //playerPlatform = PlayerPlatform.Unknown; // 默认平台类型
         playerName = "游客";
         avatarUrl = "";
         needGuide = true;
         maxRound = 0;
         maxScore = 0;
-        //coinCount = 10;
-        settings = new GameSettings();
-        //endGameInfo = new EndGameInfo();
-        //playerChallenge = new PlayerChallenge();
+        musicVolume = 0.5f;
+        soundEffectVolume = 0.5f;
     }
 
     /// <summary>
     /// 带参数构造函数（初始化玩家信息）
     /// </summary>
-    public PlayerInfo( string playerName, string avatarUrl, bool needGuide,int maxRound, int maxScore, GameSettings settings)
+    public PlayerInfo( string playerName, string avatarUrl, bool needGuide,int maxRound, int maxScore,float musicVolume,float soundEffectVolume)
     {
-        //this.playerID = playerID;
-        //this.playerPlatform = playerPlatform;
         this.playerName = playerName;
         this.avatarUrl = avatarUrl;
         this.needGuide = needGuide;
         this.maxRound = maxRound;
         this.maxScore = maxScore;
-        //this.coinCount = coinCount;
-        this.settings = settings ?? new GameSettings(); // 避免传入null
-        //this.endGameInfo = endGameInfo ?? new EndGameInfo();
-        //this.playerChallenge = playerChallenge ?? new PlayerChallenge();
     }
 }
 

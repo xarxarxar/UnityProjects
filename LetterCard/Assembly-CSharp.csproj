@@ -10,7 +10,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{DB08CF8C-D5DD-A817-26A6-6C2EEA351906}</ProjectGuid>
+    <ProjectGuid>{0740A8FE-73BF-32DA-43C2-D1FF7713EA6B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -60,77 +60,191 @@
     <Analyzer Include="D:\UnityHub\UnityEditors\Install\2022.3.41f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\XLua\Examples\09_GenericMethod\Foo.cs" />
     <Compile Include="Assets\LetterCardFiles\Scripts\Tip\Tip.cs" />
     <Compile Include="Assets\LetterCardFiles\Scripts\Word\WordFinder.cs" />
+    <Compile Include="Assets\XLua\Gen\UnityEngine_WaitForSecondsWrap.cs" />
+    <Compile Include="Assets\XLua\Src\DelegateBridge.cs" />
+    <Compile Include="Assets\XLua\Examples\04_LuaObjectOrented\InvokeLua.cs" />
     <Compile Include="Assets\LetterCardFiles\Scripts\DataInfo\PlayerInfo.cs" />
     <Compile Include="Assets\LetterCardFiles\Scripts\Card\RewardCard.cs" />
+    <Compile Include="Assets\XLua\Gen\UnityEngine_AnimationClipWrap.cs" />
+    <Compile Include="Assets\XLua\Gen\XLuaTest_LuaBehaviourWrap.cs" />
+    <Compile Include="Assets\XLua\Gen\UnityEngine_Vector2Wrap.cs" />
     <Compile Include="Assets\LetterCardFiles\Scripts\GameController\GameConfig.cs" />
+    <Compile Include="Assets\XLua\Gen\UnityEngine_ResourcesWrap.cs" />
+    <Compile Include="Assets\XLua\Examples\08_Hotfix\HotfixTest.cs" />
+    <Compile Include="Assets\XLua\Gen\XLuaTest_Foo2ParentWrap.cs" />
     <Compile Include="Assets\LetterCardFiles\Scripts\Tip\ShowTipManager.cs" />
-    <Compile Include="Assets\LetterCardFiles\Scripts\DataInfo\GameSettings.cs" />
+    <Compile Include="Assets\XLua\Gen\Tutorial_ICalcWrap.cs" />
+    <Compile Include="Assets\XLua\Src\TemplateEngine\TemplateEngine.cs" />
+    <Compile Include="Assets\LetterCardFiles\Scripts\Card\SpecialMission.cs" />
     <Compile Include="Assets\LetterCardFiles\Scripts\GameController\GameManager.cs" />
+    <Compile Include="Assets\XLua\Gen\XLuaTest_Foo1ChildWrap.cs" />
+    <Compile Include="Assets\XLua\Examples\06_Coroutine\CoroutineTest.cs" />
+    <Compile Include="Assets\XLua\Gen\UnityEngine_ColorWrap.cs" />
     <Compile Include="Assets\LetterCardFiles\Scripts\DataInfo\DataManager.cs" />
     <Compile Include="Assets\LetterCardFiles\Scripts\Tip\GuideFigner.cs" />
+    <Compile Include="Assets\XLua\Gen\XLuaTest_IExchangerBridge.cs" />
+    <Compile Include="Assets\XLua\Gen\UnityEngine_TransformWrap.cs" />
+    <Compile Include="Assets\XLua\Src\ObjectCasters.cs" />
     <Compile Include="Assets\PSF\SerializableDictionary\Demo\Scripts\SerializableDictionaryDemo_2.cs" />
-    <Compile Include="Assets\LetterCardFiles\Scripts\RankingSystem.cs" />
+    <Compile Include="Assets\XLua\Gen\WrapPusher.cs" />
+    <Compile Include="Assets\XLua\Examples\ExampleGenConfig.cs" />
+    <Compile Include="Assets\XLua\Examples\06_Coroutine\Coroutine_Runner.cs" />
+    <Compile Include="Assets\XLua\Examples\10_SignatureLoader\SignatureLoaderTest.cs" />
+    <Compile Include="Assets\XLua\Gen\XLuaTest_Foo1ParentWrap.cs" />
+    <Compile Include="Assets\XLua\Src\LuaEnv.cs" />
+    <Compile Include="Assets\XLua\Examples\07_AsyncTest\AsyncTest.cs" />
+    <Compile Include="Assets\XLua\Tutorial\CSharpCallLua\CSCallLua.cs" />
+    <Compile Include="Assets\XLua\Src\CopyByValue.cs" />
+    <Compile Include="Assets\XLua\Gen\XLuaTest_PeddingWrap.cs" />
+    <Compile Include="Assets\XLua\Gen\UnityEngine_BoundsWrap.cs" />
+    <Compile Include="Assets\XLua\Examples\07_AsyncTest\MessageBox.cs" />
+    <Compile Include="Assets\XLua\Src\LuaDLL.cs" />
+    <Compile Include="Assets\XLua\Src\LuaException.cs" />
+    <Compile Include="Assets\XLua\Gen\UnityEngine_TimeWrap.cs" />
     <Compile Include="Assets\LetterCardFiles\Scripts\GameController\CurrentInfo.cs" />
-    <Compile Include="Assets\LetterCardFiles\Scripts\Tip\GuideCircle.cs" />
+    <Compile Include="Assets\XLua\Gen\XLuaTest_BaseTestWrap.cs" />
+    <Compile Include="Assets\XLua\Tutorial\LoadLuaScript\Loader\CustomLoader.cs" />
+    <Compile Include="Assets\XLua\Examples\14_HotfixAsyncAwait\HotfixAsyncAwaitTest.cs" />
+    <Compile Include="Assets\XLua\Gen\UnityEngine_ParticleSystemWrap.cs" />
     <Compile Include="Assets\LetterCardFiles\Scripts\Card\FunctionCard.cs" />
-    <Compile Include="Assets\LetterCardFiles\Scripts\Level\CacheText.cs" />
-    <Compile Include="Assets\LetterCardFiles\Scripts\ScoreCalculator.cs" />
+    <Compile Include="Assets\XLua\Gen\PackUnpack.cs" />
+    <Compile Include="Assets\XLua\Examples\11_RawObject\RawObjectTest.cs" />
+    <Compile Include="Assets\XLua\Src\SignatureLoader.cs" />
+    <Compile Include="Assets\XLua\Gen\UnityEngine_MonoBehaviourWrap.cs" />
     <Compile Include="Assets\LetterCardFiles\Scripts\Button\ButtonManager.cs" />
+    <Compile Include="Assets\XLua\Src\TypeExtensions.cs" />
     <Compile Include="Assets\LetterCardFiles\Scripts\Audios\AudioSettings.cs" />
-    <Compile Include="Assets\LetterCardFiles\Scripts\DataInfo\EndGameInfo.cs" />
+    <Compile Include="Assets\XLua\Examples\08_Hotfix\HotfixTest2.cs" />
+    <Compile Include="Assets\XLua\Gen\UnityEngine_SkinnedMeshRendererWrap.cs" />
     <Compile Include="Assets\LetterCardFiles\Scripts\Wechat\WechatManager.cs" />
-    <Compile Include="Assets\LetterCardFiles\Scripts\Level\LevelConfig.cs" />
+    <Compile Include="Assets\XLua\Gen\UnityEngine_ComponentWrap.cs" />
+    <Compile Include="Assets\XLua\Src\GenAttributes.cs" />
+    <Compile Include="Assets\XLua\Gen\UnityEngine_MathfWrap.cs" />
     <Compile Include="Assets\LetterCardFiles\Scripts\Word\WordChecker.cs" />
     <Compile Include="Assets\LetterCardFiles\Scripts\Word\WordList.cs" />
+    <Compile Include="Assets\XLua\Gen\UnityEngine_TextAssetWrap.cs" />
+    <Compile Include="Assets\XLua\Gen\UnityEngine_QuaternionWrap.cs" />
     <Compile Include="Assets\LetterCardFiles\Scripts\Behaviour\SimpleTouch.cs" />
+    <Compile Include="Assets\XLua\Gen\UnityEngine_RendererWrap.cs" />
+    <Compile Include="Assets\XLua\Src\MethodWarpsCache.cs" />
+    <Compile Include="Assets\XLua\Src\ObjectPool.cs" />
+    <Compile Include="Assets\XLua\Gen\System_Collections_Generic_List_1_System_Int32_Wrap.cs" />
     <Compile Include="Assets\LetterCardFiles\Scripts\Tip\WordTip.cs" />
-    <Compile Include="Assets\LetterCardFiles\Scripts\IPlatformBridge.cs" />
+    <Compile Include="Assets\XLua\Gen\XLuaTest_Foo2ChildWrap.cs" />
+    <Compile Include="Assets\XLua\Src\RawObject.cs" />
+    <Compile Include="Assets\XLua\Gen\UnityEngine_Ray2DWrap.cs" />
+    <Compile Include="Assets\XLua\Gen\XLuaTest_NoGcWrap.cs" />
     <Compile Include="Assets\LetterCardFiles\Scripts\GetRewords\GetRewards.cs" />
+    <Compile Include="Assets\XLua\Tutorial\LoadLuaScript\ByFile\ByFile.cs" />
     <Compile Include="Assets\LetterCardFiles\Scripts\Card\LetterCard.cs" />
-    <Compile Include="Assets\LetterCardFiles\Scripts\Level\LevelDatabase.cs" />
+    <Compile Include="Assets\XLua\Src\GenericDelegateBridge.cs" />
+    <Compile Include="Assets\XLua\Gen\UnityEngine_LightWrap.cs" />
+    <Compile Include="Assets\XLua\Examples\01_Helloworld\Helloworld.cs" />
+    <Compile Include="Assets\XLua\Src\LuaFunction.cs" />
     <Compile Include="Assets\LetterCardFiles\Scripts\Card\Card.cs" />
+    <Compile Include="Assets\XLua\Gen\Tutorial_BaseClassWrap.cs" />
     <Compile Include="Assets\LetterCardFiles\Scripts\GameController\GameGuide.cs" />
-    <Compile Include="Assets\LetterCardFiles\Scripts\Card\SpecialCard.cs" />
+    <Compile Include="Assets\XLua\Src\LuaTable.cs" />
+    <Compile Include="Assets\XLua\Gen\UnityEngine_RayWrap.cs" />
+    <Compile Include="Assets\XLua\Gen\System_Collections_IEnumeratorBridge.cs" />
+    <Compile Include="Assets\XLua\Gen\UnityEngine_DebugWrap.cs" />
+    <Compile Include="Assets\XLua\Src\Utils.cs" />
+    <Compile Include="Assets\XLua\Gen\DelegatesGensBridge.cs" />
+    <Compile Include="Assets\XLua\Gen\UnityEngine_AnimationCurveWrap.cs" />
+    <Compile Include="Assets\XLua\Gen\XLuaTest_FooExtensionWrap.cs" />
+    <Compile Include="Assets\XLua\Gen\UnityEngine_BehaviourWrap.cs" />
+    <Compile Include="Assets\XLua\Gen\XLuaTest_FooWrap.cs" />
     <Compile Include="Assets\PSF\SerializableDictionary\Demo\Scripts\SerializableDictionaryDemo_1.cs" />
+    <Compile Include="Assets\XLua\Src\StaticLuaCallbacks.cs" />
+    <Compile Include="Assets\XLua\Gen\System_ObjectWrap.cs" />
     <Compile Include="Assets\LetterCardFiles\Scripts\Card\HandCardContainer.cs" />
+    <Compile Include="Assets\XLua\Gen\UnityEngine_Vector3Wrap.cs" />
+    <Compile Include="Assets\LetterCardFiles\Scripts\Luas\LuaManager.cs" />
+    <Compile Include="Assets\XLua\Gen\UnityEngine_GameObjectWrap.cs" />
+    <Compile Include="Assets\XLua\Examples\09_GenericMethod\GenericMethodExample.cs" />
+    <Compile Include="Assets\XLua\Gen\XLuaTest_MyStructWrap.cs" />
+    <Compile Include="Assets\XLua\Examples\12_ReImplementInLua\ReImplementInLua.cs" />
+    <Compile Include="Assets\XLua\Gen\Tutorial_CSCallLua_ItfDBridge.cs" />
     <Compile Include="Assets\LetterCardFiles\Scripts\Tip\TipRound.cs" />
     <Compile Include="Assets\LetterCardFiles\Scripts\Card\DeckManager.cs" />
     <Compile Include="Assets\LetterCardFiles\Scripts\Card\SpecialCardState.cs" />
-    <Compile Include="Assets\LetterCardFiles\Scripts\Screen\ResolutionManager.cs" />
+    <Compile Include="Assets\XLua\Gen\XLuaTest_InvokeLua_ICalcBridge.cs" />
+    <Compile Include="Assets\XLua\Src\LuaBase.cs" />
+    <Compile Include="Assets\XLua\Src\InternalGlobals.cs" />
+    <Compile Include="Assets\XLua\Examples\02_U3DScripting\LuaBehaviour.cs" />
+    <Compile Include="Assets\XLua\Gen\EnumWrap.cs" />
+    <Compile Include="Assets\XLua\Gen\UnityEngine_KeyframeWrap.cs" />
     <Compile Include="Assets\PSF\SerializableDictionary\Scripts\SerializableDictionary.cs" />
+    <Compile Include="Assets\LetterCardFiles\Scripts\Card\ScoreCalculator.cs" />
     <Compile Include="Assets\LetterCardFiles\Scripts\GameController\GameFailCanvas.cs" />
     <Compile Include="Assets\LetterCardFiles\Scripts\GameController\SettingManager.cs" />
+    <Compile Include="Assets\XLua\Examples\08_Hotfix\StatefullTest.cs" />
     <Compile Include="Assets\LetterCardFiles\Scripts\Audios\AudioManager.cs" />
+    <Compile Include="Assets\XLua\Gen\Tutorial_DerivedClassExtensionsWrap.cs" />
     <Compile Include="Assets\LetterCardFiles\Scripts\GameController\GameEntrance.cs" />
-    <Compile Include="Assets\LetterCardFiles\Scripts\Background\BackgroundChange.cs" />
     <Compile Include="Assets\LetterCardFiles\Scripts\Card\CardPool.cs" />
-    <Compile Include="Assets\LetterCardFiles\Scripts\Level\LevelButton.cs" />
-    <Compile Include="Assets\LetterCardFiles\Scripts\Level\LevelConfigManager.cs" />
+    <Compile Include="Assets\XLua\Examples\05_NoGc\NoGc.cs" />
+    <Compile Include="Assets\XLua\Gen\Tutorial_DerivedClassWrap.cs" />
+    <Compile Include="Assets\XLua\Tutorial\LoadLuaScript\ByString\ByString.cs" />
+    <Compile Include="Assets\XLua\Gen\XLuaGenAutoRegister.cs" />
+    <Compile Include="Assets\LetterCardFiles\Scripts\Card\CacheText.cs" />
+    <Compile Include="Assets\XLua\Src\CodeEmit.cs" />
+    <Compile Include="Assets\XLua\Tutorial\LuaCallCSharp\LuaCallCs.cs" />
+    <Compile Include="Assets\XLua\Src\ObjectTranslatorPool.cs" />
+    <Compile Include="Assets\XLua\Gen\UnityEngine_ObjectWrap.cs" />
+    <Compile Include="Assets\XLua\Src\ObjectTranslator.cs" />
+    <Compile Include="Assets\LetterCardFiles\Scripts\Wechat\WXAdsManager.cs" />
+    <Compile Include="Assets\XLua\Gen\UnityEngine_Vector4Wrap.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\XLua\Examples\07_AsyncTest\Resources\async_test.lua.txt" />
+    <None Include="Assets\XLua\Tutorial\LoadLuaScript\ByFile\Resources\byfile.lua.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
+    <None Include="Assets\XLua\Examples\14_HotfixAsyncAwait\Resources\MyTask2.lua.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
+    <None Include="Assets\XLua\Examples\06_Coroutine\Resources\coruntine_test.lua.txt" />
+    <None Include="Assets\XLua\Resources\xlua\util.lua.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Mobile.cginc" />
+    <None Include="Assets\XLua\Examples\14_HotfixAsyncAwait\Resources\MyTask1.lua.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF SSD.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface-Mobile.shader" />
+    <None Include="Assets\XLua\Examples\14_HotfixAsyncAwait\Resources\Method1.lua.txt" />
+    <None Include="Assets\AddressableAssetsData\link.xml" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface.shader" />
     <None Include="Assets\TextMesh Pro\Sprites\EmojiOne Attribution.txt" />
+    <None Include="Assets\XLua\Resources\perf\profiler.lua.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Custom-Atlas.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF.shader" />
+    <None Include="Assets\XLua\Examples\14_HotfixAsyncAwait\Resources\MyTask.lua.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile SSD.shader" />
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Leading Characters.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Properties.cginc" />
+    <None Include="Assets\XLua\Examples\14_HotfixAsyncAwait\Resources\AsyncMethod3.lua.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Surface.cginc" />
+    <None Include="Assets\LetterCardFiles\Scripts\Luas\WatchAds.lua.txt" />
+    <None Include="Assets\XLua\Resources\perf\memory.lua.txt" />
+    <None Include="Assets\XLua\Examples\14_HotfixAsyncAwait\Resources\AsyncMethod1.lua.txt" />
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
+    <None Include="Assets\XLua\Examples\03_UIEvent\ButtonInteraction.lua.txt" />
+    <None Include="Assets\XLua\Examples\14_HotfixAsyncAwait\Resources\AsyncMethod4.lua.txt" />
+    <None Include="Assets\XLua\Gen\link.xml" />
+    <None Include="Assets\XLua\Examples\02_U3DScripting\LuaTestScript.lua.txt" />
+    <None Include="Assets\XLua\Examples\07_AsyncTest\Resources\message_box.lua.txt" />
+    <None Include="Assets\XLua\Examples\14_HotfixAsyncAwait\Resources\AsyncMethod2.lua.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Masking.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF Overlay.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Mobile.shader" />
     <None Include="Assets\TextMesh Pro\Fonts\LiberationSans - OFL.txt" />
+    <None Include="Assets\XLua\Resources\tdr\tdr.lua.txt" />
+    <None Include="Assets\XLua\CHANGELOG.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile.shader" />
+    <None Include="Assets\XLua\Examples\06_Coroutine\Resources\cs_coroutine.lua.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Sprite.shader" />
+    <None Include="Assets\XLua\Examples\14_HotfixAsyncAwait\Resources\await.lua.txt" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
@@ -973,20 +1087,80 @@
       <HintPath>Library\ScriptAssemblies\Unity.2D.IK.Runtime.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="PsdPlugin">
-      <HintPath>Library\ScriptAssemblies\PsdPlugin.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Unity.Burst.Editor">
       <HintPath>Library\ScriptAssemblies\Unity.Burst.Editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Unity.Burst">
-      <HintPath>Library\ScriptAssemblies\Unity.Burst.dll</HintPath>
+    <Reference Include="Unity.ResourceManager">
+      <HintPath>Library\ScriptAssemblies\Unity.ResourceManager.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.2D.Common.Path.Editor">
       <HintPath>Library\ScriptAssemblies\Unity.2D.Common.Path.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.ScriptableBuildPipeline">
+      <HintPath>Library\ScriptAssemblies\Unity.ScriptableBuildPipeline.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.2D.PixelPerfect.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.2D.PixelPerfect.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.Rider.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.Rider.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.2D.Aseprite.Common">
+      <HintPath>Library\ScriptAssemblies\Unity.2D.Aseprite.Common.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.2D.Sprite.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.2D.Sprite.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.VisualScripting.Flow">
+      <HintPath>Library\ScriptAssemblies\Unity.VisualScripting.Flow.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.Mathematics.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.Mathematics.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.2D.Tilemap.Extras.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.2D.Tilemap.Extras.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.Collections">
+      <HintPath>Library\ScriptAssemblies\Unity.Collections.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.PlasticSCM.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.PlasticSCM.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.2D.SpriteShape.Runtime">
+      <HintPath>Library\ScriptAssemblies\Unity.2D.SpriteShape.Runtime.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.2D.PixelPerfect">
+      <HintPath>Library\ScriptAssemblies\Unity.2D.PixelPerfect.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.2D.Aseprite.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.2D.Aseprite.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="PsdPlugin">
+      <HintPath>Library\ScriptAssemblies\PsdPlugin.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.Burst">
+      <HintPath>Library\ScriptAssemblies\Unity.Burst.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.Timeline.Editor">
@@ -1021,24 +1195,8 @@
       <HintPath>Library\ScriptAssemblies\Unity.VisualScripting.Core.Editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Unity.Rider.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.Rider.Editor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.2D.PixelPerfect.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.2D.PixelPerfect.Editor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.2D.Aseprite.Common">
-      <HintPath>Library\ScriptAssemblies\Unity.2D.Aseprite.Common.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.2D.Sprite.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.2D.Sprite.Editor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.VisualScripting.Flow">
-      <HintPath>Library\ScriptAssemblies\Unity.VisualScripting.Flow.dll</HintPath>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>Library\ScriptAssemblies\UnityEngine.UI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.VisualScripting.Flow.Editor">
@@ -1049,20 +1207,8 @@
       <HintPath>Library\ScriptAssemblies\Unity.InternalAPIEngineBridge.001.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Unity.Mathematics.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.Mathematics.Editor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Unity.2D.Common.Runtime">
       <HintPath>Library\ScriptAssemblies\Unity.2D.Common.Runtime.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>Library\ScriptAssemblies\UnityEngine.UI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.2D.Tilemap.Extras.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.2D.Tilemap.Extras.Editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.Timeline">
@@ -1073,32 +1219,20 @@
       <HintPath>Library\ScriptAssemblies\Unity.VisualScripting.SettingsProvider.Editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Unity.Collections">
-      <HintPath>Library\ScriptAssemblies\Unity.Collections.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.PlasticSCM.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.PlasticSCM.Editor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.2D.Psdimporter.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.2D.Psdimporter.Editor.dll</HintPath>
+    <Reference Include="Unity.Addressables.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.Addressables.Editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.InternalAPIEditorBridge.001">
       <HintPath>Library\ScriptAssemblies\Unity.InternalAPIEditorBridge.001.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Unity.2D.SpriteShape.Runtime">
-      <HintPath>Library\ScriptAssemblies\Unity.2D.SpriteShape.Runtime.dll</HintPath>
+    <Reference Include="Unity.2D.Psdimporter.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.2D.Psdimporter.Editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.VisualScripting.State.Editor">
       <HintPath>Library\ScriptAssemblies\Unity.VisualScripting.State.Editor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.2D.PixelPerfect">
-      <HintPath>Library\ScriptAssemblies\Unity.2D.PixelPerfect.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.Mathematics">
@@ -1109,24 +1243,16 @@
       <HintPath>Library\ScriptAssemblies\Unity.2D.Common.Editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Unity.TextMeshPro">
-      <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.Editor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.2D.Aseprite.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.2D.Aseprite.Editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.VisualScripting.State">
       <HintPath>Library\ScriptAssemblies\Unity.VisualScripting.State.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Unity.2D.SpriteShape.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.2D.SpriteShape.Editor.dll</HintPath>
+    <Reference Include="Unity.ScriptableBuildPipeline.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.ScriptableBuildPipeline.Editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.2D.Tilemap.Editor">
@@ -1137,35 +1263,43 @@
       <HintPath>Library\ScriptAssemblies\Unity.2D.Animation.Editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Unity.Addressables">
+      <HintPath>Library\ScriptAssemblies\Unity.Addressables.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Unity.2D.IK.Editor">
       <HintPath>Library\ScriptAssemblies\Unity.2D.IK.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.2D.SpriteShape.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.2D.SpriteShape.Editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
-      <Project>{D38FC8E5-070C-6C73-CAF2-A66D51E87DE0}</Project>
+      <Project>{AD438A65-59B0-1959-6227-A52A8579F852}</Project>
       <Name>Assembly-CSharp-firstpass</Name>
     </ProjectReference>
     <ProjectReference Include="LeanTouch.csproj">
-      <Project>{2C0AA071-6656-B9A8-EF86-3972A92F2CD7}</Project>
+      <Project>{2B3FC5AD-5E63-3EF2-ADA9-90C220B42D53}</Project>
       <Name>LeanTouch</Name>
     </ProjectReference>
-    <ProjectReference Include="Wx.csproj">
-      <Project>{C0599127-2AD4-F0DD-BDB8-95B7F87DFD00}</Project>
-      <Name>Wx</Name>
-    </ProjectReference>
     <ProjectReference Include="WxEditor.csproj">
-      <Project>{330F4037-FBB9-3E8A-8037-556B9E3546B5}</Project>
+      <Project>{49B122E0-66CA-73F4-61FB-2B602EECF21B}</Project>
       <Name>WxEditor</Name>
     </ProjectReference>
-    <ProjectReference Include="CW.Common.csproj">
-      <Project>{0C9EFBB0-EFD1-8CDC-6795-4E89ABB6221C}</Project>
-      <Name>CW.Common</Name>
-    </ProjectReference>
     <ProjectReference Include="LeanCommon.csproj">
-      <Project>{79FC8AD7-6D62-F036-9704-EEFE1FC30CDC}</Project>
+      <Project>{DFB18A93-63EB-85F9-DF9E-6C7410281852}</Project>
       <Name>LeanCommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="Wx.csproj">
+      <Project>{D8C4820E-E150-D07A-7E88-6EAF37830F3C}</Project>
+      <Name>Wx</Name>
+    </ProjectReference>
+    <ProjectReference Include="CW.Common.csproj">
+      <Project>{59E5A919-E531-5C70-FDC5-9D895E3D4C68}</Project>
+      <Name>CW.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

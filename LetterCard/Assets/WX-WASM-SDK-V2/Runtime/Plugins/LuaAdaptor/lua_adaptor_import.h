@@ -29,5 +29,13 @@
 #include "lua51/lauxlib.h"
 #elif __EMSCRIPTEN__
 //EMSCRIPTEN_ENV_LUA_IMPORT_LOGIC_START
+#include "D:\\UnityHub\\UnityProjects\\LetterCardStudy\\WebGLPlugins\\lua.h"
+#include "D:\\UnityHub\\UnityProjects\\LetterCardStudy\\WebGLPlugins\\lobject.h"
+#include "D:\\UnityHub\\UnityProjects\\LetterCardStudy\\WebGLPlugins\\lstate.h"
+#include "D:\\UnityHub\\UnityProjects\\LetterCardStudy\\WebGLPlugins\\lfunc.h"
+#include "D:\\UnityHub\\UnityProjects\\LetterCardStudy\\WebGLPlugins\\lapi.h"
+#include "D:\\UnityHub\\UnityProjects\\LetterCardStudy\\WebGLPlugins\\lstring.h"
+#include "D:\\UnityHub\\UnityProjects\\LetterCardStudy\\WebGLPlugins\\ltable.h"
+#include "D:\\UnityHub\\UnityProjects\\LetterCardStudy\\WebGLPlugins\\lauxlib.h"
 //EMSCRIPTEN_ENV_LUA_IMPORT_LOGIC_END
 #endif

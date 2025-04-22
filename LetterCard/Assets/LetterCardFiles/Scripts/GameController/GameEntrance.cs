@@ -17,14 +17,6 @@ public class GameEntrance : MonoBehaviour
         set 
         { 
             coinCount = value;
-            if (value < 0)
-            {
-                coinText.text = "--";
-            }
-            else
-            {
-                coinText.text = coinCount.ToString();
-            }
             
             GameManager.Instance.coinText.text = coinCount.ToString();
             if (value < GameManager.Instance.DrawNeedCoin)
@@ -37,8 +29,6 @@ public class GameEntrance : MonoBehaviour
             }
         }
     }
-
-    [SerializeField] private Text coinText;
 
     public Image startGameButton;//一开始的开始游戏按钮
 
@@ -67,6 +57,8 @@ public class GameEntrance : MonoBehaviour
                 ShowTipManager.instance.ShowLoading(false);
                 WechatManager.instance.CreateUserInfoButtonBefore();//先创建获取用户信息按钮
                 WechatManager.instance.CreateUserInfoButton();
+
+                StartCoroutine(GameFailCanvas.instance.LoadLua());
             }
         );
         ButtonManager.instance.startGameButton.onClick.AddListener(SartGame);
@@ -101,13 +93,6 @@ public class GameEntrance : MonoBehaviour
         GetRewards.Instance.GetComponent<Canvas>().enabled = true;
     }
 
-    /// <summary>
-    /// 设置金币的Text
-    /// </summary>
-    private void SetCoinText()
-    {
-        
-    }
 
     public void CloseEnterGamePanel()
     {

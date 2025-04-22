@@ -15,7 +15,6 @@ public class DeckManager : MonoBehaviour
     private List<(SpecialEffectType,float)> specialCardPool = new List<(SpecialEffectType, float)>();
     
     public FunctionCard specialCardPrefab;
-    public RewardCard rewardCardPrefab;
 
     // 手牌
     public Transform LetterHandCard;
@@ -40,10 +39,7 @@ public class DeckManager : MonoBehaviour
     public LetterCard letterCardPrefab; // 字母牌预制体
 
     // 事件
-    public UnityEvent OnHandFull;
     public UnityEvent<Card> OnCardDrawn;
-
-    
 
     private void Awake()
     {
@@ -251,91 +247,6 @@ public class DeckManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 抽取指定的卡牌，用于游戏教程等等
-    /// </summary>
-    /// <param name="cardType">指定卡牌类型（字母牌或特殊牌）</param>
-    /// <param name="letter">指定字母（仅适用于字母牌）</param>
-    /// <param name="color">指定颜色（仅适用于字母牌）</param>
-    public void DrawDesignatedCard(CardType cardType, char? letter = null, char? color = null)
-    {
-        // 如果是字母卡
-        if (cardType == CardType.Letter)
-        {
-            // 先过滤字母牌堆，筛选符合条件的卡牌
-            List<(char, char)> validLetterCards = letterDeck
-                .Where(card => (!letter.HasValue || card.Item1 == letter.Value) &&
-                               (!color.HasValue || card.Item2 == color.Value))
-                .ToList();
-
-            if (validLetterCards.Count == 0)
-            {
-                Debug.LogWarning("没有符合条件的字母牌！");
-                return;
-            }
-
-            // 从符合条件的卡牌中随机选择一张
-            int index = UnityEngine.Random.Range(0, validLetterCards.Count);
-            var selectedCard = validLetterCards[index];
-
-            // 创建新的字母卡
-            LetterCard newCard = (LetterCard)cardPool.GetCard<LetterCard>();
-            newCard.Letter = selectedCard.Item1;
-            newCard.Color = selectedCard.Item2;
-
-            // 设置父物体
-            newCard.transform.SetParent(LetterHandCard);
-
-            // 从字母堆移除已抽取的卡牌
-            //letterDeck.Remove(selectedCard);
-            letterHandCards.Add(newCard);
-
-
-            // 调用抽牌事件
-            OnCardDrawn?.Invoke(newCard);
-        }
-        // 如果是特殊卡
-        else if (cardType == CardType.Special)
-        {
-            // 检查是否可以抽取特殊卡
-            if (!CanDrawSpecialCard())
-            {
-                Debug.LogWarning("无法抽取特殊卡！");
-                return;
-            }
-
-            // 根据权重抽取特殊卡
-            float totalWeight = specialCardPool.Sum(c => c.Item2);
-            float randomPoint = UnityEngine.Random.Range(0, totalWeight);
-
-            foreach (var card in specialCardPool.OrderBy(c => c.Item2))
-            {
-                if (randomPoint < card.Item2)
-                {
-                    // 生成特殊卡实例
-                    FunctionCard newCard = Instantiate(specialCardPrefab, SpecialHandCard);
-                    newCard.EffectType = card.Item1;
-                    specialHandCards.Add(newCard);
-                    
-                    // 调用抽牌事件
-                    OnCardDrawn?.Invoke(newCard);
-                    return;
-                }
-                randomPoint -= card.Item2;
-            }
-        }
-    }
-
-    public void DrawDesignCard(SpecialEffectType effectType)
-    {
-        FunctionCard newCard = Instantiate(specialCardPrefab, SpecialHandCard);
-        //FunctionCard newCard = (FunctionCard)cardPool.GetCard();
-        //newCard.transform.SetParent(SpecialHandCard);
-        newCard.EffectType = effectType;
-        specialHandCards.Add(newCard);
-        OnCardDrawn?.Invoke(newCard);
-    }
-
-    /// <summary>
     /// 抽取指定颜色的随机字母卡牌
     /// </summary>
     /// <param name="color">指定的颜色（R、G、B、Y）</param>
@@ -516,15 +427,6 @@ public class DeckManager : MonoBehaviour
     int GetCurrentMaxSpecial()
     {
         return GameManager.Instance.MaxSpecialCaradCount;
-    }
-
-    /// <summary>
-    /// 当前最大缓存容量
-    /// </summary>
-    /// <returns></returns>
-    int GetCurrentMaxCache()
-    {
-        return 10;
     }
 
     // 生成全部字母的数组

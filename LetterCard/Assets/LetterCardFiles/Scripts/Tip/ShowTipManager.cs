@@ -12,8 +12,6 @@ public class ShowTipManager : MonoBehaviour
     public Tip tipWithMoney;
     public Tip tipNomoney;
 
-    public GameObject dustbinGameobject;
-
     public GameObject loadingObject;
 
     private Queue<(string,UnityAction)> tipTexts = new Queue<(string, UnityAction)>();
