@@ -4,41 +4,44 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using System.Collections;
-using DG.Tweening;
 
 public class CountDownSlider : MonoBehaviour
 {
-    private Slider slider;
-    public float waitTime => LevelConfig.instance.WaitTime;
+    public Slider sliderWaitTime;
+    public Slider sliderAdditionTime;
+
+    //public float waitTime => LevelConfig.instance.WaitTime;
     public bool isOver=false;
-    public Text tipText;
     public static event UnityAction CountDownOver; // 倒计时结束事件
     public float SliderRatioOnInterrupt { get; private set; } = 0f; // 外部可以访问的比值
-
-    private void Awake() => slider = GetComponent<Slider>();
-
-    public void OnEnable()
-    {
-        slider.value=slider.maxValue;
-    }
+    public Text additionalTimeText;//额外时长的显示
 
     public void OnDisable()
     {
-        StopAllCoroutines();
+
     }
 
-    public IEnumerator CountDown(int round)
+    public IEnumerator CountDown(float waittime,int value)//value==0时，slider为sliderWaitTime，==1时 为sliderAdditionTime
     {
-        tipText.text = "";
-        float tmp = RealWaitTime(round);
-        tmp=Mathf.Clamp(tmp, 2, waitTime);
-        //Debug.Log($"tmp is {tmp}");
-        slider.maxValue = tmp;
-        slider.value = tmp;
+        Slider slider=value==0? sliderWaitTime : sliderAdditionTime;
+
+        slider.gameObject.SetActive(true);
+        slider.maxValue = waittime;
+        slider.value = waittime;
         isOver = false;
+        if (isOver)
+        {
+            slider.gameObject.SetActive(false);
+            yield break;
+        }
 
         while (slider.value > 0)
         {
+            if (value == 1)
+            {
+                additionalTimeText.text=$"额外{slider.value.ToString("f1")}秒";
+            }
+
             slider.value -= Time.deltaTime;
             // 暂停处理
             while (LevelPlaying.isPaused) yield return null;
@@ -52,19 +55,30 @@ public class CountDownSlider : MonoBehaviour
                 break;
             }
         }
+        
         slider.value = 0;
-        gameObject.SetActive(false);
+        if (!isOver)
+        {
+            SliderRatioOnInterrupt = 0;
+        }
+        slider.gameObject.SetActive(false);
         CountDownOver?.Invoke();
         yield break;
     }
 
-    public IEnumerator EndlessCountDown(float maxValue)
+    public IEnumerator EndlessCountDown(float maxValue, int value)
     {
-        tipText.text = "";
+        
+        Slider slider = value == 0 ? sliderWaitTime : sliderAdditionTime;
+        slider.gameObject.SetActive(true);
         slider.maxValue = maxValue;
         slider.value = maxValue;
         isOver = false;
-
+        if (isOver)
+        {
+            slider.gameObject.SetActive(false);
+            yield break;
+        }
         while (slider.value > 0)
         {
             slider.value -= Time.deltaTime;
@@ -81,14 +95,15 @@ public class CountDownSlider : MonoBehaviour
             }
         }
         slider.value = 0;
-        gameObject.SetActive(false);
+        slider.gameObject.SetActive(false);
         CountDownOver?.Invoke();
         yield break;
     }
 
-    public IEnumerator GuideCountDown(float maxValue)
+    public IEnumerator GuideCountDown(float maxValue, int value)
     {
-        tipText.text = "";
+        Slider slider = value == 0 ? sliderWaitTime : sliderAdditionTime;
+        slider.gameObject.SetActive(true);
         slider.maxValue = maxValue;
         slider.value = maxValue;
         isOver = false;
@@ -109,7 +124,11 @@ public class CountDownSlider : MonoBehaviour
             }
         }
         slider.value = 0;
-        gameObject.SetActive(false);
+        if (!isOver)
+        {
+            SliderRatioOnInterrupt = 0;
+        }
+        slider.gameObject.SetActive(false);
         CountDownOver?.Invoke();
         yield break;
     }
@@ -117,40 +136,5 @@ public class CountDownSlider : MonoBehaviour
     public void SetIsOver()
     {
         isOver = true;
-    }
-
-    private float RealWaitTime(int round)
-    {
-        float tmp = waitTime;
-        if (round >= 3 && round < 6)
-        {
-            tmp = tmp - 1.0f;
-            if (tipText.text != "速度变快")
-            {
-                tipText.text = "速度变快";
-                tipText.color = Color.yellow;
-                tipText.rectTransform.localScale = Vector3.one * 1.2f;
-
-                tipText.rectTransform.DOScale(Vector3.one * 1.0f, 0.5f)
-                    .SetEase(Ease.OutBack);
-            }
-            
-        }
-        if (round >= 6)
-        {
-            tmp = tmp - 2.0f;
-            if(tipText.text != "速度更快")
-            {
-                tipText.text = "速度更快";
-                tipText.color = Color.red;
-                tipText.rectTransform.localScale = Vector3.one * 4.0f;
-
-                tipText.rectTransform.DOScale(Vector3.one * 1.0f, 2.0f)
-                    .SetEase(Ease.OutBack);
-            }
-            
-        }
-        Debug.Log($"tmp is {tmp}");
-        return tmp;
     }
 }

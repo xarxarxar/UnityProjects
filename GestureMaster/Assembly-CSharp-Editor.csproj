@@ -60,6 +60,9 @@
     <Analyzer Include="D:\UnityHub\UnityEditors\Install\2022.3.41f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\SuperScrollView\Editor\LoopStaggeredGridViewEditor.cs" />
+    <Compile Include="Assets\SuperScrollView\Editor\LoopGridViewEditor.cs" />
+    <Compile Include="Assets\SuperScrollView\Editor\LoopListViewEditor2.cs" />
     <Compile Include="Assets\Editor\DecalDatabaseEditor.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -457,6 +460,10 @@
     </Reference>
     <Reference Include="Unity.Plastic.Newtonsoft.Json">
       <HintPath>Library\PackageCache\com.unity.collab-proxy@2.8.2\Lib\Editor\Unity.Plastic.Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>Assets\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="log4netPlastic">

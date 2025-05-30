@@ -6,8 +6,9 @@ using UnityEngine.UI;
 public class Guide : MonoBehaviour
 {
     public static Guide instance;
-    public GameInfo maskPanel;
     public GameObject tipObject;
+
+
 
     public List<Button> gameCanvasButtons=new List<Button>();//0--暂停，1--PK，2-6分别为大，食，中，无，小
 

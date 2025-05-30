@@ -1,149 +1,196 @@
 #if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
+using UnityEditorInternal;
 using System.Collections.Generic;
+using System.Reflection;
 
 [CustomEditor(typeof(DecalDatabase))]
 public class DecalDatabaseEditor : Editor
 {
+    private ReorderableList list;
+    private FieldInfo isDefaultField;
+    private List<bool> foldouts;
+
+    private static readonly List<string> meijiaDescription = new() { "每轮倒计时长+0.3秒" };
+    private static readonly List<string> tiehuaDescription = new() { "每轮PK胜利时额外+1金币" };
+
+    private void OnEnable()
+    {
+        isDefaultField = typeof(DecalData).GetField("isDefault", BindingFlags.NonPublic | BindingFlags.Instance);
+        var db = (DecalDatabase)target;
+
+        // 初始化折叠状态
+        foldouts = new List<bool>();
+        foreach (var _ in db.decalList) foldouts.Add(false);
+
+        list = new ReorderableList(serializedObject,
+            serializedObject.FindProperty("decalList"), true, true, true, true);
+
+        list.drawHeaderCallback = rect =>
+            EditorGUI.LabelField(rect, "Decal 列表 (可拖拽排序，点击折叠) ");
+
+        list.elementHeightCallback = index =>
+        {
+            bool exp = foldouts[index];
+            int lines = exp ? 9 : 2; // 折叠时2行，展开时9行
+            return lines * EditorGUIUtility.singleLineHeight + (lines + 1) * 4;
+        };
+
+        list.drawElementCallback = (rect, index, active, focused) =>
+        {
+            var prop = list.serializedProperty.GetArrayElementAtIndex(index);
+            var dbInst = (DecalDatabase)target;
+            var decal = dbInst.decalList[index];
+            bool exp = foldouts[index];
+
+            // 折叠控件
+            Rect foldRect = new Rect(rect.x + 2, rect.y + 2, 12, EditorGUIUtility.singleLineHeight);
+            foldouts[index] = EditorGUI.Foldout(foldRect, exp, GUIContent.none);
+
+            float x = rect.x + 18;
+            float w = rect.width - 36;
+            float lh = EditorGUIUtility.singleLineHeight;
+            float y = rect.y + 2;
+
+            // ID
+            EditorGUI.BeginDisabledGroup(true);
+            EditorGUI.TextField(new Rect(x, y, w, lh), "ID", decal.id);
+            EditorGUI.EndDisabledGroup();
+            // 删除按钮
+            Rect btnDel = new Rect(rect.x + rect.width - 32, y, 30, lh);
+            if (GUI.Button(btnDel, "删"))
+            {
+                Undo.RecordObject(dbInst, "Delete Decal");
+                dbInst.decalList.RemoveAt(index);
+                foldouts.RemoveAt(index);
+                EditorUtility.SetDirty(dbInst);
+                return;
+            }
+            y += lh + 4;
+
+            // 贴图
+            decal.texture = (Texture2D)EditorGUI.ObjectField(new Rect(x, y, w, lh), "贴图", decal.texture, typeof(Texture2D), false);
+            y += lh + 4;
+
+            if (!exp) return;
+
+            // 解锁方式
+            var methodProp = prop.FindPropertyRelative("unlockMethod");
+            UnlockMethod m = (UnlockMethod)methodProp.enumValueIndex;
+            m = (UnlockMethod)EditorGUI.EnumPopup(new Rect(x, y, w, lh), "解锁方式", m);
+            if ((int)m != methodProp.enumValueIndex)
+            {
+                Undo.RecordObject(dbInst, "Change Method");
+                methodProp.enumValueIndex = (int)m;
+                ApplyDescriptionAndPrice(decal, m);
+                EditorUtility.SetDirty(dbInst);
+            }
+            y += lh + 4;
+
+            // 解锁信息
+            if (m != UnlockMethod.CoinPurchase)
+            {
+                var infoProp = prop.FindPropertyRelative("unlockInfo");
+                infoProp.stringValue = EditorGUI.TextField(new Rect(x, y, w, lh), "信息", infoProp.stringValue);
+                y += lh + 4;
+            }
+
+            // 描述
+            EditorGUI.LabelField(new Rect(x, y, w, lh), "描述: " + decal.description);
+            y += lh + 4;
+
+            // 价格
+            if (m == UnlockMethod.CoinPurchase)
+            {
+                EditorGUI.LabelField(new Rect(x, y, w, lh), "价格: " + decal.price);
+                y += lh + 4;
+            }
+
+            // 默认
+            bool def = (bool)isDefaultField.GetValue(decal);
+            bool newDef = EditorGUI.Toggle(new Rect(x, y, w, lh), "默认贴花", def);
+            if (newDef != def)
+            {
+                Undo.RecordObject(dbInst, "Toggle Default");
+                if (newDef)
+                    foreach (var o in dbInst.decalList)
+                        if (o != decal && o.type == decal.type)
+                            isDefaultField.SetValue(o, false);
+                isDefaultField.SetValue(decal, newDef);
+                EditorUtility.SetDirty(dbInst);
+            }
+            y += lh + 4;
+
+            // 拥有
+            decal.isOwned = EditorGUI.Toggle(new Rect(x, y, w, lh), "拥有", decal.isOwned);
+            y += lh + 4;
+
+            // 装备
+            decal.isEquip = EditorGUI.Toggle(new Rect(x, y, w, lh), "装备", decal.isEquip);
+            y += lh + 4;
+
+            // 底线
+            EditorGUI.DrawRect(new Rect(rect.x, rect.yMax - 2, rect.width, 1), Color.gray);
+        };
+
+        list.onAddCallback = l =>
+        {
+            var dbInst = (DecalDatabase)target;
+            Undo.RecordObject(dbInst, "Add Decal");
+            var d = new DecalData { type = dbInst.globalSkinType, unlockMethod = UnlockMethod.CoinPurchase };
+            d.id = (d.type == SkinType.NailArt ? "mj_" : "th_") + System.Guid.NewGuid().ToString("N").Substring(0, 8);
+            ApplyDescriptionAndPrice(d, UnlockMethod.CoinPurchase);
+            dbInst.decalList.Add(d);
+            foldouts.Add(true);
+            EditorUtility.SetDirty(dbInst);
+        };
+
+        list.onRemoveCallback = l =>
+        {
+            var dbInst = (DecalDatabase)target;
+            Undo.RecordObject(dbInst, "Remove Decal");
+            dbInst.decalList.RemoveAt(l.index);
+            foldouts.RemoveAt(l.index);
+            EditorUtility.SetDirty(dbInst);
+        };
+
+        list.onReorderCallback = l =>
+        {
+            var dbInst = (DecalDatabase)target;
+            var newF = new List<bool>();
+            foreach (var _ in dbInst.decalList) newF.Add(false);
+            for (int i = 0; i < newF.Count && i < foldouts.Count; i++) newF[i] = foldouts[i];
+            foldouts = newF;
+        };
+    }
+
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
-        DecalDatabase db = (DecalDatabase)target;
+        var db = (DecalDatabase)target;
 
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Decal Database", EditorStyles.boldLabel);
-        EditorGUILayout.Space();
-
         db.globalSkinType = (SkinType)EditorGUILayout.EnumPopup("Global Skin Type", db.globalSkinType);
+        EditorGUILayout.HelpBox("每种类型只能一个默认贴花。", MessageType.Info);
 
+        list.DoLayoutList();
         EditorGUILayout.Space();
-        EditorGUILayout.LabelField("Decal List", EditorStyles.boldLabel);
-        EditorGUILayout.Space();
-
-        // 分组缓存
-        Dictionary<SkinLevel, List<DecalData>> levelGroups = new Dictionary<SkinLevel, List<DecalData>>();
-        foreach (SkinLevel level in System.Enum.GetValues(typeof(SkinLevel)))
+        if (GUILayout.Button("清除所有 isOwned 和 isEquip"))
         {
-            levelGroups[level] = new List<DecalData>();
-        }
-
-        foreach (var decal in db.decalList)
-        {
-            levelGroups[decal.level].Add(decal);
-        }
-
-        // 修改 Level 缓存：key 是 DecalData，value 是新的 level
-        Dictionary<DecalData, SkinLevel> levelChanges = new();
-
-        // 删除缓存
-        List<DecalData> deleteList = new();
-
-        foreach (var group in levelGroups)
-        {
-            DrawGroupHeader(group.Key.ToString() + " 等级", GetColorByLevel(group.Key));
-            List<DecalData> list = group.Value;
-
-            foreach (var decal in list)
-            {
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.BeginVertical("box");
-                EditorGUI.indentLevel++;
-
-                decal.texture = (Texture2D)EditorGUILayout.ObjectField("Texture", decal.texture, typeof(Texture2D), false);
-
-                // 改为缓存 level 修改
-                SkinLevel newLevel = (SkinLevel)EditorGUILayout.EnumPopup("Level", decal.level);
-                if (newLevel != decal.level)
-                {
-                    levelChanges[decal] = newLevel;
-                }
-
-                decal.isOwned = EditorGUILayout.Toggle("Is Owned", decal.isOwned);
-                decal.isEquip = EditorGUILayout.Toggle("Is Equip", decal.isEquip);
-                decal.description = EditorGUILayout.TextField("Description", decal.description);
-                decal.price = EditorGUILayout.IntField("Price", decal.price);
-
-                EditorGUI.indentLevel--;
-                EditorGUILayout.EndVertical();
-
-                if (GUILayout.Button("删除", GUILayout.Width(60), GUILayout.Height(60)))
-                {
-                    deleteList.Add(decal);
-                }
-
-                EditorGUILayout.EndHorizontal();
-                EditorGUILayout.Space();
-            }
-
-            // 添加按钮
-            if (GUILayout.Button($"添加 {group.Key} 级别新贴花"))
-            {
-                Undo.RecordObject(db, "Add Decal");
-                DecalData newDecal = new DecalData
-                {
-                    level = group.Key,
-                    price = 0,
-                    isOwned = false,
-                    isEquip = false,
-                    type = db.globalSkinType,
-                    description = "",
-                    texture = null
-                };
-                db.decalList.Add(newDecal);
-                EditorUtility.SetDirty(db);
-            }
-
-            GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(1));
-            EditorGUILayout.Space();
-        }
-
-        // 应用 level 修改
-        if (levelChanges.Count > 0)
-        {
-            Undo.RecordObject(db, "Change Decal Level");
-            foreach (var pair in levelChanges)
-            {
-                pair.Key.level = pair.Value;
-            }
-            EditorUtility.SetDirty(db);
-        }
-
-        // 应用删除
-        if (deleteList.Count > 0)
-        {
-            Undo.RecordObject(db, "Delete Decal");
-            foreach (var decal in deleteList)
-            {
-                db.decalList.Remove(decal);
-            }
+            Undo.RecordObject(db, "Clear Status");
+            foreach (var d in db.decalList) { d.isOwned = false; d.isEquip = false; }
             EditorUtility.SetDirty(db);
         }
 
         serializedObject.ApplyModifiedProperties();
     }
 
-    private void DrawGroupHeader(string title, Color bgColor)
+    private void ApplyDescriptionAndPrice(DecalData d, UnlockMethod m)
     {
-        Rect rect = EditorGUILayout.GetControlRect(false, 25);
-        EditorGUI.DrawRect(rect, bgColor);
-        EditorGUI.LabelField(rect, title, new GUIStyle(EditorStyles.boldLabel)
-        {
-            alignment = TextAnchor.MiddleCenter,
-            normal = { textColor = Color.white }
-        });
-        EditorGUILayout.Space();
-    }
-
-    private Color GetColorByLevel(SkinLevel level)
-    {
-        return level switch
-        {
-            SkinLevel.Normal => new Color(0, 0, 0, 0.4f),
-            SkinLevel.Purple => new Color(0.4f, 0.2f, 0.5f, 0.7f),
-            SkinLevel.Golden => new Color(0.6f, 0.5f, 0.0f, 0.7f),
-            _ => Color.gray
-        };
+        d.description = d.type == SkinType.NailArt ? meijiaDescription[0] : tiehuaDescription[0];
+        d.price = m == UnlockMethod.CoinPurchase ? 100 : 0;
     }
 }
 #endif

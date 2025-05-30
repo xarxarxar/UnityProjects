@@ -13,10 +13,21 @@ public class DecalDatabase : ScriptableObject
 
     private void OnValidate()
     {
+#if UNITY_EDITOR
+        for (int i = decalList.Count - 1; i >= 0; i--)
+        {
+            var decal = decalList[i];
+            if (decal.texture != null && !AssetDatabase.Contains(decal.texture))
+            {
+                Debug.LogWarning($"Decal [{i}] 的贴图已被删除，自动清理引用");
+                decal.texture = null;
+            }
+        }
+#endif
+
         foreach (var decal in decalList)
         {
             decal.type = globalSkinType;
-            decal.UpdateDescriptionAndPrice();
         }
     }
 }

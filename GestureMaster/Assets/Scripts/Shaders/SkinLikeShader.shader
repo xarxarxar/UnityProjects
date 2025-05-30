@@ -44,6 +44,7 @@ Shader "Custom/SkinLikeShader"
             o.Albedo = baseColor + sss;
             o.Smoothness = _Glossiness;
 
+
             // 使用默认内置的 SpecColor（Standard Shader）
             // 若你希望自定义，可以使用 metallic workflow
         }

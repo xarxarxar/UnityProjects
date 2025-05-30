@@ -47,6 +47,28 @@ public class Hand:MonoBehaviour
         }
     }
 
+    public void SetGesture(int category)
+    {
+        if (category == 0 || category == 1)
+        {
+            bool[] tmp = new bool[5];
+            for (int i = 0; i < 5; i++)
+            {
+                tmp[i] =UnityEngine. Random.value > 0.5f;
+            }
+            SetFingers(tmp);
+        }
+        else if (category == 2)
+        {
+            bool[][] RPS = {
+                new[] { false, false, false, false, false }, // 石头
+                new[] { false, true, true, false, false },   // 剪刀
+                new[] { true, true, true, true, true }       // 布
+            };
+            SetFingers(RPS[UnityEngine.Random.Range(0, RPS.Length)]);
+        }
+    }
+
     // 递归方法：同步两个 transform
     private void SyncRecursive( Transform target,Transform source)
     {

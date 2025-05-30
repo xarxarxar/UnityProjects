@@ -1,73 +1,32 @@
 using DG.Tweening;
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class CoinManager : MonoBehaviour
 {
-    public static CoinManager instance;
+    //public static CoinManager instance;
     public GameInfo gameInfo=>GameManager.instance.gameInfo;
     public GameObject coinGet;//获取金币的提示
 
     public GameObject getCoinPanel;//获取金币的面板
+
     public Button menuAddCoinButton;//主页获取金币的按钮
     public Button meijiaAddCoinButton;//美甲获取金币的按钮
 
-
     private void Awake()
     {
-        instance = this;
+        //instance = this;
     }
 
-    //获得金币
-    public void GetCoin(int count)
-    {
-        gameInfo.coinCount += count;
-    }
-
-    //获得金币
-    public void GetCoin(int baseCount,int times)
-    {
-        gameInfo.coinCount += baseCount* times;
-        coinGet.SetActive(true);
-        if (times != 1)
-        {
-            //coinGet.transform.Find("金币数量").GetComponent<Text>().text = $"+{baseCount}<color=red>×<size=40%>{times}</size></color>";
-            coinGet.transform.Find("金币数量").GetComponent<Text>().text = $"+{baseCount * times}";
-        }
-        else
-        {
-            coinGet.transform.Find("金币数量").GetComponent<Text>().text = $"+{baseCount * times}";
-        }
-        
-        PlayScaleSequence(coinGet);
-    }
-
-
-
-    /// <summary>
-    /// 扣钱
-    /// </summary>
-    /// <param name="count">是否扣成功</param>
-    /// <returns></returns>
-    public bool ReduceCoin(int count)
-    {
-        if(gameInfo.coinCount< count)
-        {
-            return false;
-        }
-        gameInfo.coinCount -= count;
-        GameManager.instance.UpdateCoinText();
-        return true;
-    }
 
     /// <summary>
     /// 播放缩放动画并在完成后隐藏物体。
     /// </summary>
     /// <param name="target">要操作的目标物体</param>
     /// <param name="duration">每段动画的持续时间</param>
-    public void PlayScaleSequence(GameObject target, float duration = 0.2f)
+    public Sequence PlayScaleSequence(GameObject target, float duration = 0.2f, UnityAction callback = null, bool autoHide = true)
     {
         Transform t = target.transform;
 
@@ -87,6 +46,12 @@ public class CoinManager : MonoBehaviour
         sequence.AppendInterval(1f);
 
         // 动画完成后隐藏目标
-        sequence.OnComplete(() => target.SetActive(false));
+        sequence.OnComplete(() =>
+        {
+            callback?.Invoke();
+            if (autoHide)
+                target.SetActive(false);
+        });
+        return sequence;
     }
 }

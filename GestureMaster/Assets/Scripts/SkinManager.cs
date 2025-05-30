@@ -1,275 +1,307 @@
 using DG.Tweening;
+using SuperScrollView;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class SkinManager : MonoBehaviour
 {
+    public  static SkinManager instance;
+    
     public DecalDatabase decalDatabase_meijia;
     public DecalDatabase decalDatabase_tiehua;
+    private DecalDatabase current_decalDatabase;
+
+    public bool isEquipMeijia =>
+    decalDatabase_meijia != null &&
+    decalDatabase_meijia.decalList.Any(d => d.isEquip && !d.IsDefault);//当前游戏中是否装备了美甲
+    public bool isEquipTiehua =>
+    decalDatabase_tiehua != null &&
+    decalDatabase_tiehua.decalList.Any(d => d.isEquip && !d.IsDefault);//当前游戏中是否装备了贴花
+    public DecalData meijiaDecal=> decalDatabase_meijia.decalList.FirstOrDefault(d => d.isEquip);//美甲的DecalData
+    public DecalData tiehuaDecal=> decalDatabase_tiehua.decalList.FirstOrDefault(d => d.isEquip);//贴花的DecalData
+
 
     public GameObject decalItemPrefab_Normal;//普通toggle的预制体
-    public GameObject decalItemPrefab_Purple;//紫色toggle的预制体
-    public GameObject decalItemPrefab_Golden;//金色toggle的预制体
 
-    public Transform tattooContent;
-    //public Transform nailContent;
-
+    public ToggleGroup ToggleGroup;
     public Text descriptionText;//描述该道具的Text
-    public Text priceText;//该道具的价格
-    public Text equipText;//该道具是否已装备
+    public Text getMothText;//获取该道具的途径
     public Button buyButton;
-    public Button equipButton;
-    private GameObject lastEquippedItemUI; // 用于记录上一个已装备的Item UI
 
-
-    public Material targetMaterial_meijia; // 你用来显示贴花的材质
-    public Material targetMaterial_tiehua; // 你用来显示贴花的材质
+    public Material targetMaterial_meijia; // 商城中用来显示美甲的材质
+    public Material targetMaterial_tiehua; // 商城中用来显示贴花的材质
     public Material myhandMeijiaMaterial; // 我的手的真正游戏中的材质
     public Material myhandTiehuaMaterial; // 我的手的真正游戏中的材质
     public GameObject renderHand;//用来展示的手的模型
+    public GameObject nailHand;//用来展示的指甲的模型
     public Camera renderCamera;//用来展示模型的摄像机
     public Text countText;//显示有多少皮肤和皮肤总数
-    public Text coinText;//显示有多少金币
 
-    private void OnEnable()
+    [Header("基础配置")]
+    public LoopGridView mLoopGridView_meijia;
+    public LoopGridView mLoopGridView_tiehua;
+    public int totalCount => current_decalDatabase.decalList.Count;
+    public string prefabName = "ItemPrefab";
+
+    [Header("Item 尺寸设置")]
+    public List<ToggleItemAndData> toggleItemAndDatas_meijia=new List<ToggleItemAndData>();
+    public List<ToggleItemAndData> toggleItemAndDatas_tiehua = new List<ToggleItemAndData>();
+    public List<ToggleItemAndData> toggleItemAndDatas_current = new List<ToggleItemAndData>();
+    public float itemWidth = 250f;
+    public float itemHeight = 350f;
+    public float itemPaddingX = 20f;
+    public float itemPaddingY = 20f;
+
+    private bool isMeijiaLoaded=false;//美甲的super scroll view是否已经加载过
+    private bool isTiehuaLoaded=false;//贴花的super scroll view是否已经加载过
+    private int mColumCount;//scroll view 的列数
+
+    public Toggle openMeijiaToggle;
+    public Toggle openTiehuaToggle;
+    public static ToggleItem equipItem;//用来记录哪个皮肤是正在装备的
+    public static DecalData equipDecal;//用来记录哪个皮肤是正在装备的
+
+    private void Awake()
     {
-        coinText.text=GameManager.instance.gameInfo.coinCount.ToString();
+        instance=this;
     }
 
-    void Start()
+    private void Start()
     {
-        PopulateDecalUI(decalDatabase_meijia);
-        if (tattooContent.childCount > 0)
+        foreach(DecalData decalData in decalDatabase_meijia.decalList)
         {
-            var firstToggle = tattooContent.GetChild(0).GetComponent<Toggle>();
-            firstToggle.isOn = true;
+            toggleItemAndDatas_meijia.Add(new ToggleItemAndData(decalData, false));
         }
+        foreach (DecalData decalData in decalDatabase_tiehua.decalList)
+        {
+            toggleItemAndDatas_tiehua.Add(new ToggleItemAndData(decalData, false));
+        }
+
+        openMeijiaToggle.onValueChanged.AddListener((isOn) =>
+        {
+            if(isOn)
+            {
+                ShowSkin(decalDatabase_meijia);
+            }
+        });
+        openTiehuaToggle.onValueChanged.AddListener((isOn) =>
+        {
+            if (isOn)
+            {
+                ShowSkin(decalDatabase_tiehua);
+            }
+        });
+
+        ToggleItem.OnToggleClick += ShowRenderHand;//显示贴画的效果 
+        ToggleItem.OnEquipButtonClick += EquipButtonClick;//装备的皮肤变化
+
+        GameManager.OnDateUpdated += SetNewWeekLoginRewardInfos;
     }
 
-    public void PopulateDecalUI(DecalDatabase decalDatabase)
+    /// <summary>
+    /// 初始化游戏皮肤
+    /// </summary>
+    public void Init()
     {
-        ClearContent(tattooContent);
+        SyncDecalStatusFromDatabase();
+        ShowRealHand(meijiaDecal);
+        ShowRealHand(tiehuaDecal);
+    }
 
-        Material myhandMaterial=null;
-        Material targetMaterial = null;
-        if (decalDatabase== decalDatabase_meijia)
+    /// <summary>
+    /// 游戏内获取皮肤的操作
+    /// </summary>
+    public void GetSkin(DecalData decalData)
+    {
+        decalData.isOwned = true;//拥有该款皮肤
+        decalData.isNewest = true;
+        if(decalData.type==SkinType.NailArt)//是美甲
         {
-            myhandMaterial=myhandMeijiaMaterial;
-            targetMaterial= targetMaterial_meijia;
-            MoveRotateScale(renderHand.transform,new Vector3(0.07f,-0.65f,5.58f),new Vector3(0,0,3.42f),new Vector3(1,1,1));
-            TweenCameraSize(renderCamera,0.5f);
+            SkinInfo result = GameManager.instance.gameInfo.meijiaDecals.Find(skin => skin.id == decalData.id);
+            result.isOwned = true;
         }
         else
         {
-            myhandMaterial = myhandTiehuaMaterial;
-            targetMaterial = targetMaterial_tiehua;
-            MoveRotateScale(renderHand.transform, new Vector3(-0.16f, 3.14f, 5.58f), new Vector3(0, 0, 3.42f), new Vector3(1, 1, 1));
-            TweenCameraSize(renderCamera, 2.06f);
+            SkinInfo result = GameManager.instance.gameInfo.tiehuaDecals.Find(skin => skin.id == decalData.id);
+            result.isOwned = true;
         }
+        DataManager.instance.SyncGameInfo();//同步数据
+    }
+
+
+    //展示皮肤
+    public void ShowSkin(DecalDatabase decalDatabase)
+    {
+        current_decalDatabase = decalDatabase;
+        if (decalDatabase == decalDatabase_meijia)//加载美甲
+        {
+            InitGrid(mLoopGridView_meijia);
+            toggleItemAndDatas_current = toggleItemAndDatas_meijia;
+        }
+        else
+        {
+            InitGrid(mLoopGridView_tiehua);
+            toggleItemAndDatas_current = toggleItemAndDatas_tiehua;
+        }
+        
+
         // 获取已拥有的皮肤数量
         int ownedCount = decalDatabase.decalList.Count(decal => decal.isOwned);
         countText.text = $"全部：<color=#008DD4>{ownedCount}</color>/{decalDatabase.decalList.Count}";
+    }
 
-        decalDatabase.decalList.Sort((a, b) =>
+    /// <summary>
+    /// 将本地的皮肤数据与云端的同步
+    /// </summary>
+    public void SyncDecalStatusFromDatabase()
+    {
+        if (decalDatabase_meijia == null) return;
+        foreach (var matchingDecal in decalDatabase_meijia.decalList)
         {
-            // 1. isOwned: false 前面
-            if (a.isOwned != b.isOwned)
-                return a.isOwned ? -1 : 1;
-
-            // 2. isEquip: true 前面（仅在 isOwned 相同前提下）
-            //if (a.isOwned && b.isOwned && a.isEquip != b.isEquip)
-            //    return a.isEquip ? -1 : 1;
-
-            // 3. level: Normal < Purple < Golden
-            return a.level.CompareTo(b.level);
-        });
-
-        for (int i = 0; i < decalDatabase.decalList.Count; i++)
-        {
-            DecalData decal = decalDatabase.decalList[i];
-            GameObject prefab = GetPrefabByLevel(decal.level);
-
-
-            Transform parentContent = tattooContent;
-
-            GameObject item = Instantiate(prefab, parentContent);
-
-            //item.transform.SetSiblingIndex(0);
-
-            item.transform.Find("是否已拥有Label").gameObject.SetActive(decal.isOwned);
-            item.transform.Find("是否已装备Label").gameObject.SetActive(decal.isEquip);
-
-            if (decal.isEquip)
+            var skin = GameManager.instance.gameInfo.meijiaDecals.Find(d => d.id == matchingDecal.id);
+            if (skin != null)
             {
-                lastEquippedItemUI = item;
-            }
-
-            Toggle toggle = item.GetComponent<Toggle>();
-            if (toggle != null)
-            {
-                ToggleGroup toggleGroup = parentContent.GetComponent<ToggleGroup>();
-                if (toggleGroup != null)
-                {
-                    toggle.group = toggleGroup;
-                }
-
-                // 捕获当前循环变量，避免闭包问题
-                DecalData currentDecal = decal;
-
-                toggle.onValueChanged.AddListener(isOn =>
-                {
-                    if (isOn)
-                    {
-                        descriptionText.text = currentDecal.description;
-                        priceText.text = currentDecal.isOwned ? "" : currentDecal.price.ToString();
-                        equipText.text = currentDecal.isEquip ? "已装备" : "装备";
-                        
-                        buyButton.gameObject.SetActive(!currentDecal.isOwned);
-                        equipButton.gameObject.SetActive(currentDecal.isOwned);
-
-                        if (targetMaterial != null && currentDecal.texture != null)
-                        {
-                            targetMaterial.SetTexture("_DecalTex", currentDecal.texture);
-                        }
-
-                        // 清除旧的监听
-                        buyButton.onClick.RemoveAllListeners();
-                        equipButton.onClick.RemoveAllListeners();
-
-                        buyButton.onClick.AddListener(() =>
-                        {
-                            if (CoinManager.instance.ReduceCoin(currentDecal.price))
-                            {
-                                coinText.text = GameManager.instance.gameInfo.coinCount.ToString();
-
-                                currentDecal.isOwned = true;
-
-                                // 重新设置 description 和 price（避免新创建的 description 为空）
-                                currentDecal.UpdateDescriptionAndPrice();
-
-                                // 关键：重新生成 UI，重新排序和刷新界面
-                                PopulateDecalUI(decalDatabase);
-
-                                // 不需要下面这堆代码了
-                                // item.transform.Find("是否已拥有Label").gameObject.SetActive(true);
-                                // buyButton.gameObject.SetActive(false);
-                                // equipButton.gameObject.SetActive(true);
-                                // priceText.text = "";
-                                // equipText.text = "装备";
-                                // int ownedCount = decalDatabase.decalList.Count(d => d.isOwned);
-                                // countText.text = $"全部：<color=#008DD4>{ownedCount}</color>/{decalDatabase.decalList.Count}";
-                            }
-                            else
-                            {
-                                Debug.Log("金币不足");
-                            }
-                        });
-
-                        equipButton.onClick.AddListener(() =>
-                        {
-                            // 所有皮肤取消装备
-                            foreach (var d in decalDatabase.decalList)
-                            {
-                                d.isEquip = false;
-                            }
-
-                            currentDecal.isEquip = true;
-
-                            // 设置当前贴图
-                            if (myhandMaterial != null && currentDecal.texture != null)
-                            {
-                                myhandMaterial.SetTexture("_DecalTex", currentDecal.texture);
-                            }
-
-                            //隐藏上一个已装备标签
-                            if (lastEquippedItemUI != null)
-                            {
-                                Transform lastLabel = lastEquippedItemUI.transform.Find("是否已装备Label");
-                                if (lastLabel != null)
-                                    lastLabel.gameObject.SetActive(false);
-                            }
-
-                            //显示当前的已装备标签
-                            Transform currentLabel = item.transform.Find("是否已装备Label");
-                            if (currentLabel != null)
-                                currentLabel.gameObject.SetActive(true);
-
-                            // 更新引用
-                            lastEquippedItemUI = item;
-
-                            // 更新UI文本
-                            equipText.text = "已装备";
-                        });
-                    }
-                });
-            }
-
-            var icon = item.transform.Find("Icon").GetChild(0)?.GetComponent<Image>();
-            if (icon != null)
-            {
-                icon.sprite = decal.GetThumbnail();
+                matchingDecal.isOwned = skin.isOwned;
+                matchingDecal.isEquip = skin.isEquip;
             }
         }
 
+        if (decalDatabase_tiehua == null) return;
 
-    }
-    
-
-
-    void ClearContent(Transform content)
-    {
-        for (int i = content.childCount - 1; i >= 0; i--)
+        foreach (var matchingDecal in decalDatabase_tiehua.decalList)
         {
-            Destroy(content.GetChild(i).gameObject);
+            var skin = GameManager.instance.gameInfo.tiehuaDecals.Find(d => d.id == matchingDecal.id);
+            if (skin != null)
+            {
+                matchingDecal.isOwned = skin.isOwned;
+                matchingDecal.isEquip = skin.isEquip;
+            }
         }
     }
 
-    GameObject GetPrefabByLevel(SkinLevel level)
+    //周一重新设置每日登录信息获取的情况
+    private void SetNewWeekLoginRewardInfos(int weekday)
     {
-        switch (level)
+        //周一了，并且上一次登录时间和今天不是同一天，则刷新一周的每日登录信息
+        if(weekday == 0 && GameManager.instance.gameInfo.lastLoginDate.Date!=GameManager.instance.TodayDate.Date)
         {
-            case SkinLevel.Normal: return decalItemPrefab_Normal;
-            case SkinLevel.Purple: return decalItemPrefab_Purple;
-            case SkinLevel.Golden: return decalItemPrefab_Golden;
-            default: return decalItemPrefab_Normal;
+            SetGameInfoLoginRewardInfos(GameManager.instance.gameInfo.loginRewardInfos);
         }
     }
 
-    void SetupItemUI(GameObject item, DecalData decal)
+    /// <summary>
+    /// 将每日登录信息列表重新设置
+    /// </summary>
+    /// <param name="loginRewardInfos"></param>
+    public void SetGameInfoLoginRewardInfos(List<LoginRewardInfo> loginRewardInfos)
     {
-        // 描述文本
-        if (descriptionText != null)
-            descriptionText.text = decal.description;
-
-        // 装备文本和按钮显示
-        if (decal.isOwned)
+        //获取6个美甲
+        List<DecalData> meijias = GetRandomSkins(isOwned: false, type: SkinType.NailArt, unlockMethod: UnlockMethod.DailyLogin, count: 6);
+        //获取1个贴花
+        List<DecalData> tiehua = GetRandomSkins(isOwned: false, type: SkinType.Tattoo, unlockMethod: UnlockMethod.DailyLogin, count: 1);
+        // 添加美甲奖励（前6天）
+        for (int i = 0; i < meijias.Count; i++)
         {
-            if (equipText != null)
-                equipText.text = decal.isEquip ? "已装备" : "装备";
+            LoginRewardInfo tmpLoginRewardInfo = new LoginRewardInfo();
+            tmpLoginRewardInfo.skinId = meijias[i]?.id ?? ""; // 防止null
+            tmpLoginRewardInfo.weekday = i;
+            loginRewardInfos.Add(tmpLoginRewardInfo);
+        }
 
-            if (buyButton != null)
-                buyButton.gameObject.SetActive(false);
+        // 添加第7天的贴花奖励
+        LoginRewardInfo lastLoginReward = new LoginRewardInfo();
+        lastLoginReward.skinId = tiehua[0]?.id ?? ""; // 防止null
+        lastLoginReward.weekday = 6;
+        loginRewardInfos.Add(lastLoginReward);
+    }
 
-            if (equipButton != null)
-                equipButton.gameObject.SetActive(true);
+    /// <summary>
+    /// 通关id得到皮肤的decaldata
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public DecalData GetSkinById(string id)
+    {
+        DecalData decalData= decalDatabase_meijia.decalList.FirstOrDefault(d => d.id == id);
+        if(decalData == null)
+        {
+            decalData= decalDatabase_tiehua.decalList.FirstOrDefault(d => d.id == id);
+        }
+        return decalData;
+    }
+
+    /// <summary>
+    /// 随机获取皮肤的decaldata
+    /// </summary>
+    /// <param name="skinType"></param>
+    /// <returns></returns>
+    public List<DecalData> GetRandomSkins(
+    bool? isOwned = null,
+    bool? isEquip = null,
+    bool? isNewest = null,
+    SkinType? type = null,
+    UnlockMethod? unlockMethod = null,
+    int count = 1
+)
+    {
+        List<DecalData> sourceList = new List<DecalData>();
+
+        // 收集数据源
+        if (type == null)
+        {
+            if (decalDatabase_meijia?.decalList != null)
+                sourceList.AddRange(decalDatabase_meijia.decalList);
+
+            if (decalDatabase_tiehua?.decalList != null)
+                sourceList.AddRange(decalDatabase_tiehua.decalList);
+        }
+        else if (type == SkinType.NailArt)
+        {
+            if (decalDatabase_meijia?.decalList != null)
+                sourceList.AddRange(decalDatabase_meijia.decalList);
         }
         else
         {
-            if (priceText != null)
-                priceText.text = $"{decal.price}";
-
-            if (buyButton != null)
-                buyButton.gameObject.SetActive(true);
-
-            if (equipButton != null)
-                equipButton.gameObject.SetActive(false);
-
-            if (equipText != null)
-                equipText.text = "";
+            if (decalDatabase_tiehua?.decalList != null)
+                sourceList.AddRange(decalDatabase_tiehua.decalList);
         }
+
+        // 多条件过滤
+        List<DecalData> filteredList = sourceList.FindAll(d =>
+            (isOwned == null || d.isOwned == isOwned) &&
+            (isEquip == null || d.isEquip == isEquip) &&
+            (isNewest == null || d.isNewest == isNewest) &&
+            (unlockMethod == null || d.unlockMethod == unlockMethod)
+        );
+
+        // 打乱顺序
+        for (int i = filteredList.Count - 1; i > 0; i--)
+        {
+            int j = UnityEngine.Random.Range(0, i + 1);
+            (filteredList[i], filteredList[j]) = (filteredList[j], filteredList[i]);
+        }
+
+        // 构建固定长度的返回列表
+        List<DecalData> result = new List<DecalData>();
+        for (int i = 0; i < count; i++)
+        {
+            if (i < filteredList.Count)
+            {
+                result.Add(filteredList[i]);
+            }
+            else
+            {
+                result.Add(null); // 不足则补 null
+            }
+        }
+
+        return result;
     }
+
 
     /// <summary>
     /// 在指定时间内同时移动、旋转和缩放目标物体，返回 Sequence。
@@ -280,7 +312,7 @@ public class SkinManager : MonoBehaviour
     /// <param name="targetScale">目标缩放</param>
     /// <param name="duration">动画持续时间（默认 1 秒）</param>
     /// <returns>返回 DOTween 的 Sequence 对象</returns>
-    public static Sequence MoveRotateScale(Transform target, Vector3 targetPosition, Vector3 targetRotation, Vector3 targetScale, float duration = 1f)
+    Sequence MoveRotateScale(Transform target, Vector3 targetPosition, Vector3 targetRotation, Vector3 targetScale, float duration = 0.75f)
     {
         Sequence sequence = DOTween.Sequence();
 
@@ -303,23 +335,198 @@ public class SkinManager : MonoBehaviour
     /// <param name="targetSize">目标大小</param>
     /// <param name="duration">持续时间</param>
     /// <returns>返回 Tween 对象</returns>
-    public static Tween TweenCameraSize(Camera cam, float targetSize, float duration = 1f)
+    public static Tween TweenCameraSize(Camera cam, float targetSize, float duration = 0.75f)
     {
         return DOTween.To(() => cam.orthographicSize, x => cam.orthographicSize = x, targetSize, duration);
     }
+
+    /// <summary>
+    /// 从 DecalDatabase 中随机获取一个未拥有的 DecalData
+    /// </summary>
+    /// <param name="decalDatabase">Decal 数据库对象</param>
+    /// <returns>一个未拥有的 DecalData，如果没有则返回 null</returns>
+    public DecalData GetRandomUnownedDecal(DecalDatabase decalDatabase)
+    {
+        // 获取所有未拥有的 Decal
+        var unownedDecals = decalDatabase.decalList
+            .Where(d => d != null && d.isOwned == false)
+            .ToList();
+
+        // 如果没有未拥有的贴花，返回 null
+        if (unownedDecals.Count == 0)
+            return null;
+
+        // 随机选取一个
+        int index =UnityEngine. Random.Range(0, unownedDecals.Count);
+        return unownedDecals[index];
+    }
+
+    /// <summary>
+    /// 展示皮肤效果
+    /// </summary>
+    /// <param name="category">0为美甲，1为贴画</param>
+    /// <param name="decalData">材质贴图</param>
+    public void ShowRenderHand(DecalData decalData)
+    {
+        if (decalData.IsDefault)
+        {
+            descriptionText.text = "默认";
+        }
+        else
+        {
+            descriptionText.text = decalData.description;
+        }
+        
+        if (decalData.type == SkinType.NailArt)//美甲
+        {
+            nailHand.SetActive(true);
+            renderHand.SetActive(false);
+            targetMaterial_meijia.SetTexture("_MainTex", decalData.texture);
+            TweenCameraSize(renderCamera, 0.5f);
+            MoveRotateScale(renderHand.transform, new Vector3(0.32f, -0.68f, 5.53f), new Vector3(0, -9.26f, -0.418f), new Vector3(1, 1, 1));
+        }
+        else
+        {
+            nailHand.SetActive(false);
+            renderHand.SetActive(true);
+            targetMaterial_tiehua.SetTexture("_MainTex", decalData.texture);
+            MoveRotateScale(renderHand.transform, new Vector3(-0.16f, 2.91f, 5.58f), new Vector3(0, 0, 3.42f), new Vector3(1, 1, 1));
+            TweenCameraSize(renderCamera, 1.5f);
+        }
+    }
+
+    /// <summary>
+    /// 设置游戏内真正的皮肤效果
+    /// </summary>
+    /// <param name="category">0为美甲，1为贴画</param>
+    /// <param name="texture">材质贴图</param>
+    public void ShowRealHand(DecalData decalData)
+    {
+        if (decalData.type == SkinType.NailArt)
+        {
+            myhandMeijiaMaterial.SetTexture("_MainTex", decalData.texture);
+            foreach (var skin in GameManager.instance.gameInfo.meijiaDecals)
+            {
+                skin.isEquip = (skin.id == decalData.id);
+            }
+        }
+        else
+        {
+            myhandTiehuaMaterial.SetTexture("_MainTex", decalData.texture);
+            foreach (var skin in GameManager.instance.gameInfo.tiehuaDecals)
+            {
+                skin.isEquip = (skin.id == decalData.id);
+            }
+        }
+    }
+
+    private void EquipButtonClick(ToggleItem toggleItem,DecalData decalData)
+    {
+        equipItem.transform.Find("是否已装备Label").gameObject.SetActive(false);//获取之前装备的这个
+        equipDecal.isEquip = false;
+
+        toggleItem.transform.Find("是否已装备Label").gameObject.SetActive(true);//将当前的这个设为true
+        ShowRealHand(decalData);
+
+        equipItem = toggleItem;
+        equipDecal = decalData;
+
+        DataManager.instance.SyncGameInfo();//同步数据
+    }
+
+    void InitGrid(LoopGridView loopGridView)
+    {
+        mLoopGridView_meijia.gameObject.SetActive(loopGridView == mLoopGridView_meijia);
+        mLoopGridView_tiehua.gameObject.SetActive(loopGridView == mLoopGridView_tiehua);
+
+        DecalData ownedDecal = current_decalDatabase.decalList.Find(decal => decal.isEquip);
+        ShowRenderHand(ownedDecal);
+
+        if (loopGridView == mLoopGridView_meijia)
+        {
+            prefabName = "Toggle_美甲";
+            if (isMeijiaLoaded) return;
+            else 
+            {
+                itemWidth = 230;
+                itemHeight = 370;
+                isMeijiaLoaded = true;
+            }
+            
+        }
+        else
+        {
+            prefabName = "Toggle_贴花";
+            if (isTiehuaLoaded) return;
+            else
+            {
+                itemWidth = 250;
+                itemHeight = 250;
+                isTiehuaLoaded = true;
+            } 
+        }
+
+
+        mColumCount = CalculateColumnCount(loopGridView);
+
+        var settingParam = new LoopGridViewSettingParam
+        {
+            mItemSize = new Vector2(itemWidth, itemHeight),
+            mItemPadding = new Vector2(itemPaddingX, itemPaddingY),
+            mGridFixedType = GridFixedType.ColumnCountFixed,
+            mFixedRowOrColumnCount = mColumCount
+        };
+
+        loopGridView.InitGridView(totalCount, OnGetItemByRowColumn, settingParam);
+        
+    }
+
+    LoopGridViewItem OnGetItemByRowColumn(LoopGridView gridView, int index, int row, int column)
+    {
+        int realIndex = CalculateIndexByColumnCount(column, row);
+        if (index < 0 || index >= decalDatabase_meijia.decalList.Count)
+        {
+            return null;
+        }
+        LoopGridViewItem item = gridView.NewListViewItem(prefabName);
+        ToggleItem itemScript = item.GetComponent<ToggleItem>();
+        // 是否是从对象池中第一次拿出来的
+        if (item.IsInitHandlerCalled == false)
+        {
+            item.IsInitHandlerCalled = true;
+            itemScript.Init(toggleItemAndDatas_current[realIndex]);// here to init the item, such as add button click event listener.
+        }
+        //否则只需要更新就行
+        itemScript.UpdateUI(toggleItemAndDatas_current[realIndex], realIndex);
+        return item;
+    }
+
+    int CalculateColumnCount(LoopGridView loopGridView)
+    {
+        
+        RectTransform viewport = loopGridView.GetComponent<ScrollRect>().viewport;
+        float viewWidth = viewport.rect.width;
+        float totalItemWidth = itemWidth + itemPaddingX;
+        int col = Mathf.FloorToInt(viewWidth / totalItemWidth);
+        return Mathf.Max(1, col); // 最少1列
+    }
+
+    int CalculateIndexByColumnCount(int column,int row)
+    {
+        return row*mColumCount+column;
+    }
 }
 
-[System.Serializable]
-public class SkinData
+
+public enum UnlockMethod
 {
-    public string id;             // 唯一标识符
-    public string name;           // 显示名称
-    public SkinType type;         // 类型
-    public Sprite previewIcon;    // UI 预览图
-    public GameObject prefab;     // 实际应用在手上的预制体
-    public bool isUnlocked;       // 是否已解锁
+    CoinPurchase,    // 使用金币购买
+    ShareToUnlock,   // 分享解锁
+    Achievement,     // 成就解锁
+    DailyLogin,      // 连续登录赠送
+    EventReward,     // 活动奖励
+    //AdsUnlock        // 看广告获得
 }
-
 public enum SkinType
 {
     NailArt,    // 美甲
@@ -327,26 +534,28 @@ public enum SkinType
     // Future: Ring, Bracelet, etc.
 }
 
-public enum SkinLevel
-{
-    Normal,//普通
-    Purple,//紫色
-    Golden//金色
-}
-
 [System.Serializable]
 public class DecalData
 {
+    // 使用 WeakReference 缓存 Sprite，防止 Sprite 长期驻留内存，导致内存占用过高
+    static Dictionary<Texture2D, WeakReference<Sprite>> _spriteCache = new();
+    [SerializeField] private bool isDefault;
+    public bool IsDefault => isDefault; // 外部只读
+    public string id;
     public Texture2D texture;
-    public SkinLevel level;
     public string description;
     public int price;
     public bool isOwned;
     public bool isEquip;
+    public bool isNewest;//是否是最新获得的
     public SkinType type;
+
+    public UnlockMethod unlockMethod = UnlockMethod.CoinPurchase; // 默认金币购买
+    public string unlockInfo; // 附加信息，如成就ID、活动ID、分享标题等
 
     private static readonly List<string> meijiaDescription = new List<string>
     {
+        "",
         "每轮倒计时长+0.3秒",
         "每轮倒计时长+0.6秒",
         "每轮倒计时长+1秒"
@@ -354,32 +563,42 @@ public class DecalData
 
     private static readonly List<string> tiehuaDescription = new List<string>
     {
+        "",
         "每轮PK胜利时额外+1金币",
         "每轮PK胜利时额外+2金币",
         "每轮PK胜利时额外+5金币"
     };
 
-    public void UpdateDescriptionAndPrice()
-    {
-        int index = (int)level;
-        if (type == SkinType.NailArt)
-        {
-            description = meijiaDescription[index];
-            price = 100 + index * 50;
-        }
-        else if (type == SkinType.Tattoo)
-        {
-            description = tiehuaDescription[index];
-            price = 1000 + index * 500;
-        }
-    }
 
+    /// <summary>
+    /// 获取对应的 Sprite 缩略图，若已缓存则复用，否则动态创建并缓存（使用 WeakReference）
+    /// </summary>
+    /// <returns>缩略图 Sprite</returns>
     public Sprite GetThumbnail()
     {
-        return Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+        // 若纹理为空，返回空
+        if (texture == null)
+            return null;
+
+        // 尝试从缓存中获取 Sprite
+        if (_spriteCache.TryGetValue(texture, out var weakRef))
+        {
+            if (weakRef.TryGetTarget(out var cachedSprite) && cachedSprite != null)
+            {
+                return cachedSprite; // 缓存命中，直接返回
+            }
+        }
+
+        // 创建新的 Sprite（注意：像素单位设为100，可根据项目需求调整）
+        var sprite = Sprite.Create(
+            texture,
+            new Rect(0, 0, texture.width, texture.height),
+            new Vector2(0.5f, 0.5f) // 设定 pivot 为中心
+        );
+
+        // 将 Sprite 缓存起来（使用弱引用）
+        _spriteCache[texture] = new WeakReference<Sprite>(sprite);
+        return sprite;
     }
 }
-
-
-
 

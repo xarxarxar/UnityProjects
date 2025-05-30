@@ -31,7 +31,6 @@ public class LevelControl : MonoBehaviour
     {
         if (level <= 1)
         {
-            Debug.Log("生成新手指引关卡");
             GenerateGuideLevel();
             return;
         } 

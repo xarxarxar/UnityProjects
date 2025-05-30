@@ -18,30 +18,40 @@ public class HandControl : MonoBehaviour
     private void Awake() => instance = this; // 单例模式
 
     /// <summary>
-    /// 两个手势是否相同
+    /// 判断两个手势是否完全相同（每个手指状态都一致）
     /// </summary>
-    /// <returns></returns>
-    public bool IsSame() =>
-        Enumerable.Range(0, 5).All(i => myHand.Fingers[i] == otherHand.Fingers[i]); // 所有手指状态都相同
+    public bool IsSame(bool[] otherGesture = null)
+    {
+        var compareTo = otherGesture ?? otherHand.Fingers;
+        if (compareTo == null || compareTo.Length != 5 || myHand.Fingers == null || myHand.Fingers.Length != 5)
+            return false;
+
+        return Enumerable.Range(0, 5).All(i => myHand.Fingers[i] == compareTo[i]);
+    }
 
     /// <summary>
-    /// 两个手势是否相反
+    /// 判断两个手势是否完全相反（每个手指状态都不一致）
     /// </summary>
-    /// <returns></returns>
-    public bool IsOpposite() =>
-        Enumerable.Range(0, 5).All(i => myHand.Fingers[i] != otherHand.Fingers[i]); // 所有手指状态都相反
+    public bool IsOpposite(bool[] otherGesture = null)
+    {
+        var compareTo = otherGesture ?? otherHand.Fingers;
+        if (compareTo == null || compareTo.Length != 5 || myHand.Fingers == null || myHand.Fingers.Length != 5)
+            return false;
+
+        return Enumerable.Range(0, 5).All(i => myHand.Fingers[i] != compareTo[i]);
+    }
 
     /// <summary>
     /// 剪刀石头布是否胜利
     /// </summary>
     /// <returns></returns>
-    public bool IsRPSWin() // 判断石头剪刀布是否胜利
+    public bool IsRPSWin(bool[] otherGesture=null) // 判断石头剪刀布是否胜利
     {
         var rock = new[] { false, false, false, false, false };
         var scissor = new[] { false, true, true, false, false };
         var paper = new[] { true, true, true, true, true };
         var me = myHand.Fingers;
-        var enemy = otherHand.Fingers;
+        var enemy = otherGesture??otherHand.Fingers;
 
         if (enemy.SequenceEqual(rock)) return me.SequenceEqual(paper);
         if (enemy.SequenceEqual(scissor)) return me.SequenceEqual(rock);
