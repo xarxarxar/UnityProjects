@@ -6,13 +6,13 @@ using XLua;
 
 public class LuaManager : MonoBehaviour
 {
-    public static LuaManager instance;
+    //public static LuaManager instance;
     public LuaEnv luaEnv;
     public string luaString;
 
     private void Awake()
     {
-        instance = this;
+        //instance = this;
         luaEnv=new LuaEnv();
     }
 }

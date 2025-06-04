@@ -32,8 +32,8 @@ const initShareEvents = () => {
                 if (item.dataset.isSelf === 'false') {
                     wx.shareMessageToFriend({
                         openId: item.dataset.id,
-                        title: '最强战力排行榜！谁是第一？',
-                        imageUrl: 'https://mmgame.qpic.cn/image/5f9144af9f0e32d50fb878e5256d669fa1ae6fdec77550849bfee137be995d18/0',
+                        title: '到底是谁反应这么快',
+                        imageUrl: 'https://7465-test01cloud-8g9b0glp7aab2737-1322886618.tcb.qcloud.la/testFolder/PixPin_2025-06-04_17-38-53.png?sign=0fa92134599d97653e9bb8ce570f3fc0&t=1749029968',
                     });
                 }
             });

@@ -38,22 +38,22 @@ public class GameFailCanvas : MonoBehaviour
 
         GameObject relifeButtonObject = loadHandle.Result;
         relifeButton = Instantiate(relifeButtonObject, relifeButtonParent).GetComponent<Button>();
-        LuaManager.instance.luaString = loadLuaString.Result.text;
+        //LuaManager.instance.luaString = loadLuaString.Result.text;
 
         // 获取 Lua 返回的 table（就是上面那个 M）
-        LuaTable luaScript = LuaManager.instance.luaEnv.DoString(LuaManager.instance.luaString)[0] as LuaTable;
+        //LuaTable luaScript = LuaManager.instance.luaEnv.DoString(LuaManager.instance.luaString)[0] as LuaTable;
 
         //执行AdsInit
-        luaScript.Get<Action<GameFailCanvas>>("InitAds")?.Invoke(this);
+        //luaScript.Get<Action<GameFailCanvas>>("InitAds")?.Invoke(this);
 
         // 传入 relifeButton 和 this（GameFailCanvas 实例）
-        luaScript.Get<Action<Button, GameFailCanvas>>("BindRelifeButton")?.Invoke(relifeButton, this);
+        //luaScript.Get<Action<Button, GameFailCanvas>>("BindRelifeButton")?.Invoke(relifeButton, this);
 
 
         GameObject getTipButtonObject = getTipButtonHandle.Result;
         GetRewards.Instance.getTipButton = Instantiate(getTipButtonObject, getTipButtonParent).GetComponent<Button>();
         // 传入 relifeButton 和 this（GameFailCanvas 实例）
-        luaScript.Get<Action<Button, GetRewards>>("BindGetTipButton")?.Invoke(GetRewards.Instance.getTipButton, GetRewards.Instance);
+        //luaScript.Get<Action<Button, GetRewards>>("BindGetTipButton")?.Invoke(GetRewards.Instance.getTipButton, GetRewards.Instance);
     }
 
 
@@ -97,12 +97,33 @@ public class GameFailCanvas : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// 继续挑战（看广告）
+    /// </summary>
+    public void AdForContinueChallenge()
+    {
+        AudioManager.instance.PlaySoundEffect("ClickButton");
+        WXAdsManager.Instance.ShowAd((isOver) =>
+        {
+            if (isOver)
+            {
+                GameManager.Instance.ContinueChallenge();
+                GameManager.Instance.DoubleScoreRoundCount = 5;
+            }
+            else
+            {
+                ShowTipManager.instance.ShowTip("广告未观看完毕");
+            }
+        });
+
+    }
+
     public void InitAds(string gridUnitId, string bannerUnitId, string interstitialUnitId, string inspireUnitId)
     {
-        WXAdsManager.Instance.gridUnitId = gridUnitId;
-        WXAdsManager.Instance.bannerUnitId = gridUnitId;
-        WXAdsManager.Instance.interstitialUnitId = interstitialUnitId;
-        WXAdsManager.Instance.inspireUnitId = inspireUnitId;
+        //WXAdsManager.Instance.gridUnitId = gridUnitId;
+        //WXAdsManager.Instance.bannerUnitId = gridUnitId;
+        //WXAdsManager.Instance.interstitialUnitId = interstitialUnitId;
+        //WXAdsManager.Instance.inspireUnitId = inspireUnitId;
         WXAdsManager.Instance.Init();
     }
 

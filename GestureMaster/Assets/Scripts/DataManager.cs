@@ -23,6 +23,7 @@ public class DataManager : MonoBehaviour
     /// 玩家数据获取完毕
     /// </summary>
     public static event UnityAction OnGetGameInfo;
+    private GameInfo PlayerInfo=>GameEntrance.instance.PlayerInfo;
 
 
     private void Awake()
@@ -112,7 +113,7 @@ public class DataManager : MonoBehaviour
     {
         string timeStr = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         SyncDecalStatusFromDatabase();//同步皮肤数据
-        UploadGameInfo(GameManager.instance.gameInfo);
+        UploadGameInfo(PlayerInfo);
     }
 
     /// <summary>
@@ -154,7 +155,7 @@ public class DataManager : MonoBehaviour
         WX.OnHide((res) =>
         {
             string timeStr = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-            UploadGameInfo(GameManager.instance.gameInfo);
+            UploadGameInfo(PlayerInfo);
         });
     }
 
@@ -163,7 +164,7 @@ public class DataManager : MonoBehaviour
     {
         if (SkinManager.instance.decalDatabase_meijia == null) return;
 
-        foreach (var skin in GameManager.instance.gameInfo. meijiaDecals)
+        foreach (var skin in PlayerInfo.meijiaDecals)
         {
             var matchingDecal = SkinManager.instance.decalDatabase_meijia.decalList.Find(d => d.id == skin.id);
             if (matchingDecal != null)
@@ -175,7 +176,7 @@ public class DataManager : MonoBehaviour
 
         if (SkinManager.instance.decalDatabase_tiehua == null) return;
 
-        foreach (var skin in GameManager.instance.gameInfo.tiehuaDecals)
+        foreach (var skin in PlayerInfo.tiehuaDecals)
         {
             var matchingDecal = SkinManager.instance.decalDatabase_tiehua.decalList.Find(d => d.id == skin.id);
             if (matchingDecal != null)
@@ -185,7 +186,7 @@ public class DataManager : MonoBehaviour
             }
         }
     }
-
+   
 
     //时间戳（秒）转日期字符串
     public string TimestampToDateString(long timestamp)

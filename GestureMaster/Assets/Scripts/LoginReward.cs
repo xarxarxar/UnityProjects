@@ -15,6 +15,7 @@ public class LoginReward : MonoBehaviour
     public GameObject mNoSkinCanGet;//显示已无可领取的美甲
 
     public GameObject mLoginRewardPanel;//登录领取奖励面板
+    public GameObject mGetLoginRewardPanel;//登录领取奖励面板，恭喜获取
 
     public Button mPreButton;
     public Button mNextButton;
@@ -23,6 +24,9 @@ public class LoginReward : MonoBehaviour
     [SerializeField] private int mCurrentIndex;//当前显示的index
 
     public List<LoginRewardInfo> loginRewardInfos = new List<LoginRewardInfo>();
+
+    private GameInfo PlayerInfo=>GameEntrance.instance.PlayerInfo;
+    private int WeekDay=> GameEntrance.WeekDay;
 
     private void Awake()
     {
@@ -34,15 +38,16 @@ public class LoginReward : MonoBehaviour
     /// </summary>
     public void Init()
     {
-        loginRewardInfos=GameManager.instance.gameInfo.loginRewardInfos;
+        loginRewardInfos= PlayerInfo.loginRewardInfos;
         mGetButton.onClick.AddListener(GetSkinButton);
+        mMakeUpButton.onClick.AddListener(ShareForLoginSkin);
     }
 
     //打开每日登陆奖励面板
     public void OpenLoginRewardPanel()
     {
         mLoginRewardPanel.SetActive(true);
-        mCurrentIndex = GameManager.instance.WeekDay;
+        mCurrentIndex = WeekDay;
         SetRewardSkin(loginRewardInfos[mCurrentIndex]);
     }
 
@@ -81,12 +86,12 @@ public class LoginReward : MonoBehaviour
 
         mDateText.text ="周"+ ConvertNumberToChinese(mCurrentIndex);
         //时间为今天，且没有拥有这个皮肤
-        mGetButton.gameObject.SetActive(skinInfo.weekday== GameManager.instance.WeekDay 
+        mGetButton.gameObject.SetActive(skinInfo.weekday== WeekDay
             && !SkinManager.instance.GetSkinById(skinInfo.skinId).isOwned
             && skinInfo.skinId != "");
         //时间已经过了而且没有这个皮肤
-        mMakeUpButton.gameObject.SetActive(skinInfo.weekday < GameManager.instance.WeekDay && !SkinManager.instance.GetSkinById(skinInfo.skinId).isOwned);
-        mReachDate.gameObject.SetActive(skinInfo.weekday > GameManager.instance.WeekDay);
+        mMakeUpButton.gameObject.SetActive(skinInfo.weekday < WeekDay && !SkinManager.instance.GetSkinById(skinInfo.skinId).isOwned);
+        mReachDate.gameObject.SetActive(skinInfo.weekday > WeekDay);
         mAlreadyHas.gameObject.SetActive(SkinManager.instance.GetSkinById(skinInfo.skinId).isOwned);
     }
 
@@ -94,6 +99,20 @@ public class LoginReward : MonoBehaviour
     private void GetSkinButton()
     {
         SkinManager.instance.GetSkin(SkinManager.instance.GetSkinById(mCurrentId));
+        mGetLoginRewardPanel.SetActive(true);
+        mGetButton.gameObject.SetActive(false);
+        mAlreadyHas.gameObject .SetActive(true);
+    }
+
+    private void ShareForLoginSkin()
+    {
+        WechatManager.ShareApp(() =>
+        {
+            SkinManager.instance.GetSkin(SkinManager.instance.GetSkinById(mCurrentId));
+            mAlreadyHas.gameObject.SetActive(true);
+            mGetLoginRewardPanel.SetActive(true);
+            mMakeUpButton.gameObject.SetActive(false);
+        });
     }
 
     private string ConvertNumberToChinese(int number)

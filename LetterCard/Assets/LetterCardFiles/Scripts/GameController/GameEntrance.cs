@@ -52,13 +52,16 @@ public class GameEntrance : MonoBehaviour
                 WX.cloud.Init(new ICloudConfig()
                 {
                     env = "cloud1-1g93cld7637aacb4", // 云环境 ID
+
                     traceUser = false
                 });
                 ShowTipManager.instance.ShowLoading(false);
                 WechatManager.instance.CreateUserInfoButtonBefore();//先创建获取用户信息按钮
                 WechatManager.instance.CreateUserInfoButton();
 
-                StartCoroutine(GameFailCanvas.instance.LoadLua());
+                WXAdsManager.Instance.Init();
+
+                //StartCoroutine(GameFailCanvas.instance.LoadLua());
             }
         );
         ButtonManager.instance.startGameButton.onClick.AddListener(SartGame);

@@ -27,6 +27,25 @@ public class GetRewards : MonoBehaviour
         });
     }
 
+    //通过广告获取提示
+    public void AdForMoney()
+    {
+        Debug.Log("看广告获取金币");
+        WXAdsManager.Instance.ShowAd((isOver) =>
+        {
+            if (isOver)
+            {
+                GameEntrance.instance.CoinCount += 50;
+                ShowTipManager.instance.ShowTip("获得金币", 50);
+                GetComponent<Canvas>().enabled = false;
+            }
+            else
+            {
+                ShowTipManager.instance.ShowTip("广告未观看完毕");
+            }
+        });
+    }
+
 
     /// <summary>
     /// 关闭获取奖励面板

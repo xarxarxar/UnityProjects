@@ -1,8 +1,6 @@
-using SuperScrollView;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Diagnostics;
 
 [Serializable]
 public class GameInfo
@@ -19,22 +17,9 @@ public class GameInfo
 
     public List<LoginRewardInfo> loginRewardInfos=new List<LoginRewardInfo>();//一周的登录领取皮肤详情
 
-    public int Level 
-    { 
-        get => level;
-        set
-        {
-            if(level != value)
-            {
-                level = value;
-                GameManager.instance.levelText.text = $"关卡{level}";
-            }
-        }
-    }
-
     public void Init()
     {
-        lastLoginDate = GameManager.instance.TodayDate;//今天
+        lastLoginDate = GameEntrance.TodayDate;//今天
         playerName = "游客";
         avatarUrl = "";
         playerProvince = "其他";
@@ -46,9 +31,9 @@ public class GameInfo
         //填充三个list
         meijiaDecals.Clear();
         tiehuaDecals.Clear();
-        if (SkinManager.instance.decalDatabase_meijia != null)
+        if (GameEntrance.instance.decalDatabase_meijia != null)
         {
-            foreach (var decal in SkinManager.instance.decalDatabase_meijia.decalList)
+            foreach (var decal in GameEntrance.instance.decalDatabase_meijia.decalList)
             {
                 meijiaDecals.Add(new SkinInfo
                 {
@@ -58,9 +43,9 @@ public class GameInfo
                 });
             }
         }
-        if (SkinManager.instance.decalDatabase_tiehua != null)
+        if (GameEntrance.instance.decalDatabase_tiehua != null)
         {
-            foreach (var decal in SkinManager.instance.decalDatabase_tiehua.decalList)
+            foreach (var decal in GameEntrance.instance.decalDatabase_tiehua.decalList)
             {
                 tiehuaDecals.Add(new SkinInfo
                 {
@@ -70,8 +55,7 @@ public class GameInfo
                 });
             }
         }
-
-        SkinManager.instance.SetGameInfoLoginRewardInfos(loginRewardInfos);
+        GameEntrance.instance.SetGameInfoLoginRewardInfos(loginRewardInfos);
     }
 
 

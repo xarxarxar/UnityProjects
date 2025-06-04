@@ -30,6 +30,7 @@ public class LevelPlaying : MonoBehaviour
     public GameObject failPanel;//失败界面
 
     private readonly string[] categoryNames = { "相同", "相反", "石头剪刀布" };
+    private GameInfo PlayerInfo => GameEntrance.instance.PlayerInfo;
 
 
     private void Awake()
@@ -87,6 +88,7 @@ public class LevelPlaying : MonoBehaviour
         isPaused = pause;
     }
 
+    //普通模式获得的是美甲
     private IEnumerator PlayLevel()
     {
         int failCount = 0;
@@ -104,7 +106,7 @@ public class LevelPlaying : MonoBehaviour
         bool hasRelived=false;
 
         //先确定如果这把赢了会获得的美甲皮肤
-        DecalData decalData = SkinManager.instance.GetRandomUnownedDecal(SkinManager.instance.decalDatabase_meijia);
+        DecalData decalData = SkinManager.instance.GetRandomSkins(isOwned:false,type:SkinType.NailArt,unlockMethod:UnlockMethod.CoinPurchase,count:1)[0];
         SkinManager.instance.ShowRenderHand(decalData);//展示出来，后面显示的时候会用
 
         for (int i = 0; i < LevelConfig.instance.RoundCount; i++)
@@ -150,7 +152,6 @@ public class LevelPlaying : MonoBehaviour
             isClickPkButton = false;
             pkButton.gameObject.SetActive(true);
 
-            
 
             float waittime = LevelConfig.instance.WaitTime;
             if (i >= 3 && i < 6)
@@ -271,7 +272,8 @@ public class LevelPlaying : MonoBehaviour
             robotRandomGesture = StartCoroutine(HandControl.instance.otherHand.RandomGesture());
         }
 
-        GameManager.instance.gameInfo.Level += 1;//关卡+1
+        PlayerInfo.level += 1;//关卡+1
+        GameManager.instance.levelText.text = $"关卡{PlayerInfo.level}";
         rewardPanel.SetActive(true);
         SkinManager.instance.GetSkin(decalData);//获取该皮肤
         StopAllCoroutines();
@@ -283,14 +285,14 @@ public class LevelPlaying : MonoBehaviour
 
         // 等待期间机器人手指随机做动作
         Coroutine robotRandomGesture = StartCoroutine(HandControl.instance.otherHand.RandomGesture());
-        int coin = 0;//该关卡获取的金币数量
+
         pkButton.onClick.AddListener(() =>
         {
             isClickPkButton = true;
         });
 
         //先确定如果这把赢了会获得的美甲皮肤
-        DecalData decalData = SkinManager.instance.GetRandomUnownedDecal(SkinManager.instance.decalDatabase_meijia);
+        DecalData decalData = SkinManager.instance.GetRandomSkins(isOwned: false, type: SkinType.NailArt, unlockMethod: UnlockMethod.CoinPurchase, count: 1)[0];
         SkinManager.instance.ShowRenderHand(decalData);//展示出来，后面显示的时候会用
 
         for (int i = 0; i < LevelConfig.instance.RoundCount; i++)
@@ -501,7 +503,8 @@ public class LevelPlaying : MonoBehaviour
             robotRandomGesture = StartCoroutine(HandControl.instance.otherHand.RandomGesture());
         }
         Guide.instance.SetButtonActive(0,1,2,3,4,5,6);
-        GameManager.instance.gameInfo.Level += 1;//关卡+1
+        PlayerInfo.level += 1;//关卡+1
+        GameManager.instance.levelText.text = $"关卡{PlayerInfo.level}";
         rewardPanel.SetActive(true);
         SkinManager.instance.GetSkin(decalData);//获取该皮肤
         StopAllCoroutines();
@@ -672,7 +675,7 @@ public class LevelPlaying : MonoBehaviour
     }
 
     /// <summary>
-    /// 地狱模式，失败一次直接算失败，完全正确之后通关
+    /// 地狱模式，失败一次直接算失败，完全正确之后通关，地狱模式获得的是纹身
     /// </summary>
     /// <returns></returns>
     private IEnumerator PlayHellLevel()
@@ -691,7 +694,7 @@ public class LevelPlaying : MonoBehaviour
         bool hasRelived=false;
 
         //先确定如果这把赢了会获得的美甲皮肤
-        DecalData decalData = SkinManager.instance.GetRandomUnownedDecal(SkinManager.instance.decalDatabase_meijia);
+        DecalData decalData = SkinManager.instance.GetRandomSkins(isOwned: false, type: SkinType.Tattoo, unlockMethod: UnlockMethod.CoinPurchase, count: 1)[0];
         SkinManager.instance.ShowRenderHand(decalData);//展示出来，后面显示的时候会用
 
         for (int i = 0; i < LevelConfig.instance.RoundCount; i++)

@@ -22,16 +22,16 @@ public class WXAdsManager : MonoBehaviour
         }
     }
     WXRewardedVideoAd inspireAd;    // 广告单例
-    WXCustomAd gridAd;//格子广告单例
-    WXCustomAd bannerAd;//横幅广告单例
-    WXInterstitialAd interstitialAd;//插屏广告单例
+    //WXCustomAd gridAd;//格子广告单例
+   // WXCustomAd bannerAd;//横幅广告单例
+    //WXInterstitialAd interstitialAd;//插屏广告单例
     UnityAction<bool> rewardCallback;   // 奖励回调
 
     //广告的adUnitId
-    public string gridUnitId;//格子广告ID
-    public string bannerUnitId;//横幅广告ID
-    public string interstitialUnitId;//插屏广告ID
-    public string inspireUnitId;//激励广告ID
+    //public string gridUnitId;//格子广告ID
+    //public string bannerUnitId;//横幅广告ID
+    //public string interstitialUnitId;//插屏广告ID
+    private string inspireUnitId= "adunit-4f10312f12d89a3d";//激励广告ID
 
 
     public void Init()
@@ -39,67 +39,67 @@ public class WXAdsManager : MonoBehaviour
 
         Debug.Log("加载广告");
         //格子广告
-        WindowInfo windowInfo = WX.GetWindowInfo();
-        int gridAdWidth = (int)(windowInfo.windowWidth * 0.8f);
-        gridAd = WX.CreateCustomAd(new WXCreateCustomAdParam()
-        {
-            adUnitId = gridUnitId,
-            adIntervals = 30,
-            style = new CustomStyle() { left = (int)(windowInfo.windowWidth * 0.18f), top = (int)(windowInfo.windowHeight - 106), width = gridAdWidth },
+        //WindowInfo windowInfo = WX.GetWindowInfo();
+        //int gridAdWidth = (int)(windowInfo.windowWidth * 0.8f);
+        //gridAd = WX.CreateCustomAd(new WXCreateCustomAdParam()
+        //{
+        //    adUnitId = gridUnitId,
+        //    adIntervals = 30,
+        //    style = new CustomStyle() { left = (int)(windowInfo.windowWidth * 0.18f), top = (int)(windowInfo.windowHeight - 106), width = gridAdWidth },
 
-        });
-        gridAd.OnLoad((res) =>
-        {
-            Debug.Log($"格子广告加载 = {res.errMsg}");
-        });
-        gridAd.OnError((res) =>
-        {
-            Debug.Log($"格子广告加载错误 = {res.errMsg}");
-        });
-        gridAd.OnClose(() =>
-        {
-            Debug.Log($"格子广告关闭 ");
-        });
+        //});
+        //gridAd.OnLoad((res) =>
+        //{
+        //    Debug.Log($"格子广告加载 = {res.errMsg}");
+        //});
+        //gridAd.OnError((res) =>
+        //{
+        //    Debug.Log($"格子广告加载错误 = {res.errMsg}");
+        //});
+        //gridAd.OnClose(() =>
+        //{
+        //    Debug.Log($"格子广告关闭 ");
+        //});
 
 
-        //横幅广告
-        bannerAd = WX.CreateCustomAd(new WXCreateCustomAdParam()
-        {
-            adUnitId = bannerUnitId,
-            adIntervals = 30,
-            style = new CustomStyle() { left = (int)(windowInfo.windowWidth * 0.18f), top = (int)(windowInfo.windowHeight - 106 * 0.8f), width = gridAdWidth },
+        ////横幅广告
+        //bannerAd = WX.CreateCustomAd(new WXCreateCustomAdParam()
+        //{
+        //    adUnitId = bannerUnitId,
+        //    adIntervals = 30,
+        //    style = new CustomStyle() { left = (int)(windowInfo.windowWidth * 0.18f), top = (int)(windowInfo.windowHeight - 106 * 0.8f), width = gridAdWidth },
 
-        });
-        bannerAd.OnLoad((res) =>
-        {
-            Debug.Log($"横幅广告加载 = {res.errMsg}");
-        });
-        bannerAd.OnError((res) =>
-        {
-            Debug.Log($"横幅广告加载错误 = {res.errMsg}");
-        });
-        bannerAd.OnClose(() =>
-        {
-            Debug.Log($"横幅广告关闭 ");
-        });
+        //});
+        //bannerAd.OnLoad((res) =>
+        //{
+        //    Debug.Log($"横幅广告加载 = {res.errMsg}");
+        //});
+        //bannerAd.OnError((res) =>
+        //{
+        //    Debug.Log($"横幅广告加载错误 = {res.errMsg}");
+        //});
+        //bannerAd.OnClose(() =>
+        //{
+        //    Debug.Log($"横幅广告关闭 ");
+        //});
 
-        //插屏广告
-        interstitialAd = WX.CreateInterstitialAd(new WXCreateInterstitialAdParam()
-        {
-            adUnitId = interstitialUnitId,
-        });
-        interstitialAd.OnLoad((res) =>
-        {
-            Debug.Log($"插屏广告加载 = {res.errMsg}");
-        });
-        interstitialAd.OnError((res) =>
-        {
-            Debug.Log($"插屏广告加载错误 = {res.errMsg}");
-        });
-        interstitialAd.OnClose(() =>
-        {
-            Debug.Log($"插屏广告关闭 ");
-        });
+        ////插屏广告
+        //interstitialAd = WX.CreateInterstitialAd(new WXCreateInterstitialAdParam()
+        //{
+        //    adUnitId = interstitialUnitId,
+        //});
+        //interstitialAd.OnLoad((res) =>
+        //{
+        //    Debug.Log($"插屏广告加载 = {res.errMsg}");
+        //});
+        //interstitialAd.OnError((res) =>
+        //{
+        //    Debug.Log($"插屏广告加载错误 = {res.errMsg}");
+        //});
+        //interstitialAd.OnClose(() =>
+        //{
+        //    Debug.Log($"插屏广告关闭 ");
+        //});
 
         //激励广告
         inspireAd = WX.CreateRewardedVideoAd(new WXCreateRewardedVideoAdParam()
@@ -127,7 +127,7 @@ public class WXAdsManager : MonoBehaviour
     /// </summary>
     public void ShowGridAd()
     {
-        gridAd.Show();
+        //gridAd.Show();
     }
 
     /// <summary>
@@ -135,7 +135,7 @@ public class WXAdsManager : MonoBehaviour
     /// </summary>
     public void CloseGridAds()
     {
-        gridAd.Hide();
+        //gridAd.Hide();
     }
 
     /// <summary>
@@ -143,14 +143,14 @@ public class WXAdsManager : MonoBehaviour
     /// </summary>
     public void ShowBannerAd()
     {
-        if (bannerAd != null)
-        {
-            bannerAd.Show();
-        }
-        else
-        {
-            Debug.Log("bannerAd为空");
-        }
+        //if (bannerAd != null)
+        //{
+        //    bannerAd.Show();
+        //}
+        //else
+        //{
+        //    Debug.Log("bannerAd为空");
+        //}
 
     }
 
@@ -159,7 +159,7 @@ public class WXAdsManager : MonoBehaviour
     /// </summary>
     public void CloseBannerAds()
     {
-        bannerAd.Hide();
+        //bannerAd.Hide();
     }
 
     /// <summary>
@@ -167,14 +167,14 @@ public class WXAdsManager : MonoBehaviour
     /// </summary>
     public void ShowInterstitialAd()
     {
-        if (interstitialAd != null)
-        {
-            interstitialAd.Show();
-        }
-        else
-        {
-            Debug.Log("interstitialAd为空");
-        }
+        //if (interstitialAd != null)
+        //{
+        //    interstitialAd.Show();
+        //}
+        //else
+        //{
+        //    Debug.Log("interstitialAd为空");
+        //}
 
     }
 
@@ -204,6 +204,7 @@ public class WXAdsManager : MonoBehaviour
     /// <param name="callback">看完广告后的回调</param>
     public void ShowAd(UnityAction<bool> callback)
     {
+        Debug.Log("显示激励广告");
         inspireAd.Show();
         rewardCallback = callback;
     }
@@ -214,7 +215,7 @@ public class WXAdsManager : MonoBehaviour
     /// <param name="isEnd">是否看完</param>
     void OnPlayEnd(bool isEnd)
     {
-        RandomPlayCustom();
+        //RandomPlayCustom();//随机播放格子广告
         rewardCallback?.Invoke(isEnd);
         if (isEnd)
         {

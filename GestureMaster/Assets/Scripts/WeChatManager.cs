@@ -30,6 +30,8 @@ public class WechatManager : MonoBehaviour
     public Image imageRightBottom;
     public GameObject RankObject;
 
+    private GameInfo PlayerInfo=>GameEntrance.instance.PlayerInfo;
+
     private void Awake()
     {
         instance = this;
@@ -52,13 +54,6 @@ public class WechatManager : MonoBehaviour
         // 设置 OnShow 监听
         WX.OnShow(res);
     }
-
-
-
-
-
-
-
 
     /// <summary>
     /// 上传分数
@@ -95,8 +90,7 @@ public class WechatManager : MonoBehaviour
     /// </summary>
     public void RankButton()
     {
-        AudioManager.instance.PlaySFX("点击");
-        UploadScore(GameManager.instance.gameInfo.Level);
+        UploadScore(PlayerInfo.level);
         RankObject.SetActive(true);
         ShowScore();
     }

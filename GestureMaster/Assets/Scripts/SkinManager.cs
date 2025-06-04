@@ -65,6 +65,10 @@ public class SkinManager : MonoBehaviour
     public static ToggleItem equipItem;//用来记录哪个皮肤是正在装备的
     public static DecalData equipDecal;//用来记录哪个皮肤是正在装备的
 
+    private GameInfo PlayerInfo=>GameEntrance.instance.PlayerInfo;
+    private int WeekDay=>GameEntrance.WeekDay;
+    private DateTime TodayDate => GameEntrance.TodayDate;
+
     private void Awake()
     {
         instance=this;
@@ -99,7 +103,7 @@ public class SkinManager : MonoBehaviour
         ToggleItem.OnToggleClick += ShowRenderHand;//显示贴画的效果 
         ToggleItem.OnEquipButtonClick += EquipButtonClick;//装备的皮肤变化
 
-        GameManager.OnDateUpdated += SetNewWeekLoginRewardInfos;
+        GameEntrance.OnDateUpdate += SetNewWeekLoginRewardInfos;
     }
 
     /// <summary>
@@ -121,12 +125,12 @@ public class SkinManager : MonoBehaviour
         decalData.isNewest = true;
         if(decalData.type==SkinType.NailArt)//是美甲
         {
-            SkinInfo result = GameManager.instance.gameInfo.meijiaDecals.Find(skin => skin.id == decalData.id);
+            SkinInfo result = PlayerInfo.meijiaDecals.Find(skin => skin.id == decalData.id);
             result.isOwned = true;
         }
         else
         {
-            SkinInfo result = GameManager.instance.gameInfo.tiehuaDecals.Find(skin => skin.id == decalData.id);
+            SkinInfo result = PlayerInfo.tiehuaDecals.Find(skin => skin.id == decalData.id);
             result.isOwned = true;
         }
         DataManager.instance.SyncGameInfo();//同步数据
@@ -162,7 +166,7 @@ public class SkinManager : MonoBehaviour
         if (decalDatabase_meijia == null) return;
         foreach (var matchingDecal in decalDatabase_meijia.decalList)
         {
-            var skin = GameManager.instance.gameInfo.meijiaDecals.Find(d => d.id == matchingDecal.id);
+            var skin = PlayerInfo.meijiaDecals.Find(d => d.id == matchingDecal.id);
             if (skin != null)
             {
                 matchingDecal.isOwned = skin.isOwned;
@@ -174,7 +178,7 @@ public class SkinManager : MonoBehaviour
 
         foreach (var matchingDecal in decalDatabase_tiehua.decalList)
         {
-            var skin = GameManager.instance.gameInfo.tiehuaDecals.Find(d => d.id == matchingDecal.id);
+            var skin = PlayerInfo.tiehuaDecals.Find(d => d.id == matchingDecal.id);
             if (skin != null)
             {
                 matchingDecal.isOwned = skin.isOwned;
@@ -184,12 +188,12 @@ public class SkinManager : MonoBehaviour
     }
 
     //周一重新设置每日登录信息获取的情况
-    private void SetNewWeekLoginRewardInfos(int weekday)
+    private void SetNewWeekLoginRewardInfos()
     {
         //周一了，并且上一次登录时间和今天不是同一天，则刷新一周的每日登录信息
-        if(weekday == 0 && GameManager.instance.gameInfo.lastLoginDate.Date!=GameManager.instance.TodayDate.Date)
+        if(WeekDay == 0 && PlayerInfo.lastLoginDate.Date!= TodayDate.Date)
         {
-            SetGameInfoLoginRewardInfos(GameManager.instance.gameInfo.loginRewardInfos);
+            SetGameInfoLoginRewardInfos(PlayerInfo.loginRewardInfos);
         }
     }
 
@@ -345,7 +349,7 @@ public class SkinManager : MonoBehaviour
     /// </summary>
     /// <param name="decalDatabase">Decal 数据库对象</param>
     /// <returns>一个未拥有的 DecalData，如果没有则返回 null</returns>
-    public DecalData GetRandomUnownedDecal(DecalDatabase decalDatabase)
+    public DecalData aGetRandomUnownedDecal(DecalDatabase decalDatabase)
     {
         // 获取所有未拥有的 Decal
         var unownedDecals = decalDatabase.decalList
@@ -374,7 +378,30 @@ public class SkinManager : MonoBehaviour
         }
         else
         {
-            descriptionText.text = decalData.description;
+            if (decalData.type == SkinType.NailArt)
+            {
+                if (decalData.unlockMethod == UnlockMethod.CoinPurchase)
+                {
+                    descriptionText.text = "通过关卡后随机获得";
+                }
+                else
+                {
+                    descriptionText.text = "每周一至周六登录获得";
+                }
+            }
+            else
+            {
+                if (decalData.unlockMethod == UnlockMethod.CoinPurchase)
+                {
+                    descriptionText.text = "通关地狱关卡随机获得";
+                }
+                else
+                {
+                    descriptionText.text = "每周日登录获得";
+                }
+            }
+            
+            
         }
         
         if (decalData.type == SkinType.NailArt)//美甲
@@ -405,7 +432,7 @@ public class SkinManager : MonoBehaviour
         if (decalData.type == SkinType.NailArt)
         {
             myhandMeijiaMaterial.SetTexture("_MainTex", decalData.texture);
-            foreach (var skin in GameManager.instance.gameInfo.meijiaDecals)
+            foreach (var skin in PlayerInfo.meijiaDecals)
             {
                 skin.isEquip = (skin.id == decalData.id);
             }
@@ -413,7 +440,7 @@ public class SkinManager : MonoBehaviour
         else
         {
             myhandTiehuaMaterial.SetTexture("_MainTex", decalData.texture);
-            foreach (var skin in GameManager.instance.gameInfo.tiehuaDecals)
+            foreach (var skin in PlayerInfo.tiehuaDecals)
             {
                 skin.isEquip = (skin.id == decalData.id);
             }
