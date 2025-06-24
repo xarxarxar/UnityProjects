@@ -63,6 +63,32 @@ public class Guide : MonoBehaviour
         return activeButtons;
     }
 
+    /// <summary>
+    /// 设置指定索引的按钮可显示，其余不显示，并返回可点击按钮列表
+    /// </summary>
+    /// <param name="activeIndices">需要设置为可点击的按钮索引</param>
+    /// <returns>所有被设置为可点击的按钮列表</returns>
+    public List<Button> SetButtonVisible(params int[] activeIndices)
+    {
+        List<Button> activeButtons = new List<Button>();
+
+        for (int i = 0; i < gameCanvasButtons.Count; i++)
+        {
+            Button btn = gameCanvasButtons[i];
+            if (btn == null) continue;
+
+            bool isActive = System.Array.IndexOf(activeIndices, i) >= 0;
+            btn.gameObject.SetActive(isActive);
+
+            if (isActive)
+            {
+                activeButtons.Add(btn);
+            }
+        }
+
+        return activeButtons;
+    }
+
     //将所有按钮复原
     public void ResetAllButtons()
     {

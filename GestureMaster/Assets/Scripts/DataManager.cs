@@ -47,7 +47,6 @@ public class DataManager : MonoBehaviour
             name = "GetCurrentTime",
             success = (res) =>
             {
-                Debug.Log($"收到回复为{res.result}");
                 TimeStamp timestamp= JsonConvert.DeserializeObject<TimeStamp>(res.result.ToString());
                 callback?.Invoke(timestamp.timestamp);
                 OnGetDatetime?.Invoke(TimestampToDateTime(timestamp.timestamp));
@@ -82,7 +81,6 @@ public class DataManager : MonoBehaviour
             name = "DownloadGameInfo",
             success = (res) =>
             {
-                Debug.Log($"下载数据+{res.result}");
                 // 解析从云函数返回的结果
                 if (res.result != null)
                 {

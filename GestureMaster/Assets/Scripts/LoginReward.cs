@@ -112,7 +112,7 @@ public class LoginReward : MonoBehaviour
             mAlreadyHas.gameObject.SetActive(true);
             mGetLoginRewardPanel.SetActive(true);
             mMakeUpButton.gameObject.SetActive(false);
-        });
+        }, title: "签到就能领皮肤，你也来试试", imageUrl: "https://mmocgame.qpic.cn/wechatgame/MJwKfmHh4DczMMtjNCe6Vcg1icoZD2Z7Sm037OtEk8WFRVibSmMmAhbNyJIOgy4AxO/0");
     }
 
     private string ConvertNumberToChinese(int number)

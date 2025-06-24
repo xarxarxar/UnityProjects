@@ -22,7 +22,7 @@ public class ToggleItem : MonoBehaviour
     DecalData mDecalData;//该toggle对应的decalData
     public static event UnityAction<DecalData> OnToggleClick;//切换到该Toggle的事件
     public static event UnityAction<ToggleItem,DecalData> OnEquipButtonClick;//装备该decal的事件
-    private static event UnityAction<int> OnToggleClickIndex;//点击某个Toggle
+    private static event UnityAction<int,SkinType> OnToggleClickIndex;//点击某个Toggle
     private Button mEquipButton;//装备按钮
     [SerializeField] int mIndex;
     public Toggle mToggle;
@@ -81,7 +81,7 @@ public class ToggleItem : MonoBehaviour
 
             //Toggle点击响应事件
             OnToggleClick?.Invoke(mDecalData);
-            OnToggleClickIndex?.Invoke(mIndex);
+            OnToggleClickIndex?.Invoke(mIndex, mDecalData.type);
         }
         else
         {
@@ -101,8 +101,8 @@ public class ToggleItem : MonoBehaviour
     }
 
 
-    private void OnToggleChange(int index)
+    private void OnToggleChange(int index,SkinType type)
     {
-        mToggle.isOn = mIndex== index;
+        mToggle.isOn = mIndex== index && type== mDecalData.type;
     }
 }

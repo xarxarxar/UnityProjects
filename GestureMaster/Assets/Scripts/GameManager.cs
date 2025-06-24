@@ -67,6 +67,8 @@ public class GameManager : MonoBehaviour
         levelText.text = $"关卡{PlayerInfo.level}";
         skinManager.Init();
         LoginReward.instance.Init();
+
+        //WechatManager.EvaluateAndRecommend();
     }
 
     //设置首页周几的手势

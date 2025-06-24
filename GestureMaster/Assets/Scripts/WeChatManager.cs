@@ -29,6 +29,7 @@ public class WechatManager : MonoBehaviour
     public Image imageLeftTop;
     public Image imageRightBottom;
     public GameObject RankObject;
+    
 
     private GameInfo PlayerInfo=>GameEntrance.instance.PlayerInfo;
 
@@ -37,10 +38,15 @@ public class WechatManager : MonoBehaviour
         instance = this;
     }
 
-    public static void ShareApp(UnityAction callback)
+    public static void ShareApp(UnityAction callback,string title=null,string imageUrl=null,string imageUrlId=null)
     {
         // 主动拉起分享给通讯录的方法
-        WX.ShareAppMessage(new ShareAppMessageOption());
+        WX.ShareAppMessage(new ShareAppMessageOption() 
+        {
+            title= title,
+            imageUrl= imageUrl,
+            imageUrlId =imageUrlId
+        });
         System.Action<OnShowListenerResult> res = null;
         res = (result) =>
         {

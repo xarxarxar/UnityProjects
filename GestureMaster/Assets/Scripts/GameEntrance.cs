@@ -18,6 +18,8 @@ public class GameEntrance : MonoBehaviour
     /// <summary>
     /// 日期更新时执行
     /// </summary>
+    public static event UnityAction OnGetingPlayerWechatInfo;//正在获取玩家微信授权
+    public static event UnityAction OnGetPlayerWechatInfo;//拿到玩家微信授权
     public static event UnityAction OnDateUpdate;//日期更新事件
     public static event UnityAction OnPlayerInfoSync;//玩家信息同步完成
     public static event UnityAction<float> OnLoadSceneProgress;//场景加载进度
@@ -28,6 +30,8 @@ public class GameEntrance : MonoBehaviour
     #region 公共变量
     public DecalDatabase decalDatabase_meijia;
     public DecalDatabase decalDatabase_tiehua;
+    public Image startButton;//开始界面伪装的开始按钮
+    
     #endregion
 
     #region 私有变量
@@ -35,6 +39,7 @@ public class GameEntrance : MonoBehaviour
     private long currentTime;//当前时间戳，精确到秒
     private static int weekDay;//今天周几
     private DataManager dataManager=>DataManager.instance;//DataManager单例实例
+    WXUserInfoButton wxUserInfoButton;
     #endregion
 
     #region 公共属性
@@ -68,6 +73,7 @@ public class GameEntrance : MonoBehaviour
     //从云端加载数据
     private void LoadDataFromCloud()
     {
+        PlayerInfo.Init();
         // 初始化微信 SDK
         WX.InitSDK(
             (code) =>
@@ -77,10 +83,12 @@ public class GameEntrance : MonoBehaviour
                     env = "cloud1-7gkr9w5v84fb9104", // 云环境 ID
                     traceUser = false
                 });
+                CreateUserInfoButtonBefore();//先创建获取用户信息按钮
+                CreateUserInfoButton();
             }
         );
 
-        dataManager.GetCurrentTime(UpdateTime);//获取当前时间
+        //dataManager.GetCurrentTime(UpdateTime);//获取当前时间
 
     }
     
@@ -106,18 +114,14 @@ public class GameEntrance : MonoBehaviour
         //加载玩家数据
         dataManager.DownloadGameInfo((playerInfo) =>
         {
-            //如果数据库没有玩家数据，创建并上传
-            if (playerInfo == null)
-            {
-                Debug.Log("玩家数据为空");
-                PlayerInfo.Init();
-                dataManager.UploadGameInfo(PlayerInfo);
-            }
-            else
+            //如果数据库没有玩家数据，创建并上传,有的话就直接同步
+            if (playerInfo != null)
             {
                 Debug.Log("玩家数据非空");
                 PlayerInfo = playerInfo;
             }
+            PlayerInfo.lastLoginDate = todayDate;
+            dataManager.UploadGameInfo(PlayerInfo);
             OnPlayerInfoSync?.Invoke();//玩家信息同步完成
             LoadGameScene();//开始加载游戏场景
         });
@@ -140,28 +144,21 @@ public class GameEntrance : MonoBehaviour
     //加载游戏主场景的协程
     private IEnumerator LoadSceneAsync()
     {
-        Debug.Log("执行到5");
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("GameScene");
         asyncLoad.allowSceneActivation = false;
-        Debug.Log("执行到6");
         while (!asyncLoad.isDone)
         {
-            Debug.Log("执行到61");
             float progress = Mathf.Clamp01(asyncLoad.progress / 0.9f);
-            Debug.Log("执行到62");
             // 通知 UI 更新进度
             OnLoadSceneProgress?.Invoke(progress);
-            Debug.Log("执行到63");
             if (asyncLoad.progress >= 0.9f)
             {
                 // 场景准备好了，可以激活
                 yield return new WaitForSeconds(1f); // 如果需要等待一秒
                 asyncLoad.allowSceneActivation = true;
             }
-            Debug.Log("执行到64");
             yield return null;
         }
-        Debug.Log("执行到7");
     }
 
 
@@ -256,5 +253,140 @@ public class GameEntrance : MonoBehaviour
         }
 
         return result;
+    }
+
+    public void CreateUserInfoButton()
+    {
+        WX.GetSetting(new GetSettingOption()
+        {
+            success = (res) =>
+            {
+                Debug.Log($"获取Setting成功");
+                //已经授权过
+                if (res.authSetting.ContainsKey("scope.userInfo") && res.authSetting["scope.userInfo"] == true)
+                {
+                    startButton.gameObject.SetActive(false);
+                    OnGetingPlayerWechatInfo?.Invoke();//已经获取过权限了
+                    wxUserInfoButton.Hide();
+                    Debug.Log($"已经获取过权限");
+                    WX.GetUserInfo(new GetUserInfoOption()
+                    {
+                        success = (res) =>
+                        {
+                            OnGetPlayerWechatInfo?.Invoke();
+                            Debug.Log($"获取用户信息成功:{res.userInfo.nickName}");
+                            //ShowTipManager.instance.ShowLoading(true);
+                            DataManager.instance.DownloadGameInfo((successAction) =>
+                            {
+                                if (res.userInfo.nickName != PlayerInfo.playerName
+                            || res.userInfo.avatarUrl != PlayerInfo.avatarUrl)
+                                {
+                                    PlayerInfo.playerName = res.userInfo.nickName;
+                                    PlayerInfo.avatarUrl = res.userInfo.avatarUrl;
+                                }
+                                DataManager.instance.UploadGameInfo(PlayerInfo);
+                                //ShowTipManager.instance.ShowLoading(false);
+                                //GameEntrance.instance.CloseEnterGamePanel();
+                                
+                                dataManager.GetCurrentTime(UpdateTime);//获取当前时间
+                            });
+
+                            //ShowTipManager.instance.ShowLoading(false);
+                        },
+                        fail = (res) =>
+                        {
+                            Debug.LogError("获取用户信息失败：" + res.errMsg);
+                            //ShowTipManager.instance.ShowTip("获取用户信息失败");
+                            //ShowTipManager.instance.ShowLoading(false);
+                        },
+                        complete = (res) =>
+                        {
+                            Debug.Log("获取用户信息操作完成");
+                        }
+                    });
+                }
+                else
+                {
+                    Debug.Log($"还未获取过权限");
+                    wxUserInfoButton.Show();
+                }
+            },
+
+            fail = (res) =>
+            {
+                Debug.Log($"获取Setting失败：{res.errMsg}");
+            }
+        });
+
+    }
+
+
+    public void CreateUserInfoButtonBefore()
+    {
+        Rect rect = GetStartButtonRect();
+        wxUserInfoButton = WX.CreateUserInfoButton((int)rect.x, Screen.height - (int)rect.y - (int)rect.height, (int)rect.width, (int)rect.height, "", true);
+        wxUserInfoButton.OnTap((res) =>
+        {
+            if (res.errCode == 0)
+            {
+                wxUserInfoButton.Hide();
+                WX.GetUserInfo(new GetUserInfoOption()
+                {
+                    success = (res) =>
+                    {
+                        startButton.gameObject.SetActive(false);
+                        OnGetPlayerWechatInfo?.Invoke();
+                        Debug.Log($"获取用户信息成功:{res.userInfo.nickName}");
+                        //ShowTipManager.instance.ShowLoading(true);
+                        DataManager.instance.DownloadGameInfo((successAction) =>
+                        {
+                            if (res.userInfo.nickName != PlayerInfo.playerName
+                        || res.userInfo.avatarUrl != PlayerInfo.avatarUrl)
+                            {
+                                PlayerInfo.playerName = res.userInfo.nickName;
+                                PlayerInfo.avatarUrl = res.userInfo.avatarUrl;
+                            }
+                            DataManager.instance.UploadGameInfo(PlayerInfo);
+                            //GameEntrance.instance.CloseEnterGamePanel();
+                            
+                            dataManager.GetCurrentTime(UpdateTime);//获取当前时间
+                        });
+                    },
+                    fail = (res) =>
+                    {
+                        Debug.LogError("获取用户信息失败：" + res.errMsg);
+                        TipManager.instance.ShowTip("获取信息失败");
+                    },
+                    complete = (res) =>
+                    {
+                        Debug.Log("获取用户信息操作完成");
+                    }
+                });
+            }
+            else
+            {
+                TipManager.instance.ShowTip("请先授权");
+            }
+        });
+        wxUserInfoButton.Hide();
+
+    }
+
+    private Rect GetStartButtonRect()
+    {
+        var rectTransform = GameEntrance.instance.startButton.GetComponent<RectTransform>();
+        // 获取 RectTransform 的四个角的世界坐标
+        Vector3[] worldCorners = new Vector3[4];
+        rectTransform.GetWorldCorners(worldCorners);
+
+        // 创建屏幕矩形
+        var screenRect = new Rect(
+                        worldCorners[0].x,
+                        worldCorners[0].y,
+                        worldCorners[2].x - worldCorners[0].x,
+                        worldCorners[2].y - worldCorners[0].y);
+
+        Debug.Log($"Screen Rect: {screenRect}");
+        return screenRect;
     }
 }

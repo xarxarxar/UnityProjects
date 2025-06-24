@@ -114,6 +114,8 @@ public class LevelPlaying : MonoBehaviour
             // 暂停处理
             while (isPaused) yield return null;
 
+            Guide.instance.SetButtonVisible(0, 1, 2, 3, 4, 5, 6);//显示全部按钮
+
             int category = LevelConfig.instance.gestureCategory[i];
 
             float additionTime = 0;
@@ -184,6 +186,7 @@ public class LevelPlaying : MonoBehaviour
                 additionWaitTime = countDownSlider.SliderRatioOnInterrupt * additionWaitTime;
             }
             pkButton.gameObject.SetActive(false);
+            Guide.instance.SetButtonVisible(0);//只显示暂停按钮
 
             //连胜次数
             continuousSuccessCount = result ? continuousSuccessCount + 1 : 0;
@@ -300,6 +303,7 @@ public class LevelPlaying : MonoBehaviour
             // 暂停处理
             while (isPaused) yield return null;
 
+            Guide.instance.SetButtonVisible(0,1,2,3,4,5,6);//显示全部按钮
             int category = LevelConfig.instance.gestureCategory[i];
 
             while (isPaused) yield return null;
@@ -333,7 +337,7 @@ public class LevelPlaying : MonoBehaviour
             tmpPaused = true;
             if (i == 0)
             {
-                Guide.instance.SetTip("点击下方五个按钮，将下方手势变为与上方相同");
+                Guide.instance.SetTip("点击下方五个按钮，\n将下方手势变为与上方相同");
                 List<Button> fingerButtons = Guide.instance.SetButtonActive(2, 3, 4, 5, 6);
                 foreach (Button button in fingerButtons)
                 {
@@ -368,7 +372,7 @@ public class LevelPlaying : MonoBehaviour
 
             if (i == 1)
             {
-                Guide.instance.SetTip("点击下方五个按钮，将下方手势变为与上方相反");
+                Guide.instance.SetTip("点击下方五个按钮，\n将下方手势变为与上方相反");
                 List<Button> fingerButtons = Guide.instance.SetButtonActive(2, 3, 4, 5, 6);
                 foreach (Button button in fingerButtons)
                 {
@@ -446,7 +450,7 @@ public class LevelPlaying : MonoBehaviour
                     //如果玩家做对了
                     if (result)
                     {
-                        Guide.instance.SetTip("倒计时过半后提前PK也可获取额外时长0.1秒\n倒计时结束后自动PK则不获取");
+                        Guide.instance.SetTip("倒计时过半后提前PK\n也可获取额外时长0.1秒\n倒计时结束后自动PK则不获取");
                         Guide.instance.SetButtonActive(0,1);//复原按钮不能点击的状态
                         tmpPaused = false;
                         //移除这fingerButtons中所有button的TmpClick点击事件
@@ -470,6 +474,8 @@ public class LevelPlaying : MonoBehaviour
                 2 => HandControl.instance.IsRPSWin(),
                 _ => false
             };
+
+            Guide.instance.SetButtonVisible(0);//只显示暂停按钮
 
             //连胜次数
             continuousSuccessCount = result ? continuousSuccessCount + 1 : 0;
@@ -507,6 +513,7 @@ public class LevelPlaying : MonoBehaviour
         GameManager.instance.levelText.text = $"关卡{PlayerInfo.level}";
         rewardPanel.SetActive(true);
         SkinManager.instance.GetSkin(decalData);//获取该皮肤
+        
         StopAllCoroutines();
     }
 
@@ -702,6 +709,8 @@ public class LevelPlaying : MonoBehaviour
             // 暂停处理
             while (isPaused) yield return null;
 
+            Guide.instance.SetButtonVisible(0,1,2,3,4,5,6);//显示全部按钮
+
             float additionTime = 0;
             
 
@@ -809,6 +818,8 @@ public class LevelPlaying : MonoBehaviour
             }
             pkButton.gameObject.SetActive(false);
 
+            
+
             result = category switch
             {
                 0 => HandControl.instance.IsSame(robotGesture),
@@ -816,6 +827,8 @@ public class LevelPlaying : MonoBehaviour
                 2 => HandControl.instance.IsRPSWin(robotGesture),
                 _ => false
             };
+
+            Guide.instance.SetButtonVisible(0);//只显示暂停按钮
 
             //连胜次数
             continuousSuccessCount = result ? continuousSuccessCount + 1 : 0;
@@ -938,7 +951,7 @@ public class LevelPlaying : MonoBehaviour
         {
             isPaused= false;
             TipManager.instance.ShowTip("复活");
-        });
+        },title:"太考验反应速度了，来助我复活得皮肤",imageUrl: "https://mmocgame.qpic.cn/wechatgame/MJwKfmHh4DczMMtjNCe6Vcg1icoZD2Z7Sm037OtEk8WFRVibSmMmAhbNyJIOgy4AxO/0");
     }
 
 
