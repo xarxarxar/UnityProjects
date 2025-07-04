@@ -32,6 +32,8 @@ public class StartPanel : MonoBehaviour
     {
         Debug.Log("点击开始挑战按钮");
         OnSatrtBattle?.Invoke();//开始挑战按钮被点击
+        GameUIManager.Instance.HideMainMenu();//隐藏主菜单
+        GameUIManager.Instance.ShowChooseDebuffPanel();
         gameObject.SetActive(false);
     }
     #endregion

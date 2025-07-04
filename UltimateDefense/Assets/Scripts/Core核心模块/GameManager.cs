@@ -31,7 +31,8 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void Start()
     {
-        GameUIManager.Instance.ShowEnterPanel();//显示进入游戏面板
+        //GameUIManager.Instance.ShowEnterPanel();//显示进入游戏面板
+        Init();
     }
 
     #region 公共方法

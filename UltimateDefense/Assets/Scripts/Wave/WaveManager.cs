@@ -51,11 +51,11 @@ public class WaveManager : ManagerBase<WaveManager>,IManager
     /// <summary>
     /// 只读属性，每个敌人生成的间隔时间
     /// </summary>
-    public float SpawnEnemyInterval { get => _spawnEnemyInterval/BattleManager.Instance.GameSpeed; }
+    public float SpawnEnemyInterval { get => _spawnEnemyInterval; }
     /// <summary>
     /// 只读属性，每波敌人生成的间隔时间
     /// </summary>
-    public float SpawnWaveInterval { get => _spawnWaveInterval / BattleManager.Instance.GameSpeed; }
+    public float SpawnWaveInterval { get => _spawnWaveInterval; }
     /// <summary>
     /// 最大回合数
     /// </summary>
@@ -69,6 +69,7 @@ public class WaveManager : ManagerBase<WaveManager>,IManager
     /// </summary>
     public override void Init()
     {
+        Debug.Log("wavemanager 初始化");
         _currentRound = 0;
     }
     /// <summary>

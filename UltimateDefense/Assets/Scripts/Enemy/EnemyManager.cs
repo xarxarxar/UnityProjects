@@ -15,7 +15,7 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
     [SerializeField] public Enemy _enemyPrefab;     //敌人预制体
     private ObjectPool<Enemy> _enemyPool;           //敌人对象池
     private float _enemyDieCoinProb=0.5f;            //敌人死亡之后获得金币的概率
-    private int _enemyDieCoin=10;                  //敌人死亡之后获得的金币数量
+    private int _enemyDieCoin=50;                  //敌人死亡之后获得的金币数量
     private BuildingBase _targetBuilding;              //敌人的目标建筑物
     //private int _enemyTotalCount = 0;                //敌人生成的数量,从开始到结束的总数量，包括死亡的
     #endregion
@@ -29,6 +29,8 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
     /// 最后一波的最后一个敌人生成完毕
     /// </summary>
     public static event UnityAction OnLastEnemySpawned;
+
+    public static event UnityAction OnAlmostNextWave;//在马上下一波的时候触发
     #endregion
 
     #region 公开属性
@@ -81,6 +83,7 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
     {
         Enemy.OnMoveInRange -= OnMoveInRange;
         Enemy.OnEnemyDie -= UnregisterEnemy;
+        BattleManager.OnEndBattle -= OnEndBattle;
         StopAllCoroutines();
     }
     /// <summary>
@@ -89,10 +92,16 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
     public override void Init()
     {
         Debug.Log("enemymanager初始化");
+        _allEnemies.Clear();
+        _enemiesInRange.Clear();
+        _enemyDieCoinProb = 0.5f;
+        _enemyDieCoin = 50;
+        _targetBuilding = Crystal.Instance;//设置初始目标建筑为水晶
+
         Enemy.OnMoveInRange += OnMoveInRange;
         Enemy.OnEnemyDie += UnregisterEnemy;
-        if(_enemyPool==null) _enemyPool = new ObjectPool<Enemy>(_enemyPrefab, 20, transform);//初始化敌人对象池
-        if(_targetBuilding==null) _targetBuilding = Crystal.Instance;//设置初始目标建筑为水晶
+        BattleManager.OnEndBattle += OnEndBattle;
+        if (_enemyPool==null) _enemyPool = new ObjectPool<Enemy>(_enemyPrefab, 20, transform);//初始化敌人对象池
         StartCoroutine(GenerateEnemyIE());
     }
 
@@ -105,7 +114,7 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
     public void SpawnEnemy(Enemy enemy, float xPos, int level)
     {
         //_enemyTotalCount++;  
-        enemy.Init(new Vector3(xPos, 16, 0), level, -1 * (_allEnemies.Count));
+        enemy.Init(new Vector3(xPos, 13, 0), level, -1 * (_allEnemies.Count));
         _allEnemies.Add(enemy);
         OnEnemyCountChanged?.Invoke(_allEnemies.Count);//场上敌人数量变化
     }
@@ -188,13 +197,15 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
 
     private IEnumerator GenerateEnemyIE()
     {
+        yield return null;
         while (true)
         {
+            //Debug.Log($"一波生成前，当前波次为{WaveManager.Instance.CurrentRound}");
             WaveManager.Instance.CurrentRound++;
             for (int i = 0; i < WaveManager.Instance.SingleWaveEnemyCount; i++)
             {
                 while (BattleManager.Instance.IsPaused) yield return null;
-                yield return new WaitForSeconds(WaveManager.Instance.SpawnEnemyInterval);
+                yield return TimerUtility.WaitForGameSeconds(WaveManager.Instance.SpawnEnemyInterval);
                 Enemy enemy = _enemyPool.Get();
                 int currentRound = WaveManager.Instance.CurrentRound;
                 SpawnEnemy(enemy, Random.Range(-7.5f, 7.5f), Random.Range(Mathf.Max(1,currentRound - 3),currentRound));
@@ -203,18 +214,50 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
                 if (WaveManager.Instance.CurrentRound == WaveManager.Instance.MaxRound &&
                     i == WaveManager.Instance.SingleWaveEnemyCount - 1)
                 {
-                    Debug.Log("最后一个敌人生成完成，发送事件");
+                    //Debug.Log("最后一个敌人生成完成，发送事件");
                     OnLastEnemySpawned?.Invoke();  // 触发事件
                 }
-
             }
             if (WaveManager.Instance.CurrentRound >= WaveManager.Instance.MaxRound) 
             {
                 yield break;
             }
             while (BattleManager.Instance.IsPaused) yield return null;
-            yield return new  WaitForSeconds(WaveManager.Instance.SpawnWaveInterval);
+            // 启动一个提醒协程（监听 GameSpeed 和暂停）
+            StartCoroutine(WaitAndNotifyBeforeTime(WaveManager.Instance.SpawnWaveInterval, 3f, () =>
+            {
+                Debug.Log("剩下 3 秒！");
+                OnAlmostNextWave?.Invoke();
+            }));
+            yield return TimerUtility.WaitForGameSeconds(WaveManager.Instance.SpawnWaveInterval);
+            //Debug.Log($"一波生成完毕，当前波次为{WaveManager.Instance.CurrentRound}");
         }
+    }
+
+    //启动一个提醒协程
+    private IEnumerator WaitAndNotifyBeforeTime(float totalTime, float notifyBefore, System.Action callback)
+    {
+        float timer = 0f;
+        float targetTime = totalTime - notifyBefore;
+
+        while (timer < targetTime)
+        {
+            if (!BattleManager.Instance.IsPaused)
+            {
+                timer += Time.deltaTime * BattleManager.Instance.GameSpeed;
+            }
+            yield return null;
+        }
+
+        callback?.Invoke();
+    }
+
+    //挑战结束
+    private void OnEndBattle(bool success)
+    {
+        _allEnemies.Clear();
+        _enemiesInRange.Clear();
+        StopAllCoroutines();
     }
     #endregion
 }

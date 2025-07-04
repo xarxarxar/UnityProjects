@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// 表示一座塔的行为，如攻击、范围、升级等。
@@ -13,8 +14,7 @@ public class Tower : MonoBehaviour
     public float baseFireRate = 1f;        // 攻击频率（每秒几次）
     public float criticalProb = 0.1f;       //初始暴击概率
     public int baseDamage = 10;            // 初始单次攻击伤害
-    
-    
+    [SerializeField]private int _currentBulletCount;        //当前子弹数量
 
     [Header("升级属性")]
     public int level = 1;                  // 当前等级
@@ -24,14 +24,35 @@ public class Tower : MonoBehaviour
     public int totalDamage => Mathf.RoundToInt(baseDamage * (1 + TowerManager.Instance.GlobalAttackBonus));
     public float totalAttackRate => baseFireRate*(1+TowerManager.Instance.GlobalAttackSpeedMultiplier);
     public float totalCriticalProb => criticalProb + TowerManager.Instance.GlobalCriticalShotProb;
+    public float ReloadTime=> reloadTime- TowerManager.Instance.GlobalIncreaseReloadTime;
+    public int BulletCapacity=> bulletCapacity+TowerManager.Instance.GlobalIncreaseBulletCap;
+    public float totalCriticalMultiplier=>TowerManager.Instance.GlobalCriticalMultiplier;//暴击伤害倍率
     #endregion
 
     #region 私有字段
-    private float reloadTime = 0f;//装弹时间
+    private float reloadTime = 3.0f;//装弹时间
+    private int bulletCapacity = 10;//子弹容量
     private Enemy currentTarget;//当前的攻击目标
     private bool _isPaused=>BattleManager.Instance.IsPaused;//是否暂停
     private List<Enemy> _enemiesInRange=>EnemyManager.Instance.EnemiesInRange;//在攻击范围内的所有敌人
     private float _gameSpeed=>BattleManager.Instance.GameSpeed;
+    [SerializeField]private MySlider _slider;//炮塔所带的slider
+    [SerializeField] private Text _bulletCountText;//子弹数量的Text
+    private bool _isReloading = false; // 是否正在换弹
+    private float noAttackTimer = 0f;//未处于攻击状态的时长
+    private Coroutine _reloadCoroutine;//换弹协程
+
+
+    public int CurrentBulletCount 
+    { 
+        get => _currentBulletCount; 
+        set
+        {
+            _currentBulletCount=value;
+            _bulletCountText.text=value.ToString();
+        }
+    }
+
     [SerializeField]private Bullet _bullet;//子弹
     #endregion
 
@@ -39,16 +60,24 @@ public class Tower : MonoBehaviour
     private void OnEnable()
     {
         StartCoroutine(AttackIE());//开始攻击
+        BattleManager.OnEndBattle += OnEndBattle;
+    }
+    private void OnDisable()
+    {
+        BattleManager.OnEndBattle -= OnEndBattle;
     }
 
     private void Update()
     {
-        
+        if(Input.GetKeyDown(KeyCode.R))
+        {
+            StartReload();
+        }
     }
+
     #endregion
 
     #region 公共方法
-
     /// <summary>
     /// 升级塔：消耗金币，增加伤害与攻速。这里逻辑不对，应该是三个合成进行升级
     /// </summary>
@@ -85,7 +114,9 @@ public class Tower : MonoBehaviour
         {
             Bullet bullet= TowerManager.Instance.BulletPool.Get();//从对象池拿取
 
-            if (Random.value<totalCriticalProb)//暴击
+            float value = Random.value;
+            
+            if (value < totalCriticalProb)//暴击
             {
                 bullet.Init(transform.position, target,true, Mathf.RoundToInt(totalDamage*TowerManager.Instance.GlobalCriticalMultiplier));
             }
@@ -93,26 +124,91 @@ public class Tower : MonoBehaviour
             {
                 bullet.Init(transform.position, target, false, totalDamage);
             }
-            
         }
+        CurrentBulletCount--;
     }
 
     private IEnumerator AttackIE()
     {
         yield return null;
+        CurrentBulletCount = BulletCapacity;//补满子弹
+        
         while (true)
         {
-            if (_isPaused)
+            if (_isPaused || _isReloading)
+            {
                 yield return null;
+                continue;
+            }
 
-            if(_enemiesInRange.Count!=0)
+            // 自动换弹逻辑
+            if (CurrentBulletCount <= 0)
+            {
+                StartReload(); // 自动换弹
+                yield return null;
+                continue;
+            }
+
+            if (_enemiesInRange.Count!=0)
             {
                 currentTarget = _enemiesInRange[0];
                 Attack(currentTarget);
+                // 攻击了就重置计时器
+                noAttackTimer = 0f;
+
+                if (CurrentBulletCount > 0) 
+                    yield return TimerUtility.WaitForGameSeconds((1 / totalAttackRate));
             }
-            yield return new WaitForSeconds((1/ totalAttackRate) / _gameSpeed);
+            else
+            {
+                // 没攻击目标，累加计时器
+                noAttackTimer += Time.deltaTime * _gameSpeed;
+
+                if (noAttackTimer >= 3f && CurrentBulletCount < BulletCapacity)
+                {
+                    StartReload(); // 3秒无攻击，弹药未满，强制换弹
+                    noAttackTimer = 0f; // 重置计时器
+                }
+
+                yield return null;
+            }
         }
     }
 
+    //挑战结束
+    private void OnEndBattle(bool success)
+    {
+        StopAllCoroutines();
+    }
+
+    private void CountDownSlider(float time)
+    {
+        _slider.Init(time);//开始
+    }
+
+   
+
+    //换弹
+    private void StartReload()
+    {
+        if (_isReloading || CurrentBulletCount== BulletCapacity) return; // 防止重复换弹
+        _reloadCoroutine = StartCoroutine(ReloadIE());
+    }
+
+    //换弹协程
+    private IEnumerator ReloadIE()
+    {
+        _isReloading = true;
+
+        // 显示倒计时 UI
+        CountDownSlider(ReloadTime);
+
+        // 实时等待，受 GameSpeed 影响
+        yield return TimerUtility.WaitForGameSeconds(ReloadTime);
+
+        CurrentBulletCount = BulletCapacity;
+
+        _isReloading = false;
+    }
     #endregion
 }

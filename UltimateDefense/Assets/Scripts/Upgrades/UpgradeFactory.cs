@@ -22,15 +22,19 @@ public static class UpgradeFactory
             Upgrade_IncreaseTowerAttack.CreateDynamicUpgrade,
             Upgrade_IncreaseTowerAttackRate.CreateDynamicUpgrade,
             Upgrade_IncreaseEnemyDieCoinProb.CreateDynamicUpgrade,
+            Upgrade_IncreaseTowerReloadTime.CreateDynamicUpgrade,
+            Upgrade_IncreaseTowerBulletCap.CreateDynamicUpgrade,
+            Upgrade_IncreaseCriticalShotProb.CreateDynamicUpgrade,
+            Upgrade_IncreaseCriticalMultiplier.CreateDynamicUpgrade,
+            Upgrade_SaveMoneyToBank.CreateDynamicUpgrade,
+            Upgrade_IncreaseBankInterest.CreateDynamicUpgrade,
+            Upgrade_IncreaseEnemyDieCoin.CreateDynamicUpgrade,
+            Upgrade_IncreaseCrystalMaxHP.CreateDynamicUpgrade,
             // 可在此继续扩充其他类型升级的模板，例如减速、银行利息等
         };
     }
 
     #endregion
-
-
-
-
 
     #region 公共方法
 
@@ -84,6 +88,38 @@ public static class UpgradeFactory
         if (template is Upgrade_IncreaseEnemyDieCoinProb edcp)
         {
             return new Upgrade_IncreaseEnemyDieCoinProb(edcp.EnemyDieCoinProbBonus, edcp.Cost);
+        }
+        if(template is Upgrade_IncreaseTowerReloadTime itrt)
+        {
+            return new Upgrade_IncreaseTowerReloadTime(itrt.Bonus, itrt.Cost);
+        }
+        if (template is Upgrade_IncreaseTowerBulletCap itbc)
+        {
+            return new Upgrade_IncreaseTowerBulletCap(itbc.Bonus, itbc.Cost);
+        }
+        if (template is Upgrade_IncreaseCriticalShotProb icsp)
+        {
+            return new Upgrade_IncreaseCriticalShotProb(icsp.Bonus, icsp.Cost);
+        }
+        if (template is Upgrade_IncreaseCriticalMultiplier icmp)
+        {
+            return new Upgrade_IncreaseCriticalMultiplier(icmp.Bonus, icmp.Cost);
+        }
+        if (template is Upgrade_SaveMoneyToBank smtb)
+        {
+            return new Upgrade_SaveMoneyToBank();
+        }
+        if (template is Upgrade_IncreaseBankInterest ibi)
+        {
+            return new Upgrade_IncreaseBankInterest(ibi.Bonus, ibi.Cost);
+        }
+        if (template is Upgrade_IncreaseEnemyDieCoin iedc)
+        {
+            return new Upgrade_IncreaseEnemyDieCoin(iedc.Bonus, iedc.Cost);
+        }
+        if (template is Upgrade_IncreaseCrystalMaxHP icmh)
+        {
+            return new Upgrade_IncreaseCrystalMaxHP(icmh.Bonus, icmh.Cost);
         }
 
         // 后续若添加其他 Upgrade 子类，在此继续扩充：

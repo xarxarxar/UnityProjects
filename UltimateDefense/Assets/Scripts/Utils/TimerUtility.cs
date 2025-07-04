@@ -27,7 +27,7 @@ public class TimerUtility : MonoBehaviour
     /// <param name="callback">回调方法</param>
     public void Timer(float delay, Action callback)
     {
-        // StartCoroutine(TimerCoroutine(delay, callback));
+        StartCoroutine(TimerCoroutine(delay, callback));
     }
     #endregion
 
@@ -37,7 +37,7 @@ public class TimerUtility : MonoBehaviour
     /// </summary>
     private void Awake()
     {
-        // if (Instance == null) { Instance = this; DontDestroyOnLoad(gameObject); } else { Destroy(gameObject); return; }
+        if (Instance == null) { Instance = this; DontDestroyOnLoad(gameObject); } else { Destroy(gameObject); return; }
     }
 
     /// <summary>
@@ -47,9 +47,29 @@ public class TimerUtility : MonoBehaviour
     /// <param name="callback">回调方法</param>
     private IEnumerator TimerCoroutine(float delay, Action callback)
     {
-        // yield return new WaitForSeconds(delay * BattleManager.Instance.GameSpeed);
-        // callback?.Invoke();
+        yield return WaitForGameSeconds(delay / BattleManager.Instance.GameSpeed);
+        callback?.Invoke();
         yield break;
+    }
+
+
+    /// <summary>
+    /// 受GameSpeed影响的时间
+    /// </summary>
+    /// <param name="time"></param>
+    /// <returns></returns>
+    public static IEnumerator WaitForGameSeconds(float time)
+    {
+        float timer = 0f;
+
+        while (timer < time)
+        {
+            if (!BattleManager.Instance.IsPaused)
+            {
+                timer += Time.deltaTime * BattleManager.Instance.GameSpeed;
+            }
+            yield return null;
+        }
     }
 
     /// <summary>

@@ -33,7 +33,8 @@ public class MetaCurrencyManager : ManagerBase<MetaCurrencyManager>,IManager
     /// </summary>
     public override void Init()
     {
-
+        Debug.Log("MetaCurrencyManager 初始化");
+        BattleManager.OnEndBattle += OnEndBattle;
     }
 
     /// <summary>
@@ -60,6 +61,14 @@ public class MetaCurrencyManager : ManagerBase<MetaCurrencyManager>,IManager
             return true;
         }
         return false;
+    }
+    #endregion
+
+    #region 私有方法
+    private void OnEndBattle(bool success)
+    {
+        Debug.Log("挑战结束，增加局外金币");
+        AddMetaCoin(BattleManager.Instance.MetaCoinCount);
     }
     #endregion
 }

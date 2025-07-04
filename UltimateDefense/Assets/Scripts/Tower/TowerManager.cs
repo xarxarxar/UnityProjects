@@ -12,7 +12,9 @@ public class TowerManager : ManagerBase<TowerManager>,IManager
     private float _globalAttackBonus=0;                 // 全局攻击力加成值
     private float _globalAttackSpeedMultiplier = 0.0f;  // 全局射速加成倍率
     private float _globalCriticalShotProb = 0.0f;       //全局暴击概率加成
-    private float _globalCriticalMultiplier = 2.0f; //全局暴击伤害倍数加成
+    private float _globalCriticalMultiplier = 1.5f; //全局暴击伤害倍数加成
+    private float _globalIncreaseReloadTime = 0.0f; //全局换弹时长减少
+    private int _globalIncreaseBulletCap =0; //全局弹夹容量加成
     private TowerFactory _towerFactory;               // 引用 TowerFactory 单例，用于创建新塔
     private bool _isInitialized;                      // 标记是否已初始化
     [SerializeField] public Bullet _bulletPrefab;     //子弹预制体
@@ -48,6 +50,15 @@ public class TowerManager : ManagerBase<TowerManager>,IManager
     /// </summary>
     public ObjectPool<Bullet> BulletPool { get => _bulletPool; }
 
+    /// <summary>
+    /// 全局换弹时长加成，供外部调用
+    /// </summary>
+    public float GlobalIncreaseReloadTime { get => _globalIncreaseReloadTime; set => _globalIncreaseReloadTime = value; }
+    /// <summary>
+    /// 全局弹夹容量加成，供外部调用
+    /// </summary>
+    public int GlobalIncreaseBulletCap { get => _globalIncreaseBulletCap; set => _globalIncreaseBulletCap = value; }
+
     #endregion
 
     #region public 成员方法
@@ -57,7 +68,13 @@ public class TowerManager : ManagerBase<TowerManager>,IManager
     /// <exception cref="System.NotImplementedException"></exception>
     public override void Init()
     {
-        if(_bulletPool == null) _bulletPool = new ObjectPool<Bullet>(_bulletPrefab, 10, transform);
+        _globalAttackBonus = 0;
+        _globalAttackSpeedMultiplier = 0;
+        _globalCriticalShotProb = 0;
+        _globalCriticalMultiplier= 1.5f;
+        _globalIncreaseReloadTime= 0;
+        _globalIncreaseBulletCap = 0;
+        if (_bulletPool == null) _bulletPool = new ObjectPool<Bullet>(_bulletPrefab, 10, transform);
     }
 
     /// <summary>
@@ -91,33 +108,13 @@ public class TowerManager : ManagerBase<TowerManager>,IManager
     }
 
     /// <summary>
-    /// 注册一个刚创建或合成完成的塔实例到 _allTowers 列表
-    /// </summary>
-    /// <param name="tower">待注册的塔实例</param>
-    public void RegisterTower(Tower tower)
-    {
-        // if (!_allTowers.Contains(tower))
-        //     _allTowers.Add(tower);
-    }
-
-    /// <summary>
-    /// 取消注册一个塔实例（仅从列表移除，不销毁 GameObject）
-    /// </summary>
-    /// <param name="tower">待取消注册的塔实例</param>
-    public void UnregisterTower(Tower tower)
-    {
-        // if (_allTowers.Contains(tower))
-        //     _allTowers.Remove(tower);
-    }
-
-    /// <summary>
     /// 对所有塔应用一次全局攻击力加成（例如升级时调用）
     /// 遍历 _allTowers，将每座塔的 BaseAttack += bonus，并 UpdateStats
     /// </summary>
     /// <param name="bonus">要增加的攻击力值</param>
     public void ApplyGlobalAttackBonus(float bonus)
     {
-        // _globalAttackBonus += bonus;
+        _globalAttackBonus += bonus;
         // foreach (var t in _allTowers)
         // {
         //     t.BaseAttack += bonus;

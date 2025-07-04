@@ -1,5 +1,6 @@
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
 
 /// <summary>
 /// 控制战斗流程
@@ -12,6 +13,10 @@ public class BattleManager : MonoBehaviour
     public const string Scene_Battle = "Battle";//场景名常量，用于切换到战斗场景。
     #endregion
 
+    #region 静态事件
+    public static event UnityAction<bool> OnEndBattle;//挑战结束
+    #endregion
+
     #region 私有属性
     private static BattleManager _instance;//单例实例，供全局访问 Instance
     private bool _isGameOver;//标记当前游戏是否结束（胜利或失败）。
@@ -20,7 +25,8 @@ public class BattleManager : MonoBehaviour
     private int _totalClears;//玩家累计通关次数（成功守住 100 回合的次数）。
     private int _startGold;//本局开局所给的初始金币数（受技能树或其他影响）。
     private float _gameSpeed = 1f;//当前游戏速度倍率，默认 1×，用于倍速功能（0.5×、1×、2× 等）。
-    
+    [SerializeField]private Debuff _debuff=new Debuff();//通关之后选择的Debuff
+    private int _metaCoinCount = 0;//单次挑战获取的局外金币数量
     #endregion
 
     #region 公开属性
@@ -52,6 +58,14 @@ public class BattleManager : MonoBehaviour
     /// 公开属性，用于设置游戏是否处于暂停状态
     /// </summary>
     public bool IsPaused { get => _isPaused; set => _isPaused = value; }
+    /// <summary>
+    /// 通关之后选择的Debuff
+    /// </summary>
+    public Debuff Debuff { get => _debuff;}
+    /// <summary>
+    /// 单次挑战获取的局外金币数量
+    /// </summary>
+    public int MetaCoinCount { get => _metaCoinCount;}
 
     #endregion
 
@@ -62,12 +76,20 @@ public class BattleManager : MonoBehaviour
     /// 设置 IsFailed = false、
     /// 通过 SceneManager 切换到战斗场景，并调用 WaveManager 启动第一回合。
     /// </summary>
-    public void StartBattle()
+    public void StartBattle(Debuff debuff)
     {
+        
+        _debuff = debuff;
+        _gameSpeed=1f;
+        _metaCoinCount = 0;
+        
         BattleUIManager.Instance.ShowBattleScene();//显示战斗场景
         _isPaused = false;
         ManagerRegistry.InitManagers(InitStage.InBattle);
+
+        ScienceManager.Instance.ApplyScience();//应用科技点
         EnemyManager.OnLastEnemySpawned += OnLastEnemySpawned;
+        Crystal.OnCrystalDestroyed += OnCrystalDestroyed;
     }
 
     /// <summary>
@@ -78,19 +100,21 @@ public class BattleManager : MonoBehaviour
     /// <param name="success"></param>
     public void EndBattle(bool success)
     {
-        Debug.Log("挑战结束了");
-        if (success)
-        {
-            BattleUIManager.Instance.ShowVictoryPanel();//显示游戏胜利界面
-        }
-        else
-        {
-            BattleUIManager.Instance.ShowGameOverPanel();//显示游戏失败界面
-        }
+        _isPaused = true;
+        SignleMetaCoinCount();//计算这次挑战获取了多少局外金币
+        BattleUIManager.Instance.ShowEndPanel(success);//显示游戏结算界面
         
         EnemyManager.OnLastEnemySpawned -= OnLastEnemySpawned;
         EnemyManager.OnEnemyCountChanged -= OnEnemyCountChanged;
-        
+        OnEndBattle?.Invoke(success);
+    }
+
+    /// <summary>
+    /// 复活
+    /// </summary>
+    public void Relive()
+    {
+
     }
 
     /// <summary>
@@ -108,7 +132,7 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     public void PauseGame()
     {
-
+        _isPaused = true;
     }
 
     /// <summary>
@@ -116,7 +140,7 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     public void ResumeGame()
     {
-
+        _isPaused = false;
     }
 
     /// <summary>
@@ -124,6 +148,27 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     public void AddClear()
     {
+
+    }
+
+    /// <summary>
+    /// 修改debuff
+    /// </summary>
+    public void ChangeDebuff(DebuffType debuffType,int delta)
+    {
+        switch (debuffType)
+        {
+            case DebuffType.AddHP:
+                _debuff.AddHP = Mathf.Max(0, _debuff.AddHP + delta);
+                break;
+            case DebuffType.AddSpeed:
+                _debuff.AddSpeed = Mathf.Max(0, _debuff.AddSpeed + delta);
+                break;
+            case DebuffType.AddCount:
+                _debuff.AddCount = Mathf.Max(0, _debuff.AddCount + delta);
+                break;
+        }
+
 
     }
 
@@ -161,8 +206,8 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     private void Start()
     {
-        StartPanel.OnSatrtBattle += StartBattle;//点击开始挑战按钮之后
-        
+        //StartPanel.OnSatrtBattle += StartBattle;//点击开始挑战按钮之后
+        ChooseDebuffPanel.OnDebuffChooseEnd += StartBattle;//选择debuff 完毕之后
     }
 
     private void Update()
@@ -190,6 +235,25 @@ public class BattleManager : MonoBehaviour
         {
             EndBattle(true);//胜利了
         }
+    }
+
+    //单次挑战获取的局外金币数量
+    private void SignleMetaCoinCount()
+    {
+        int rounds = WaveManager.Instance.CurrentRound;//当前回合
+        int tens = rounds / 3; // 闯过了多少个10关卡
+        int bonus = 0;
+        for (int i = 1; i <= tens; i++)
+        {
+            bonus += i;
+        }
+        _metaCoinCount = bonus;
+    }
+
+    //水晶被破坏了
+    private void OnCrystalDestroyed()
+    {
+        EndBattle(false);
     }
     #endregion
 }

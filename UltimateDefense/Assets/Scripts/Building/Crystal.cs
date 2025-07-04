@@ -18,6 +18,10 @@ public class Crystal : BuildingBase
     public static Crystal Instance { get => _instance; }
 
     public override string BuildingName { get=> _name; }
+    /// <summary>
+    /// 每秒恢复的血量
+    /// </summary>
+    public int RecoverHpPerSecond { get => _recoverHpPerSecond; set => _recoverHpPerSecond = value; }
 
     private void Awake()
     {
@@ -25,11 +29,14 @@ public class Crystal : BuildingBase
         else Destroy(gameObject);
     }
 
-    private void Start()
+    private void OnEnable()
     {
-#if UNITY_EDITOR
-        Init(100,1);
-#endif
+        Init(MaxHP, 1);
+    }
+
+    protected void OnDisable()
+    {
+        StopAllCoroutines();
     }
 
     /// <summary>
@@ -39,9 +46,9 @@ public class Crystal : BuildingBase
     /// <param name="recoverHpPerSecond">每秒恢复的生命值</param>
     public override void Init(int maxHP,int recoverHpPerSecond)
     {
-        _maxHP=maxHP;
-        _currentHP=_maxHP;
-        _recoverHpPerSecond=recoverHpPerSecond;
+        MaxHP=maxHP;
+        _currentHP=MaxHP;
+        RecoverHpPerSecond=recoverHpPerSecond;
 
         if(_recoverCoro != null) _recoverCoro = null;
         _recoverCoro = StartCoroutine(RecoverIE());//启动水晶每秒回血的协程
@@ -51,7 +58,7 @@ public class Crystal : BuildingBase
     /// 受到伤害
     /// </summary>
     /// <param name="damage"></param>
-    public void TakeDamage(int damage)
+    public override void TakeDamage(int damage)
     {
         _currentHP -= damage;
         if (_currentHP < 0) 
@@ -73,19 +80,19 @@ public class Crystal : BuildingBase
     public void Recover(int hp)
     {
         _currentHP += hp;
-        if (_currentHP > _maxHP)
+        if (_currentHP > MaxHP)
         {
-            _currentHP = _maxHP;
+            _currentHP = MaxHP;
         }
     }
     
     //每秒恢复血量的协程
     private IEnumerator RecoverIE()
     {
-        while (_recoverHpPerSecond > 0)
+        while (RecoverHpPerSecond > 0)
         {
-            Recover(_recoverHpPerSecond);
-            yield return new WaitForSeconds(1/BattleManager.Instance.GameSpeed);
+            Recover(RecoverHpPerSecond);
+            yield return TimerUtility.WaitForGameSeconds(1);//等待一秒
         }
     }
 

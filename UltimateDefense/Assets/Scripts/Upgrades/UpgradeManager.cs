@@ -10,6 +10,7 @@ public class UpgradeManager : ManagerBase<UpgradeManager>,IManager
     #region 私有字段
     private List<UpgradeBase> _purchasedUpgrades = new List<UpgradeBase>();             // 已购买升级列表
     private int _totalSpentGold;                              // 累计花费的金币，可用于成就统计
+    private int _updateCount = 0;//刷新升级面板的次数
     #endregion
 
     #region 公开属性
@@ -17,6 +18,11 @@ public class UpgradeManager : ManagerBase<UpgradeManager>,IManager
     /// 只读属性，暴露已购买的升级列表（只读视图）
     /// </summary>
     public IReadOnlyList<UpgradeBase> PurchasedUpgrades => _purchasedUpgrades;
+
+    /// <summary>
+    /// 刷新升级面板的次数
+    /// </summary>
+    public int UpdateCount { get => _updateCount; set => _updateCount = value; }
 
     #endregion
 

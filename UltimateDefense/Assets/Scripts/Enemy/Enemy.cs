@@ -62,6 +62,10 @@ public class Enemy : MonoBehaviour
     #region Unity 生命周期
     private void OnEnable()
     {
+        
+    }
+    private void OnDisable() 
+    { 
         StopAllCoroutines();
     }
     #endregion
@@ -81,12 +85,13 @@ public class Enemy : MonoBehaviour
         enemyLayer = layer;                 // 设置渲染层级
 
         // 根据等级动态计算最大生命值，护盾默认为 0
-        maxHP = level * 100;
+        maxHP = level * (100+BattleManager.Instance.Debuff.AddHP*10);//算上debuff的，增加敌人10%HP
         maxShield = 0;
         _currentHP = maxHP;                 // 初始化当前血量为最大值
         _currentShield = maxShield;         // 初始化当前护盾为最大值
 
         levelText.text = level.ToString();  // 在 UI 上显示等级
+        transform.localScale= Vector3.one* (1+(level-1)/100f);//等级越大，体型越大
         SetOrderLayer(enemyLayer);          // 更新 Canvas 排序层级
         ChangeShield();                     // 初始化护盾条填充
         ChangeHP();                         // 初始化血条填充
@@ -97,6 +102,8 @@ public class Enemy : MonoBehaviour
 
         // 启动中央状态机协程，管理移动和攻击行为
         StartCoroutine(StateMachineLoop());
+
+        BattleManager.OnEndBattle += OnEndBattle;
     }
 
     /// <summary>
@@ -140,6 +147,8 @@ public class Enemy : MonoBehaviour
         enemyLayer = layer;
         enemyCanvas.sortingOrder = enemyLayer;
     }
+
+    
     #endregion
 
     #region 状态机协程
@@ -193,7 +202,7 @@ public class Enemy : MonoBehaviour
                 moveSpeed * BattleManager.Instance.GameSpeed * Time.deltaTime);
 
             // 当 Y <= 13（示例值）且首次进入范围，触发 OnMoveInRange
-            if (transform.position.y < 13f && !_isInRangeList)
+            if (transform.position.y < 8f && !_isInRangeList)
             {
                 _isInRangeList = true;
                 OnMoveInRange?.Invoke(this);
@@ -251,6 +260,13 @@ public class Enemy : MonoBehaviour
     private void ChangeShield()
     {
         shieldSlider.fillAmount = maxShield == 0 ? 0f : (float)_currentShield / maxShield;
+    }
+
+    //挑战结束
+    private void OnEndBattle(bool success)
+    {
+        EnemyManager.Instance.EnemyPool.Return(this);
+        StopAllCoroutines();
     }
     #endregion
 }

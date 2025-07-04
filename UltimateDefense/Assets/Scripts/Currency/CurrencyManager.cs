@@ -16,6 +16,7 @@ public class CurrencyManager : ManagerBase<CurrencyManager>,IManager
 
     #region 公共静态变量
     public static UnityAction<int> OnCoinChange;      //金币数量发生变化
+    public static UnityAction<Enemy,int> OnGetCoinFromEnemy;      //敌人死亡获取金币
     #endregion
 
     #region 公开属性
@@ -31,6 +32,14 @@ public class CurrencyManager : ManagerBase<CurrencyManager>,IManager
     #endregion
 
     #region public 成员方法
+    private void Update()
+    {
+        if (Input.GetKeyUp(KeyCode.G))
+        {
+            AddCoin(100);
+        }
+    }
+
     private void OnDisable()
     {
         _gold = 0;
@@ -56,7 +65,7 @@ public class CurrencyManager : ManagerBase<CurrencyManager>,IManager
     }
 
     /// <summary>
-    /// 尝试扣除指定数量金币，如果不足则返回 false
+    /// 扣除指定数量金币，如果不足则返回 false
     /// 扣费成功后刷新 UI 并保存
     /// </summary>
     /// <param name="amount">要花费的金币数</param>
@@ -80,8 +89,8 @@ public class CurrencyManager : ManagerBase<CurrencyManager>,IManager
     /// <returns>是否足够</returns>
     public bool HasEnoughGold(int amount)
     {
-        // return _gold >= amount;
-        return false;
+        // return ;
+        return _gold >= amount;
     }
 
     /// <summary>
@@ -123,6 +132,7 @@ public class CurrencyManager : ManagerBase<CurrencyManager>,IManager
         {
             // 掉落金币
             AddCoin(EnemyManager.EnemyDieCoin);
+            OnGetCoinFromEnemy?.Invoke(enemy,EnemyManager.EnemyDieCoin);
         }
     }
 
