@@ -49,7 +49,7 @@ public class Upgrade_IncreaseTowerReloadTime : UpgradeBase
     #region 公共方法
     public override bool IsAvailable()
     {
-        return TowerManager.Instance.GlobalIncreaseReloadTime < 2.0f;
+        return TowerManager.Instance.GlobalReloadTime.Value > 1.0f;
     }
 
     /// <summary>
@@ -58,7 +58,7 @@ public class Upgrade_IncreaseTowerReloadTime : UpgradeBase
     public override void Apply()
     {
         // 通知 Manager 保存全局加成
-        TowerManager.Instance.GlobalIncreaseReloadTime += _bonus;
+        TowerManager.Instance.GlobalReloadTime.Value -= _bonus;
     }
 
     #endregion

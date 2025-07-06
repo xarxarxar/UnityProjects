@@ -33,8 +33,8 @@ public class Enemy : MonoBehaviour
     public int maxHP = 100;
     [Tooltip("敌人的最大护盾值，默认无护盾")]
     public int maxShield = 100;
-    [Tooltip("移动速度，单位：世界单位/秒")]
-    public float moveSpeed = 2f;
+    //[Tooltip("移动速度，单位：世界单位/秒")]
+    //public float moveSpeed = 2f;
     [Tooltip("击败敌人后获得的金币奖励")]
     public int rewardGold = 10;
     [Tooltip("UI 渲染层级顺序，数值越高越靠前")]
@@ -48,10 +48,28 @@ public class Enemy : MonoBehaviour
     #region 私有字段（状态与运行时数据）
     private int _currentHP;         // 当前生命值
     private int _currentShield;     // 当前护盾值
+    [SerializeField] private int _damageNullifiedCount;     // 免疫伤害次数
     private BuildingBase _targetBuilding => EnemyManager.Instance.TargetBuilding;  // 攻击目标建筑
     private bool _isDead;           // 是否已死亡
     private bool _isInRangeList;    // 是否已触发进入攻击范围事件
     private bool _isPaused => BattleManager.Instance.IsPaused;  // 游戏是否暂停
+
+    /// <summary>
+    /// 当前的HP
+    /// </summary>
+    public int CurrentHP 
+    { 
+        get => _currentHP;
+        set 
+        {
+            if (_currentHP != value)
+            {
+                _currentHP = value;
+            }
+            levelText.text = _currentHP.ToString();  // 在 UI 上显示等级
+            transform.localScale = Vector3.one * (1 + (_currentHP - 1) / 100f);//等级越大，体型越大
+        } 
+    }
 
     /// <summary>敌人状态枚举：移动 or 攻击</summary>
     private enum State { Moving, Attacking }
@@ -84,14 +102,15 @@ public class Enemy : MonoBehaviour
         _isInRangeList = false;             // 重置范围触发标志
         enemyLayer = layer;                 // 设置渲染层级
 
-        // 根据等级动态计算最大生命值，护盾默认为 0
-        maxHP = level * (100+BattleManager.Instance.Debuff.AddHP*10);//算上debuff的，增加敌人10%HP
+        // 根据等级动态计算最大生命值，一级就是一滴血,护盾默认为 0
+        maxHP = Mathf.RoundToInt(level * (1+BattleManager.Instance.Debuff.AddHP*0.1f)) ;//算上debuff的，增加敌人10%HP
         maxShield = 0;
-        _currentHP = maxHP;                 // 初始化当前血量为最大值
+        CurrentHP = maxHP;                 // 初始化当前血量为最大值
         _currentShield = maxShield;         // 初始化当前护盾为最大值
+        _damageNullifiedCount=EnemyManager.Instance.EnemyDamageNullifiedCount.Value;
 
-        levelText.text = level.ToString();  // 在 UI 上显示等级
-        transform.localScale= Vector3.one* (1+(level-1)/100f);//等级越大，体型越大
+
+
         SetOrderLayer(enemyLayer);          // 更新 Canvas 排序层级
         ChangeShield();                     // 初始化护盾条填充
         ChangeHP();                         // 初始化血条填充
@@ -122,6 +141,13 @@ public class Enemy : MonoBehaviour
     public void TakeDamage(bool isCritical, int damage)
     {
         if (_isDead) return;               // 如果已死亡，忽略伤害
+
+        if (_damageNullifiedCount > 0)
+        {
+            _damageNullifiedCount--;
+            return;
+        }
+
         OnEnemyDamaged?.Invoke(this, isCritical, damage); // 通知外部
 
         if (_currentShield > 0)            // 有护盾时先扣护盾
@@ -131,9 +157,9 @@ public class Enemy : MonoBehaviour
         }
         else                               // 无护盾时扣血
         {
-            _currentHP = Mathf.Max(_currentHP - damage, 0);
+            CurrentHP = Mathf.Max(CurrentHP - damage, 0);
             ChangeHP();                    // 更新血条 UI
-            if (_currentHP == 0)
+            if (CurrentHP == 0)
                 Die();                    // 血量耗尽则死亡
         }
     }
@@ -199,7 +225,7 @@ public class Enemy : MonoBehaviour
             transform.position = Vector3.MoveTowards(
                 transform.position,
                 targetPos,
-                moveSpeed * BattleManager.Instance.GameSpeed * Time.deltaTime);
+                EnemyManager.Instance.EnemySpeed.Value * BattleManager.Instance.GameSpeed * Time.deltaTime);
 
             // 当 Y <= 13（示例值）且首次进入范围，触发 OnMoveInRange
             if (transform.position.y < 8f && !_isInRangeList)
@@ -253,7 +279,7 @@ public class Enemy : MonoBehaviour
     /// <summary>更新血条 UI 填充比例</summary>
     private void ChangeHP()
     {
-        hpSlider.fillAmount = maxHP == 0 ? 0f : (float)_currentHP / maxHP;
+        hpSlider.fillAmount = maxHP == 0 ? 0f : (float)CurrentHP / maxHP;
     }
 
     /// <summary>更新护盾条 UI 填充比例</summary>

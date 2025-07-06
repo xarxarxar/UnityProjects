@@ -8,6 +8,7 @@ public class GamePlayingPanel : MonoBehaviour
     [SerializeField] private Text _roundText;       // 显示当前回合信息的 UI 文本组件
     [SerializeField] private Text _enemyCountText;  //显示当前敌人数量的Text
     [SerializeField] private Button _openBankButton;  //打开银行面板的按钮
+    [SerializeField] private Button _openEnemyInfoButton;  //打开敌人信息面板的按钮
     [SerializeField] private Button _openDoubleSpeedButton;  //打开两倍速的按钮
     [SerializeField] private Button _openPauseButton;  //打开暂停面板的按钮
     [SerializeField] private Button _openInfoButton;  //打开信息面板的按钮
@@ -25,8 +26,14 @@ public class GamePlayingPanel : MonoBehaviour
         _openPauseButton.onClick.AddListener(() => {
             BattleUIManager.Instance.ShowPausePanel();
         });
+        _openEnemyInfoButton.onClick.AddListener(() => {
+            BattleUIManager.Instance.ShowEnemyInfoInfoPanel();
+        });
+        _openInfoButton.onClick.AddListener(() => { 
+            BattleUIManager.Instance.ShowBattleTowerInfoPanel();
+        });
         WaveManager.OnWaveChanged += OnWaveChanged;
-        EnemyManager.OnEnemyCountChanged += OnEnemyCountChanged;
+        EnemyManager.Instance.EnemyCurrentCount.OnValueChanged += OnEnemyCountChanged;
         EnemyManager.OnAlmostNextWave += OnAlmostNextWave;
         CurrencyManager.OnCoinChange += RefreshGoldDisplay;//金币变化时也刷新金币显示
         BankManager.OnBankMoneyChanged += OnBankMoneyChanged;//银行金币数量变化时
@@ -35,13 +42,15 @@ public class GamePlayingPanel : MonoBehaviour
     private void OnDisable()
     {
         WaveManager.OnWaveChanged -= OnWaveChanged;
-        EnemyManager.OnEnemyCountChanged -= OnEnemyCountChanged;
+        EnemyManager.Instance.EnemyCurrentCount.OnValueChanged -= OnEnemyCountChanged;
         EnemyManager.OnAlmostNextWave -= OnAlmostNextWave;
         CurrencyManager.OnCoinChange -= RefreshGoldDisplay;//金币变化时也刷新金币显示
         BankManager.OnBankMoneyChanged -= OnBankMoneyChanged;//银行金币数量变化时
 
         _openBankButton.onClick.RemoveAllListeners();
         _openPauseButton.onClick.RemoveAllListeners();
+        _openInfoButton.onClick.RemoveAllListeners();
+        _openEnemyInfoButton.onClick.RemoveAllListeners();
     }
 
 

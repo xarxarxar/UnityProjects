@@ -10,28 +10,27 @@ public class Tower : MonoBehaviour
 {
     #region 配置参数
     [Header("基本属性")]
-    public float attackRange = 5f;         // 攻击范围
-    public float baseFireRate = 1f;        // 攻击频率（每秒几次）
-    public float criticalProb = 0.1f;       //初始暴击概率
-    public int baseDamage = 10;            // 初始单次攻击伤害
+    //public float baseFireRate = 1f;        // 攻击频率（每秒几次）
+    //public float criticalProb = 0.1f;       //初始暴击概率
+    //public int baseDamage = 1;            // 初始单次攻击伤害
     [SerializeField]private int _currentBulletCount;        //当前子弹数量
 
     [Header("升级属性")]
     public int level = 1;                  // 当前等级
-    public int upgradeCost = 50;           // 升级花费金币
+    //public int upgradeCost = 50;           // 升级花费金币
 
     //总属性
-    public int totalDamage => Mathf.RoundToInt(baseDamage * (1 + TowerManager.Instance.GlobalAttackBonus));
-    public float totalAttackRate => baseFireRate*(1+TowerManager.Instance.GlobalAttackSpeedMultiplier);
-    public float totalCriticalProb => criticalProb + TowerManager.Instance.GlobalCriticalShotProb;
-    public float ReloadTime=> reloadTime- TowerManager.Instance.GlobalIncreaseReloadTime;
-    public int BulletCapacity=> bulletCapacity+TowerManager.Instance.GlobalIncreaseBulletCap;
-    public float totalCriticalMultiplier=>TowerManager.Instance.GlobalCriticalMultiplier;//暴击伤害倍率
+    public int totalDamage => Mathf.RoundToInt(TowerManager.Instance.GlobalAttackBonus.Value);
+    public float totalAttackRate => TowerManager.Instance.GlobalAttackSpeedMultiplier.Value;
+    public float totalCriticalProb =>TowerManager.Instance.GlobalCriticalShotProb.Value;
+    public float ReloadTime=> TowerManager.Instance.GlobalReloadTime.Value;
+    public int BulletCapacity=> TowerManager.Instance.GlobalIncreaseBulletCap.Value;
+    public float totalCriticalMultiplier=>TowerManager.Instance.GlobalCriticalMultiplier.Value;//暴击伤害倍率
     #endregion
 
     #region 私有字段
-    private float reloadTime = 3.0f;//装弹时间
-    private int bulletCapacity = 10;//子弹容量
+    //private float reloadTime = 3.0f;//装弹时间
+    //private int bulletCapacity = 10;//子弹容量
     private Enemy currentTarget;//当前的攻击目标
     private bool _isPaused=>BattleManager.Instance.IsPaused;//是否暂停
     private List<Enemy> _enemiesInRange=>EnemyManager.Instance.EnemiesInRange;//在攻击范围内的所有敌人
@@ -79,19 +78,6 @@ public class Tower : MonoBehaviour
 
     #region 公共方法
     /// <summary>
-    /// 升级塔：消耗金币，增加伤害与攻速。这里逻辑不对，应该是三个合成进行升级
-    /// </summary>
-    public void Upgrade()
-    {
-        if (CurrencyManager.Instance.SpendCoin(upgradeCost))
-        {
-            level++;
-            baseDamage = 20;
-            baseFireRate = 0.5f;
-            upgradeCost += 50;
-        }
-    }
-    /// <summary>
     /// 摧毁该防御塔
     /// </summary>
     public void Destroy()
@@ -102,12 +88,6 @@ public class Tower : MonoBehaviour
     #endregion
 
     #region 私有方法
-
-    private bool IsTargetInRange(Enemy target)
-    {
-        return Vector3.Distance(transform.position, target.transform.position) <= attackRange;
-    }
-
     private void Attack(Enemy target)
     {
         if (target != null)
@@ -118,7 +98,7 @@ public class Tower : MonoBehaviour
             
             if (value < totalCriticalProb)//暴击
             {
-                bullet.Init(transform.position, target,true, Mathf.RoundToInt(totalDamage*TowerManager.Instance.GlobalCriticalMultiplier));
+                bullet.Init(transform.position, target,true, Mathf.RoundToInt(totalDamage*TowerManager.Instance.GlobalCriticalMultiplier.Value));
             }
             else
             {

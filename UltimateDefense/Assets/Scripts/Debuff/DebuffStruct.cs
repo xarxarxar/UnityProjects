@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -9,7 +6,8 @@ public enum DebuffType
 {
     AddHP,
     AddSpeed,
-    AddCount
+    AddCount,
+    DamageNullified
 }
 
 public class DebuffStruct : MonoBehaviour

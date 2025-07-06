@@ -128,11 +128,11 @@ public class CurrencyManager : ManagerBase<CurrencyManager>,IManager
     private void OnEnemyDie(Enemy enemy)
     {
         // ¸ÅÂÊµôÂä½ğ±Ò
-        if (Random.value <= EnemyManager.EnemyDieCoinProb)
+        if (Random.value <= EnemyManager.EnemyDieCoinProb.Value)
         {
             // µôÂä½ğ±Ò
-            AddCoin(EnemyManager.EnemyDieCoin);
-            OnGetCoinFromEnemy?.Invoke(enemy,EnemyManager.EnemyDieCoin);
+            AddCoin(EnemyManager.EnemyDieCoin.Value);
+            OnGetCoinFromEnemy?.Invoke(enemy,EnemyManager.EnemyDieCoin.Value);
         }
     }
 

@@ -1,7 +1,4 @@
 
-using Unity.VisualScripting;
-using UnityEngine;
-
 public class Upgrade_IncreaseCriticalShotProb : UpgradeBase
 {
     #region 私有字段
@@ -46,7 +43,7 @@ public class Upgrade_IncreaseCriticalShotProb : UpgradeBase
     #region 公共方法
     public override bool IsAvailable()
     {
-        return TowerManager.Instance.GlobalCriticalShotProb < 0.5f;
+        return TowerManager.Instance.GlobalCriticalShotProb.Value < 0.5f;
     }
 
     /// <summary>
@@ -55,7 +52,7 @@ public class Upgrade_IncreaseCriticalShotProb : UpgradeBase
     public override void Apply()
     {
         // 通知 Manager 保存全局加成
-        TowerManager.Instance.GlobalCriticalShotProb += _bonus;
+        TowerManager.Instance.GlobalCriticalShotProb.Value += _bonus;
     }
 
     #endregion

@@ -33,13 +33,13 @@ public class Upgrade_IncreaseTowerAttackRate : UpgradeBase
         UpgradeID = "IncreaseTowerAttackRate";
         _attackRateBonus = attackRateBonus;
         Cost = cost;
-        Description = $"所有炮塔攻速 +{_attackRateBonus*100}%";
+        Description = $"每秒射击次数 +{_attackRateBonus}";
     }
 
     public static Upgrade_IncreaseTowerAttackRate CreateDynamicUpgrade()
     {
-        float attackRateBonus =0.05f* Random.Range(1,20);
-        int cost = Mathf.RoundToInt(attackRateBonus * 100);
+        float attackRateBonus =0.1f;
+        int cost = Mathf.RoundToInt(attackRateBonus * 50);
         return new Upgrade_IncreaseTowerAttackRate(attackRateBonus, cost);
     }
 
@@ -53,7 +53,7 @@ public class Upgrade_IncreaseTowerAttackRate : UpgradeBase
     public override void Apply()
     {
         // 通知 Manager 保存全局加成
-        TowerManager.Instance.GlobalAttackSpeedMultiplier += _attackRateBonus;
+        TowerManager.Instance.GlobalAttackSpeedMultiplier.Value += _attackRateBonus;
     }
 
     #endregion

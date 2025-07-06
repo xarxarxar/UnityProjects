@@ -14,8 +14,11 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
     private bool _isInitialized;                // 标记是否已初始化
     [SerializeField] public Enemy _enemyPrefab;     //敌人预制体
     private ObjectPool<Enemy> _enemyPool;           //敌人对象池
-    private float _enemyDieCoinProb=0.5f;            //敌人死亡之后获得金币的概率
-    private int _enemyDieCoin=50;                  //敌人死亡之后获得的金币数量
+    private BindableProperty<float>  _enemyDieCoinProb=new BindableProperty<float>();//敌人死亡之后获得金币的概率
+    private BindableProperty<float>  _enemySpeed=new BindableProperty<float>();//敌人移动速度
+    private BindableProperty<int> _enemyDieCoin = new BindableProperty<int>();//敌人死亡之后获得的金币数量
+    private BindableProperty<int> _enemyCurrentCount = new BindableProperty<int>();//当前所有敌人数量
+    private BindableProperty<int> _enemyDamageNullifiedCount = new BindableProperty<int>();//敌人免疫伤害次数
     private BuildingBase _targetBuilding;              //敌人的目标建筑物
     //private int _enemyTotalCount = 0;                //敌人生成的数量,从开始到结束的总数量，包括死亡的
     #endregion
@@ -24,7 +27,7 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
     /// <summary>
     /// 场上敌人数量变化
     /// </summary>
-    public static event UnityAction<int> OnEnemyCountChanged;
+    //public static event UnityAction<int> OnEnemyCountChanged;
     /// <summary>
     /// 最后一波的最后一个敌人生成完毕
     /// </summary>
@@ -51,26 +54,38 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
     /// <summary>
     /// 敌人死亡后，掉落金币的概率
     /// </summary>
-    public float EnemyDieCoinProb 
+    public BindableProperty<float> EnemyDieCoinProb 
     { 
         get => _enemyDieCoinProb; 
         set
         {
             _enemyDieCoinProb=value;
-            if (_enemyDieCoinProb > 0.8f)
+            if (_enemyDieCoinProb.Value > 0.8f)
             {
-                _enemyDieCoinProb = 0.8f;//最大百分之80
+                _enemyDieCoinProb.Value = 0.8f;//最大百分之80
             }
         } 
     }
     /// <summary>
     /// 敌人死亡后，掉落金币的数量
     /// </summary>
-    public int EnemyDieCoin { get => _enemyDieCoin; set => _enemyDieCoin = value; }
+    public BindableProperty<int> EnemyDieCoin { get => _enemyDieCoin; set => _enemyDieCoin = value; }
     /// <summary>
     /// 只读属性，敌人的目标建筑物
     /// </summary>
     public BuildingBase TargetBuilding { get => _targetBuilding; }
+    /// <summary>
+    /// 当前活着的敌人数量
+    /// </summary>
+    public BindableProperty<int> EnemyCurrentCount { get => _enemyCurrentCount; set => _enemyCurrentCount = value; }
+    /// <summary>
+    /// 敌人移动速度
+    /// </summary>
+    public BindableProperty<float> EnemySpeed { get => _enemySpeed; set => _enemySpeed = value; }
+    /// <summary>
+    /// 敌人免疫伤害次数
+    /// </summary>
+    public BindableProperty<int> EnemyDamageNullifiedCount { get => _enemyDamageNullifiedCount; set => _enemyDamageNullifiedCount = value; }
 
     #endregion
 
@@ -94,8 +109,11 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
         Debug.Log("enemymanager初始化");
         _allEnemies.Clear();
         _enemiesInRange.Clear();
-        _enemyDieCoinProb = 0.5f;
-        _enemyDieCoin = 50;
+        _enemyDieCoinProb.Value = 0.5f;
+        _enemyDieCoin.Value = 50;
+        _enemyCurrentCount.Value = 0;
+        _enemySpeed.Value = 0.5f * (1 + BattleManager.Instance.Debuff.AddSpeed * 0.1f);
+        _enemyDamageNullifiedCount.Value = 0 + BattleManager.Instance.Debuff.DamageNullified;
         _targetBuilding = Crystal.Instance;//设置初始目标建筑为水晶
 
         Enemy.OnMoveInRange += OnMoveInRange;
@@ -116,7 +134,8 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
         //_enemyTotalCount++;  
         enemy.Init(new Vector3(xPos, 13, 0), level, -1 * (_allEnemies.Count));
         _allEnemies.Add(enemy);
-        OnEnemyCountChanged?.Invoke(_allEnemies.Count);//场上敌人数量变化
+        _enemyCurrentCount.Value = _allEnemies.Count;
+        //OnEnemyCountChanged?.Invoke(_allEnemies.Count);//场上敌人数量变化
     }
 
     /// <summary>
@@ -134,8 +153,8 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
         {
             _allEnemies[i].SetOrderLayer(-1*i);
         }
-
-        OnEnemyCountChanged?.Invoke(_allEnemies.Count);//场上敌人数量变化
+        _enemyCurrentCount.Value = _allEnemies.Count;
+        //OnEnemyCountChanged?.Invoke(_allEnemies.Count);//场上敌人数量变化
     }
 
     /// <summary>
@@ -202,7 +221,9 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
         {
             //Debug.Log($"一波生成前，当前波次为{WaveManager.Instance.CurrentRound}");
             WaveManager.Instance.CurrentRound++;
-            for (int i = 0; i < WaveManager.Instance.SingleWaveEnemyCount; i++)
+
+            int enemyCount = Mathf.RoundToInt(WaveManager.Instance.SingleWaveEnemyCount * (1 + BattleManager.Instance.Debuff.AddCount * 0.1f));
+            for (int i = 0; i < enemyCount; i++)
             {
                 while (BattleManager.Instance.IsPaused) yield return null;
                 yield return TimerUtility.WaitForGameSeconds(WaveManager.Instance.SpawnEnemyInterval);
@@ -212,7 +233,7 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
 
                 // 如果是最后一波 且是最后一个敌人
                 if (WaveManager.Instance.CurrentRound == WaveManager.Instance.MaxRound &&
-                    i == WaveManager.Instance.SingleWaveEnemyCount - 1)
+                    i == enemyCount - 1)
                 {
                     //Debug.Log("最后一个敌人生成完成，发送事件");
                     OnLastEnemySpawned?.Invoke();  // 触发事件

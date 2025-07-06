@@ -105,7 +105,7 @@ public class BattleManager : MonoBehaviour
         BattleUIManager.Instance.ShowEndPanel(success);//显示游戏结算界面
         
         EnemyManager.OnLastEnemySpawned -= OnLastEnemySpawned;
-        EnemyManager.OnEnemyCountChanged -= OnEnemyCountChanged;
+        EnemyManager.Instance.EnemyCurrentCount.OnValueChanged -= OnEnemyCountChanged;
         OnEndBattle?.Invoke(success);
     }
 
@@ -225,7 +225,7 @@ public class BattleManager : MonoBehaviour
     //最后一个敌人生成之后
     private void OnLastEnemySpawned()
     {
-        EnemyManager.OnEnemyCountChanged += OnEnemyCountChanged;
+        EnemyManager.Instance.EnemyCurrentCount.OnValueChanged += OnEnemyCountChanged;
     }
 
     //敌人数量变化

@@ -43,7 +43,7 @@ public class Upgrade_IncreaseCriticalMultiplier : UpgradeBase
     #region 公共方法
     public override bool IsAvailable()
     {
-        return TowerManager.Instance.GlobalCriticalMultiplier < 3.0f;
+        return TowerManager.Instance.GlobalCriticalMultiplier.Value < 3.0f;
     }
 
     /// <summary>
@@ -52,7 +52,7 @@ public class Upgrade_IncreaseCriticalMultiplier : UpgradeBase
     public override void Apply()
     {
         // 通知 Manager 保存全局加成
-        TowerManager.Instance.GlobalCriticalMultiplier += _bonus;
+        TowerManager.Instance.GlobalCriticalMultiplier.Value += _bonus;
     }
 
     #endregion

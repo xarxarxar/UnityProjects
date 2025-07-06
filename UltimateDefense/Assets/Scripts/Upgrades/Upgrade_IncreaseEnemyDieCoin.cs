@@ -52,7 +52,7 @@ public class Upgrade_IncreaseEnemyDieCoin : UpgradeBase
     public override void Apply()
     {
         // 通知 Manager 保存全局加成
-        EnemyManager.Instance.EnemyDieCoin += _bonus;
+        EnemyManager.Instance.EnemyDieCoin.Value += _bonus;
     }
 
     #endregion

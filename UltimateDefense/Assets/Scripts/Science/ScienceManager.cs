@@ -5,9 +5,9 @@ public class ScienceManager : ManagerBase<ScienceManager>,IManager
     [SerializeField]private int _unlockIndex;//玩家已解锁的科技index,0表示一个都未解锁
     private readonly ScienceData[] baseSciences = new ScienceData[]//基础科技
     {
-        new ScienceData { name = "攻击力+10%", description = "所有炮塔攻击力 +10%", effectType = ScienceEffectType.IncreaseDamageFlat, value = 0.1f },
-        new ScienceData { name = "攻速+1%", description = "所有炮塔攻速 +1%", effectType = ScienceEffectType.IncreaseAttackSpeedPct, value = 1 },
-        new ScienceData { name = "换弹时间-0.1s", description = "所有炮塔换弹时间 -0.1 秒", effectType = ScienceEffectType.ReduceReloadTime, value = 0.1f },
+        new ScienceData { name = "攻击力+1", description = "炮塔攻击力+1", effectType = ScienceEffectType.IncreaseDamageFlat, value = 1 },
+        new ScienceData { name = "每秒攻击次数+0.1", description = "每秒攻击次数+0.1", effectType = ScienceEffectType.IncreaseAttackSpeedPct, value = 0.1f },
+        new ScienceData { name = "换弹时间-0.1s", description = "换弹时间-0.1秒", effectType = ScienceEffectType.ReduceReloadTime, value = 0.1f },
         // 可以继续添加 6 个作为第 4~9 个
     };
 
@@ -91,15 +91,15 @@ public class ScienceManager : ManagerBase<ScienceManager>,IManager
         switch(scienceData.effectType)
         {
             case ScienceEffectType.IncreaseDamageFlat:
-                TowerManager.Instance.ApplyGlobalAttackBonus(scienceData.value);
+                TowerManager.Instance.GlobalAttackBonus.Value +=Mathf.RoundToInt(scienceData.value);
                 break;
 
             case ScienceEffectType.IncreaseAttackSpeedPct:
-                //TowerManager.Instance.AddAttackSpeedBonusPercent(data.value);
+                TowerManager.Instance.GlobalAttackSpeedMultiplier.Value +=scienceData.value;
                 break;
 
             case ScienceEffectType.ReduceReloadTime:
-                //TowerManager.Instance.ReduceReloadTime(data.value);
+                TowerManager.Instance.GlobalReloadTime.Value -=scienceData.value;
                 break;
 
             case ScienceEffectType.UnlockSkin:
@@ -133,7 +133,7 @@ public class ScienceData
 
 public enum ScienceEffectType
 {
-    IncreaseDamageFlat,      // +10伤害
+    IncreaseDamageFlat,      // +1伤害
     IncreaseAttackSpeedPct,  // +1%攻速
     ReduceReloadTime,        // -0.1秒换弹
     UnlockSkin               // 解锁皮肤

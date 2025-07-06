@@ -7,7 +7,7 @@ public class Upgrade_IncreaseTowerAttack : UpgradeBase
 {
     #region 私有字段
 
-    private float _attackBonus;    // 本次升级增加的攻击力百分比
+    private int _attackBonus;    // 本次升级增加的攻击力百分比
 
     #endregion
 
@@ -16,7 +16,7 @@ public class Upgrade_IncreaseTowerAttack : UpgradeBase
     /// <summary>
     /// 外部可读取此次增加的攻击力
     /// </summary>
-    public float AttackBonus => _attackBonus;
+    public int AttackBonus => _attackBonus;
 
     #endregion
 
@@ -27,18 +27,18 @@ public class Upgrade_IncreaseTowerAttack : UpgradeBase
     /// </summary>
     /// <param name="attackBonus">要增加的攻击力数值</param>
     /// <param name="cost">消耗的金币数</param>
-    public Upgrade_IncreaseTowerAttack(float attackBonus, int cost)
+    public Upgrade_IncreaseTowerAttack(int attackBonus, int cost)
     {
         UpgradeID = "IncreaseTowerAttack";
         _attackBonus = attackBonus;
         Cost = cost;
-        Description = $"所有炮塔攻击力 +{_attackBonus*100}%";
+        Description = $"炮塔基础伤害 +{_attackBonus}";
     }
 
     public static Upgrade_IncreaseTowerAttack CreateDynamicUpgrade()
     {
-        float bonus = 0.05f * Random.Range(1, 20);
-        int cost = Mathf.RoundToInt(bonus * 100);
+        int bonus = Random.Range(1, 5);
+        int cost = Mathf.RoundToInt(bonus * 50);
         return new Upgrade_IncreaseTowerAttack(bonus, cost);
     }
 
@@ -53,7 +53,7 @@ public class Upgrade_IncreaseTowerAttack : UpgradeBase
     public override void Apply()
     {
         // 通知 Manager 保存全局加成
-        TowerManager.Instance.GlobalAttackBonus += _attackBonus;
+        TowerManager.Instance.GlobalAttackBonus.Value += _attackBonus;
     }
 
     #endregion

@@ -47,7 +47,7 @@ public class Upgrade_IncreaseEnemyDieCoinProb : UpgradeBase
     #region 公共方法
     public override bool IsAvailable()
     {
-        return EnemyManager.Instance.EnemyDieCoinProb<0.8f;
+        return EnemyManager.Instance.EnemyDieCoinProb.Value <0.8f;
     }
 
     /// <summary>
@@ -57,7 +57,7 @@ public class Upgrade_IncreaseEnemyDieCoinProb : UpgradeBase
     public override void Apply()
     {
         // 通知 Manager 保存全局加成
-        EnemyManager.Instance.EnemyDieCoinProb += _enemyDieCoinProbBonus;
+        EnemyManager.Instance.EnemyDieCoinProb.Value += _enemyDieCoinProbBonus;
     }
 
     #endregion

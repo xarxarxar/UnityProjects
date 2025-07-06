@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,17 +7,18 @@ using UnityEngine;
 public class TowerManager : ManagerBase<TowerManager>,IManager
 {
     #region 私有属性
-    private List<Tower> _allTowers=new List<Tower>();// 场上所有活着的塔实例列表
-    private float _globalAttackBonus=0;                 // 全局攻击力加成值
-    private float _globalAttackSpeedMultiplier = 0.0f;  // 全局射速加成倍率
-    private float _globalCriticalShotProb = 0.0f;       //全局暴击概率加成
-    private float _globalCriticalMultiplier = 1.5f; //全局暴击伤害倍数加成
-    private float _globalIncreaseReloadTime = 0.0f; //全局换弹时长减少
-    private int _globalIncreaseBulletCap =0; //全局弹夹容量加成
-    private TowerFactory _towerFactory;               // 引用 TowerFactory 单例，用于创建新塔
+    private BindableProperty<int> _globalAttackBonus =new BindableProperty<int>();// 全局攻击力加成值
+    private BindableProperty<int> _globalIncreaseBulletCap = new BindableProperty<int>(); //全局弹夹容量加成
+    private BindableProperty<float> _globalAttackSpeedMultiplier=new BindableProperty<float>();  // 全局射速加成倍率
+    private BindableProperty<float> _globalCriticalShotProb = new BindableProperty<float>();       //全局暴击概率加成
+    private BindableProperty<float> _globalCriticalMultiplier = new BindableProperty<float>(); //全局暴击伤害倍数加成
+    private BindableProperty<float> _globalReloadTime = new BindableProperty<float>(); //全局换弹时长
+
     private bool _isInitialized;                      // 标记是否已初始化
+    private TowerFactory _towerFactory;               // 引用 TowerFactory 单例，用于创建新塔
     [SerializeField] public Bullet _bulletPrefab;     //子弹预制体
     private ObjectPool<Bullet> _bulletPool;           //子弹对象池
+    private List<Tower> _allTowers = new List<Tower>();// 场上所有活着的塔实例列表
     #endregion
 
     #region 公开属性
@@ -30,21 +30,28 @@ public class TowerManager : ManagerBase<TowerManager>,IManager
     /// <summary>
     /// 全局攻击力加成属性，可在外部设置
     /// </summary>
-    public float GlobalAttackBonus { get { return _globalAttackBonus; } set { _globalAttackBonus = value; } }
+    public BindableProperty<int> GlobalAttackBonus 
+    { get 
+        { return _globalAttackBonus; }
+        set 
+        {
+            _globalAttackBonus = value; 
+        } 
+    }
 
     /// <summary>
     /// 全局攻击速度倍率属性，可在外部设置
     /// </summary>
-    public float GlobalAttackSpeedMultiplier { get { return _globalAttackSpeedMultiplier; } set { _globalAttackSpeedMultiplier = value; } }
+    public BindableProperty<float> GlobalAttackSpeedMultiplier { get { return _globalAttackSpeedMultiplier; } set { _globalAttackSpeedMultiplier = value; } }
 
     /// <summary>
     /// 全局暴击概率加成，供外部调用
     /// </summary>
-    public float GlobalCriticalShotProb { get => _globalCriticalShotProb; set => _globalCriticalShotProb = value; }
+    public BindableProperty<float> GlobalCriticalShotProb { get => _globalCriticalShotProb; set => _globalCriticalShotProb = value; }
     /// <summary>
     /// 全局暴击倍数加成，供外部调用
     /// </summary>
-    public float GlobalCriticalMultiplier { get => _globalCriticalMultiplier; set => _globalCriticalMultiplier = value; }
+    public BindableProperty<float> GlobalCriticalMultiplier { get => _globalCriticalMultiplier; set => _globalCriticalMultiplier = value; }
     /// <summary>
     /// 子弹对象池，供外部调用
     /// </summary>
@@ -53,11 +60,11 @@ public class TowerManager : ManagerBase<TowerManager>,IManager
     /// <summary>
     /// 全局换弹时长加成，供外部调用
     /// </summary>
-    public float GlobalIncreaseReloadTime { get => _globalIncreaseReloadTime; set => _globalIncreaseReloadTime = value; }
+    public BindableProperty<float> GlobalReloadTime { get => _globalReloadTime; set => _globalReloadTime = value; }
     /// <summary>
     /// 全局弹夹容量加成，供外部调用
     /// </summary>
-    public int GlobalIncreaseBulletCap { get => _globalIncreaseBulletCap; set => _globalIncreaseBulletCap = value; }
+    public BindableProperty<int> GlobalIncreaseBulletCap { get => _globalIncreaseBulletCap; set => _globalIncreaseBulletCap = value; }
 
     #endregion
 
@@ -68,12 +75,12 @@ public class TowerManager : ManagerBase<TowerManager>,IManager
     /// <exception cref="System.NotImplementedException"></exception>
     public override void Init()
     {
-        _globalAttackBonus = 0;
-        _globalAttackSpeedMultiplier = 0;
-        _globalCriticalShotProb = 0;
-        _globalCriticalMultiplier= 1.5f;
-        _globalIncreaseReloadTime= 0;
-        _globalIncreaseBulletCap = 0;
+        _globalAttackBonus.Value = 1;
+        _globalAttackSpeedMultiplier.Value = 1;
+        _globalCriticalShotProb.Value = 0;
+        _globalCriticalMultiplier.Value = 1.5f;
+        _globalReloadTime.Value = 3;
+        _globalIncreaseBulletCap.Value = 10;
         if (_bulletPool == null) _bulletPool = new ObjectPool<Bullet>(_bulletPrefab, 10, transform);
     }
 
@@ -100,11 +107,7 @@ public class TowerManager : ManagerBase<TowerManager>,IManager
     /// <param name="tower">要销毁的塔实例</param>
     public void DestroyTower(Tower tower)
     {
-        // if (_allTowers.Contains(tower))
-        // {
-        //     _allTowers.Remove(tower);
-        //     Destroy(tower.gameObject);
-        // }
+
     }
 
     /// <summary>
@@ -112,14 +115,9 @@ public class TowerManager : ManagerBase<TowerManager>,IManager
     /// 遍历 _allTowers，将每座塔的 BaseAttack += bonus，并 UpdateStats
     /// </summary>
     /// <param name="bonus">要增加的攻击力值</param>
-    public void ApplyGlobalAttackBonus(float bonus)
+    public void ApplyGlobalAttackBonus(int bonus)
     {
-        _globalAttackBonus += bonus;
-        // foreach (var t in _allTowers)
-        // {
-        //     t.BaseAttack += bonus;
-        //     t.UpdateStats();
-        // }
+        _globalAttackBonus.Value += bonus;
     }
     #endregion
 

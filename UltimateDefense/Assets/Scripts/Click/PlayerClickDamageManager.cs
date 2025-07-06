@@ -56,7 +56,7 @@ public class PlayerClickDamageManager : ManagerBase<PlayerClickDamageManager>,IM
         {
             if (Random.value < _criticalProb)//±©»÷
             {
-                enemy.TakeDamage(true, Mathf.RoundToInt(_damage * TowerManager.Instance.GlobalCriticalMultiplier));
+                enemy.TakeDamage(true, Mathf.RoundToInt(_damage * TowerManager.Instance.GlobalCriticalMultiplier.Value));
             }
             else
             {

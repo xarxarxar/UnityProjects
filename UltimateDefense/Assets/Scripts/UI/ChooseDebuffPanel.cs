@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -91,8 +90,11 @@ public class ChooseDebuffPanel : MonoBehaviour
             case DebuffType.AddCount:
                 _debuff.AddCount = Mathf.Max(0, _debuff.AddCount + delta);
                 break;
+            case DebuffType.DamageNullified:
+                _debuff.DamageNullified = Mathf.Max(0, _debuff.DamageNullified + delta);
+                break;
         }
-        _chooseCount = _debuff.AddHP + _debuff.AddSpeed + _debuff.AddCount;
+        _chooseCount = _debuff.AddHP + _debuff.AddSpeed + _debuff.AddCount+ _debuff.DamageNullified;
 
         //设置开始挑战按钮的状态
         SetButtonStatus(startChallengeButton, _chooseCount >= DataManager.Instance.PlayerInfo.PassCount);
@@ -133,6 +135,11 @@ public class Debuff
     /// </summary>
     public int AddCount;
 
+    /// <summary>
+    /// 敌人免疫伤害次数
+    /// </summary>
+    public int DamageNullified;
+
     public Debuff()
     {
         AddHP = 0; AddSpeed=0; AddCount = 0;
@@ -158,6 +165,8 @@ public class Debuff
                 return "敌人移动速度增加 10%";
             case DebuffType.AddCount:
                 return "敌人数量增加 10%";
+            case DebuffType.DamageNullified:
+                return "敌人免疫伤害次数";
             default:
                 return "未知效果";
         }
