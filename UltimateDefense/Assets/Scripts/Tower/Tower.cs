@@ -37,6 +37,10 @@ public class Tower : MonoBehaviour
     private float _gameSpeed=>BattleManager.Instance.GameSpeed;
     [SerializeField]private MySlider _slider;//炮塔所带的slider
     [SerializeField] private Text _bulletCountText;//子弹数量的Text
+    [SerializeField] private GameObject _gunBarrel;//炮管
+    [SerializeField] private Transform _bulletInitPos;//子弹初始化位置
+    [SerializeField] private float rotateSpeed = 360f; // 每秒旋转多少度
+    private bool _isRotating = false; // 是否正在旋转
     private bool _isReloading = false; // 是否正在换弹
     private float noAttackTimer = 0f;//未处于攻击状态的时长
     private Coroutine _reloadCoroutine;//换弹协程
@@ -92,27 +96,89 @@ public class Tower : MonoBehaviour
     {
         if (target != null)
         {
-            Bullet bullet= TowerManager.Instance.BulletPool.Get();//从对象池拿取
+            StartCoroutine(RotateAndShootIE(target));
+        }
+    }
+
+    private IEnumerator RotateAndShootIE(Enemy target)
+    {
+        if (target == null) yield break;
+
+        Vector3 dir = target.transform.position - _gunBarrel.transform.position;
+        float targetAngle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg - 90f;
+        Quaternion targetRotation = Quaternion.Euler(0f, 0f, targetAngle);
+
+        while (Quaternion.Angle(_gunBarrel.transform.rotation, targetRotation) > 0.5f)
+        {
+            if (_isPaused)
+            {
+                yield return null;
+                continue;
+            }
+
+            _gunBarrel.transform.rotation = Quaternion.RotateTowards(
+                _gunBarrel.transform.rotation,
+                targetRotation,
+                rotateSpeed * Time.deltaTime * _gameSpeed
+            );
+
+            yield return null;
+        }
+
+        // === 真正射击 ===
+        if (target != null)
+        {
+            Bullet bullet = TowerManager.Instance.BulletPool.Get();
 
             float value = Random.value;
-            
-            if (value < totalCriticalProb)//暴击
+            if (value < totalCriticalProb)
             {
-                bullet.Init(transform.position, target,true, Mathf.RoundToInt(totalDamage*TowerManager.Instance.GlobalCriticalMultiplier.Value));
+                bullet.Init(_bulletInitPos.position, target, true, Mathf.RoundToInt(totalDamage * totalCriticalMultiplier));
             }
             else
             {
-                bullet.Init(transform.position, target, false, totalDamage);
+                bullet.Init(_bulletInitPos.position, target, false, totalDamage);
             }
+
+            CurrentBulletCount--;
+            noAttackTimer = 0f; // 在这儿重置计时器
+
+            // === 射击后才等待攻击间隔 ===
+            yield return TimerUtility.WaitForGameSeconds((1f / totalAttackRate));
         }
-        CurrentBulletCount--;
     }
+
+    //private void Attack(Enemy target)
+    //{
+    //    if (target != null)
+    //    {
+    //        // === 炮管旋转（修正 +90 度）===
+    //        Vector3 dir = target.transform.position - _gunBarrel.transform.position;
+    //        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+    //        _gunBarrel.transform.rotation = Quaternion.Euler(0f, 0f, angle - 90f);
+
+
+    //        Bullet bullet= TowerManager.Instance.BulletPool.Get();//从对象池拿取
+
+    //        float value = Random.value;
+
+    //        if (value < totalCriticalProb)//暴击
+    //        {
+    //            bullet.Init(_bulletInitPos.position, target,true, Mathf.RoundToInt(totalDamage*TowerManager.Instance.GlobalCriticalMultiplier.Value));
+    //        }
+    //        else
+    //        {
+    //            bullet.Init(_bulletInitPos.position, target, false, totalDamage);
+    //        }
+    //    }
+    //    CurrentBulletCount--;
+    //}
 
     private IEnumerator AttackIE()
     {
         yield return null;
-        CurrentBulletCount = BulletCapacity;//补满子弹
-        
+        CurrentBulletCount = BulletCapacity;
+
         while (true)
         {
             if (_isPaused || _isReloading)
@@ -121,33 +187,26 @@ public class Tower : MonoBehaviour
                 continue;
             }
 
-            // 自动换弹逻辑
             if (CurrentBulletCount <= 0)
             {
-                StartReload(); // 自动换弹
+                StartReload();
                 yield return null;
                 continue;
             }
 
-            if (_enemiesInRange.Count!=0)
+            if (_enemiesInRange.Count != 0)
             {
                 currentTarget = _enemiesInRange[0];
-                Attack(currentTarget);
-                // 攻击了就重置计时器
-                noAttackTimer = 0f;
-
-                if (CurrentBulletCount > 0) 
-                    yield return TimerUtility.WaitForGameSeconds((1 / totalAttackRate));
+                yield return StartCoroutine(RotateAndShootIE(currentTarget)); // 等待旋转和射击完成
             }
             else
             {
-                // 没攻击目标，累加计时器
                 noAttackTimer += Time.deltaTime * _gameSpeed;
 
                 if (noAttackTimer >= 3f && CurrentBulletCount < BulletCapacity)
                 {
-                    StartReload(); // 3秒无攻击，弹药未满，强制换弹
-                    noAttackTimer = 0f; // 重置计时器
+                    StartReload();
+                    noAttackTimer = 0f;
                 }
 
                 yield return null;

@@ -1,13 +1,20 @@
 using UnityEngine;
+using static Unity.VisualScripting.Dependencies.Sqlite.SQLite3;
 
 public class ScienceManager : ManagerBase<ScienceManager>,IManager
 {
     [SerializeField]private int _unlockIndex;//玩家已解锁的科技index,0表示一个都未解锁
-    private readonly ScienceData[] baseSciences = new ScienceData[]//基础科技
+    private readonly ScienceNodeData[] baseSciences = new ScienceNodeData[]//基础科技
     {
-        new ScienceData { name = "攻击力+1", description = "炮塔攻击力+1", effectType = ScienceEffectType.IncreaseDamageFlat, value = 1 },
-        new ScienceData { name = "每秒攻击次数+0.1", description = "每秒攻击次数+0.1", effectType = ScienceEffectType.IncreaseAttackSpeedPct, value = 0.1f },
-        new ScienceData { name = "换弹时间-0.1s", description = "换弹时间-0.1秒", effectType = ScienceEffectType.ReduceReloadTime, value = 0.1f },
+        new ScienceNodeData { description = "炮塔攻击力+1", effectType = ScienceEffectType.IncreaseDamageFlat, value = 1,costType=RewardType.Diamond,cost=1 },
+        new ScienceNodeData { description = "每秒攻击次数+0.1", effectType = ScienceEffectType.IncreaseAttackSpeedPct, value = 0.1f,costType=RewardType.Diamond,cost=1 },
+        new ScienceNodeData { description = "换弹时间-0.1秒", effectType = ScienceEffectType.ReduceReloadTime, value = 0.1f,costType=RewardType.Diamond,cost=1 },
+        new ScienceNodeData { description = "换弹时间-0.1秒", effectType = ScienceEffectType.ReduceReloadTime, value = 0.1f,costType=RewardType.Diamond,cost=1 },
+        new ScienceNodeData { description = "换弹时间-0.1秒", effectType = ScienceEffectType.ReduceReloadTime, value = 0.1f,costType=RewardType.Diamond,cost=1 },
+        new ScienceNodeData { description = "换弹时间-0.1秒", effectType = ScienceEffectType.ReduceReloadTime, value = 0.1f,costType=RewardType.Diamond,cost=1 },
+        new ScienceNodeData { description = "换弹时间-0.1秒", effectType = ScienceEffectType.ReduceReloadTime, value = 0.1f,costType=RewardType.Diamond,cost=1 },
+        new ScienceNodeData { description = "换弹时间-0.1秒", effectType = ScienceEffectType.ReduceReloadTime, value = 0.1f,costType=RewardType.Diamond,cost=1 },
+        new ScienceNodeData { description = "换弹时间-0.1秒", effectType = ScienceEffectType.ReduceReloadTime, value = 0.1f,costType=RewardType.Diamond,cost=1 },
         // 可以继续添加 6 个作为第 4~9 个
     };
 
@@ -30,7 +37,6 @@ public class ScienceManager : ManagerBase<ScienceManager>,IManager
     public override void Init()
     {
         _unlockIndex=0;
-        Debug.Log($"_unlockIndex is {_unlockIndex}");
     }
 
     /// <summary>
@@ -58,20 +64,21 @@ public class ScienceManager : ManagerBase<ScienceManager>,IManager
     /// 通过index获取sciencedata信息
     /// </summary>
     /// <returns></returns>
-    public ScienceData GetScienceDataByIndex(int index)
+    public ScienceNodeData GetScienceDataByIndex(int index)
     {
         if(index<=0) return null;
-        ScienceData scienceData = null;
+        ScienceNodeData scienceData = null;
         if (index % 10 != 9)
         {
+            Debug.Log($"index is {index}");
             scienceData = baseSciences[index % 10];
         }
         else
         {
             // 特殊科技：创建一个新的 ScienceData 对象
-            scienceData = new ScienceData
+            scienceData = new ScienceNodeData
             {
-                name = "测试皮肤",
+                //name = "测试皮肤",
                 description = "测试皮肤描述",
                 effectType = ScienceEffectType.UnlockSkin,
                 value = 0,
@@ -87,7 +94,7 @@ public class ScienceManager : ManagerBase<ScienceManager>,IManager
     /// <param name="index"></param>
     private void ApplySignleScience(int index)
     {
-        ScienceData scienceData= GetScienceDataByIndex(index);
+        ScienceNodeData scienceData= GetScienceDataByIndex(index);
         switch(scienceData.effectType)
         {
             case ScienceEffectType.IncreaseDamageFlat:
@@ -111,19 +118,21 @@ public class ScienceManager : ManagerBase<ScienceManager>,IManager
     
 }
 
-public class ScienceData
+public class ScienceNodeData
 {
-    public string name;
+    //public string name;
     public string description;
     public ScienceEffectType effectType;
     public float value;
     public string extraData; // 用于特殊科技，如皮肤名
+    public RewardType costType;//花费的货币类型
+    public int cost;//花费的数量
 
-    public ScienceData() { }
+    public ScienceNodeData() { }
 
-    public ScienceData(ScienceData other)
+    public ScienceNodeData(ScienceNodeData other)
     {
-        name = other.name;
+        //name = other.name;
         description = other.description;
         effectType = other.effectType;
         value = other.value;

@@ -78,7 +78,6 @@ public class ChooseDebuffPanel : MonoBehaviour
     //debuffstruct¸Ä±äÊ±
     private void OnChangeDebuffStruct(DebuffType debuffType,int delta)
     {
-        Debug.Log($"debuffType is {debuffType},delta is {debuffType}");
         switch (debuffType)
         {
             case DebuffType.AddHP:

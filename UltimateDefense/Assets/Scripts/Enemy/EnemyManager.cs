@@ -247,7 +247,6 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
             // 启动一个提醒协程（监听 GameSpeed 和暂停）
             StartCoroutine(WaitAndNotifyBeforeTime(WaveManager.Instance.SpawnWaveInterval, 3f, () =>
             {
-                Debug.Log("剩下 3 秒！");
                 OnAlmostNextWave?.Invoke();
             }));
             yield return TimerUtility.WaitForGameSeconds(WaveManager.Instance.SpawnWaveInterval);

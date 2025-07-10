@@ -11,6 +11,14 @@ public class GameUIManager : ManagerBase<GameUIManager>,IManager
     [SerializeField]private GameObject _playerInfoPanel;//玩家信息面板
     [SerializeField]private GameObject _chooseDebuffPanel;//通关之后选择debuff的面板
     [SerializeField]private TipPanel _tipPanel;//显示tip的面板
+                                                          
+    [SerializeField] private BasePanel _onlineRewardPanel;//在线奖励界面
+    [SerializeField] private BasePanel _signInPanel;      //签到界面
+    [SerializeField] private BasePanel _dailyMissionPanel;//每日任务界面
+    [SerializeField] private BasePanel _achievementPanel; //成就界面
+    [SerializeField] private BasePanel _settingPanel;     //设置界面
+    [SerializeField] private BasePanel _rankPanel;        //排行榜界面
+    [SerializeField] private BasePanel _sharePanel;       //邀请有礼界面
 
     protected override void Awake()
     {
@@ -82,6 +90,15 @@ public class GameUIManager : ManagerBase<GameUIManager>,IManager
     public void HidePlayerInfoPanel()
     {
         _playerInfoPanel.SetActive(false);
+    }
+
+    /// <summary>
+    /// 显示面板，该面板是非全屏的面板
+    /// </summary>
+    /// <param name="basePanel"></param>
+    public void ShowPanel(BasePanel basePanel)
+    {
+
     }
 
     /// <summary>

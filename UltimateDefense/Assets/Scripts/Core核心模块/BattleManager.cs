@@ -25,8 +25,10 @@ public class BattleManager : MonoBehaviour
     private int _totalClears;//玩家累计通关次数（成功守住 100 回合的次数）。
     private int _startGold;//本局开局所给的初始金币数（受技能树或其他影响）。
     private float _gameSpeed = 1f;//当前游戏速度倍率，默认 1×，用于倍速功能（0.5×、1×、2× 等）。
-    [SerializeField]private Debuff _debuff=new Debuff();//通关之后选择的Debuff
-    private int _metaCoinCount = 0;//单次挑战获取的局外金币数量
+    [SerializeField]
+    private Debuff _debuff=new Debuff();//通关之后选择的Debuff
+    private int _diamondCount = 0;//单次挑战获取的局外钻石数量
+    private int _crownCount = 0;//单次挑战获取的局外王冠数量
     #endregion
 
     #region 公开属性
@@ -63,9 +65,13 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     public Debuff Debuff { get => _debuff;}
     /// <summary>
-    /// 单次挑战获取的局外金币数量
+    /// 单次挑战获取的局外王冠数量
     /// </summary>
-    public int MetaCoinCount { get => _metaCoinCount;}
+    public int DiamondCount { get => _diamondCount; }
+    /// <summary>
+    /// 单次挑战获取的局外王冠数量
+    /// </summary>
+    public int CrownCount { get => _crownCount;}
 
     #endregion
 
@@ -81,7 +87,7 @@ public class BattleManager : MonoBehaviour
         
         _debuff = debuff;
         _gameSpeed=1f;
-        _metaCoinCount = 0;
+        _diamondCount = 0;
         
         BattleUIManager.Instance.ShowBattleScene();//显示战斗场景
         _isPaused = false;
@@ -247,7 +253,7 @@ public class BattleManager : MonoBehaviour
         {
             bonus += i;
         }
-        _metaCoinCount = bonus;
+        _diamondCount = bonus;
     }
 
     //水晶被破坏了

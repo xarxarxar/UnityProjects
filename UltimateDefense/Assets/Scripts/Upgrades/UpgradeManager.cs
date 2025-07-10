@@ -53,6 +53,7 @@ public class UpgradeManager : ManagerBase<UpgradeManager>,IManager
     {
         _purchasedUpgrades.Clear();
         _totalSpentGold = 0;
+        _updateCount = 0;
     }
     /// <summary>
     /// 尝试购买指定升级：返回是否成功

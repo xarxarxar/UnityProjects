@@ -14,13 +14,20 @@ public class PanelSwitcher : MonoBehaviour
     private Outline challengeOutline => challengeButton.GetComponent<Outline>();
     private Outline scienceOutline => scienceButton.GetComponent<Outline>();
 
-    [SerializeField]private Text _coinText;//局外金币Text
+    [SerializeField]private RewardStruct _diamondReward;//钻石奖励
+    [SerializeField]private RewardStruct _crownReward;  //王冠奖励
     [SerializeField]private Text _passCountText;//通关次数的Text
 
     void Start()
     {
-        MetaCurrencyManager.OnMetaCoinChanged += OnMetaCoinChanged;
-        DataManager.OnPassCountChanged += OnPassCountChanged;
+        MetaCurrencyManager.Instance.DiamondCount.OnValueChanged +=(value)=>
+        {
+            OnMetaCoinChanged(RewardType.Diamond,value);
+        };
+        MetaCurrencyManager.Instance.CrownCount.OnValueChanged += (value) =>
+        {
+            OnMetaCoinChanged(RewardType.Crown, value);
+        };
 
         // 绑定按钮点击事件
         towerButton.onClick.AddListener(() => SwitchToPanel(towerPanel));
@@ -63,14 +70,15 @@ public class PanelSwitcher : MonoBehaviour
     }
 
     //局外金币变化时
-    private void OnMetaCoinChanged(int amount)
+    private void OnMetaCoinChanged(RewardType rewardType,int amount)
     {
-        _coinText.text = $"{MetaCurrencyManager.Instance.MetaCoin}";
-    }
-
-    //通关次数变化时
-    private void OnPassCountChanged(int value)
-    {
-        _passCountText.text= $"通关次数：{value}";
+        switch (rewardType)
+        {
+            case RewardType.Diamond:
+                _diamondReward.Init(amount); break;
+            case RewardType.Crown:
+                _crownReward.Init(amount); break;
+            default:break;
+        }
     }
 }

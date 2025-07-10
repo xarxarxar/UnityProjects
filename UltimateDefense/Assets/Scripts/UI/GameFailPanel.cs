@@ -10,7 +10,7 @@ public class GameFailPanel : MonoBehaviour
 
     private void OnEnable()
     {
-        _metaCoinText.text = $"获得局外金币{BattleManager.Instance.MetaCoinCount}个";
+        _metaCoinText.text = $"获得局外金币{BattleManager.Instance.DiamondCount}个";
     }
 
     private void Start()

@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 /// <summary>
 /// 表示敌人单位，包含血量、移动、攻击、受击和点击逻辑。
@@ -217,15 +218,19 @@ public class Enemy : MonoBehaviour
     private void HandleMovingState()
     {
         Vector3 targetPos = _targetBuilding.transform.position;
-        float distance = Vector3.Distance(transform.position, targetPos);
+        //float distance = Vector3.Distance(transform.position, targetPos);
+        float bottomY = transform.position.y - 0.5f * transform.localScale.y;//敌人的下边缘
 
-        if (distance > 0.01f)
+        //if (distance > 0.01f)
+        if (bottomY>-4.0f)
         {
             // 按移动速度和游戏倍速平滑移动
-            transform.position = Vector3.MoveTowards(
-                transform.position,
-                targetPos,
-                EnemyManager.Instance.EnemySpeed.Value * BattleManager.Instance.GameSpeed * Time.deltaTime);
+            transform.position += Vector3.down * EnemyManager.Instance.EnemySpeed.Value * BattleManager.Instance.GameSpeed * Time.deltaTime;
+
+            //transform.position = Vector3.MoveTowards(
+            //    transform.position,
+            //    targetPos,
+            //    EnemyManager.Instance.EnemySpeed.Value * BattleManager.Instance.GameSpeed * Time.deltaTime);
 
             // 当 Y <= 13（示例值）且首次进入范围，触发 OnMoveInRange
             if (transform.position.y < 8f && !_isInRangeList)
@@ -247,10 +252,10 @@ public class Enemy : MonoBehaviour
     /// </summary>
     private void HandleAttackingState()
     {
-        float distance = Vector3.Distance(transform.position, _targetBuilding.transform.position);
-
-        // 如果目标建筑超出攻击范围 (示例：>0.5f)，则切换回移动状态
-        if (distance > 0.5f)
+        //float distance = Vector3.Distance(transform.position, _targetBuilding.transform.position);
+        float bottomY = transform.position.y - 0.5f * transform.localScale.y;//敌人的下边缘
+        // 如果目标建筑超出攻击范围，则切换回移动状态
+        if (bottomY > -4.0f)
         {
             _currentState = State.Moving;
             return;

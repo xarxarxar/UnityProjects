@@ -25,7 +25,6 @@ public class DataManager : ManagerBase<DataManager>,IManager
     /// </summary>
     public override void Init()
     {
-        Debug.Log("DataManager init");
 #if UNITY_EDITOR
         _playerInfo=new PlayerInfo();
         //_playerInfo.PassCount = 5;
