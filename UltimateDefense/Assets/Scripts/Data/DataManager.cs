@@ -29,7 +29,8 @@ public class DataManager : ManagerBase<DataManager>,IManager
         _playerInfo=new PlayerInfo();
         //_playerInfo.PassCount = 5;
         _playerInfo.UnlockCount = 1;
-        _playerInfo.CoinCount = 100;
+        _playerInfo.DiamondCount = 100;
+        _playerInfo.CrownCount = 10;
         _playerInfo.PassCount = 10;
         OnDataLoaded?.Invoke();
 #endif

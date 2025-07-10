@@ -1,7 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,19 +9,8 @@ public class ScienceNodeItem : MonoBehaviour
     [SerializeField]private Text _descriptionText;//描述Text
     [SerializeField]private Button _unlockButton;//解锁该科技节点的按钮
     [SerializeField]private RewardStruct _unlockCost;//解锁该科技节点所需的花费
+    [SerializeField]private GameObject _unlockMask;//该节点的未解锁时候的蒙版
     public int _index;//该科技节点所对应的index
-
-    private void OnEnable()
-    {
-        //_unlockButton.onClick.AddListener(UnlockButton);
-        //_unlockButton.interactable = Index == ScienceManager.Instance.UnlockIndex+1;
-        //_descriptionText.text = ScienceManager.Instance.GetScienceDataByIndex(Index).description;
-    }
-
-    private void OnDisable()
-    {
-        _unlockButton.onClick.RemoveAllListeners();
-    }
 
     /// <summary>
     /// 初始化
@@ -33,16 +18,12 @@ public class ScienceNodeItem : MonoBehaviour
     public void Init(ScienceNodeData scienceNode,int index)
     {
         _index=index;
-        if(scienceNode == null )
-        {
-            Debug.Log("scienceNode is null");
-            return;
-        }
         _descriptionText.text=index.ToString()+ scienceNode.description;
         _unlockCost.Init(scienceNode.costType,scienceNode.cost);
-        _unlockButton.interactable = _index == ScienceManager.Instance.UnlockIndex + 1;
+        SetInteractale(_index);//设置该节点的可交互性
 
         _unlockButton.onClick.AddListener(UnlockButton);
+        ScienceManager.Instance.UnlockIndex.OnValueChanged += SetInteractale;
     }
 
     /// <summary>
@@ -53,12 +34,21 @@ public class ScienceNodeItem : MonoBehaviour
         _index = index;
         _descriptionText.text = index.ToString() + scienceNode.description;
         _unlockCost.Init(scienceNode.costType, scienceNode.cost);
-        _unlockButton.interactable = _index == ScienceManager.Instance.UnlockIndex + 1;
+        SetInteractale(_index);//设置该节点的可交互性
     }
 
+    //解锁按钮的点击事件
     private void UnlockButton()
     {
+        Debug.Log($"解锁的序号为{_index}");
         ScienceManager.Instance.UnlockScience(_index);
-        _unlockButton.onClick.RemoveListener(UnlockButton);
+        //_unlockButton.onClick.RemoveListener(UnlockButton);
+    }
+
+    //设置这个节点的可交互性
+    private void SetInteractale(int index)
+    {
+        _unlockMask.SetActive(_index > ScienceManager.Instance.UnlockIndex.Value + 1);
+        _unlockButton.interactable = _index == ScienceManager.Instance.UnlockIndex.Value + 1;
     }
 }

@@ -20,22 +20,7 @@ public class PanelSwitcher : MonoBehaviour
 
     void Start()
     {
-        MetaCurrencyManager.Instance.DiamondCount.OnValueChanged +=(value)=>
-        {
-            OnMetaCoinChanged(RewardType.Diamond,value);
-        };
-        MetaCurrencyManager.Instance.CrownCount.OnValueChanged += (value) =>
-        {
-            OnMetaCoinChanged(RewardType.Crown, value);
-        };
-
-        // 绑定按钮点击事件
-        towerButton.onClick.AddListener(() => SwitchToPanel(towerPanel));
-        challengeButton.onClick.AddListener(() => SwitchToPanel(challengePanel));
-        scienceButton.onClick.AddListener(() => SwitchToPanel(sciencePanel));
-
-        // 初始默认打开某个面板（如技能）
-        SwitchToPanel(challengePanel);
+        DataManager.OnDataLoaded += OnDataLoaded;
     }
 
     //切换面板
@@ -80,5 +65,31 @@ public class PanelSwitcher : MonoBehaviour
                 _crownReward.Init(amount); break;
             default:break;
         }
+    }
+
+    /// <summary>
+    /// 数据加载完毕
+    /// </summary>
+    private void OnDataLoaded()
+    {
+        MetaCurrencyManager.Instance.DiamondCount.OnValueChanged += (value) =>
+        {
+            OnMetaCoinChanged(RewardType.Diamond, value);
+        };
+        MetaCurrencyManager.Instance.CrownCount.OnValueChanged += (value) =>
+        {
+            OnMetaCoinChanged(RewardType.Crown, value);
+        };
+
+        OnMetaCoinChanged(RewardType.Diamond, MetaCurrencyManager.Instance.DiamondCount.Value);
+        OnMetaCoinChanged(RewardType.Crown, MetaCurrencyManager.Instance.CrownCount.Value);
+
+        // 绑定按钮点击事件
+        towerButton.onClick.AddListener(() => SwitchToPanel(towerPanel));
+        challengeButton.onClick.AddListener(() => SwitchToPanel(challengePanel));
+        scienceButton.onClick.AddListener(() => SwitchToPanel(sciencePanel));
+
+        // 初始默认打开某个面板（如技能）
+        SwitchToPanel(challengePanel);
     }
 }

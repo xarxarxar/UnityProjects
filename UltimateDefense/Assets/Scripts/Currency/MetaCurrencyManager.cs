@@ -35,8 +35,8 @@ public class MetaCurrencyManager : ManagerBase<MetaCurrencyManager>,IManager
     /// </summary>
     public override void Init()
     {
-        _diamondCount.Value = 0;
-        _crownCount.Value = 0;
+        _diamondCount.Value = DataManager.Instance.PlayerInfo.DiamondCount;
+        _crownCount.Value = DataManager.Instance.PlayerInfo.CrownCount;
 
         BattleManager.OnEndBattle += OnEndBattle;
     }
