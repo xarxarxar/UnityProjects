@@ -9,6 +9,7 @@ public class RewardStruct : MonoBehaviour
     public Text countText;  //奖励的个数的Text
     public RewardType type; //奖励的类型
 
+
     public void Init(int count)
     {
         countText.text= count.ToString();
@@ -20,6 +21,7 @@ public class RewardStruct : MonoBehaviour
         this.type = type;
         iconImage.sprite = RewardManager.IconMap[type];
     }
+
 }
 
 

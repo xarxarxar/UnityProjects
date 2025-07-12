@@ -4,7 +4,7 @@ using static Unity.VisualScripting.Dependencies.Sqlite.SQLite3;
 public class ScienceManager : ManagerBase<ScienceManager>,IManager
 {
     [SerializeField]
-    private BindableProperty<int> _unlockIndex=new BindableProperty<int>();//玩家已解锁的科技index,0表示一个都未解锁
+    private Bindable<int> _unlockIndex=new Bindable<int>();//玩家已解锁的科技index,0表示一个都未解锁
     private readonly ScienceNodeData[] baseSciences = new ScienceNodeData[]//基础科技
     {
         new ScienceNodeData { description = "炮塔攻击力+1", effectType = ScienceEffectType.IncreaseDamageFlat, value = 1,costType=RewardType.Diamond,cost=1 },
@@ -27,7 +27,7 @@ public class ScienceManager : ManagerBase<ScienceManager>,IManager
     /// <summary>
     /// 玩家已解锁的科技index
     /// </summary>
-    public BindableProperty<int> UnlockIndex { get => _unlockIndex; set => _unlockIndex = value; }
+    public Bindable<int> UnlockIndex { get => _unlockIndex; set => _unlockIndex = value; }
 
     protected override void Awake()
     {

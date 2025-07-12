@@ -6,20 +6,20 @@ using UnityEngine.Events;
 /// </summary>
 public class MetaCurrencyManager : ManagerBase<MetaCurrencyManager>,IManager
 {
-    private BindableProperty<int> _diamondCount=new BindableProperty<int>();//局外钻石的数量
-    private BindableProperty<int> _crownCount=new BindableProperty<int>();  //局外王冠的数量
+    private Bindable<int> _diamondCount=new Bindable<int>();//局外钻石的数量
+    private Bindable<int> _crownCount=new Bindable<int>();  //局外王冠的数量
     #region 公共静态事件
     #endregion
 
     /// <summary>
     /// 只读属性，钻石数量
     /// </summary>
-    public BindableProperty<int> DiamondCount { get => _diamondCount; }
+    public Bindable<int> DiamondCount { get => _diamondCount; }
 
     /// <summary>
     /// 只读属性，王冠数量
     /// </summary>
-    public BindableProperty<int> CrownCount { get => _crownCount; }
+    public Bindable<int> CrownCount { get => _crownCount; }
 
     #region 私有方法
     protected override void Awake()
