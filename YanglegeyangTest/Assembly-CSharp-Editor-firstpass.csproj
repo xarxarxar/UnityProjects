@@ -1061,6 +1061,10 @@
       <HintPath>Library\ScriptAssemblies\Unity.VisualStudio.Editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="UnityEditor.UI">
+      <HintPath>Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Unity.VisualScripting.Core">
       <HintPath>Library\ScriptAssemblies\Unity.VisualScripting.Core.dll</HintPath>
       <Private>False</Private>
@@ -1075,10 +1079,6 @@
     </Reference>
     <Reference Include="Unity.VisualScripting.Core.Editor">
       <HintPath>Library\ScriptAssemblies\Unity.VisualScripting.Core.Editor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEditor.UI">
-      <HintPath>Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.Rider.Editor">
@@ -1203,6 +1203,10 @@
       <Project>{E35780FB-71FC-E694-F31B-A552571037C3}</Project>
       <Name>Assembly-CSharp-firstpass</Name>
     </ProjectReference>
+    <ProjectReference Include="Utilities.csproj">
+      <Project>{D4539307-9F8F-E460-5075-DB208F60CD92}</Project>
+      <Name>Utilities</Name>
+    </ProjectReference>
     <ProjectReference Include="Sirenix.OdinInspector.Modules.UnityMathematics.csproj">
       <Project>{B5D5437B-1277-26C2-6B11-7E31A2DD208C}</Project>
       <Name>Sirenix.OdinInspector.Modules.UnityMathematics</Name>
@@ -1215,6 +1219,18 @@
       <Project>{30007F40-C4A7-7A9A-17A1-F27B75F686CC}</Project>
       <Name>spine-unity-examples</Name>
     </ProjectReference>
+    <ProjectReference Include="SimpleInspectorAttributes.csproj">
+      <Project>{8AB647D9-AC4B-9C21-98A1-80032E94B139}</Project>
+      <Name>SimpleInspectorAttributes</Name>
+    </ProjectReference>
+    <ProjectReference Include="SimpleInspectorAttributesEditor.csproj">
+      <Project>{B59EA9C9-5055-6E80-82A6-6684FC4BA3E1}</Project>
+      <Name>SimpleInspectorAttributesEditor</Name>
+    </ProjectReference>
+    <ProjectReference Include="SimpleScrollSnapEditor.csproj">
+      <Project>{DACA1499-358F-52D5-FDE3-9CAE87884202}</Project>
+      <Name>SimpleScrollSnapEditor</Name>
+    </ProjectReference>
     <ProjectReference Include="spine-unity-examples-editor.csproj">
       <Project>{83737B93-D4FA-F867-9759-7D1202684941}</Project>
       <Name>spine-unity-examples-editor</Name>
@@ -1223,9 +1239,21 @@
       <Project>{E2AB08EE-742F-6A34-1535-190DE631B652}</Project>
       <Name>spine-unity</Name>
     </ProjectReference>
+    <ProjectReference Include="UtilitiesEditor.csproj">
+      <Project>{54A6D94B-C3E4-BD36-ACA1-908B5A5D1446}</Project>
+      <Name>UtilitiesEditor</Name>
+    </ProjectReference>
     <ProjectReference Include="spine-unity-editor.csproj">
       <Project>{F8BCC7DB-98EF-C892-47F8-C2E31FA91B9C}</Project>
       <Name>spine-unity-editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="SimpleScrollSnap.csproj">
+      <Project>{7DBD0AAF-99FE-AF37-20A4-1D859C6F9467}</Project>
+      <Name>SimpleScrollSnap</Name>
+    </ProjectReference>
+    <ProjectReference Include="CopyrightNoticeEditor.csproj">
+      <Project>{54D4D42F-534D-15D5-802A-EABCC4592077}</Project>
+      <Name>CopyrightNoticeEditor</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
