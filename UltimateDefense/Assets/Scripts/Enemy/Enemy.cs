@@ -2,7 +2,6 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using static UnityEngine.RuleTile.TilingRuleOutput;
 
 /// <summary>
 /// 表示敌人单位，包含血量、移动、攻击、受击和点击逻辑。
@@ -143,9 +142,11 @@ public class Enemy : MonoBehaviour
     {
         if (_isDead) return;               // 如果已死亡，忽略伤害
 
-        if (_damageNullifiedCount > 0)
+        AudioManager.Instance.PlaySFX("被击中");
+        if (_damageNullifiedCount > 0)//免伤还在
         {
             _damageNullifiedCount--;
+            
             return;
         }
 
@@ -163,6 +164,7 @@ public class Enemy : MonoBehaviour
             if (CurrentHP == 0)
                 Die();                    // 血量耗尽则死亡
         }
+        
     }
 
     /// <summary>

@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -7,17 +6,29 @@ using UnityEngine;
 /// </summary>
 public class RicochetTower : BaseTower
 {
-    public override int BulletDamage => base.BulletDamage;
-    public override int BulletCapacity => base.BulletCapacity;
-    public override float AttackSpeed => base.AttackSpeed;
-    public override float CriticalProb => base.CriticalProb;
-    public override float ReloadTime => base.ReloadTime;
+    public override TowerType TowerType { get => TowerType.Ricochet; }
 
-    private int _maxChain=3;//最大弹射的次数
+    private int _maxChain=2;//最大弹射的次数
 
-    protected override void Init()
+    public override int BaseDamage => 1;//1-4-7-10
+    public override int BaseCap => 6;//6-8-10
+    public override float BaseAtkRate => 1;
+    public override float BaseReload => 3;
+    public override float BaseCritProb => 0.1f;
+    public override float BaseCritMult => 1.2f;
+
+    public override string GetDescription()
     {
-        base.Init();
+        return $"子弹命中敌人后可以额外弹射，当前额外弹射次数{_maxChain}，每次弹射伤害衰减70%";
+    }
+
+    public override string GetUpgradeDescription()
+    {
+        // 判断等级是否为5的倍数且不为 0
+        bool isEvenAndNotZero = TowerLevel != 0 && TowerLevel % 5 == 0;
+
+        // 返回对应的描述文本
+        return isEvenAndNotZero ? "额外弹射次数+1" : "伤害衰减-10%";
     }
 
     //实现父类的DoAttack方法
@@ -29,8 +40,8 @@ public class RicochetTower : BaseTower
         Bullet bullet = TowerManager.Instance.BulletPool.Get();
 
         // 判断是否暴击
-        bool isCritical = Random.value < CriticalProb;
-        int damage = isCritical ? Mathf.RoundToInt(BulletDamage * CriticalMult) : BulletDamage;
+        bool isCritical = Random.value < CriticalProb.Value;
+        int damage = isCritical ? Mathf.RoundToInt(BulletDamage.Value * CriticalMult.Value) : BulletDamage.Value;
 
         // 初始化为弹射子弹：最多弹射 3 次（即命中 4 个敌人）
         bullet.InitChainBullet(
@@ -39,7 +50,7 @@ public class RicochetTower : BaseTower
             isCritical,
             damage,
             maxChain: _maxChain,
-            decayPercent: 0.3f // 每次弹射衰减30%
+            decayPercent: 0.7f // 每次弹射衰减70%
         );
 
         // 扣除子弹数

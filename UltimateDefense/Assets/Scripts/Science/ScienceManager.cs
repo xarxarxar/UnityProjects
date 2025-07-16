@@ -100,15 +100,15 @@ public class ScienceManager : ManagerBase<ScienceManager>,IManager
         switch(scienceData.effectType)
         {
             case ScienceEffectType.IncreaseDamageFlat:
-                TowerManager.Instance.GlobalAttackBonus.Value +=Mathf.RoundToInt(scienceData.value);
+                TowerManager.Instance.BonusAtk.Value +=Mathf.RoundToInt(scienceData.value);
                 break;
 
             case ScienceEffectType.IncreaseAttackSpeedPct:
-                TowerManager.Instance.GlobalAttackSpeedMultiplier.Value +=scienceData.value;
+                TowerManager.Instance.BonusAttackRate.Value +=scienceData.value;
                 break;
 
             case ScienceEffectType.ReduceReloadTime:
-                TowerManager.Instance.GlobalReloadTime.Value -=scienceData.value;
+                TowerManager.Instance.BonusReload.Value -=scienceData.value;
                 break;
 
             case ScienceEffectType.UnlockSkin:

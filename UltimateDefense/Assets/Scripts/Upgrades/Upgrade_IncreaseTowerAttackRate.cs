@@ -53,7 +53,7 @@ public class Upgrade_IncreaseTowerAttackRate : UpgradeBase
     public override void Apply()
     {
         // 通知 Manager 保存全局加成
-        TowerManager.Instance.GlobalAttackSpeedMultiplier.Value += _attackRateBonus;
+        TowerManager.Instance.BonusAttackRate.Value += _attackRateBonus;
     }
 
     #endregion

@@ -45,7 +45,7 @@ public class Upgrade_IncreaseTowerBulletCap : UpgradeBase
     #region 公共方法
     public override bool IsAvailable()
     {
-        return TowerManager.Instance.GlobalIncreaseBulletCap.Value < 40f;
+        return TowerManager.Instance.BonusCap.Value < 40f;
     }
 
     /// <summary>
@@ -54,8 +54,8 @@ public class Upgrade_IncreaseTowerBulletCap : UpgradeBase
     public override void Apply()
     {
         // 通知 Manager 保存全局加成
-        TowerManager.Instance.GlobalIncreaseBulletCap.Value += _bonus;
-        Debug.Log($"GlobalIncreaseBulletCap is {TowerManager.Instance.GlobalIncreaseBulletCap}");
+        TowerManager.Instance.BonusCap.Value += _bonus;
+        Debug.Log($"GlobalIncreaseBulletCap is {TowerManager.Instance.BonusCap}");
     }
 
     #endregion

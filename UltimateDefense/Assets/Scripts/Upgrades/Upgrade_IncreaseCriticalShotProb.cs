@@ -43,7 +43,7 @@ public class Upgrade_IncreaseCriticalShotProb : UpgradeBase
     #region 公共方法
     public override bool IsAvailable()
     {
-        return TowerManager.Instance.GlobalCriticalShotProb.Value < 0.5f;
+        return TowerManager.Instance.BonusCritProb.Value < 0.5f;
     }
 
     /// <summary>
@@ -52,7 +52,7 @@ public class Upgrade_IncreaseCriticalShotProb : UpgradeBase
     public override void Apply()
     {
         // 通知 Manager 保存全局加成
-        TowerManager.Instance.GlobalCriticalShotProb.Value += _bonus;
+        TowerManager.Instance.BonusCritProb.Value += _bonus;
     }
 
     #endregion

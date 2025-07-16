@@ -19,4 +19,13 @@ public class Bindable<T>
             }
         }
     }
+
+    //新增构造函数
+    public Bindable(T initialValue)
+    {
+        _value = initialValue;
+    }
+
+    //可选：无参构造函数（保留原始行为）
+    public Bindable() { }
 }

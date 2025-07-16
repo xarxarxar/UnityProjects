@@ -88,6 +88,35 @@ public class MetaCurrencyManager : ManagerBase<MetaCurrencyManager>,IManager
         }
         return false;
     }
+
+    /// <summary>
+    /// 是否有足够的局外货币，只判断不扣款
+    /// </summary>
+    /// <param name="success"></param>
+    public bool HasEnoughMoney(RewardType rewardType, int amount)
+    {
+        switch (rewardType)
+        {
+            case RewardType.Crown:
+                if (_crownCount.Value >= amount)
+                {
+                    return true;
+                }
+                break;
+
+            case RewardType.Diamond:
+                if (_diamondCount.Value >= amount)
+                {
+                    return true;
+                }
+                break;
+
+            case RewardType.Coin:
+                // 局内金币不处理
+                return false;
+        }
+        return false;
+    }
     #endregion
 
     #region 私有方法

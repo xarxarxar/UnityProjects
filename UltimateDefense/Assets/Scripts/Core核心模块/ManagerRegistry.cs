@@ -64,7 +64,7 @@ public abstract class ManagerBase<T> : MonoBehaviour, IManager where T : MonoBeh
         }
         else
         {
-            Destroy(gameObject);
+            //Destroy(gameObject);
         }
         if (!_isRegistry)
         {

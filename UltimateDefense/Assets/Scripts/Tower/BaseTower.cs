@@ -48,16 +48,29 @@ public abstract class BaseTower : MonoBehaviour
             }
         }
     }
+    /// <summary>
+    /// 炮塔的等级，暂定10级为最大级
+    /// </summary>
+    public int TowerLevel { get; set; }
 
-    //子类可重写逻辑
-    public virtual int BulletDamage { get => TowerManager.Instance.BaseAtk.Value; } //子弹伤害
-    public virtual int BulletCapacity { get => TowerManager.Instance.BaseCap.Value; } //子弹容量
-    public virtual float AttackSpeed { get => TowerManager.Instance.BaseSpeed.Value; }//攻击间隔
-    public virtual float ReloadTime {get => TowerManager.Instance.BaseReload.Value; }//换弹时长
-    public virtual float CriticalProb { get => TowerManager.Instance.BaseCritProb.Value; }//暴击概率
-    public virtual float CriticalMult { get => TowerManager.Instance.BaseCritMult.Value; }//暴击伤害倍率
+    //子类需重写值的逻辑，炮塔基础值，也就是一级时候的值
+    public abstract int BaseDamage { get; }    //子弹伤害
+    public abstract int BaseCap { get; }       //子弹容量
+    public abstract float BaseAtkRate { get; } //攻击间隔
+    public abstract float BaseReload { get; }  //换弹时长
+    public abstract float BaseCritProb { get; } //暴击概率
+    public abstract float BaseCritMult { get; } //暴击伤害倍率
+    //子类需重写值的逻辑，炮塔最终的值
+    public Bindable<int> BulletDamage { get; } = new Bindable<int>(); //子弹伤害
+    public Bindable<int> BulletCapacity { get; } = new Bindable<int>(); //子弹容量
+    public Bindable<float> AttackRate { get; } = new Bindable<float>();//攻击间隔
+    public Bindable<float> ReloadTime {get; } = new Bindable<float>();//换弹时长
+    public Bindable<float> CriticalProb { get; } = new Bindable<float>();//暴击概率
+    public Bindable<float> CriticalMult { get; } = new Bindable<float>();//暴击伤害倍率
+
 
     //子类不用修改
+    public TowerData TowerData => TowerDataManager.Instance.GetTowerData(TowerType);
     protected Enemy currentTarget;//当前的攻击目标
     private List<Enemy> _enemiesInRange => EnemyManager.Instance.EnemiesInRange;//在攻击范围内的所有敌人
     private float _gameSpeed => BattleManager.Instance.GameSpeed;
@@ -67,21 +80,37 @@ public abstract class BaseTower : MonoBehaviour
     private float noAttackTimer = 0f;//未处于攻击状态的时长
     private Coroutine _reloadCoroutine;//换弹协程
 
+    //子类必须写好
+    /// <summary>
+    /// 该防御塔的类型
+    /// </summary>
+    public abstract TowerType TowerType { get;}
+    // 子类必须实现自己的攻击逻辑
+    protected abstract IEnumerator DoAttack();
+
+
+    //下面是函数
     public void OnEnable()
     {
         Init();
+        //InitTower();
         StartCoroutine(AttackIE());//开始攻击
         BattleManager.OnEndBattle += OnEndBattle;
     }
     private void OnDisable()
     {
         BattleManager.OnEndBattle -= OnEndBattle;
+        //炮管归位
+        _gunBarrel.transform.localPosition = Vector3.zero;
+        _gunBarrel.transform.localRotation = Quaternion.identity;
+        _gunBarrel.transform.localScale = Vector3.one;
     }
 
     //攻击逻辑
     public IEnumerator Attack()
     {
         PlayAttackAnim();           // 通用逻辑：播放攻击动画
+        
         yield return DoAttack();    // 等待子类执行 DoAttack（也改成协程）
     }
 
@@ -95,12 +124,69 @@ public abstract class BaseTower : MonoBehaviour
     //初始化
     protected virtual void Init()
     {
-        
+        CalculateAtkDamage();
+        CalculateBulletCap();
+        CalculateAtkRate();
+        CalculateReloadTime();
+        CalculateCriticalProb();
+        CalculateCriticalMult();
     }
 
-    // 子类必须实现自己的攻击逻辑
-    protected abstract IEnumerator DoAttack();
+    
+    //子类可以重新计算自己的数据
+    /// <summary>
+    /// 计算攻击伤害
+    /// </summary>
+    protected virtual void CalculateAtkDamage()
+    {
+        BulletDamage.Value = Mathf.RoundToInt(BaseDamage * (1f + TowerManager.Instance.BonusAtk.Value));
+    }
+    /// <summary>
+    /// 计算弹夹容量
+    /// </summary>
+    protected virtual void CalculateBulletCap()
+    {
+        BulletCapacity.Value = BaseCap + TowerManager.Instance.BonusCap.Value;
+    }
+    /// <summary>
+    /// 计算每秒攻击次数
+    /// </summary>
+    protected virtual void CalculateAtkRate()
+    {
+        AttackRate.Value = BaseAtkRate * (1f + TowerManager.Instance.BonusAttackRate.Value);
+    }
+    /// <summary>
+    /// 计算换弹时间
+    /// </summary>
+    protected virtual void CalculateReloadTime()
+    {
+        CriticalProb.Value = BaseReload + TowerManager.Instance.BonusCritProb.Value;
+    }
+    /// <summary>
+    /// 计算暴击概率
+    /// </summary>
+    protected virtual void CalculateCriticalProb()
+    {
+        ReloadTime.Value = BaseCritProb * (1f - TowerManager.Instance.BonusReload.Value);
+    }
+    /// <summary>
+    /// 计算暴击伤害倍率
+    /// </summary>
+    protected virtual void CalculateCriticalMult()
+    {
+        CriticalMult.Value = BaseCritMult + TowerManager.Instance.BonusCritMult.Value;
+    }
+    /// <summary>
+    /// 获取炮塔的描述
+    /// </summary>
+    /// <returns></returns>
+    public abstract string GetDescription();
 
+    /// <summary>
+    /// 获取升级的属性的描述
+    /// </summary>
+    /// <returns></returns>
+    public abstract string GetUpgradeDescription();
 
     //子类不用重写
     //旋转并设计的协程
@@ -137,14 +223,14 @@ public abstract class BaseTower : MonoBehaviour
             noAttackTimer = 0f; // 在这儿重置计时器
 
             // === 射击后才等待攻击间隔 ===
-            yield return TimerUtility.WaitForGameSeconds((1f / AttackSpeed));
+            yield return TimerUtility.WaitForGameSeconds((1f / AttackRate.Value));
         }
     }
     //攻击协程
     private IEnumerator AttackIE()
     {
         yield return null;
-        CurrentBulletCount = BulletCapacity;
+        CurrentBulletCount = BulletCapacity.Value;
 
         while (true)
         {
@@ -170,7 +256,7 @@ public abstract class BaseTower : MonoBehaviour
             {
                 noAttackTimer += Time.deltaTime * _gameSpeed;
 
-                if (noAttackTimer >= 3f && CurrentBulletCount < BulletCapacity)
+                if (noAttackTimer >= 3f && CurrentBulletCount < BulletCapacity.Value)
                 {
                     StartReload();
                     noAttackTimer = 0f;
@@ -178,12 +264,13 @@ public abstract class BaseTower : MonoBehaviour
 
                 yield return null;
             }
+
         }
     }
     //换弹
     private void StartReload()
     {
-        if (_isReloading || CurrentBulletCount == BulletCapacity) return; // 防止重复换弹
+        if (_isReloading || CurrentBulletCount == BulletCapacity.Value) return; // 防止重复换弹
         _reloadCoroutine = StartCoroutine(ReloadIE());
     }
     //换弹协程
@@ -192,12 +279,12 @@ public abstract class BaseTower : MonoBehaviour
         _isReloading = true;
 
         // 显示倒计时 UI
-        CountDownSlider(ReloadTime);
+        CountDownSlider(ReloadTime.Value);
 
         // 实时等待，受 GameSpeed 影响
-        yield return TimerUtility.WaitForGameSeconds(ReloadTime);
+        yield return TimerUtility.WaitForGameSeconds(ReloadTime.Value);
 
-        CurrentBulletCount = BulletCapacity;
+        CurrentBulletCount = BulletCapacity.Value;
 
         _isReloading = false;
     }
@@ -211,6 +298,7 @@ public abstract class BaseTower : MonoBehaviour
     //挑战结束
     private void OnEndBattle(bool success)
     {
+        Debug.Log("挑战结束");
         StopAllCoroutines();
     }
 }

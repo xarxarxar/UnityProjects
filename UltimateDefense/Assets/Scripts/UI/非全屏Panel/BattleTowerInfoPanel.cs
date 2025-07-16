@@ -14,25 +14,25 @@ public class BattleTowerInfoPanel : BasePanel
 
     private void Start()
     {
-        TowerManager.Instance.GlobalAttackBonus.OnValueChanged += value => _bulletDamageText.text = $"{value}";
-        _bulletDamageText.text = $"{TowerManager.Instance.GlobalAttackBonus.Value}";
+        TowerManager.Instance.BonusAtk.OnValueChanged += value => _bulletDamageText.text = $"{value}";
+        _bulletDamageText.text = $"{TowerManager.Instance.BonusAtk.Value}";
 
-        TowerManager.Instance.GlobalAttackSpeedMultiplier.OnValueChanged += value => _bulletSpeedText.text = $"{value}";
-        _bulletSpeedText.text = $"{TowerManager.Instance.GlobalAttackSpeedMultiplier.Value}";
+        TowerManager.Instance.BonusAttackRate.OnValueChanged += value => _bulletSpeedText.text = $"{value}";
+        _bulletSpeedText.text = $"{TowerManager.Instance.BonusAttackRate.Value}";
 
-        TowerManager.Instance.GlobalCriticalShotProb.OnValueChanged +=
+        TowerManager.Instance.BonusCritProb.OnValueChanged +=
             value => _bulletCriticalShotProbText.text = $"{(value * 100f).ToString("F0")}%";
-        _bulletCriticalShotProbText.text = $"{(TowerManager.Instance.GlobalCriticalShotProb.Value * 100f).ToString("F0")}%";
+        _bulletCriticalShotProbText.text = $"{(TowerManager.Instance.BonusCritProb.Value * 100f).ToString("F0")}%";
 
-        TowerManager.Instance.GlobalCriticalMultiplier.OnValueChanged +=
+        TowerManager.Instance.BonusCritMult.OnValueChanged +=
             value => _bulletCriticalShotMultiText.text = $"{(value * 100f).ToString("F0")}%";
-        _bulletCriticalShotMultiText.text = $"{(TowerManager.Instance.GlobalCriticalMultiplier.Value * 100f).ToString("F0")}%";
+        _bulletCriticalShotMultiText.text = $"{(TowerManager.Instance.BonusCritMult.Value * 100f).ToString("F0")}%";
 
-        TowerManager.Instance.GlobalIncreaseBulletCap.OnValueChanged += value => _bulletCapText.text = $"{value}";
-        _bulletCapText.text = $"{TowerManager.Instance.GlobalIncreaseBulletCap.Value}";
+        TowerManager.Instance.BonusCap.OnValueChanged += value => _bulletCapText.text = $"{value}";
+        _bulletCapText.text = $"{TowerManager.Instance.BonusCap.Value}";
 
-        TowerManager.Instance.GlobalReloadTime.OnValueChanged += value => _bulletReloadTimeText.text = $"{value}s";
-        _bulletReloadTimeText.text = $"{TowerManager.Instance.GlobalReloadTime.Value}s";
+        TowerManager.Instance.BonusReload.OnValueChanged += value => _bulletReloadTimeText.text = $"{value}s";
+        _bulletReloadTimeText.text = $"{TowerManager.Instance.BonusReload.Value}s";
     }
 
 

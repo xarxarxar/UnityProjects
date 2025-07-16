@@ -58,6 +58,7 @@ public class Bullet : MonoBehaviour
         _targetEnemy = enemy;
         _isCritical = isCritical;
         _damage = damage;
+        AudioManager.Instance.PlaySFX("开枪");
     }
 
     // 穿透型子弹（单穿/多穿）
@@ -68,6 +69,7 @@ public class Bullet : MonoBehaviour
         _isCritical = isCritical;
         _damage = damage;
         _bulletType = type;
+        AudioManager.Instance.PlaySFX("开枪");
     }
 
     // 弹射子弹（跟踪型 + 弹射次数 + 衰减百分比）
@@ -83,6 +85,8 @@ public class Bullet : MonoBehaviour
         _decayPercent = Mathf.Clamp01(decayPercent);
         _currentChain = 0;
         _hitEnemies.Clear();
+
+        AudioManager.Instance.PlaySFX("开枪");
     }
 
     #endregion
