@@ -36,7 +36,7 @@ public class Upgrade_IncreaseTowerBulletCap : UpgradeBase
     public static Upgrade_IncreaseTowerBulletCap CreateDynamicUpgrade()
     {
         int bonus = 1;
-        int cost = 20;
+        int cost = 100;
         return new Upgrade_IncreaseTowerBulletCap(bonus, cost);
     }
 

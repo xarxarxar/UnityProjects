@@ -34,7 +34,7 @@ public class Upgrade_IncreaseCriticalMultiplier : UpgradeBase
     public static Upgrade_IncreaseCriticalMultiplier CreateDynamicUpgrade()
     {
         float bonus = 0.1f;
-        int cost = 20;
+        int cost = 100;
         return new Upgrade_IncreaseCriticalMultiplier(bonus, cost);
     }
 

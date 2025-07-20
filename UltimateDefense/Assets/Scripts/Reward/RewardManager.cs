@@ -13,11 +13,14 @@ public class RewardManager : ManagerBase<RewardManager>,IManager
 
     public static Dictionary<RewardType, Sprite> IconMap;
 
-    public override void Init()
+    protected override void Awake()
     {
         base.Awake();
-        _stage = InitStage.OutBattle;//æ÷Õ‚Manager
+        _stage = InitStage.OutBattle;
+    }
 
+    public override void Init()
+    {
         IconMap = new Dictionary<RewardType, Sprite>
         {
             { RewardType.Coin, _coinSprite },

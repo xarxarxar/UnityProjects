@@ -17,7 +17,7 @@ public class ChooseDebuffPanel : MonoBehaviour
 
     private void OnEnable()
     {
-        if (DataManager.Instance.PlayerInfo.PassCount == 0)//如果通关次数为0，则直接跳过这一步
+        if (DataManager.Instance.PlayerInfo.PassCount.Value == 0)//如果通关次数为0，则直接跳过这一步
         {
             OnDebuffChooseEnd?.Invoke(new Debuff(_debuff));
             gameObject.SetActive(false);
@@ -96,7 +96,7 @@ public class ChooseDebuffPanel : MonoBehaviour
         _chooseCount = _debuff.AddHP + _debuff.AddSpeed + _debuff.AddCount+ _debuff.DamageNullified;
 
         //设置开始挑战按钮的状态
-        SetButtonStatus(startChallengeButton, _chooseCount >= DataManager.Instance.PlayerInfo.PassCount);
+        SetButtonStatus(startChallengeButton, _chooseCount >= DataManager.Instance.PlayerInfo.PassCount.Value);
         
     }
 

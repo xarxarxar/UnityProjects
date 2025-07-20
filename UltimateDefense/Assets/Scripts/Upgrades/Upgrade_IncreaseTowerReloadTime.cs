@@ -40,7 +40,7 @@ public class Upgrade_IncreaseTowerReloadTime : UpgradeBase
     public static Upgrade_IncreaseTowerReloadTime CreateDynamicUpgrade()
     {
         float bonus =0.1f;
-        int cost = 20;
+        int cost = 100;
         return new Upgrade_IncreaseTowerReloadTime(bonus, cost);
     }
 

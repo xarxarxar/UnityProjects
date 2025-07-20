@@ -4,11 +4,7 @@ using UnityEngine;
 
 public class AudioManager : ManagerBase<AudioManager>,IManager
 {
-
-    
-
-    
-
+    public override string Description { get; } = "管理音频的播放，局外的Manager";
     [Header("Audio Sources")]
     public AudioSource bgmSourcePrefab;
     public AudioSource sfxSourcePrefab;
@@ -25,7 +21,7 @@ public class AudioManager : ManagerBase<AudioManager>,IManager
     protected override void Awake()
     {
         base.Awake();
-        _stage = InitStage.InBattle;//局内Manager
+        _stage = InitStage.OutBattle;//局外的Manager
         
     }
 

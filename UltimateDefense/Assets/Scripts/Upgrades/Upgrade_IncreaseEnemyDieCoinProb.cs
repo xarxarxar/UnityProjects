@@ -38,7 +38,7 @@ public class Upgrade_IncreaseEnemyDieCoinProb : UpgradeBase
     public static Upgrade_IncreaseEnemyDieCoinProb CreateDynamicUpgrade()
     {
         float bonus = 0.01f * Random.Range(1, 10);
-        int cost = Mathf.RoundToInt(bonus * 1000);
+        int cost = 100;
         return new Upgrade_IncreaseEnemyDieCoinProb(bonus, cost);
     }
 

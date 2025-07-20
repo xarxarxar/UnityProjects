@@ -97,6 +97,7 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
     private void OnDisable()
     {
         Enemy.OnMoveInRange -= OnMoveInRange;
+        Enemy.OnMoveOutRange -= OnMoveOutRange;
         Enemy.OnEnemyDie -= UnregisterEnemy;
         BattleManager.OnEndBattle -= OnEndBattle;
         StopAllCoroutines();
@@ -117,6 +118,7 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
         _targetBuilding = Crystal.Instance;//设置初始目标建筑为水晶
 
         Enemy.OnMoveInRange += OnMoveInRange;
+        Enemy.OnMoveOutRange += OnMoveOutRange;
         Enemy.OnEnemyDie += UnregisterEnemy;
         BattleManager.OnEndBattle += OnEndBattle;
         if (_enemyPool==null) _enemyPool = new ObjectPool<Enemy>(_enemyPrefab, 20, transform);//初始化敌人对象池
@@ -208,10 +210,51 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
         // _isInitialized = false;
     }
 
+    private void Update()
+    {
+        //模拟两倍速
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            for(int i=0;i< _allEnemies.Count; i++)
+            {
+                if (_allEnemies[i].GetComponent<Rigidbody2D>().gravityScale == 1) return;
+                _allEnemies[i].GetComponent<Rigidbody2D>().gravityScale = 1;
+                // 获取 Rigidbody2D 组件
+                Rigidbody2D rb = _allEnemies[i].GetComponent<Rigidbody2D>();
+
+                // 将当前速度向量乘以 2，实现加倍
+                rb.velocity = rb.velocity * 2f;
+            }
+            
+        }
+        //模拟一倍速
+        if (Input.GetKeyUp(KeyCode.Q))
+        {
+            for (int i = 0; i < _allEnemies.Count; i++)
+            {
+                if (_allEnemies[i].GetComponent<Rigidbody2D>().gravityScale == 0.25f) return;
+                _allEnemies[i].GetComponent<Rigidbody2D>().gravityScale = 0.25f;
+                // 获取 Rigidbody2D 组件
+                Rigidbody2D rb = _allEnemies[i].GetComponent<Rigidbody2D>();
+
+                // 将当前速度向量乘以 2，实现加倍
+                rb.velocity = rb.velocity / 2f;
+            }
+        }
+    }
+
     //敌人移动至攻击范围
     private void OnMoveInRange(Enemy enemy)
     {
         _enemiesInRange.Add(enemy);
+    }
+    //敌人移出攻击范围
+    private void OnMoveOutRange(Enemy enemy)
+    {
+        if (_enemiesInRange.Contains(enemy))
+        {
+            _enemiesInRange.Remove(enemy);
+        }
     }
 
     private IEnumerator GenerateEnemyIE()

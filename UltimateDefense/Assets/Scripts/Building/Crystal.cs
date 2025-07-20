@@ -17,12 +17,7 @@ public class Crystal : BuildingBase
 
     public static Crystal Instance { get => _instance; }
 
-    public override string BuildingName { get=> _name; }
-    /// <summary>
-    /// 每秒恢复的血量
-    /// </summary>
-    public int RecoverHpPerSecond { get => _recoverHpPerSecond; set => _recoverHpPerSecond = value; }
-
+    
     private void Awake()
     {
         if (_instance == null) _instance = this;
@@ -31,7 +26,7 @@ public class Crystal : BuildingBase
 
     private void OnEnable()
     {
-        Init(MaxHP, 1);
+        Init(MaxHP);
     }
 
     protected void OnDisable()
@@ -43,15 +38,12 @@ public class Crystal : BuildingBase
     /// 初始化水晶
     /// </summary>
     /// <param name="maxHP">最大生命值</param>
-    /// <param name="recoverHpPerSecond">每秒恢复的生命值</param>
-    public override void Init(int maxHP,int recoverHpPerSecond)
+    public override void Init(int maxHP)
     {
-        MaxHP=maxHP;
-        _currentHP=MaxHP;
-        RecoverHpPerSecond=recoverHpPerSecond;
+        _currentHP = MaxHP =maxHP;
 
-        if(_recoverCoro != null) _recoverCoro = null;
-        _recoverCoro = StartCoroutine(RecoverIE());//启动水晶每秒回血的协程
+        //if(_recoverCoro != null) _recoverCoro = null;
+        //_recoverCoro = StartCoroutine(RecoverIE());//启动水晶每秒回血的协程
     }
 
     /// <summary>
@@ -87,13 +79,13 @@ public class Crystal : BuildingBase
     }
     
     //每秒恢复血量的协程
-    private IEnumerator RecoverIE()
-    {
-        while (RecoverHpPerSecond > 0)
-        {
-            Recover(RecoverHpPerSecond);
-            yield return TimerUtility.WaitForGameSeconds(1);//等待一秒
-        }
-    }
+    //private IEnumerator RecoverIE()
+    //{
+        //while (RecoverHpPerSecond > 0)
+       // {
+       //     Recover(RecoverHpPerSecond);
+       //     yield return TimerUtility.WaitForGameSeconds(1);//等待一秒
+       // }
+    //}
 
 }

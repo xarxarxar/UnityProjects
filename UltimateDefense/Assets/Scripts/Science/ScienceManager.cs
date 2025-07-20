@@ -1,8 +1,8 @@
 using UnityEngine;
-using static Unity.VisualScripting.Dependencies.Sqlite.SQLite3;
 
 public class ScienceManager : ManagerBase<ScienceManager>,IManager
 {
+    public override string Description { get; } = "管理科技树，局外的Manager";
     [SerializeField]
     private Bindable<int> _unlockIndex=new Bindable<int>();//玩家已解锁的科技index,0表示一个都未解锁
     private readonly ScienceNodeData[] baseSciences = new ScienceNodeData[]//基础科技
@@ -58,7 +58,7 @@ public class ScienceManager : ManagerBase<ScienceManager>,IManager
     {
         if (index != _unlockIndex.Value + 1) return;
         _unlockIndex.Value++;
-        DataManager.Instance.PlayerInfo.UnlockCount++;
+        DataManager.Instance.PlayerInfo.UnlockCount.Value++;
     }
 
     /// <summary>

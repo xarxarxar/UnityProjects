@@ -40,20 +40,49 @@ public class ManagerRegistry
             }
         }
     }
+
+    public static void InitWithConfig(ManagerInitConfig config)
+    {
+        foreach (var group in config.initOrder)
+        {
+            foreach (var behaviour in group.managers)
+            {
+                if (behaviour is IManager manager && managers.Contains(manager))
+                {
+                    manager.Init();
+                }
+                else
+                {
+                    Debug.LogWarning($"{behaviour.name} 未注册或不实现 IManager。");
+                }
+            }
+        }
+    }
 }
+
+
+public class ManagerBase : MonoBehaviour
+{
+    public int Index;
+    [field: SerializeField]
+    public virtual string Description { get; }= "默认Manager";
+    [SerializeField] protected InitStage _stage;
+    public InitStage Stage { get => _stage; }//Manager类必须InitStage变量，用来表示该Manager类是用于什么时候
+}
+
 
 /// <summary>
 /// 管理类基类，包含了只读属性Intance
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public abstract class ManagerBase<T> : MonoBehaviour, IManager where T : MonoBehaviour,IManager
+public class ManagerBase<T> : ManagerBase, IManager where T : MonoBehaviour,IManager
 {
     private static T _instance;
     protected bool _isRegistry=false;
-    [SerializeField]protected InitStage _stage;
+    
     public static T Instance => _instance;
 
-    public InitStage Stage { get=> _stage; }//Manager类必须InitStage变量，用来表示该Manager类是用于什么时候
+    
 
     protected virtual void Awake()
     {
@@ -72,8 +101,11 @@ public abstract class ManagerBase<T> : MonoBehaviour, IManager where T : MonoBeh
             _isRegistry = true;// 防止重复注册
         }
     }
+    //Manager类必须有Init函数
+    public virtual void Init()
+    {
 
-    public abstract void Init();//Manager类必须有Init函数
+    }
 }
 
 public interface IManager

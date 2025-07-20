@@ -7,18 +7,19 @@ using UnityEngine.Events;
 public abstract class BuildingBase : MonoBehaviour
 {
     [Header("血量设置")]
-    [SerializeField] private int maxHP = 100;              // 最大生命值
     [SerializeField] protected int _currentHP = 100;          // 当前生命值
 
     /// <summary>
     /// 建筑的唯一名称或类型，由子类提供
     /// </summary>
-    public abstract string BuildingName { get; }
+    [field: SerializeField]
+    public string BuildingName { get; }
 
     /// <summary>
     /// 最大生命值
     /// </summary>
-    public int MaxHP { get => maxHP; set => maxHP = value; }
+    [field: SerializeField]
+    public int MaxHP { get; set; }
 
     /// <summary>
     /// 建筑被摧毁的实例事件，订阅者可接收到本实例
@@ -28,7 +29,11 @@ public abstract class BuildingBase : MonoBehaviour
     /// <summary>
     /// 初始化函数，由子类实现
     /// </summary>
-    public abstract void Init(int maxHP, int recoverHpPerSecond=0);
+    /// <param name="maxHP">最大生命值</param>
+    public virtual void Init(int maxHP)
+    {
+        _currentHP = MaxHP = maxHP;
+    }
 
     /// <summary>
     /// 受到伤害
@@ -41,6 +46,14 @@ public abstract class BuildingBase : MonoBehaviour
         if (_currentHP <= 0)
         {
             _currentHP = 0;
+            Die();
         }
+    }
+
+    //建筑物死亡
+    public virtual void Die()
+    {
+        Destroy(gameObject);
+        OnDestroyed?.Invoke(this);
     }
 }

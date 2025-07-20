@@ -116,14 +116,7 @@ public class GameUIManager : ManagerBase<GameUIManager>,IManager
     #region Ë½ÓÐ·½·¨
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Tab))
-        {
-            ShowPlayerInfoPanel();
-        }
-        if(Input.GetKeyUp(KeyCode.Tab))
-        {
-            HidePlayerInfoPanel();
-        }
+
     }
     #endregion
 }

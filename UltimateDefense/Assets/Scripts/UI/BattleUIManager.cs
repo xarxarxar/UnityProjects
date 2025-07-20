@@ -79,7 +79,7 @@ public class BattleUIManager : ManagerBase<BattleUIManager>,IManager
     public override void Init()
     {
         Debug.Log("BattleUIManager初始化");
-        _upgradePanel.Init(UpgradeFactory.GetRandomUpgrades(3));
+        _upgradePanel.Init();
         ShowGamePlayingPanel();
         Enemy.OnEnemyDamaged += OnEnemyDamaged;//敌人受到伤害
         CurrencyManager.OnGetCoinFromEnemy += OnGetCoinFromEnemy;//敌人掉落金币

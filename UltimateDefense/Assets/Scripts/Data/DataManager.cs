@@ -3,7 +3,7 @@ using UnityEngine.Events;
 
 public class DataManager : ManagerBase<DataManager>,IManager
 {
-    [SerializeField] private PlayerInfo _playerInfo;//全局的玩家信息
+    [SerializeField] private PlayerInfo _playerInfo=new PlayerInfo();//全局的玩家信息
 
     public static event UnityAction<int> OnPassCountChanged;//通关次数变化
     public static event UnityAction OnDataLoaded;//数据加载完毕
@@ -26,12 +26,12 @@ public class DataManager : ManagerBase<DataManager>,IManager
     public override void Init()
     {
 #if UNITY_EDITOR
-        _playerInfo=new PlayerInfo();
+        //_playerInfo=new PlayerInfo();
         //_playerInfo.PassCount = 5;
-        _playerInfo.UnlockCount = 1;
-        _playerInfo.DiamondCount = 100;
-        _playerInfo.CrownCount = 20;
-        _playerInfo.PassCount = 10;
+        //_playerInfo.UnlockCount.Value = 1;
+        //_playerInfo.DiamondCount.Value = 100;
+        //_playerInfo.CrownCount.Value = 20;
+        //_playerInfo.PassCount.Value = 10;
         OnDataLoaded?.Invoke();
 #endif
         BattleManager.OnEndBattle += OnEndBattle;
@@ -45,8 +45,8 @@ public class DataManager : ManagerBase<DataManager>,IManager
     {
         if(success)
         {
-            _playerInfo.PassCount++;
-            OnPassCountChanged?.Invoke(_playerInfo.PassCount);
+            _playerInfo.PassCount.Value++;
+            OnPassCountChanged?.Invoke(_playerInfo.PassCount.Value);
         }
     }
     #endregion

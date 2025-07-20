@@ -74,7 +74,6 @@ public class CurrencyManager : ManagerBase<CurrencyManager>,IManager
     {
         if (_gold >= amount)
         {
-            Debug.Log($"ÏûºÄ½ð±Ò{amount}");
             _gold -= amount;
             OnCoinChange?.Invoke(amount);
             return true;

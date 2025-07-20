@@ -20,6 +20,8 @@ public class BasePanel : MonoBehaviour
 
         // 动画缩放到 1（0.5 秒，使用 Ease.OutBack 有弹性感）
         transform.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutQuad);
+
+        InitPanel();
     }
 
     private void OnCloseButton()
@@ -30,5 +32,19 @@ public class BasePanel : MonoBehaviour
             .OnComplete(() => gameObject.SetActive(false));
     }
 
+    /// <summary>
+    /// 这个是初始化面板的UI状态，每次打开面板的时候用
+    /// </summary>
+    protected virtual void InitPanel()
+    {
 
+    }
+
+    /// <summary>
+    /// 初始化面板的数据逻辑，由Manager统一调用
+    /// </summary>
+    public virtual void Init()
+    {
+
+    }
 }

@@ -34,7 +34,7 @@ public class Upgrade_IncreaseCriticalShotProb : UpgradeBase
     public static Upgrade_IncreaseCriticalShotProb CreateDynamicUpgrade()
     {
         float bonus = 0.1f;
-        int cost = 20;
+        int cost = 100;
         return new Upgrade_IncreaseCriticalShotProb(bonus, cost);
     }
 

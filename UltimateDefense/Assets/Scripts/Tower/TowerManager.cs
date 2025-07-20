@@ -109,7 +109,7 @@ public class TowerManager : ManagerBase<TowerManager>,IManager
     {
         Debug.Log($"TowerManager³õÊ¼»¯");
         //»ù´¡
-        _baseAtk.Value = TowerDataManager.Instance.GetTowerData(TowerType.Basic).Level;//»ù´¡ÉËº¦¾ÍÊÇ»ù´¡ËþµÄÉËº¦
+        _baseAtk.Value = 10;// TowerDataManager.Instance.GetTowerData(TowerType.Basic).Level;//»ù´¡ÉËº¦¾ÍÊÇ»ù´¡ËþµÄÉËº¦
         _baseCap.Value = 10;
         _baseAtkIntv.Value = 1f;
         _baseCritProb.Value = 0.0f;

@@ -55,6 +55,10 @@ public class DrawBlessPanel : BasePanel
         if (Input.GetKeyUp(KeyCode.P))
         {
             _simpleScrollSnap.Velocity += Random.Range(10000, 20000) * Vector2.right;
+            _simpleScrollSnap.OnPanelSelected.AddListener((value) =>
+            {
+                Debug.Log($"{_simpleScrollSnap.Content.GetChild(value).name}");
+            });
         }
         if(Input.GetKeyUp(KeyCode.Q))
         {

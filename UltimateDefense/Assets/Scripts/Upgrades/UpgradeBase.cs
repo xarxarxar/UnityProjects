@@ -15,7 +15,7 @@ public abstract class UpgradeBase
     /// <summary>
     /// 购买该升级消耗的金币数
     /// </summary>
-    public int Cost { get; protected set; }
+    public int Cost { get; set; }
 
     /// <summary>
     /// 升级UI上显示的描述文案，例如 "所有炮塔攻击力 +10"

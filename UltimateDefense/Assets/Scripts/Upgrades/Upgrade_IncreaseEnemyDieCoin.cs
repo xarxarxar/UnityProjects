@@ -38,7 +38,7 @@ public class Upgrade_IncreaseEnemyDieCoin : UpgradeBase
     public static Upgrade_IncreaseEnemyDieCoin CreateDynamicUpgrade()
     {
         int bonus = 2;
-        int cost = 20;
+        int cost = 100;
         return new Upgrade_IncreaseEnemyDieCoin(bonus, cost);
     }
 

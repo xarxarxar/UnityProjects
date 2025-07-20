@@ -37,7 +37,7 @@ public class Upgrade_IncreaseCrystalRecoverHP : UpgradeBase
     public static Upgrade_IncreaseCrystalRecoverHP CreateDynamicUpgrade()
     {
         int bonus = 1;
-        int cost = 20;
+        int cost = 100;
         return new Upgrade_IncreaseCrystalRecoverHP(bonus, cost);
     }
 
@@ -51,7 +51,7 @@ public class Upgrade_IncreaseCrystalRecoverHP : UpgradeBase
     public override void Apply()
     {
         // 通知 Manager 保存全局加成
-        Crystal.Instance.RecoverHpPerSecond += _bonus;
+        //Crystal.Instance.RecoverHpPerSecond += _bonus;
     }
 
     #endregion

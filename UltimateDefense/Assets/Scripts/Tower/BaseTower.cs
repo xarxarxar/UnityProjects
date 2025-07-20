@@ -117,7 +117,6 @@ public abstract class BaseTower : MonoBehaviour
     //播放攻击动画
     protected virtual void PlayAttackAnim()
     {
-        Debug.Log("播放通用攻击动画");
         // 这里可以用 Animator 或特效触发器等
     }
 
@@ -189,7 +188,7 @@ public abstract class BaseTower : MonoBehaviour
     public abstract string GetUpgradeDescription();
 
     //子类不用重写
-    //旋转并设计的协程
+    //旋转并射击的协程
     private IEnumerator RotateAndShootIE()
     {
         if (currentTarget == null) yield break;

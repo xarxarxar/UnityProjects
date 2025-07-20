@@ -13,6 +13,8 @@ public class Enemy : MonoBehaviour
     #region 静态事件
     /// <summary>当敌人进入攻击范围时触发，参数为敌人自身</summary>
     public static UnityAction<Enemy> OnMoveInRange;
+    /// <summary>当敌人移出攻击范围时触发，参数为敌人自身</summary>
+    public static UnityAction<Enemy> OnMoveOutRange;
     /// <summary>当敌人死亡时触发，参数为敌人自身</summary>
     public static UnityAction<Enemy> OnEnemyDie;
     /// <summary>当敌人受到伤害时触发，参数：敌人自身，是否暴击，伤害值</summary>
@@ -43,6 +45,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float _attackInterval = 0.5f;
     [Tooltip("攻击伤害")]
     [SerializeField] private int _attackDamage = 1;
+    [SerializeField] private int _bounsCount = 10;//最大弹跳次数
     #endregion
 
     #region 私有字段（状态与运行时数据）
@@ -78,10 +81,7 @@ public class Enemy : MonoBehaviour
     #endregion
 
     #region Unity 生命周期
-    private void OnEnable()
-    {
-        
-    }
+
     private void OnDisable() 
     { 
         StopAllCoroutines();
@@ -101,6 +101,7 @@ public class Enemy : MonoBehaviour
         _isDead = false;                    // 重置死亡状态
         _isInRangeList = false;             // 重置范围触发标志
         enemyLayer = layer;                 // 设置渲染层级
+        _bounsCount = 10;
 
         // 根据等级动态计算最大生命值，一级就是一滴血,护盾默认为 0
         maxHP = Mathf.RoundToInt(level * (1+BattleManager.Instance.Debuff.AddHP*0.1f)) ;//算上debuff的，增加敌人10%HP
@@ -109,7 +110,8 @@ public class Enemy : MonoBehaviour
         _currentShield = maxShield;         // 初始化当前护盾为最大值
         _damageNullifiedCount=EnemyManager.Instance.EnemyDamageNullifiedCount.Value;
 
-
+        //设置物理效果
+        GetComponent<Rigidbody2D>().gravityScale = BattleManager.Instance.GameSpeed==1?0.25f:1.0f;
 
         SetOrderLayer(enemyLayer);          // 更新 Canvas 排序层级
         ChangeShield();                     // 初始化护盾条填充
@@ -120,7 +122,7 @@ public class Enemy : MonoBehaviour
         _attackTimer = _attackInterval;
 
         // 启动中央状态机协程，管理移动和攻击行为
-        StartCoroutine(StateMachineLoop());
+        //StartCoroutine(StateMachineLoop());
 
         BattleManager.OnEndBattle += OnEndBattle;
     }
@@ -300,6 +302,40 @@ public class Enemy : MonoBehaviour
     {
         EnemyManager.Instance.EnemyPool.Return(this);
         StopAllCoroutines();
+    }
+
+    //碰撞
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Building")|| collision.gameObject.CompareTag("Crystal"))
+        {
+            collision.transform.parent.GetComponent<BuildingBase>().TakeDamage(_attackDamage);
+            
+            if (_bounsCount == 1)
+            {
+                collision.transform.parent.GetComponent<BuildingBase>().TakeDamage(_currentHP*2);
+                Die();
+                _bounsCount = 0;
+            }
+            _bounsCount--;
+        }
+    }
+
+    //进入区域
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("AttackArea"))
+        {
+            OnMoveInRange?.Invoke(this);
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("AttackArea"))
+        {
+            OnMoveOutRange?.Invoke(this);
+        }
     }
     #endregion
 }

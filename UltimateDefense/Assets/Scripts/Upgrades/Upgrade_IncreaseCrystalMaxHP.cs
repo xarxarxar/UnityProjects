@@ -37,7 +37,7 @@ public class Upgrade_IncreaseCrystalMaxHP : UpgradeBase
     public static Upgrade_IncreaseCrystalMaxHP CreateDynamicUpgrade()
     {
         int bonus = 10;
-        int cost = 20;
+        int cost = 100;
         return new Upgrade_IncreaseCrystalMaxHP(bonus, cost);
     }
 

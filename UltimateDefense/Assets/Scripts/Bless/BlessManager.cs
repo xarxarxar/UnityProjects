@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class BlessManager : ManagerBase<BlessManager>,IManager
 {
+    public override string Description { get; } = "管理对局开始时的祝福，局内的Manager";
     [SerializeField]private Bless _bless;//对局开始前选择的祝福
     [SerializeField]private int _blessCost;//抽取一次祝福需要花费的钻石数量
 
