@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,6 +7,7 @@ public class RewardStruct : MonoBehaviour
     public Text countText;  //奖励的个数的Text
     public RewardType type; //奖励的类型
     public int count;
+
 
     public void Init(int count)
     {
@@ -23,7 +22,6 @@ public class RewardStruct : MonoBehaviour
         iconImage.sprite = RewardManager.IconMap[type];
         this.count = count;
     }
-
 }
 
 

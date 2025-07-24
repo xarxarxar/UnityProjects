@@ -20,11 +20,8 @@ public class BattleManager : MonoBehaviour
     #region 私有属性
     private static BattleManager _instance;//单例实例，供全局访问 Instance
     private bool _isGameOver;//标记当前游戏是否结束（胜利或失败）。
-    private bool _isPaused=false;//标记游戏是否处于“暂停”状态，用于实现暂停/恢复功能。
-    private int _currentRound;//当前进行到的回合编号（1–100）。暂定100为最大回合
-    private int _totalClears;//玩家累计通关次数（成功守住 100 回合的次数）。
     private int _startGold;//本局开局所给的初始金币数（受技能树或其他影响）。
-    private float _gameSpeed = 1f;//当前游戏速度倍率，默认 1×，用于倍速功能（0.5×、1×、2× 等）。
+    private Bindable<int> _gameSpeed = new Bindable<int>();//
     [SerializeField]
     private Debuff _debuff=new Debuff();//通关之后选择的Debuff
     private int _diamondCount = 0;//单次挑战获取的局外钻石数量
@@ -37,14 +34,6 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     public static BattleManager Instance { get=>_instance;}
     /// <summary>
-    /// 只读属性，暴露玩家累计通关次数。
-    /// </summary>
-    public int TotalClears { get { return _totalClears; } }
-    /// <summary>
-    /// 只读属性，暴露当前回合编号。
-    /// </summary>
-    public int CurrentRound { get { return _currentRound; } }
-    /// <summary>
     /// 只读属性，暴露本局开局金币数。
     /// </summary>
     public int StartGold { get { return _startGold; } }
@@ -53,13 +42,13 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     public bool IsFailed { get; private set; }
     /// <summary>
-    /// 公开属性，用于设置游戏整体倍速（同时修改 Time.timeScale）。最小限制 0.1f，避免归零。
+    /// 公开属性，用于设置游戏整体倍速（同时修改 Time.timeScale）。最小限制 1.0f
     /// </summary>
-    public float GameSpeed { get { return _gameSpeed; } set { _gameSpeed = Mathf.Max(0.1f, value); } }
+    public Bindable<int> GameSpeed { get ; set;}=new Bindable<int>();
     /// <summary>
-    /// 公开属性，用于设置游戏是否处于暂停状态
+    /// 公开属性，标记游戏是否处于“暂停”状态，用于实现暂停/恢复功能。
     /// </summary>
-    public bool IsPaused { get => _isPaused; set => _isPaused = value; }
+    public Bindable<bool> IsPaused { get; private set; } = new Bindable<bool>();
     /// <summary>
     /// 通关之后选择的Debuff
     /// </summary>
@@ -86,11 +75,11 @@ public class BattleManager : MonoBehaviour
     {
         
         _debuff = debuff;
-        _gameSpeed=1f;
+        GameSpeed.Value= 1;
         _diamondCount = 0;
         
         BattleUIManager.Instance.ShowBattleScene();//显示战斗场景
-        _isPaused = false;
+        IsPaused.Value = false;
         ManagerRegistry.InitManagers(InitStage.InBattle);
 
         ScienceManager.Instance.ApplyScience();//应用科技点
@@ -106,7 +95,7 @@ public class BattleManager : MonoBehaviour
     /// <param name="success"></param>
     public void EndBattle(bool success)
     {
-        _isPaused = true;
+        IsPaused.Value = true;
         SignleMetaCoinCount();//计算这次挑战获取了多少局外金币
         BattleUIManager.Instance.ShowEndPanel(success);//显示游戏结算界面
         
@@ -138,7 +127,7 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     public void PauseGame()
     {
-        _isPaused = true;
+        IsPaused.Value = true;
     }
 
     /// <summary>
@@ -146,7 +135,7 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     public void ResumeGame()
     {
-        _isPaused = false;
+        IsPaused.Value = false;
     }
 
     /// <summary>
@@ -182,9 +171,9 @@ public class BattleManager : MonoBehaviour
     ///  设置 GameSpeed 属性（重置 Time.timeScale）。
     /// </summary>
     /// <param name="speed"></param>
-    public void SetGameSpeed(float speed)
+    public void SetGameSpeed(int speed)
     {
-        GameSpeed=speed;
+        GameSpeed.Value=speed;
     }
     #endregion
 

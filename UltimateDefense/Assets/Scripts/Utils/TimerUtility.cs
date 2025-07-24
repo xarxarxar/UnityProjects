@@ -47,7 +47,7 @@ public class TimerUtility : MonoBehaviour
     /// <param name="callback">回调方法</param>
     private IEnumerator TimerCoroutine(float delay, Action callback)
     {
-        yield return WaitForGameSeconds(delay / BattleManager.Instance.GameSpeed);
+        yield return WaitForGameSeconds(delay / BattleManager.Instance.GameSpeed.Value);
         callback?.Invoke();
         yield break;
     }
@@ -64,9 +64,9 @@ public class TimerUtility : MonoBehaviour
 
         while (timer < time)
         {
-            if (!BattleManager.Instance.IsPaused)
+            if (!BattleManager.Instance.IsPaused.Value)
             {
-                timer += Time.deltaTime * BattleManager.Instance.GameSpeed;
+                timer += Time.deltaTime * BattleManager.Instance.GameSpeed.Value;
             }
             yield return null;
         }

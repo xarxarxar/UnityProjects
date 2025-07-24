@@ -26,6 +26,8 @@ public class StartPanel : MonoBehaviour
     [SerializeField] private BasePanel _rankPanel;
     [SerializeField] private BasePanel _sharePanel;
     private Dictionary<Button, BasePanel> _buttonPanelMap;
+
+
     #endregion
 
     #region 公共变量
@@ -71,5 +73,7 @@ public class StartPanel : MonoBehaviour
         GameUIManager.Instance.ShowChooseDebuffPanel();
         gameObject.SetActive(false);
     }
+
+    
     #endregion
 }

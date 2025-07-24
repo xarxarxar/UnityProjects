@@ -73,8 +73,8 @@ public abstract class BaseTower : MonoBehaviour
     public TowerData TowerData => TowerDataManager.Instance.GetTowerData(TowerType);
     protected Enemy currentTarget;//当前的攻击目标
     private List<Enemy> _enemiesInRange => EnemyManager.Instance.EnemiesInRange;//在攻击范围内的所有敌人
-    private float _gameSpeed => BattleManager.Instance.GameSpeed;
-    private bool _isPaused=> BattleManager.Instance.IsPaused;//是否暂停
+    private float _gameSpeed => BattleManager.Instance.GameSpeed.Value;
+    private bool _isPaused=> BattleManager.Instance.IsPaused.Value;//是否暂停
     private bool _isRotating = false; // 是否正在旋转
     private bool _isReloading = false; // 是否正在换弹
     private float noAttackTimer = 0f;//未处于攻击状态的时长

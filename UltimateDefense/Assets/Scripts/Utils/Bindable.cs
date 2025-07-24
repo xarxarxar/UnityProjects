@@ -1,10 +1,13 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 
 //可绑定数据，方便监听
+[System.Serializable]
 public class Bindable<T>
 {
     private T _value;
+    [JsonIgnore]
     public Action<T> OnValueChanged;
 
     public T Value

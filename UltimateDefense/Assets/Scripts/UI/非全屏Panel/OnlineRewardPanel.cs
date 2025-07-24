@@ -10,7 +10,6 @@ public class OnlineRewardPanel : BasePanel
 
     public override void Init()
     {
-        
         _todayOnlineMinutes = 0;
         DataManager.Instance.PlayerInfo.TodayOnlineMinutes.OnValueChanged += (minutes) =>
         {
@@ -29,7 +28,7 @@ public class OnlineRewardPanel : BasePanel
             if(i== taskRewards.Count - 1)
             {
                 taskRewards[i].Init(RewardType.Crown, 1, $"‘⁄œﬂ{_needMinutes[i]}∑÷÷”",
-                    -1, DataManager.Instance.PlayerInfo.TodayOnlineMinutes.Value);
+                    _needMinutes[i], DataManager.Instance.PlayerInfo.TodayOnlineMinutes.Value);
             }
             else
             {

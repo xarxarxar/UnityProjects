@@ -8,7 +8,7 @@ public class MySlider : MonoBehaviour
 {
     public Slider slider;
     private Coroutine _countdownCoroutine;//倒计时协程
-    private float _gameSpeed=>BattleManager.Instance.GameSpeed;
+    private float _gameSpeed=>BattleManager.Instance.GameSpeed.Value;
 
     private void Start()
     {
@@ -64,9 +64,9 @@ public class MySlider : MonoBehaviour
         while (timer < duration)
         {
             // 若游戏暂停，则不更新 timer 和 slider
-            if (!BattleManager.Instance.IsPaused)
+            if (!BattleManager.Instance.IsPaused.Value)
             {
-                timer += Time.deltaTime * BattleManager.Instance.GameSpeed;
+                timer += Time.deltaTime * BattleManager.Instance.GameSpeed.Value;
                 slider.value = Mathf.Clamp01(1f - timer / duration);
             }
 

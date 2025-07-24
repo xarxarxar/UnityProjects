@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using SerializableDictionary.Scripts;
 using UnityEngine;
 
 /// <summary>
@@ -6,13 +6,11 @@ using UnityEngine;
 /// </summary>
 public class TowerDataManager : ManagerBase<TowerDataManager>,IManager
 {
-    [SerializeField] private List<TowerData> towerDataList;
-    private Dictionary<TowerType, TowerData> _towerDataDict;
     [SerializeField] private TowerType _currentTowerData;
     /// <summary>
     /// 当前对局使用的TowerType
     /// </summary>
-    public TowerType CurrentTowerType { get => _currentTowerData; set => _currentTowerData = value; }
+    public Bindable<TowerType> CurrentTowerType=>DataManager.Instance.PlayerInfo.CurrentTowerType;
 
     public override void Init()
     {
@@ -24,8 +22,6 @@ public class TowerDataManager : ManagerBase<TowerDataManager>,IManager
         base.Awake();
         _stage = InitStage.OutBattle;
 
-        _towerDataDict = new Dictionary<TowerType, TowerData>();
-
     }
 
     /// <summary>
@@ -35,12 +31,19 @@ public class TowerDataManager : ManagerBase<TowerDataManager>,IManager
     /// <returns></returns>
     public TowerData GetTowerData(TowerType type)
     {
-        if (_towerDataDict.TryGetValue(type, out var data))
+        int towerLevel = DataManager.Instance.PlayerInfo.TowerDatas[type];
+        return new TowerData
         {
-            return data;
-        }
+            Level = towerLevel,
+            BaseDamage = GetBaseDamage(type, towerLevel),
+            BaseCap=GetBaseCap(type, towerLevel),
+            BaseAtkRate=GetBaseAtkRate(type, towerLevel),
+            BaseReload=GetBaseReload(type, towerLevel),
+            BaseCritProb=GetBaseCritProb(type, towerLevel),
+            BaseCritMult=GetBaseCritMult(type, towerLevel)
+        };
             
-        return null;
+
     }
 
     /// <summary>
@@ -48,7 +51,10 @@ public class TowerDataManager : ManagerBase<TowerDataManager>,IManager
     /// </summary>
     public void UnlockTower(TowerType type)
     {
-        _towerDataDict[type].Level += 1;
+        if(!DataManager.Instance.PlayerInfo.TowerDatas.ContainsKey(type)) return;
+        if (DataManager.Instance.PlayerInfo.TowerDatas[type]!=0) return;
+
+        DataManager.Instance.PlayerInfo.TowerDatas[type]++;
     }
 
     /// <summary>
@@ -57,11 +63,10 @@ public class TowerDataManager : ManagerBase<TowerDataManager>,IManager
     /// <param name="type"></param>
     public void UpgradeTower(TowerType type)
     {
-        if(_towerDataDict[type].Level>= TowerData.MaxLevel)
-        {
-            return;
-        }
-        _towerDataDict[type].Level += 1;
+        if (!DataManager.Instance.PlayerInfo.TowerDatas.ContainsKey(type)) return;
+        if (DataManager.Instance.PlayerInfo.TowerDatas[type] >=TowerData.MaxLevel) return;
+
+        DataManager.Instance.PlayerInfo.TowerDatas[type]++;
     }
 
     /// <summary>
@@ -110,7 +115,7 @@ public class TowerDataManager : ManagerBase<TowerDataManager>,IManager
     /// <param name="towerType"></param>
     /// <param name="level"></param>
     /// <returns></returns>
-    public static float GetBaseAtkIntv(TowerType towerType, int level)
+    public static float GetBaseAtkRate(TowerType towerType, int level)
     {
         return towerType switch
         {

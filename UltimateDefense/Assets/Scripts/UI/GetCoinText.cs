@@ -14,8 +14,8 @@ public class GetCoinText : MonoBehaviour
 
     private CanvasGroup _canvasGroup;
 
-    private float totalUpDuration => _upDuration / BattleManager.Instance.GameSpeed;
-    private float totalFadeDuration => _fadeDuration / BattleManager.Instance.GameSpeed;
+    private float totalUpDuration => _upDuration / BattleManager.Instance.GameSpeed.Value;
+    private float totalFadeDuration => _fadeDuration / BattleManager.Instance.GameSpeed.Value;
 
     private void Start()
     {

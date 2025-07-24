@@ -49,6 +49,7 @@ public class CurrencyManager : ManagerBase<CurrencyManager>,IManager
     public override void Init()
     {
         _gold = 0;
+        AddCoin(1000);
         Enemy.OnEnemyDie += OnEnemyDie;//¶©ÔÄµĞÈËËÀÍöÊÂ¼ş
     }
 

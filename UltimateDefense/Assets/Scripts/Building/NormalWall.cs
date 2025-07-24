@@ -7,4 +7,5 @@ using UnityEngine;
 /// </summary>
 public class NormalWall : BuildingBase
 {
+    
 }

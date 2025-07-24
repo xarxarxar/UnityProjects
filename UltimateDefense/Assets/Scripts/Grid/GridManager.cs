@@ -5,7 +5,7 @@ using UnityEngine;
 public class GridManager : MonoBehaviour
 {
     public GameObject cellPrefab; // 预制体，代表一个格子
-    public int width = 7;
+    public int width = 9;
     public int height = 9;
     public float cellSize = 1f;
     //[SerializeField] private Vector2 gridStartPos = new Vector2(-7f, -3f); // 起始位置，可在 Inspector 中调
@@ -35,9 +35,21 @@ public class GridManager : MonoBehaviour
                 Grid cell = cellObj.GetComponent<Grid>();
                 cell.Init(new Vector2Int(row, col)); // (行, 列)
                 grid[row, col] = cell;
+                if ((row + col) % 2 == 0)
+                {
+                    cellObj.GetComponent<SpriteRenderer>().color = new Color32(42, 45, 53, 255);
+                }
+                else
+                {
+                    cellObj.GetComponent<SpriteRenderer>().color = new Color32(52,55,65,255);
+
+                }
             }
         }
     }
+
+
+    
 
 
     /// <summary>

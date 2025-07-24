@@ -1,5 +1,4 @@
 using DanielLochner.Assets.SimpleScrollSnap; // 引入命名空间
-using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -29,7 +28,7 @@ public class UpgradeTowerPanel : MonoBehaviour
     {
         _unlockCost.Init(RewardType.Crown, 1);
 
-        _simpleScrollSnap.StartingPanel = (int)TowerDataManager.Instance.CurrentTowerType;//起始位置
+        _simpleScrollSnap.StartingPanel = (int)TowerDataManager.Instance.CurrentTowerType.Value;//起始位置
         _currentTower = _simpleScrollSnap.Content.GetChild(_simpleScrollSnap.StartingPanel).GetComponent<TowerCard>();
         //_currentTower.ActivateCard();
         
@@ -73,7 +72,7 @@ public class UpgradeTowerPanel : MonoBehaviour
             _chooseThisTower.gameObject.SetActive(true);
             _unlockButton.onClick.AddListener(() => ChooseThisTower(_currentTower));
             //当前选择的不是对局中使用的炮塔
-            if (TowerDataManager.Instance.CurrentTowerType!= _currentTower.Type)
+            if (TowerDataManager.Instance.CurrentTowerType.Value != _currentTower.Type)
             {
                 _unlockButton.interactable = true;
                 _chooseThisTower.text = "选择";
@@ -108,7 +107,7 @@ public class UpgradeTowerPanel : MonoBehaviour
     private void ChooseThisTower(TowerCard towerCard)
     {
         _unlockCost.gameObject.SetActive(false);
-        TowerDataManager.Instance.CurrentTowerType= _currentTower.Type;
+        TowerDataManager.Instance.CurrentTowerType.Value = _currentTower.Type;
         UpdateButtonState();
     }
 

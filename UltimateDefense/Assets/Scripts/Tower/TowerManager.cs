@@ -109,7 +109,7 @@ public class TowerManager : ManagerBase<TowerManager>,IManager
     {
         Debug.Log($"TowerManager初始化");
         //基础
-        _baseAtk.Value = 10;// TowerDataManager.Instance.GetTowerData(TowerType.Basic).Level;//基础伤害就是基础塔的伤害
+        _baseAtk.Value = 1;// TowerDataManager.Instance.GetTowerData(TowerType.Basic).Level;//基础伤害就是基础塔的伤害
         _baseCap.Value = 10;
         _baseAtkIntv.Value = 1f;
         _baseCritProb.Value = 0.0f;
@@ -126,7 +126,7 @@ public class TowerManager : ManagerBase<TowerManager>,IManager
         if (_bulletPool == null) _bulletPool = new ObjectPool<Bullet>(_bulletPrefab, 10, transform);
 
         //启用对应炮塔的脚本
-        TowerType currentType = TowerDataManager.Instance.CurrentTowerType;
+        TowerType currentType = TowerDataManager.Instance.CurrentTowerType.Value;
         // 获取所有继承自 BaseTower 的脚本（即便禁用了也能拿到）
         BaseTower[] allTowerScripts = _towerObject.GetComponents<BaseTower>();
         foreach (BaseTower script in allTowerScripts)

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 /// <summary>
 /// 建筑类基类
@@ -8,6 +9,12 @@ public abstract class BuildingBase : MonoBehaviour
 {
     [Header("血量设置")]
     [SerializeField] protected int _currentHP = 100;          // 当前生命值
+
+    /// <summary>
+    /// 建筑的图标
+    /// </summary>
+    public Sprite icon;
+
 
     /// <summary>
     /// 建筑的唯一名称或类型，由子类提供

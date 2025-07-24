@@ -34,6 +34,8 @@ public class BattleUIManager : ManagerBase<BattleUIManager>,IManager
     private bool _isInitialized;                      // 标记是否完成 UI 初始化
     private ObjectPool<DamageText> _damageTextPool;//显示伤害文字的对象池
     private ObjectPool<GetCoinText> _getCoinTextPool;//显示从敌人身上获取了多少金币的文字
+
+    [SerializeField] private BuildingChoosePanel _buildingUIInBattlePanel;//在战斗中显示所有建筑的面板
     #endregion
 
     #region 公开属性
@@ -116,6 +118,22 @@ public class BattleUIManager : ManagerBase<BattleUIManager>,IManager
     public void HideGamePlayingPanel()
     {
         _gamePlayingPanel.SetActive(false);
+    }
+
+    /// <summary>
+    /// 显示战斗中建造的面板
+    /// </summary>
+    public void ShowBuildingPanelInBattle()
+    {
+        _buildingUIInBattlePanel.ShowPanel();
+    }
+
+    /// <summary>
+    /// 隐藏战斗中建造的面板
+    /// </summary>
+    public void HideBuildingPanelInBattle()
+    {
+        _buildingUIInBattlePanel.HidePanel();
     }
 
     /// <summary>

@@ -18,7 +18,7 @@ public class ScienceNodeItem : MonoBehaviour
     public void Init(ScienceNodeData scienceNode,int index)
     {
         _index=index;
-        _descriptionText.text=index.ToString()+ scienceNode.description;
+        _descriptionText.text=scienceNode.description;
         _unlockCost.Init(scienceNode.costType,scienceNode.cost);
         SetInteractale(_index);//设置该节点的可交互性
 
@@ -32,7 +32,7 @@ public class ScienceNodeItem : MonoBehaviour
     public void UpdateUI(ScienceNodeData scienceNode,int index)
     {
         _index = index;
-        _descriptionText.text = index.ToString() + scienceNode.description;
+        _descriptionText.text =scienceNode.description;
         _unlockCost.Init(scienceNode.costType, scienceNode.cost);
         SetInteractale(_index);//设置该节点的可交互性
     }

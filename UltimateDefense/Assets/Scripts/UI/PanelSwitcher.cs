@@ -20,7 +20,8 @@ public class PanelSwitcher : MonoBehaviour
 
     void Start()
     {
-        DataManager.OnDataLoaded += OnDataLoaded;
+        OnDataLoaded();//数据加载完毕，显示数据，绑定事件等等
+        //DataManager.OnDataLoaded += OnDataLoaded;
     }
 
     //切换面板
@@ -72,17 +73,17 @@ public class PanelSwitcher : MonoBehaviour
     /// </summary>
     private void OnDataLoaded()
     {
-        MetaCurrencyManager.Instance.DiamondCount.OnValueChanged += (value) =>
+        DataManager.Instance.PlayerInfo.DiamondCount.OnValueChanged += (value) =>
         {
             OnMetaCoinChanged(RewardType.Diamond, value);
         };
-        MetaCurrencyManager.Instance.CrownCount.OnValueChanged += (value) =>
+        DataManager.Instance.PlayerInfo.CrownCount.OnValueChanged += (value) =>
         {
             OnMetaCoinChanged(RewardType.Crown, value);
         };
 
-        OnMetaCoinChanged(RewardType.Diamond, MetaCurrencyManager.Instance.DiamondCount.Value);
-        OnMetaCoinChanged(RewardType.Crown, MetaCurrencyManager.Instance.CrownCount.Value);
+        OnMetaCoinChanged(RewardType.Diamond, DataManager.Instance.PlayerInfo.DiamondCount.Value);
+        OnMetaCoinChanged(RewardType.Crown, DataManager.Instance.PlayerInfo.CrownCount.Value);
 
         // 绑定按钮点击事件
         towerButton.onClick.AddListener(() => SwitchToPanel(towerPanel));

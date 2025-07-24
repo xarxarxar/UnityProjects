@@ -55,7 +55,7 @@ public class Enemy : MonoBehaviour
     private BuildingBase _targetBuilding => EnemyManager.Instance.TargetBuilding;  // 攻击目标建筑
     private bool _isDead;           // 是否已死亡
     private bool _isInRangeList;    // 是否已触发进入攻击范围事件
-    private bool _isPaused => BattleManager.Instance.IsPaused;  // 游戏是否暂停
+    private bool _isPaused => BattleManager.Instance.IsPaused.Value;  // 游戏是否暂停
 
     /// <summary>
     /// 当前的HP
@@ -111,7 +111,7 @@ public class Enemy : MonoBehaviour
         _damageNullifiedCount=EnemyManager.Instance.EnemyDamageNullifiedCount.Value;
 
         //设置物理效果
-        GetComponent<Rigidbody2D>().gravityScale = BattleManager.Instance.GameSpeed==1?0.25f:1.0f;
+        GetComponent<Rigidbody2D>().gravityScale = BattleManager.Instance.GameSpeed.Value ==1?0.25f:1.0f;
 
         SetOrderLayer(enemyLayer);          // 更新 Canvas 排序层级
         ChangeShield();                     // 初始化护盾条填充
@@ -229,7 +229,7 @@ public class Enemy : MonoBehaviour
         if (bottomY>-4.0f)
         {
             // 按移动速度和游戏倍速平滑移动
-            transform.position += Vector3.down * EnemyManager.Instance.EnemySpeed.Value * BattleManager.Instance.GameSpeed * Time.deltaTime;
+            transform.position += Vector3.down * EnemyManager.Instance.EnemySpeed.Value * BattleManager.Instance.GameSpeed.Value * Time.deltaTime;
 
             //transform.position = Vector3.MoveTowards(
             //    transform.position,
@@ -266,7 +266,7 @@ public class Enemy : MonoBehaviour
         }
 
         // 倒计时逻辑，考虑游戏速度
-        _attackTimer -= Time.deltaTime * BattleManager.Instance.GameSpeed;
+        _attackTimer -= Time.deltaTime * BattleManager.Instance.GameSpeed.Value;
         if (_attackTimer <= 0f)
         {
             // 对目标建筑造成一次伤害（示例：1点），可扩展为属性化

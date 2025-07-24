@@ -20,6 +20,8 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
     private Bindable<int> _enemyCurrentCount = new Bindable<int>();//当前所有敌人数量
     private Bindable<int> _enemyDamageNullifiedCount = new Bindable<int>();//敌人免疫伤害次数
     private BuildingBase _targetBuilding;              //敌人的目标建筑物
+    // 存储暂停前所有敌人的速度
+    private Dictionary<Rigidbody2D, Vector2> _enemyVelocityMap = new Dictionary<Rigidbody2D, Vector2>();
     //private int _enemyTotalCount = 0;                //敌人生成的数量,从开始到结束的总数量，包括死亡的
     #endregion
 
@@ -100,6 +102,7 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
         Enemy.OnMoveOutRange -= OnMoveOutRange;
         Enemy.OnEnemyDie -= UnregisterEnemy;
         BattleManager.OnEndBattle -= OnEndBattle;
+        BattleManager.Instance.GameSpeed.OnValueChanged -= GameSpeedChanged;
         StopAllCoroutines();
     }
     /// <summary>
@@ -121,6 +124,8 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
         Enemy.OnMoveOutRange += OnMoveOutRange;
         Enemy.OnEnemyDie += UnregisterEnemy;
         BattleManager.OnEndBattle += OnEndBattle;
+        BattleManager.Instance.GameSpeed.OnValueChanged += GameSpeedChanged;
+        BattleManager.Instance.IsPaused.OnValueChanged += GamePausedChanged;
         if (_enemyPool==null) _enemyPool = new ObjectPool<Enemy>(_enemyPrefab, 20, transform);//初始化敌人对象池
         StartCoroutine(GenerateEnemyIE());
     }
@@ -133,11 +138,9 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
     /// <param name="pathPoints">由 PathfindingHelper 计算得到的世界坐标路径点数组</param>
     public void SpawnEnemy(Enemy enemy, float xPos, int level)
     {
-        //_enemyTotalCount++;  
         enemy.Init(new Vector3(xPos, 13, 0), level, -1 * (_allEnemies.Count));
         _allEnemies.Add(enemy);
         _enemyCurrentCount.Value = _allEnemies.Count;
-        //OnEnemyCountChanged?.Invoke(_allEnemies.Count);//场上敌人数量变化
     }
 
     /// <summary>
@@ -156,45 +159,8 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
             _allEnemies[i].SetOrderLayer(-1*i);
         }
         _enemyCurrentCount.Value = _allEnemies.Count;
-        //OnEnemyCountChanged?.Invoke(_allEnemies.Count);//场上敌人数量变化
     }
 
-    /// <summary>
-    /// 查找距离 pos 最近且在 range 范围内的敌人，并返回该实例
-    /// </summary>
-    /// <param name="pos">中心坐标（塔的位置）</param>
-    /// <param name="range">射程半径（世界单位）</param>
-    /// <returns>若找到最近敌人则返回该 Enemy，否则返回 null</returns>
-    public Enemy FindNearestInRange(Vector3 pos, float range)
-    {
-        // Enemy nearest = null;
-        // float minDist = float.MaxValue;
-        // foreach (var e in _allEnemies)
-        // {
-        //     if (e.IsDead) continue;
-        //     float dist = Vector3.Distance(pos, e.transform.position);
-        //     if (dist <= range && dist < minDist)
-        //     {
-        //         minDist = dist;
-        //         nearest = e;
-        //     }
-        // }
-        // return nearest;
-        return null;
-    }
-
-    /// <summary>
-    /// 清空场上的所有敌人（例如 ResetWaves 调用时）
-    /// </summary>
-    public void ClearAllEnemies()
-    {
-        // foreach (var e in new List<Enemy>(_allEnemies))
-        // {
-        //     if (e != null)
-        //         Destroy(e.gameObject);
-        // }
-        // _allEnemies.Clear();
-    }
     #endregion
 
     #region 私有成员方法
@@ -210,25 +176,10 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
         // _isInitialized = false;
     }
 
-    private void Update()
+    //游戏速度变化时
+    private void GameSpeedChanged(int speed)
     {
-        //模拟两倍速
-        if (Input.GetKeyUp(KeyCode.Space))
-        {
-            for(int i=0;i< _allEnemies.Count; i++)
-            {
-                if (_allEnemies[i].GetComponent<Rigidbody2D>().gravityScale == 1) return;
-                _allEnemies[i].GetComponent<Rigidbody2D>().gravityScale = 1;
-                // 获取 Rigidbody2D 组件
-                Rigidbody2D rb = _allEnemies[i].GetComponent<Rigidbody2D>();
-
-                // 将当前速度向量乘以 2，实现加倍
-                rb.velocity = rb.velocity * 2f;
-            }
-            
-        }
-        //模拟一倍速
-        if (Input.GetKeyUp(KeyCode.Q))
+        if (speed == 1)
         {
             for (int i = 0; i < _allEnemies.Count; i++)
             {
@@ -241,7 +192,53 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
                 rb.velocity = rb.velocity / 2f;
             }
         }
+        if(speed==2)
+        {
+            for (int i = 0; i < _allEnemies.Count; i++)
+            {
+                if (_allEnemies[i].GetComponent<Rigidbody2D>().gravityScale == 1) return;
+                _allEnemies[i].GetComponent<Rigidbody2D>().gravityScale = 1;
+                // 获取 Rigidbody2D 组件
+                Rigidbody2D rb = _allEnemies[i].GetComponent<Rigidbody2D>();
+
+                // 将当前速度向量乘以 2，实现加倍
+                rb.velocity = rb.velocity * 2f;
+            }
+        }
     }
+
+    //游戏暂停状态变化时
+    private void GamePausedChanged(bool isPaused)
+    {
+        if (isPaused)
+        {
+            _enemyVelocityMap.Clear(); // 清空旧数据
+
+            foreach (var enemy in _allEnemies)
+            {
+                Rigidbody2D rb = enemy.GetComponent<Rigidbody2D>();
+                if (rb != null)
+                {
+                    _enemyVelocityMap[rb] = rb.velocity; // 记录当前速度
+                    rb.velocity = Vector2.zero;          // 速度归零
+                    rb.simulated = false;                // 禁用物理模拟
+                }
+            }
+        }
+        else
+        {
+            foreach (var kvp in _enemyVelocityMap)
+            {
+                if (kvp.Key != null)
+                {
+                    kvp.Key.simulated = true;             // 启用物理模拟
+                    kvp.Key.velocity = kvp.Value;         // 恢复之前的速度
+                }
+            }
+            _enemyVelocityMap.Clear(); // 清理数据，防止数据脏
+        }
+    }
+
 
     //敌人移动至攻击范围
     private void OnMoveInRange(Enemy enemy)
@@ -268,7 +265,7 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
             int enemyCount = Mathf.RoundToInt(WaveManager.Instance.SingleWaveEnemyCount * (1 + BattleManager.Instance.Debuff.AddCount * 0.1f));
             for (int i = 0; i < enemyCount; i++)
             {
-                while (BattleManager.Instance.IsPaused) yield return null;
+                while (BattleManager.Instance.IsPaused.Value) yield return null;
                 yield return TimerUtility.WaitForGameSeconds(WaveManager.Instance.SpawnEnemyInterval);
                 Enemy enemy = _enemyPool.Get();
                 int currentRound = WaveManager.Instance.CurrentRound;
@@ -286,7 +283,7 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
             {
                 yield break;
             }
-            while (BattleManager.Instance.IsPaused) yield return null;
+            while (BattleManager.Instance.IsPaused.Value) yield return null;
             // 启动一个提醒协程（监听 GameSpeed 和暂停）
             StartCoroutine(WaitAndNotifyBeforeTime(WaveManager.Instance.SpawnWaveInterval, 3f, () =>
             {
@@ -305,9 +302,9 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
 
         while (timer < targetTime)
         {
-            if (!BattleManager.Instance.IsPaused)
+            if (!BattleManager.Instance.IsPaused.Value)
             {
-                timer += Time.deltaTime * BattleManager.Instance.GameSpeed;
+                timer += Time.deltaTime * BattleManager.Instance.GameSpeed.Value;
             }
             yield return null;
         }

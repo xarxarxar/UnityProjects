@@ -29,7 +29,11 @@ public class BasePanel : MonoBehaviour
         // 动画缩放到 0，然后关闭面板
         transform.DOScale(Vector3.zero, 0.3f)
             .SetEase(Ease.InQuad)
-            .OnComplete(() => gameObject.SetActive(false));
+            .OnComplete(
+            () => {
+                gameObject.SetActive(false);
+                OnEnd();
+            } );
     }
 
     /// <summary>
@@ -44,6 +48,14 @@ public class BasePanel : MonoBehaviour
     /// 初始化面板的数据逻辑，由Manager统一调用
     /// </summary>
     public virtual void Init()
+    {
+
+    }
+
+    /// <summary>
+    /// 结束的时候调用
+    /// </summary>
+    public virtual void OnEnd()
     {
 
     }

@@ -10,20 +10,13 @@ public class Grid : MonoBehaviour, IPointerClickHandler
     public Vector2Int GridPos { get; private set; } // 格子在网格中的位置，比如(2,3)
     public bool IsOccupied { get; private set; }    // 是否已被建筑占用
     public BuildingBase OccupyingObject { get; private set; }
-    [SerializeField] private Text coordText; // 可选：Text组件用于显示坐标
+
 
     // 初始化格子位置
     public void Init(Vector2Int pos)
     {
         GridPos = pos;
         IsOccupied = false;
-
-#if UNITY_EDITOR
-        if (coordText != null)
-        {
-            coordText.text = $"({pos.x},{pos.y})";
-        }
-#endif
     }
 
     // 占用格子

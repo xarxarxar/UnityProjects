@@ -6,20 +6,18 @@ using UnityEngine.Events;
 /// </summary>
 public class MetaCurrencyManager : ManagerBase<MetaCurrencyManager>,IManager
 {
-    private Bindable<int> _diamondCount=new Bindable<int>();//局外钻石的数量
-    private Bindable<int> _crownCount=new Bindable<int>();  //局外王冠的数量
     #region 公共静态事件
     #endregion
 
     /// <summary>
     /// 只读属性，钻石数量
     /// </summary>
-    public Bindable<int> DiamondCount { get => _diamondCount; }
+    public Bindable<int> DiamondCount { get => DataManager.Instance.PlayerInfo.DiamondCount; }
 
     /// <summary>
     /// 只读属性，王冠数量
     /// </summary>
-    public Bindable<int> CrownCount { get => _crownCount; }
+    public Bindable<int> CrownCount { get => DataManager.Instance.PlayerInfo.CrownCount; }
 
     #region 私有方法
     protected override void Awake()
@@ -35,9 +33,6 @@ public class MetaCurrencyManager : ManagerBase<MetaCurrencyManager>,IManager
     /// </summary>
     public override void Init()
     {
-        _diamondCount.Value = DataManager.Instance.PlayerInfo.DiamondCount.Value;
-        _crownCount.Value = DataManager.Instance.PlayerInfo.CrownCount.Value;
-
         BattleManager.OnEndBattle += OnEndBattle;
     }
 
@@ -48,12 +43,14 @@ public class MetaCurrencyManager : ManagerBase<MetaCurrencyManager>,IManager
     {
         if(rewardType ==RewardType.Diamond)
         {
-            _diamondCount.Value += amount;
+            DiamondCount.Value += amount;
+            
         }
         if(rewardType == RewardType.Crown)
         {
-            _crownCount.Value += amount;
+            CrownCount.Value += amount;
         }
+        GameUIManager.Instance.ShowGetRewardPanel((rewardType, amount));
     }
 
     /// <summary>
@@ -67,17 +64,17 @@ public class MetaCurrencyManager : ManagerBase<MetaCurrencyManager>,IManager
         switch (rewardType)
         {
             case RewardType.Crown:
-                if (_crownCount.Value >= amount)
+                if (CrownCount.Value >= amount)
                 {
-                    _crownCount.Value -= amount;
+                    CrownCount.Value -= amount;
                     return true;
                 }
                 break;
 
             case RewardType.Diamond:
-                if (_diamondCount.Value >= amount)
+                if (DiamondCount.Value >= amount)
                 {
-                    _diamondCount.Value -= amount;
+                    DiamondCount.Value -= amount;
                     return true;
                 }
                 break;
@@ -98,14 +95,14 @@ public class MetaCurrencyManager : ManagerBase<MetaCurrencyManager>,IManager
         switch (rewardType)
         {
             case RewardType.Crown:
-                if (_crownCount.Value >= amount)
+                if (CrownCount.Value >= amount)
                 {
                     return true;
                 }
                 break;
 
             case RewardType.Diamond:
-                if (_diamondCount.Value >= amount)
+                if (DiamondCount.Value >= amount)
                 {
                     return true;
                 }

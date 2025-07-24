@@ -1,4 +1,3 @@
-using Unity.VisualScripting.Dependencies.Sqlite;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -8,11 +7,11 @@ public class BuildManager : MonoBehaviour
     public Camera mainCamera;
     public GridManager gridManager;
 
-    public GameObject buildMenu; // UI面板
-    public Button[] buildButtons; // 每个按钮绑定不同建筑建造事件
     public BuildingBase[] buildingPrefabs; // 对应建筑预制体
 
-    private Grid selectedGrid;
+    public Grid SelectedGrid;
+    public GameObject ChooseMask;//选中格子时显示的效果
+    public Transform buildingParent;//所有建筑的父物体
 
     public static BuildManager instance;
 
@@ -21,58 +20,92 @@ public class BuildManager : MonoBehaviour
         instance=this;
     }
 
-    private void Start()
+    private void OnDisable()
     {
-        buildMenu.SetActive(false);
-
-        // 绑定按钮事件
-        for (int i = 0; i < buildButtons.Length; i++)
+        foreach (Transform child in buildingParent)
         {
-            int index = i; // 局部变量防闭包
-            buildButtons[i].onClick.AddListener(() => BuildOnSelectedGrid(index));
+            Destroy(child.gameObject);
         }
     }
 
-    private void Update()
+    [SerializeField] private LayerMask buildGridLayerMask;
+    void Update()
     {
-        
+        Vector2 worldPos = Vector2.zero;
+        bool isClick = false;
+
+        // 手机或编辑器点击
+        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+        {
+            // 如果点到 UI 上就返回
+            if (EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
+                return;
+
+            worldPos = Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position);
+            isClick = true;
+        }
+#if UNITY_EDITOR || UNITY_STANDALONE
+        if (Input.GetMouseButtonDown(0))
+        {
+
+            // 如果点到 UI 上就返回
+            if (EventSystem.current.IsPointerOverGameObject())
+                return;
+
+            worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            isClick = true;
+        }
+#endif
+
+        if (isClick)
+        {
+            // 限定只检测建造格子所在的 Layer
+            RaycastHit2D hit = Physics2D.Raycast(worldPos, Vector2.zero, 0, buildGridLayerMask);
+            if (hit.collider != null)
+            {
+                Debug.Log("点击到了：" + hit.collider.name);
+                if (hit.collider.CompareTag("BuildingGrid"))
+                {
+                    ShowBuildMenu(hit.collider.GetComponent<Grid>());
+                }
+            }
+            else
+            {
+                
+                HideBuildMenu();
+            }
+        }
     }
 
-    public void ShowBuildMenu(Vector3 worldPos)
-    {
-        buildMenu.SetActive(true);
-
-        Vector3 screenPos = mainCamera.WorldToScreenPoint(worldPos);
-        buildMenu.transform.position = screenPos;
-    }
 
     public void ShowBuildMenu(Grid grid)
     {
         // 存储当前选中的格子
         //currentSelectedGrid = grid;
 
-        // 设置建造菜单的位置到格子上方（如果是 UI 的话）
-        buildMenu.SetActive(true);
-        selectedGrid=grid;
-        Vector3 screenPos = mainCamera.WorldToScreenPoint(grid.transform.position);
-        buildMenu.transform.position = screenPos;
+        // 显示建筑面板
+        BattleUIManager.Instance.ShowBuildingPanelInBattle();
+        SelectedGrid = grid;
+        //Vector3 screenPos = mainCamera.WorldToScreenPoint(grid.transform.position);
+        ChooseMask.SetActive(true);
+        ChooseMask.transform.position= SelectedGrid.transform.position;
 
-        // 根据 grid.GridPos.x/y 决定可建造的内容等
     }
 
     public  void HideBuildMenu()
     {
-        buildMenu.SetActive(false);
-        selectedGrid = null;
+        SelectedGrid = null;
+        BattleUIManager.Instance.HideBuildingPanelInBattle();
+        ChooseMask.SetActive(false);
     }
 
     private void BuildOnSelectedGrid(int prefabIndex)
     {
         
-        if (selectedGrid == null) return;
+        if (SelectedGrid == null) return;
         Debug.Log($"点击按钮{prefabIndex}");
-        BuildingBase building = Instantiate(buildingPrefabs[prefabIndex], selectedGrid.transform.position, Quaternion.identity);
-        selectedGrid.Occupy(building);
+        BuildingBase building = Instantiate(buildingPrefabs[prefabIndex], SelectedGrid.transform.position, Quaternion.identity);
+        SelectedGrid.Occupy(building);
         building.Init(10);
         HideBuildMenu();
     }

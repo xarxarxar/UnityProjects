@@ -24,7 +24,7 @@ public class ChooseDebuffPanel : MonoBehaviour
         }
         _debuff = new Debuff();
         _chooseCount = 0;
-        _titleText.text = $"您已通关了{DataManager.Instance.PlayerInfo.PassCount}次\r\n请至少选择{DataManager.Instance.PlayerInfo.PassCount}个Debuff再进行挑战";
+        _titleText.text = $"您已通关了{DataManager.Instance.PlayerInfo.PassCount.Value}次\r\n请至少选择{DataManager.Instance.PlayerInfo.PassCount.Value}个Debuff再进行挑战";
 
         SetButtonStatus(startChallengeButton, false);
         InitAllDebuffStructs();//初始化debuffstruct

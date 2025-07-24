@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,7 +6,7 @@ using UnityEngine.UI;
 /// </summary>
 public class TowerCard : MonoBehaviour
 {
-    [SerializeField] private Text _upgradeDescription;//升级描述的Text
+    //[SerializeField] private Text _upgradeDescription;//升级描述的Text
     [SerializeField] private Text _maxlevelText;//已满级的Text
     [SerializeField] private Text _levelText;//等级Text
     [SerializeField] private GameObject _unlockMask;//未解锁的遮罩
@@ -17,10 +15,6 @@ public class TowerCard : MonoBehaviour
     [SerializeField] private TowerType _type;//此卡片对应的炮塔类型
     [SerializeField] private CanvasGroup _canvasGroup;//此卡片对应的炮塔类型
 
-    private void OnEnable()
-    {
-        
-    }
 
     /// <summary>
     /// 此卡片对应的炮塔类型

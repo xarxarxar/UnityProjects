@@ -24,7 +24,7 @@ public class PlayerClickDamageManager : ManagerBase<PlayerClickDamageManager>,IM
     /// <summary>
     /// ¿‰»¥ ±º‰
     /// </summary>
-    private float ClickInterval => _clickInterval / BattleManager.Instance.GameSpeed;
+    private float ClickInterval => _clickInterval / BattleManager.Instance.GameSpeed.Value;
 
 
     protected override void Awake()

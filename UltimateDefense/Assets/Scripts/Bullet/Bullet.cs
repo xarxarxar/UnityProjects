@@ -93,7 +93,7 @@ public class Bullet : MonoBehaviour
 
     private void Update()
     {
-        if (BattleManager.Instance.IsPaused)
+        if (BattleManager.Instance.IsPaused.Value)
         {
             if (_trailRenderer != null) _trailRenderer.emitting = false;
             return;
@@ -102,7 +102,7 @@ public class Bullet : MonoBehaviour
         if (_trailRenderer != null)
         {
             _trailRenderer.emitting = true;
-            _trailRenderer.time = _baseTrailTime / BattleManager.Instance.GameSpeed;
+            _trailRenderer.time = _baseTrailTime / BattleManager.Instance.GameSpeed.Value;
         }
 
         switch (_bulletType)
@@ -128,7 +128,7 @@ public class Bullet : MonoBehaviour
         transform.position = Vector3.MoveTowards(
             transform.position,
             _targetEnemy.transform.position,
-            _moveSpeed * BattleManager.Instance.GameSpeed * Time.deltaTime
+            _moveSpeed * BattleManager.Instance.GameSpeed.Value * Time.deltaTime
         );
 
         if (Vector3.Distance(transform.position, _targetEnemy.transform.position) < 0.1f)
@@ -139,7 +139,7 @@ public class Bullet : MonoBehaviour
 
     private void MoveForward()
     {
-        transform.position += _direction * _moveSpeed * BattleManager.Instance.GameSpeed * Time.deltaTime;
+        transform.position += _direction * _moveSpeed * BattleManager.Instance.GameSpeed.Value * Time.deltaTime;
 
         if (_bulletType == BulletType.MultiPenetrate && transform.position.y >= 15f)
         {
@@ -228,6 +228,10 @@ public class Bullet : MonoBehaviour
 
     private void OnEndBattle(bool success)
     {
-        ReturnToPool();
+        if (gameObject.activeSelf)
+        {
+            ReturnToPool();
+        }
+        
     }
 }

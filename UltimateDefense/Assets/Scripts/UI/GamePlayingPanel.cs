@@ -32,6 +32,10 @@ public class GamePlayingPanel : MonoBehaviour
         _openInfoButton.onClick.AddListener(() => { 
             BattleUIManager.Instance.ShowBattleTowerInfoPanel();
         });
+        _openDoubleSpeedButton.onClick.AddListener(() =>
+        {
+            BattleManager.Instance.GameSpeed.Value= BattleManager.Instance.GameSpeed.Value == 1 ? 2 : 1;
+        });
         WaveManager.OnWaveChanged += OnWaveChanged;
         EnemyManager.Instance.EnemyCurrentCount.OnValueChanged += OnEnemyCountChanged;
         EnemyManager.OnAlmostNextWave += OnAlmostNextWave;
@@ -51,6 +55,7 @@ public class GamePlayingPanel : MonoBehaviour
         _openPauseButton.onClick.RemoveAllListeners();
         _openInfoButton.onClick.RemoveAllListeners();
         _openEnemyInfoButton.onClick.RemoveAllListeners();
+        _openDoubleSpeedButton.onClick.RemoveAllListeners();
     }
 
 
