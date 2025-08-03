@@ -1,10 +1,10 @@
-using SuperScrollView;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+
+/// <summary>
+/// 这个是显示在局外的建筑菜单栏里的元素
+/// </summary>
 public class BuildingGrid : MonoBehaviour
 {
     [SerializeField] private Text _nameText;//名称Text
@@ -40,4 +40,6 @@ public class BuildingGridData
     public string Name;
     public string Des;
     public Sprite Icon;
+    public BuildingBase BuildingBase;
+    public int Price;//它在局内建造的价格
 }

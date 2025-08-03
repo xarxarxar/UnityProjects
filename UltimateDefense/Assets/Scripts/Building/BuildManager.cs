@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 public class BuildManager : MonoBehaviour
 {
@@ -77,36 +76,23 @@ public class BuildManager : MonoBehaviour
         }
     }
 
-
     public void ShowBuildMenu(Grid grid)
     {
-        // 存储当前选中的格子
-        //currentSelectedGrid = grid;
-
         // 显示建筑面板
         BattleUIManager.Instance.ShowBuildingPanelInBattle();
         SelectedGrid = grid;
-        //Vector3 screenPos = mainCamera.WorldToScreenPoint(grid.transform.position);
         ChooseMask.SetActive(true);
         ChooseMask.transform.position= SelectedGrid.transform.position;
 
     }
 
+    /// <summary>
+    /// 隐藏所有的建筑的菜单面板
+    /// </summary>
     public  void HideBuildMenu()
     {
         SelectedGrid = null;
         BattleUIManager.Instance.HideBuildingPanelInBattle();
         ChooseMask.SetActive(false);
-    }
-
-    private void BuildOnSelectedGrid(int prefabIndex)
-    {
-        
-        if (SelectedGrid == null) return;
-        Debug.Log($"点击按钮{prefabIndex}");
-        BuildingBase building = Instantiate(buildingPrefabs[prefabIndex], SelectedGrid.transform.position, Quaternion.identity);
-        SelectedGrid.Occupy(building);
-        building.Init(10);
-        HideBuildMenu();
     }
 }

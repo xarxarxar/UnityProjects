@@ -10,6 +10,8 @@ public abstract class BuildingBase : MonoBehaviour
     [Header("血量设置")]
     [SerializeField] protected int _currentHP = 100;          // 当前生命值
 
+    private Grid occupGrid;//所占的格子
+
     /// <summary>
     /// 建筑的图标
     /// </summary>
@@ -37,9 +39,10 @@ public abstract class BuildingBase : MonoBehaviour
     /// 初始化函数，由子类实现
     /// </summary>
     /// <param name="maxHP">最大生命值</param>
-    public virtual void Init(int maxHP)
+    public virtual void Init(int maxHP,Grid grid)
     {
         _currentHP = MaxHP = maxHP;
+        occupGrid= grid;
     }
 
     /// <summary>
@@ -60,7 +63,8 @@ public abstract class BuildingBase : MonoBehaviour
     //建筑物死亡
     public virtual void Die()
     {
-        Destroy(gameObject);
+        occupGrid.Clear();//清空这个格子的状态
         OnDestroyed?.Invoke(this);
+        Destroy(gameObject);
     }
 }

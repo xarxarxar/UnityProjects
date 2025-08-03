@@ -10,9 +10,9 @@ public class PanelSwitcher : MonoBehaviour
     [SerializeField]private Button towerButton;
     [SerializeField]private Button challengeButton;
     [SerializeField]private Button scienceButton;
-    private Outline towerOutline => towerButton.GetComponent<Outline>();
-    private Outline challengeOutline => challengeButton.GetComponent<Outline>();
-    private Outline scienceOutline => scienceButton.GetComponent<Outline>();
+    private Outline towerOutline => towerButton.transform.GetChild(0).GetComponent<Outline>();
+    private Outline challengeOutline => challengeButton.transform.GetChild(0).GetComponent<Outline>();
+    private Outline scienceOutline => scienceButton.transform.GetChild(0).GetComponent<Outline>();
 
     [SerializeField]private RewardStruct _diamondReward;//×êÊ¯½±Àø
     [SerializeField]private RewardStruct _crownReward;  //Íõ¹Ú½±Àø

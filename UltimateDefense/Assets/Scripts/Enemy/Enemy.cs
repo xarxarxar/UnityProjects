@@ -56,7 +56,7 @@ public class Enemy : MonoBehaviour
     private bool _isDead;           // 是否已死亡
     private bool _isInRangeList;    // 是否已触发进入攻击范围事件
     private bool _isPaused => BattleManager.Instance.IsPaused.Value;  // 游戏是否暂停
-
+    private Rigidbody2D _rb=null;
     /// <summary>
     /// 当前的HP
     /// </summary>
@@ -82,9 +82,22 @@ public class Enemy : MonoBehaviour
 
     #region Unity 生命周期
 
+
+
     private void OnDisable() 
     { 
         StopAllCoroutines();
+    }
+
+    void FixedUpdate()
+    {
+        
+        // 如果当前速度为0，则不处理（避免除以0）
+        if (_rb.velocity.sqrMagnitude > 0.01f)
+        {
+            // 保持原方向，调整速度大小
+            _rb.velocity = _rb.velocity.normalized * 5;
+        }
     }
     #endregion
 
@@ -120,6 +133,13 @@ public class Enemy : MonoBehaviour
         // 设置初始状态为移动，并初始化攻击计时器
         _currentState = State.Moving;
         _attackTimer = _attackInterval;
+
+        if (_rb == null)
+        {
+            _rb = GetComponent<Rigidbody2D>();
+        }
+
+        _rb.velocity = Vector2.down.normalized;
 
         // 启动中央状态机协程，管理移动和攻击行为
         //StartCoroutine(StateMachineLoop());

@@ -1,9 +1,10 @@
 using SuperScrollView;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using SerializableDictionary.Scripts;
 
+/// <summary>
+/// 局外显示所有建筑的菜单，类似于背包
+/// </summary>
 public class BuildingInfoPanel : MonoBehaviour
 {
     [SerializeField]private LoopGridView _allBuildingsGrid;
@@ -11,7 +12,6 @@ public class BuildingInfoPanel : MonoBehaviour
 
     private void Start()
     {
-
         _allBuildingsGrid.InitGridView(_allBuildings.Count, OnGetItemByRowColumn);
     }
 

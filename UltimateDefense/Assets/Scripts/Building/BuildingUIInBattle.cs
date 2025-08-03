@@ -1,36 +1,53 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// 这个是要显示在局内的建筑菜单栏里的元素
+/// </summary>
 public class BuildingUIInBattle : MonoBehaviour
 {
     public BuildingBase buildBase;
-    public Button buildButton;
-    public Image icon;
-
-    private void OnEnable()
-    {
-        buildButton.onClick.AddListener(Build);
-        icon.sprite = buildBase.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
-        float zRotation = buildBase.transform.GetChild(0).eulerAngles.z;
-        icon.rectTransform.localEulerAngles = new Vector3(0, 0, zRotation);
-    }
+    private Button buildButton;
+    private Image icon;
+    public int _index;
 
     private void OnDisable()
     {
+        
+    }
+    
+    public void Init(BuildingBase data, int index)
+    {
+        icon =transform.GetChild(0).GetComponent<Image>();
+        buildButton= GetComponent<Button>();
+        _index = index;
+        icon.sprite = data.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
+        buildBase= data;
+
+        float zRotation = buildBase.transform.GetChild(0).eulerAngles.z;
+        icon.rectTransform.localEulerAngles = new Vector3(0, 0, zRotation);
+        buildButton.onClick.AddListener(Build);
+    }
+
+    public void UpdateUI(BuildingBase data, int index)
+    {
         buildButton.onClick.RemoveAllListeners();
+        _index = index;
+        icon.sprite = data.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
+        buildBase = data;
+        float zRotation = buildBase.transform.GetChild(0).eulerAngles.z;
+        icon.rectTransform.localEulerAngles = new Vector3(0, 0, zRotation);
+        buildButton.onClick.AddListener(Build);
     }
 
     public void Build()
     {
         if (BuildManager.instance.SelectedGrid && !BuildManager.instance.SelectedGrid.IsOccupied)
         {
-            BuildingBase building = Instantiate(buildBase, BuildManager.instance.SelectedGrid.transform.position, 
+            BuildingBase building = Instantiate(buildBase, BuildManager.instance.SelectedGrid.transform.position,
                 Quaternion.identity, BuildManager.instance.buildingParent);
             BuildManager.instance.SelectedGrid.Occupy(building);
-            building.Init(10);
+            building.Init(10, BuildManager.instance.SelectedGrid);
 
             //播放流光
             // 起点：按钮位置（UI坐标 → 屏幕坐标）

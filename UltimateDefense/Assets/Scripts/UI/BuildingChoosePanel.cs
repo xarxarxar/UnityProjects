@@ -1,26 +1,21 @@
 using DG.Tweening;
 using SuperScrollView;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class BuildingChoosePanel : MonoBehaviour
 {
     [SerializeField] private RectTransform _scrollPanel;
-    [SerializeField] private Button _toggleButton;
+    //[SerializeField] private Button _toggleButton;
     [SerializeField] private LoopListView2 _loopListView;
+    [SerializeField] private List<BuildingBase> buildingBases=new List<BuildingBase>(); 
 
     private bool _isExpanded = false;
 
     private void Start()
     {
-        // 初始收起状态
-        _scrollPanel.localScale = new Vector3(1, 0, 1);
-
-        // 绑定按钮点击事件
-        _toggleButton.onClick.AddListener(TogglePanel);
-
         // 初始化
-        _loopListView.InitListView(10, OnGetItemByIndex);
+        _loopListView.InitListView(buildingBases.Count, OnGetItemByIndex);
     }
 
     // 当需要显示新的 Item 时会调用
@@ -32,35 +27,19 @@ public class BuildingChoosePanel : MonoBehaviour
         LoopListViewItem2 item = listView.NewListViewItem("基础形态");
 
         // 设置数据
-        //ScienceNodeItem script = item.GetComponent<ScienceNodeItem>();
+        BuildingUIInBattle script = item.GetComponent<BuildingUIInBattle>();
 
         // 是否是从对象池中第一次拿出来的
         if (item.IsInitHandlerCalled == false)
         {
             item.IsInitHandlerCalled = true;
-            //script.Init(ScienceManager.Instance.GetScienceDataByIndex(index), index);
+            script.Init(buildingBases[index], index);
             return item;
         }
         //否则只需要更新就行
-        //script.UpdateUI(ScienceManager.Instance.GetScienceDataByIndex(index), index);
+        script.UpdateUI(buildingBases[index], index);
 
         return item;
-    }
-
-    private void TogglePanel()
-    {
-        if (_isExpanded)
-        {
-            // 收起
-            _scrollPanel.DOScaleY(0f, 0.2f).SetEase(Ease.InCubic);
-        }
-        else
-        {
-            // 展开
-            _scrollPanel.DOScaleY(1f, 0.2f).SetEase(Ease.OutCubic);
-        }
-
-        _isExpanded = !_isExpanded;
     }
 
     /// <summary>

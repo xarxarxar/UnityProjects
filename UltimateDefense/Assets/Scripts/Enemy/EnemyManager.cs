@@ -102,7 +102,7 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
         Enemy.OnMoveOutRange -= OnMoveOutRange;
         Enemy.OnEnemyDie -= UnregisterEnemy;
         BattleManager.OnEndBattle -= OnEndBattle;
-        BattleManager.Instance.GameSpeed.OnValueChanged -= GameSpeedChanged;
+        //BattleManager.Instance.GameSpeed.OnValueChanged -= GameSpeedChanged;
         StopAllCoroutines();
     }
     /// <summary>
@@ -124,7 +124,7 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
         Enemy.OnMoveOutRange += OnMoveOutRange;
         Enemy.OnEnemyDie += UnregisterEnemy;
         BattleManager.OnEndBattle += OnEndBattle;
-        BattleManager.Instance.GameSpeed.OnValueChanged += GameSpeedChanged;
+        //BattleManager.Instance.GameSpeed.OnValueChanged += GameSpeedChanged;
         BattleManager.Instance.IsPaused.OnValueChanged += GamePausedChanged;
         if (_enemyPool==null) _enemyPool = new ObjectPool<Enemy>(_enemyPrefab, 20, transform);//初始化敌人对象池
         StartCoroutine(GenerateEnemyIE());

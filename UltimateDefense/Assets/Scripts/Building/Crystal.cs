@@ -26,7 +26,7 @@ public class Crystal : BuildingBase
 
     private void OnEnable()
     {
-        Init(MaxHP);
+        Init(MaxHP,null);
     }
 
     protected void OnDisable()
@@ -38,7 +38,7 @@ public class Crystal : BuildingBase
     /// 初始化水晶
     /// </summary>
     /// <param name="maxHP">最大生命值</param>
-    public override void Init(int maxHP)
+    public override void Init(int maxHP,Grid grid)
     {
         _currentHP = MaxHP =maxHP;
 
