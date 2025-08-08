@@ -9,6 +9,9 @@ public class Crystal : BuildingBase
     [SerializeField] private string _name="水晶";
     private Coroutine _recoverCoro;     //水晶每秒恢复生命值的协程
 
+    //水晶无敌
+    private bool _isInvincible=false;//是否处于无敌状态
+    private Coroutine _invincibleCoro = null;
 
     /// <summary>
     /// 水晶被摧毁事件
@@ -16,8 +19,11 @@ public class Crystal : BuildingBase
     public static event UnityAction OnCrystalDestroyed;
 
     public static Crystal Instance { get => _instance; }
+    /// <summary>
+    /// 水晶是否处于无敌状态
+    /// </summary>
+    public bool IsInvincible { get => _isInvincible;}
 
-    
     private void Awake()
     {
         if (_instance == null) _instance = this;
@@ -52,6 +58,8 @@ public class Crystal : BuildingBase
     /// <param name="damage"></param>
     public override void TakeDamage(int damage)
     {
+        if (_isInvincible) return;//无敌状态
+
         _currentHP -= damage;
         if (_currentHP < 0) 
         {
@@ -77,15 +85,49 @@ public class Crystal : BuildingBase
             _currentHP = MaxHP;
         }
     }
-    
+
     //每秒恢复血量的协程
     //private IEnumerator RecoverIE()
     //{
-        //while (RecoverHpPerSecond > 0)
-       // {
-       //     Recover(RecoverHpPerSecond);
-       //     yield return TimerUtility.WaitForGameSeconds(1);//等待一秒
-       // }
+    //while (RecoverHpPerSecond > 0)
+    // {
+    //     Recover(RecoverHpPerSecond);
+    //     yield return TimerUtility.WaitForGameSeconds(1);//等待一秒
+    // }
     //}
+
+    /// <summary>
+    /// 设置水晶暂时无敌
+    /// </summary>
+    /// <param name="duration">无敌时长</param>
+    public void SetInvincible(float duration)
+    {
+        if (_invincibleCoro != null)
+        {
+            StopCoroutine( _invincibleCoro);
+            _invincibleCoro = null;
+        }
+        _isInvincible = true;
+        _invincibleCoro = StartCoroutine(InvincibleCoro(duration));
+    }
+    //无敌的协程
+    private IEnumerator InvincibleCoro(float duration)
+    {
+        yield return TimerUtility.WaitForGameSeconds(duration);
+        _isInvincible =false;
+    }
+
+    /// <summary>
+    /// 立刻结束无敌状态
+    /// </summary>
+    public void SetInvincibleOver()
+    {
+        if (_invincibleCoro != null)
+        {
+            StopCoroutine(_invincibleCoro);
+            _invincibleCoro = null;
+        }
+        _isInvincible = false;
+    }
 
 }

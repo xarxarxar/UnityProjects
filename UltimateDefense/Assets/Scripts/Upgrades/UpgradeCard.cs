@@ -66,7 +66,7 @@ public class UpgradeCard : MonoBehaviour
         .SetEase(Ease.Linear)
         .OnComplete(() =>
         {
-            _costText.transform.DOScale(Vector3.one, 0.2f)
+            _costText.transform.DOScale(Vector3.one, 0.1f)
                 .SetEase(Ease.OutBack)
                 .OnComplete(() =>
                 {

@@ -335,7 +335,7 @@ public class UpgradeUI : MonoBehaviour
         priceText.color = isEnough ? new Color32(239, 241, 245, 255) : new Color32(228,73,98,255);
     }
 
-
+    //播放打折的动画
     public void PlayDiscountAnimation(Action onComplete, int side=0,float discount=0)
     {
         // 初始化缩放为 1.5（根据side选择）
@@ -365,13 +365,13 @@ public class UpgradeUI : MonoBehaviour
 
         // 创建 DOTween 序列，延迟 0.5 秒后执行动画
         DOTween.Sequence()
-            .AppendInterval(0.5f)
+            .AppendInterval(0.2f)
             .AppendCallback(() =>
             {
                 if (side <= 0)
                 {
                     _discountLeft.SetActive(true);
-                    _discountLeft.transform.DOScale(Vector3.one, 1.0f)
+                    _discountLeft.transform.DOScale(Vector3.one, 0.5f)
                         .SetEase(Ease.OutBack)
                         .OnComplete(OnOneComplete);
                 }
@@ -379,7 +379,7 @@ public class UpgradeUI : MonoBehaviour
                 if (side >= 0)
                 {
                     _discountRight.SetActive(true);
-                    _discountRight.transform.DOScale(Vector3.one, 1.0f)
+                    _discountRight.transform.DOScale(Vector3.one, 0.5f)
                         .SetEase(Ease.OutBack)
                         .OnComplete(OnOneComplete);
                 }
@@ -394,7 +394,7 @@ public class UpgradeUI : MonoBehaviour
     public float GetRandomDiscount()
     {
         // 30% 概率打折
-        if (UnityEngine. Random.value >= 0.3f)
+        if (UnityEngine.Random.value >= 0.3f)
         {
             return 1f; // 不打折
         }

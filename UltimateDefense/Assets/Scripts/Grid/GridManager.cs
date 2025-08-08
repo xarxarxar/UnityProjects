@@ -15,6 +15,8 @@ public class GridManager : MonoBehaviour
     private void Start()
     {
         GenerateGrid();
+        transform.localScale = Vector3.one * 1.6875f;
+        transform.localPosition=new Vector3(0,1.5f,0);
     }
 
     private void GenerateGrid()
@@ -47,9 +49,6 @@ public class GridManager : MonoBehaviour
             }
         }
     }
-
-
-    
 
 
     /// <summary>

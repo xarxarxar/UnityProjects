@@ -130,9 +130,22 @@ public class CurrencyManager : ManagerBase<CurrencyManager>,IManager
         // 概率掉落金币
         if (Random.value <= EnemyManager.EnemyDieCoinProb.Value)
         {
+            int getCoin = 0;//得到了多少金币
             // 掉落金币
-            AddCoin(EnemyManager.EnemyDieCoin.Value);
-            OnGetCoinFromEnemy?.Invoke(enemy,EnemyManager.EnemyDieCoin.Value);
+            if (BankManager.Instance.CurrentNeedReturn.Value > 0)
+            {
+                //如果有欠款,则扣掉一半作为欠款
+                int backCoin = Mathf.RoundToInt(EnemyManager.EnemyDieCoin.Value / 2);//先还欠款
+                BankManager.Instance.CurrentNeedReturn.Value -= backCoin;
+                Debug.Log($"CurrentNeedReturn is {BankManager.Instance.CurrentNeedReturn.Value},backCoin is {backCoin}");
+                getCoin = EnemyManager.EnemyDieCoin.Value - backCoin;
+            }
+            else
+            {
+                getCoin = EnemyManager.EnemyDieCoin.Value;
+            }
+            AddCoin(getCoin);
+            OnGetCoinFromEnemy?.Invoke(enemy, getCoin);
         }
     }
 

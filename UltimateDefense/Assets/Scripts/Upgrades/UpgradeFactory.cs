@@ -30,6 +30,13 @@ public static class UpgradeFactory
             Upgrade_IncreaseBankInterest.CreateDynamicUpgrade,
             Upgrade_IncreaseEnemyDieCoin.CreateDynamicUpgrade,
             Upgrade_IncreaseCrystalMaxHP.CreateDynamicUpgrade,
+            Upgrade_GetMoney.CreateDynamicUpgrade,
+            Upgrade_RecoverCrystal.CreateDynamicUpgrade,
+            Upgrade_SetCrystalInvincible.CreateDynamicUpgrade,
+            Upgrade_SetEnemyHalf.CreateDynamicUpgrade,
+            Upgrade_RageMode.CreateDynamicUpgrade,
+            Upgrade_DecreaseAdvanceInterest.CreateDynamicUpgrade,
+            Upgrade_IncreaseMaxAdvance.CreateDynamicUpgrade,
             // 可在此继续扩充其他类型升级的模板，例如减速、银行利息等
         };
     }
@@ -120,6 +127,34 @@ public static class UpgradeFactory
         if (template is Upgrade_IncreaseCrystalMaxHP icmh)
         {
             return new Upgrade_IncreaseCrystalMaxHP(icmh.Bonus, icmh.Cost);
+        }
+        if (template is Upgrade_GetMoney ug)
+        {
+            return new Upgrade_GetMoney(ug.Money, ug.Cost);
+        }
+        if (template is Upgrade_RecoverCrystal urc)
+        {
+            return new Upgrade_RecoverCrystal(urc.HP, urc.Cost);
+        }
+        if (template is Upgrade_SetCrystalInvincible usci)
+        {
+            return new Upgrade_SetCrystalInvincible(usci.Duration, usci.Cost);
+        }
+        if (template is Upgrade_SetEnemyHalf useh)
+        {
+            return new Upgrade_SetEnemyHalf(useh.Count, useh.Cost);
+        }
+        if (template is Upgrade_RageMode urm)
+        {
+            return new Upgrade_RageMode(urm.Duration, urm.Cost);
+        }
+        if (template is Upgrade_DecreaseAdvanceInterest udai)
+        {
+            return new Upgrade_DecreaseAdvanceInterest(udai.Bonus, udai.Cost);
+        }
+        if (template is Upgrade_IncreaseMaxAdvance uima)
+        {
+            return new Upgrade_IncreaseMaxAdvance(uima.Bonus, uima.Cost);
         }
 
         // 后续若添加其他 Upgrade 子类，在此继续扩充：

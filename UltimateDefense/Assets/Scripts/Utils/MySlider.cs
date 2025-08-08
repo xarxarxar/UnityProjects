@@ -16,6 +16,7 @@ public class MySlider : MonoBehaviour
     }
     private void OnEnable()
     {
+        
         StopCountdown();
     }
 
@@ -25,6 +26,10 @@ public class MySlider : MonoBehaviour
     /// <param name="value"></param>
     public void Init(float value)
     {
+        if (slider == null)
+        {
+            slider = GetComponent<Slider>();
+        }
         gameObject.SetActive(true);
         StartCountdown(value);
     }
@@ -35,6 +40,7 @@ public class MySlider : MonoBehaviour
     /// <param name="duration">倒计时总时长（秒）</param>
     private  void StartCountdown(float duration)
     {
+
         if (_countdownCoroutine != null)
             StopCoroutine(_countdownCoroutine);
 
@@ -55,6 +61,10 @@ public class MySlider : MonoBehaviour
 
     private IEnumerator CountdownIE(float duration)
     {
+        if (slider == null)
+        {
+            Debug.Log("slider为空");
+        }
         slider.minValue = 0f;
         slider.maxValue = 1f;
         slider.value = 1f;

@@ -50,15 +50,6 @@ public class UpgradeTowerPanel : MonoBehaviour
 
         if (TowerDataManager.Instance.GetTowerData(_currentTower.Type).Level == 0)//未解锁
         {
-            if (TowerDataManager.Instance.GetTowerData(TowerType.Basic).Level == 10)//基础形态到10级了可以解锁
-            {
-                _unlockButton.interactable = true;
-            }
-            else
-            {
-                _unlockButton.interactable = false;
-            }
-            
             _unlockCost.gameObject.SetActive(true);
             _chooseThisTower.gameObject.SetActive(false);
             //是否有足够的金币
@@ -74,13 +65,11 @@ public class UpgradeTowerPanel : MonoBehaviour
             //当前选择的不是对局中使用的炮塔
             if (TowerDataManager.Instance.CurrentTowerType.Value != _currentTower.Type)
             {
-                _unlockButton.interactable = true;
                 _chooseThisTower.text = "选择";
                 _chooseThisTower.color = new Color32(239, 241, 245, 255);
             }
             else//当前选择的就是对局中使用的炮塔
             {
-                _unlockButton.interactable = false;
                 _chooseThisTower.text = "已选择";
                 _chooseThisTower.color = new Color32(76, 175, 80, 255);
             }
@@ -92,6 +81,11 @@ public class UpgradeTowerPanel : MonoBehaviour
     //解锁炮塔
     private void UnlockTower(TowerCard towerCard)
     {
+        if (TowerDataManager.Instance.GetTowerData(TowerType.Basic).Level <= 10)//基础形态到10级了可以解锁
+        {
+            return;
+        }
+
         //金币足够
         if (MetaCurrencyManager.Instance.HasEnoughMoney(_unlockCost.type, _unlockCost.count))
         {
@@ -106,6 +100,12 @@ public class UpgradeTowerPanel : MonoBehaviour
     //选定这个炮塔
     private void ChooseThisTower(TowerCard towerCard)
     {
+        //当前选择的不是对局中使用的炮塔
+        if (TowerDataManager.Instance.CurrentTowerType.Value == _currentTower.Type)
+        {
+            return;
+        }
+
         _unlockCost.gameObject.SetActive(false);
         TowerDataManager.Instance.CurrentTowerType.Value = _currentTower.Type;
         UpdateButtonState();

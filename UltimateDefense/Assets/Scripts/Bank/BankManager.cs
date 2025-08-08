@@ -1,20 +1,26 @@
 using System.Collections.Generic;
+using System.Xml.Serialization;
 using UnityEngine;
 using UnityEngine.Events;
 
 public class BankManager : ManagerBase<BankManager>,IManager
 {
-    private float _interest=1.2f;//利息
+    private Bindable<float> _saveInterest=new Bindable<float>();//存款利息
+    private Bindable<float> _advanceInterest=new Bindable<float>();//借款利息
     private int _period =3;//过多少回合返还金币
     private Queue<BankInfo> _bankCache=new Queue<BankInfo>();//银行流水缓存
-    private int _count=0;//银行拥有的金币总数
+    private Bindable<int> _currentSave=new Bindable<int>();//银行拥有的金币总数
 
-    public static event UnityAction<int> OnBankMoneyChanged;//银行金币数量改变时
+    //public static event UnityAction<int> OnBankMoneyChanged;//银行金币数量改变时
+
+    //预支金币，也就是贷款
+    private Bindable<int> _maxAdvance=new Bindable<int>();//最高可借的金额
+    private Bindable<int> _currentNeedReturn=new Bindable<int>();//当前需要还多少
 
     /// <summary>
     /// 银行利率
     /// </summary>
-    public float Interest { get => _interest; set => _interest = value; }
+    public Bindable<float> SaveInterest { get => _saveInterest; set => _saveInterest = value; }
     /// <summary>
     /// 银行汇款周期
     /// </summary>
@@ -22,18 +28,21 @@ public class BankManager : ManagerBase<BankManager>,IManager
     /// <summary>
     /// 
     /// </summary>
-    public int Count 
-    { 
-        get => _count;
-        set
-        {
-            if(_count != value)
-            {
-                _count = value;
-                OnBankMoneyChanged?.Invoke(value);
-            }
-        } 
-    }
+    public Bindable<int> CurrentSave=>_currentSave;
+
+
+    /// <summary>
+    /// 最高可借的金额
+    /// </summary>
+    public Bindable<int> MaxAdvance { get => _maxAdvance; set => _maxAdvance = value; }
+    /// <summary>
+    /// 当前需要还多少
+    /// </summary>
+    public Bindable<int> CurrentNeedReturn { get => _currentNeedReturn;}
+    /// <summary>
+    /// 当前借款利息
+    /// </summary>
+    public Bindable<float> AdvanceInterest { get => _advanceInterest; set => _advanceInterest = value; }
 
     protected override void Awake()
     {
@@ -59,7 +68,11 @@ public class BankManager : ManagerBase<BankManager>,IManager
     /// </summary>
     public override void Init()
     {
-        Count = 0;
+        _currentSave.Value = 0;
+        _maxAdvance.Value = 1000;
+        _currentNeedReturn.Value = 0;
+        _saveInterest.Value = 1.1f;
+        _advanceInterest.Value = 1.5f;
         WaveManager.OnWaveChanged += OnWaveChanged;
     }
 
@@ -71,10 +84,46 @@ public class BankManager : ManagerBase<BankManager>,IManager
     public void SaveMoney(int round,int moneyCount)
     {
         //CurrencyManager.Instance.SpendCoin(moneyCount);
-        Count += moneyCount;
-        _bankCache.Enqueue(new BankInfo(round, round + _period, moneyCount, _interest));
+        _currentSave.Value += moneyCount;
+        _bankCache.Enqueue(new BankInfo(round, round + _period, moneyCount, _saveInterest.Value));
     }
 
+    /// <summary>
+    /// 预支金币
+    /// </summary>
+    /// <param name="amount">借钱的数额</param>
+    /// <returns></returns>
+    public bool AdvanceMoney(int amount)
+    {
+        if(_currentNeedReturn.Value>=_maxAdvance.Value)
+        {
+            return false;
+        }
+        if(_currentNeedReturn.Value+ amount > _maxAdvance.Value)
+        {
+            return false;
+        }
+        CurrencyManager.Instance.AddCoin(amount);
+        _currentNeedReturn.Value += Mathf.RoundToInt(amount * _advanceInterest.Value);
+        return true;
+    }
+
+    /// <summary>
+    /// 还钱
+    /// </summary>
+    /// <param name="amount">还的数额</param>
+    public void ReturnMoney(int amount)
+    {
+        if (_currentNeedReturn.Value - amount <= 0)
+        {
+            _currentNeedReturn.Value = 0;
+        }
+        else
+        {
+            _currentNeedReturn.Value -= amount;
+        }
+        
+    }
 
     /// <summary>
     /// 回合更新事件
@@ -92,7 +141,7 @@ public class BankManager : ManagerBase<BankManager>,IManager
                 // 存款到期
                 BankInfo maturedDeposit = _bankCache.Dequeue();
                 int returnAmount = Mathf.RoundToInt(maturedDeposit._coinCount * maturedDeposit._currentInterest);
-                Count -= maturedDeposit._coinCount;
+                _currentSave.Value -= maturedDeposit._coinCount;
                 CurrencyManager.Instance.AddCoin(returnAmount);
                 Debug.Log($"存款到期！返还 {returnAmount} 金币 " +
                          $"(本金: {maturedDeposit._coinCount}, 利息率: {maturedDeposit._currentInterest})");

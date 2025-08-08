@@ -28,7 +28,7 @@ public abstract class BaseTower : MonoBehaviour
     /// <summary>
     /// 每秒旋转多少度
     /// </summary>
-    [SerializeField] protected float rotateSpeed = 360f; // 每秒旋转多少度
+    protected float rotateSpeed = 180.0f; // 每秒旋转多少度
     /// <summary>
     /// 子弹预制体
     /// </summary>
@@ -152,21 +152,21 @@ public abstract class BaseTower : MonoBehaviour
     /// </summary>
     protected virtual void CalculateAtkRate()
     {
-        AttackRate.Value = BaseAtkRate * (1f + TowerManager.Instance.BonusAttackRate.Value);
-    }
-    /// <summary>
-    /// 计算换弹时间
-    /// </summary>
-    protected virtual void CalculateReloadTime()
-    {
-        CriticalProb.Value = BaseReload + TowerManager.Instance.BonusCritProb.Value;
+        AttackRate.Value = BaseAtkRate * (1f + TowerManager.Instance.BonusAttackRate.Value)*TowerManager.Instance.BonusTmpAttackRate.Value;
     }
     /// <summary>
     /// 计算暴击概率
     /// </summary>
     protected virtual void CalculateCriticalProb()
     {
-        ReloadTime.Value = BaseCritProb * (1f - TowerManager.Instance.BonusReload.Value);
+        CriticalProb.Value = BaseCritProb + TowerManager.Instance.BonusCritProb.Value;
+    }
+    /// <summary>
+    /// 计算换弹时间
+    /// </summary>
+    protected virtual void CalculateReloadTime()
+    {
+        ReloadTime.Value = BaseReload * (1f - TowerManager.Instance.BonusReload.Value);
     }
     /// <summary>
     /// 计算暴击伤害倍率
@@ -222,6 +222,7 @@ public abstract class BaseTower : MonoBehaviour
             noAttackTimer = 0f; // 在这儿重置计时器
 
             // === 射击后才等待攻击间隔 ===
+            CalculateAtkRate();//更新攻速
             yield return TimerUtility.WaitForGameSeconds((1f / AttackRate.Value));
         }
     }
@@ -277,6 +278,9 @@ public abstract class BaseTower : MonoBehaviour
     {
         _isReloading = true;
 
+        //更新等待时间
+        CalculateReloadTime();
+        Debug.Log($"换弹时长为{ReloadTime.Value}");
         // 显示倒计时 UI
         CountDownSlider(ReloadTime.Value);
 

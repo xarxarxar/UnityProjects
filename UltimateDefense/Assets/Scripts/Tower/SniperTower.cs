@@ -45,7 +45,7 @@ public class SniperTower : BaseTower
     protected override void CalculateAtkRate()
     {
         //初始每秒攻击次数为基础攻击0.5倍
-        AttackRate.Value = BaseAtkRate / 2.0f * (1f + TowerManager.Instance.BonusAttackRate.Value);
+        AttackRate.Value = BaseAtkRate / 2.0f * (1f + TowerManager.Instance.BonusAttackRate.Value) * TowerManager.Instance.BonusTmpAttackRate.Value;
     }
     protected override void CalculateCriticalMult()
     {

@@ -63,7 +63,7 @@ public class RapidTower : BaseTower
                 bullet1.Init(_bulletInitPos.position, currentTarget, false, BulletDamage.Value);
             }
             CurrentBulletCount--;
-            yield return TimerUtility.WaitForGameSeconds(0.2f);
+            yield return TimerUtility.WaitForGameSeconds(0.1f);
             
             if (CurrentBulletCount == 0) 
             { 
