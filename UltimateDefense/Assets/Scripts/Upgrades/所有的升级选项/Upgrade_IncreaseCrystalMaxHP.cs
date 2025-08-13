@@ -50,7 +50,7 @@ public class Upgrade_IncreaseCrystalMaxHP : UpgradeBase
     public override void Apply()
     {
         // 通知 Manager 保存全局加成
-        Crystal.Instance.MaxHP += _bonus;
+        Crystal.Instance.MaxHP.Value += _bonus;
         Crystal.Instance.Recover(_bonus);
     }
 

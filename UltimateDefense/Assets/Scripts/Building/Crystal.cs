@@ -13,6 +13,9 @@ public class Crystal : BuildingBase
     private bool _isInvincible=false;//是否处于无敌状态
     private Coroutine _invincibleCoro = null;
 
+    //血条
+    [SerializeField] private MySlider hpSlider;
+
     /// <summary>
     /// 水晶被摧毁事件
     /// </summary>
@@ -32,7 +35,7 @@ public class Crystal : BuildingBase
 
     private void OnEnable()
     {
-        Init(MaxHP,null);
+        Init(100,null);
     }
 
     protected void OnDisable()
@@ -46,8 +49,12 @@ public class Crystal : BuildingBase
     /// <param name="maxHP">最大生命值</param>
     public override void Init(int maxHP,Grid grid)
     {
-        _currentHP = MaxHP =maxHP;
+        _currentHP.Value = MaxHP.Value =maxHP;
 
+        hpSlider.SetValue(1);
+
+        _currentHP.OnValueChanged += OnHpChanged;
+        MaxHP.OnValueChanged += OnHpChanged;
         //if(_recoverCoro != null) _recoverCoro = null;
         //_recoverCoro = StartCoroutine(RecoverIE());//启动水晶每秒回血的协程
     }
@@ -60,10 +67,10 @@ public class Crystal : BuildingBase
     {
         if (_isInvincible) return;//无敌状态
 
-        _currentHP -= damage;
-        if (_currentHP < 0) 
+        _currentHP.Value -= damage;
+        if (_currentHP.Value < 0) 
         {
-            _currentHP = 0;
+            _currentHP.Value = 0;
             if (_recoverCoro != null)
             {
                 StopCoroutine(_recoverCoro);
@@ -79,10 +86,10 @@ public class Crystal : BuildingBase
     /// <param name="hp"></param>
     public void Recover(int hp)
     {
-        _currentHP += hp;
-        if (_currentHP > MaxHP)
+        _currentHP.Value += hp;
+        if (_currentHP.Value > MaxHP.Value)
         {
-            _currentHP = MaxHP;
+            _currentHP.Value = MaxHP.Value;
         }
     }
 
@@ -110,6 +117,13 @@ public class Crystal : BuildingBase
         _isInvincible = true;
         _invincibleCoro = StartCoroutine(InvincibleCoro(duration));
     }
+
+    private void OnHpChanged(int hp)
+    {
+        hpSlider.SetValue((float)_currentHP.Value/MaxHP.Value);
+        hpSlider.SetText($"{_currentHP.Value}/{MaxHP.Value}");
+    }
+
     //无敌的协程
     private IEnumerator InvincibleCoro(float duration)
     {
@@ -130,4 +144,11 @@ public class Crystal : BuildingBase
         _isInvincible = false;
     }
 
+    /// <summary>
+    /// 升级水晶
+    /// </summary>
+    public void UpgradeCrystal()
+    {
+
+    }
 }

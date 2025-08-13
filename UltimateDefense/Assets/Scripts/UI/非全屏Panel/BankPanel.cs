@@ -17,6 +17,7 @@ public class BankPanel : BasePanel
     {
         _saveCoinText.text = BankManager.Instance.CurrentSave.Value.ToString();
         _saveInterestText.text = $"{(BankManager.Instance.SaveInterest.Value - 1) * 100}%";
+        _nextRoundBackText.text = $"{BankManager.Instance.NextRoundGetMoney.Value}";
         _maxAdvanceCoinText.text = $"{BankManager.Instance.MaxAdvance.Value}";
         _needReturnCoinText.text = $"{BankManager.Instance.CurrentNeedReturn.Value}";
         _advanceInterestText.text = $"{(BankManager.Instance.AdvanceInterest.Value - 1) * 100}%";
@@ -28,6 +29,10 @@ public class BankPanel : BasePanel
         BankManager.Instance.SaveInterest.OnValueChanged += (value) =>
         {
             _saveInterestText.text = $"{(BankManager.Instance.SaveInterest.Value - 1) * 100}%";
+        };
+        BankManager.Instance.NextRoundGetMoney.OnValueChanged += (value) =>
+        {
+            _nextRoundBackText.text = $"{BankManager.Instance.NextRoundGetMoney.Value}";
         };
 
         //½è

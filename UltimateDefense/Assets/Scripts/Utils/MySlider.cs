@@ -1,30 +1,63 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Slider))]
 public class MySlider : MonoBehaviour
 {
-    public Slider slider;
+    [SerializeField]private Text text;
+    private Slider slider;
     private Coroutine _countdownCoroutine;//倒计时协程
-    private float _gameSpeed=>BattleManager.Instance.GameSpeed.Value;
+    private float _gameSpeed => BattleManager.Instance.GameSpeed.Value;
 
     private void Start()
     {
-        slider=GetComponent<Slider>();
+        slider = GetComponent<Slider>();
     }
     private void OnEnable()
     {
-        
+        if (slider == null)
+        {
+            slider = GetComponent<Slider>();
+        }
+        slider.maxValue = 1;
+        slider.minValue = 0;
         StopCountdown();
     }
+    /// <summary>
+    /// 设置文本的值
+    /// </summary>
+    /// <param name="text"></param>
+    public void SetText(string txt)
+    {
+        if (text == null)
+        {
+            return;
+        }
+        text.text = txt;
+    }
+
 
     /// <summary>
-    /// 初始化
+    /// 设置MySlider的值
     /// </summary>
     /// <param name="value"></param>
-    public void Init(float value)
+    public void SetValue(float value)
+    {
+        if (slider == null)
+        {
+            slider = GetComponent<Slider>();
+        }
+        gameObject.SetActive(true);
+
+        slider.value = value;
+    }
+    /// <summary>
+    /// 开始倒计时
+    /// </summary>
+    /// <param name="value"></param>
+    public void StartCountDown(float value)
     {
         if (slider == null)
         {
@@ -34,11 +67,13 @@ public class MySlider : MonoBehaviour
         StartCountdown(value);
     }
 
+
+
     /// <summary>
     /// 开始倒计时
     /// </summary>
     /// <param name="duration">倒计时总时长（秒）</param>
-    private  void StartCountdown(float duration)
+    private void StartCountdown(float duration)
     {
 
         if (_countdownCoroutine != null)
@@ -65,9 +100,7 @@ public class MySlider : MonoBehaviour
         {
             Debug.Log("slider为空");
         }
-        slider.minValue = 0f;
-        slider.maxValue = 1f;
-        slider.value = 1f;
+        slider.value = slider.maxValue;
 
         float timer = 0f;
 
@@ -77,7 +110,7 @@ public class MySlider : MonoBehaviour
             if (!BattleManager.Instance.IsPaused.Value)
             {
                 timer += Time.deltaTime * BattleManager.Instance.GameSpeed.Value;
-                slider.value = Mathf.Clamp01(1f - timer / duration);
+                slider.value = Mathf.Clamp01(1f - timer / duration)*(slider.maxValue-slider.minValue)+ slider.minValue;
             }
 
             yield return null;

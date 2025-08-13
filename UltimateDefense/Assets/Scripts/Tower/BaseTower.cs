@@ -295,7 +295,7 @@ public abstract class BaseTower : MonoBehaviour
     //进度条倒计时
     private void CountDownSlider(float time)
     {
-        _slider.Init(time);//开始
+        _slider.StartCountDown(time);//开始
     }
 
     //挑战结束

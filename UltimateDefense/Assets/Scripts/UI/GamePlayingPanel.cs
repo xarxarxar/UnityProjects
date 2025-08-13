@@ -95,7 +95,7 @@ public class GamePlayingPanel : MonoBehaviour
     //马上下一波
     private void OnAlmostNextWave()
     {
-        _mySlider.Init(3);
+        _mySlider.StartCountDown(3);
     }
     #endregion
 }

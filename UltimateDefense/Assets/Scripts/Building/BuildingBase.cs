@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public abstract class BuildingBase : MonoBehaviour
 {
     [Header("血量设置")]
-    [SerializeField] protected int _currentHP = 100;          // 当前生命值
+    [SerializeField] protected Bindable<int> _currentHP = new Bindable<int>();          // 当前生命值
 
     private Grid occupGrid;//所占的格子
 
@@ -28,7 +28,7 @@ public abstract class BuildingBase : MonoBehaviour
     /// 最大生命值
     /// </summary>
     [field: SerializeField]
-    public int MaxHP { get; set; }
+    public Bindable<int> MaxHP { get; set; }
 
     /// <summary>
     /// 建筑被摧毁的实例事件，订阅者可接收到本实例
@@ -41,7 +41,7 @@ public abstract class BuildingBase : MonoBehaviour
     /// <param name="maxHP">最大生命值</param>
     public virtual void Init(int maxHP,Grid grid)
     {
-        _currentHP = MaxHP = maxHP;
+        _currentHP.Value =MaxHP.Value = maxHP;
         occupGrid= grid;
     }
 
@@ -52,10 +52,10 @@ public abstract class BuildingBase : MonoBehaviour
     {
         if (damage <= 0) return;
 
-        _currentHP -= damage;
-        if (_currentHP <= 0)
+        _currentHP.Value -= damage;
+        if (_currentHP.Value <= 0)
         {
-            _currentHP = 0;
+            _currentHP.Value = 0;
             Die();
         }
     }

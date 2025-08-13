@@ -4,6 +4,17 @@ using UnityEngine;
 using UnityEngine.Events;
 
 /// <summary>
+/// 敌人的种类
+/// </summary>
+public enum EnemyType
+{
+    Normal,//普通怪，打败之后概率掉落金币
+    Coin,//打败该敌人会必定掉落大量金币
+    Elite,//精英怪，暂时没想好有什么用
+    Boss,//Boss级别的怪，每10个回合出现一次，暂定为有技能，打败之后有特殊效果
+}
+
+/// <summary>
 /// 管理场上所有敌人的生成、注销与查找
 /// </summary>
 public class EnemyManager : ManagerBase<EnemyManager>,IManager
@@ -322,7 +333,3 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
     #endregion
 }
 
-public enum EnemyType
-{
-
-}
