@@ -33,9 +33,9 @@ public class Upgrade_RecoverCrystal : UpgradeBase
 
     public static Upgrade_RecoverCrystal CreateDynamicUpgrade()
     {
-        int[] hps = { 20, 40, 60 };
+        int[] hps = { 50, 100, 200 };
         int bonus = hps[Random.Range(0, hps.Length)];
-        int cost = bonus*10;
+        int cost = bonus*2;
         return new Upgrade_RecoverCrystal(bonus, cost);
     }
 

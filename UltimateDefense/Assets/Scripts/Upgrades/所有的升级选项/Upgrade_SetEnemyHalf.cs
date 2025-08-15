@@ -35,9 +35,9 @@ public class Upgrade_SetEnemyHalf : UpgradeBase
 
     public static Upgrade_SetEnemyHalf CreateDynamicUpgrade()
     {
-        int[] counts = { 1, 3, 5 };
+        int[] counts = { 10, 15, 20 };
         int bonus = counts[Random.Range(0, counts.Length)];
-        int cost = Mathf.RoundToInt(bonus * 100);
+        int cost = Mathf.RoundToInt(bonus * 30);
         return new Upgrade_SetEnemyHalf(bonus, cost);
     }
 
@@ -58,7 +58,8 @@ public class Upgrade_SetEnemyHalf : UpgradeBase
         {
             for(int i = 0; i < EnemyManager.Instance.AllEnemies.Count; i++)
             {
-                EnemyManager.Instance.AllEnemies[i].TakeDamage(false,Mathf.RoundToInt(EnemyManager.Instance.AllEnemies[i].CurrentHP/2) );
+                int damage = Mathf.Max(1, Mathf.RoundToInt(EnemyManager.Instance.AllEnemies[i].CurrentHP.Value / 2));
+                EnemyManager.Instance.AllEnemies[i].TakeDamage(false, damage);
             }
         }
         else
@@ -68,7 +69,7 @@ public class Upgrade_SetEnemyHalf : UpgradeBase
             shuffled = shuffled.OrderBy(e => Random.value).Take(count).ToList();
             foreach (var enemy in shuffled)
             {
-                int damage = Mathf.RoundToInt(enemy.CurrentHP / 2f);
+                int damage = Mathf.RoundToInt(enemy.CurrentHP.Value / 2f);
                 enemy.TakeDamage(false, damage);
             }
         }

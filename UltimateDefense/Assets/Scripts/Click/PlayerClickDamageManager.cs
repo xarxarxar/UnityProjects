@@ -35,7 +35,7 @@ public class PlayerClickDamageManager : ManagerBase<PlayerClickDamageManager>,IM
 
     private void OnDisable()
     {
-        Enemy.OnEnemyClicked -= OnEnemyClicked;
+        //Enemy.OnEnemyClicked -= OnEnemyClicked;
     }
 
     /// <summary>
@@ -43,7 +43,7 @@ public class PlayerClickDamageManager : ManagerBase<PlayerClickDamageManager>,IM
     /// </summary>
     public override void Init()
     {
-        Enemy.OnEnemyClicked += OnEnemyClicked;
+        //Enemy.OnEnemyClicked += OnEnemyClicked;
     }
 
     //敌人被点击事件

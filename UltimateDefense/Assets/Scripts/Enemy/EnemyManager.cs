@@ -25,6 +25,7 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
     private bool _isInitialized;                // 标记是否已初始化
     [SerializeField] public Enemy _enemyPrefab;     //敌人预制体
     private ObjectPool<Enemy> _enemyPool;           //敌人对象池
+    private ObjectPool<EnemyBase> _enemyBasePool;   //敌人基类对象池
     private Bindable<float>  _enemyDieCoinProb=new Bindable<float>();//敌人死亡之后获得金币的概率
     private Bindable<float>  _enemySpeed=new Bindable<float>();//敌人移动速度
     private Bindable<int> _enemyDieCoin = new Bindable<int>();//敌人死亡之后获得的金币数量
@@ -64,6 +65,12 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
     /// 子弹对象池，供外部调用
     /// </summary>
     public ObjectPool<Enemy> EnemyPool { get => _enemyPool; }
+
+    /// <summary>
+    /// 敌人对象池，供外部调用
+    /// </summary>
+    public ObjectPool<EnemyBase> EnemyBasePool { get => _enemyBasePool; }
+
     /// <summary>
     /// 敌人死亡后，掉落金币的概率
     /// </summary>
@@ -149,7 +156,8 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
     /// <param name="pathPoints">由 PathfindingHelper 计算得到的世界坐标路径点数组</param>
     public void SpawnEnemy(Enemy enemy, float xPos, int level)
     {
-        enemy.Init(new Vector3(xPos, 13, 0), level, -1 * (_allEnemies.Count));
+        enemy.Init(EnemyType.Normal, new Vector3(xPos, 13, 0), level, -1 * (_allEnemies.Count));
+        EnemyUIManager.Instance.RegisterEnemyUI(enemy, new Vector3(0, 0.0f, 0));
         _allEnemies.Add(enemy);
         _enemyCurrentCount.Value = _allEnemies.Count;
     }

@@ -40,17 +40,17 @@ public class SniperTower : BaseTower
     protected override void CalculateBulletCap()
     {
         //初始容量为基础弹夹容量的一半
-        BulletCapacity.Value = Mathf.RoundToInt(BaseCap * 0.5f) + TowerManager.Instance.BonusCap.Value;
+        _bulletCapacity.Value = Mathf.RoundToInt(BaseCap * 0.5f) + TowerManager.Instance.BonusCap.Value;
     }
     protected override void CalculateAtkRate()
     {
         //初始每秒攻击次数为基础攻击0.5倍
-        AttackRate.Value = BaseAtkRate / 2.0f * (1f + TowerManager.Instance.BonusAttackRate.Value) * TowerManager.Instance.BonusTmpAttackRate.Value;
+        _attackRate.Value = BaseAtkRate / 2.0f * (1f + TowerManager.Instance.BonusAttackRate.Value) * TowerManager.Instance.BonusTmpAttackRate.Value;
     }
     protected override void CalculateCriticalMult()
     {
         //初始暴击伤害倍率为基础暴击倍率的2倍
-        CriticalMult.Value = BaseCritMult * 2 + TowerManager.Instance.BonusCritMult.Value;
+        _criticalMult.Value = BaseCritMult * 2 + TowerManager.Instance.BonusCritMult.Value;
     }
 
     //实现父类的DoAttack方法
@@ -77,7 +77,7 @@ public class SniperTower : BaseTower
                 bullet.Init(_bulletInitPos.position, currentTarget, false, BulletDamage.Value);
             }
         }
-
+        JellySquash();
         CurrentBulletCount--;
         _shotCount++;
         yield return null;

@@ -73,7 +73,7 @@ public class BattleUIManager : ManagerBase<BattleUIManager>,IManager
     {
         _upgradePanel.DestroyUpgrade();
         HideGamePlayingPanel();
-        Enemy.OnEnemyDamaged -= OnEnemyDamaged;//敌人受到伤害
+       Enemy.OnEnemyDamaged -= OnEnemyDamaged;//敌人受到伤害
     }
     /// <summary>
     /// 初始化

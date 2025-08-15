@@ -32,13 +32,14 @@ public class Upgrade_IncreaseEnemyDieCoinProb : UpgradeBase
         UpgradeID = "IncreaseEnemyDieCoinProb";
         _enemyDieCoinProbBonus = bonus;
         Cost = cost;
-        Description = $"敌人死亡获取金币概率 +{_enemyDieCoinProbBonus * 100}%";
+        Description = $"敌人掉落金币概率 +{_enemyDieCoinProbBonus * 100}%";
     }
 
     public static Upgrade_IncreaseEnemyDieCoinProb CreateDynamicUpgrade()
     {
-        float bonus = 0.01f * Random.Range(1, 10);
-        int cost = 100;
+        float[] values = { 0.02f, 0.05f, 0.1f };
+        float bonus = values[Random.Range(0, values.Length)];
+        int cost = Mathf.RoundToInt(bonus * 2000);
         return new Upgrade_IncreaseEnemyDieCoinProb(bonus, cost);
     }
 

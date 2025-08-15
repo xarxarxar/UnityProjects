@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -7,6 +8,7 @@ using UnityEngine.UI;
 /// </summary>
 public class CurrencyManager : ManagerBase<CurrencyManager>,IManager
 {
+    public GameObject coinText;//金币粒子特效飞向的地方
     #region 私有属性
     private int _gold=0;                          // 当前玩家持有的局内金币数量
     private bool _isInitialized;                // 标记是否已加载过存档
@@ -57,12 +59,30 @@ public class CurrencyManager : ManagerBase<CurrencyManager>,IManager
     /// 增加指定数量的金币，立即保存并刷新 UI
     /// </summary>
     /// <param name="amount">要增加的金币数</param>
-    public void AddCoin(int amount)
+    /// <param name="playMultiSound">是否播放多次音效,播放音效的次数</param>
+    public void AddCoin(int amount,int playMultiSound=1)
     {
         _gold += amount;
         // UpdateUI();
         // SaveGold();
+        PlayCoinSoundMultiple(playMultiSound,0.06f);
+        //AudioManager.Instance.PlaySFX("获得金币");
         OnCoinChange?.Invoke(amount);
+    }
+
+    public void PlayCoinSoundMultiple(int times, float interval)
+    {
+        StartCoroutine(CoinSoundRoutine(times, interval));
+    }
+
+    private IEnumerator CoinSoundRoutine(int times, float interval)
+    {
+        yield return new WaitForSeconds(0.8f);//和金币粒子特效飞行时长同步
+        for (int i = 0; i < times; i++)
+        {
+            AudioManager.Instance.PlaySFX("获得金币");
+            yield return new WaitForSeconds(interval);
+        }
     }
 
     /// <summary>
@@ -145,6 +165,15 @@ public class CurrencyManager : ManagerBase<CurrencyManager>,IManager
                 getCoin = EnemyManager.EnemyDieCoin.Value;
             }
             AddCoin(getCoin);
+            //播放金币粒子特效
+            //起点：世界坐标 → 屏幕坐标
+            Vector3 screenStart = Camera.main.WorldToScreenPoint(enemy.transform.position);
+
+
+            // 终点：（UI坐标 → 屏幕坐标）
+            Vector3 screenEnd = RectTransformUtility.WorldToScreenPoint(null, coinText.transform.position); ;
+
+            GameUIManager.Instance.PlayFlyCoinEffect(screenStart, screenEnd);
             OnGetCoinFromEnemy?.Invoke(enemy, getCoin);
         }
     }

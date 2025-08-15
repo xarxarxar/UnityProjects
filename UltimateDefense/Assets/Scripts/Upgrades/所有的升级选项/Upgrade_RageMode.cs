@@ -25,13 +25,11 @@ public class Upgrade_RageMode : UpgradeBase
     /// <param name="cost">消耗的金币数</param>
     public Upgrade_RageMode(float dur, int cost)
     {
-        UpgradeID = "SetEnemyHalf";
+        UpgradeID = "RageMode";
         duration = dur;
         Cost = cost;
         Description = $"攻速变为当前300%，持续{duration}秒";
     }
-
-
 
     public static Upgrade_RageMode CreateDynamicUpgrade()
     {
@@ -49,6 +47,6 @@ public class Upgrade_RageMode : UpgradeBase
     /// </summary>
     public override void Apply()
     {
-        TowerManager.Instance.SetTmpAtkRate(2.0f, duration);
+        TowerManager.Instance.SetTmpAtkRate(3.0f, duration);
     }
 }

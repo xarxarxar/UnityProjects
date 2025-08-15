@@ -1,4 +1,4 @@
-
+using UnityEngine;
 public class Upgrade_IncreaseCriticalMultiplier : UpgradeBase
 {
     #region 私有字段
@@ -33,8 +33,9 @@ public class Upgrade_IncreaseCriticalMultiplier : UpgradeBase
 
     public static Upgrade_IncreaseCriticalMultiplier CreateDynamicUpgrade()
     {
-        float bonus = 0.1f;
-        int cost = 100;
+        float[] values = { 0.1f, 0.15f, 0.2f };
+        float bonus = values[Random.Range(0, values.Length)];
+        int cost =Mathf.RoundToInt(bonus* 300) ;
         return new Upgrade_IncreaseCriticalMultiplier(bonus, cost);
     }
 
@@ -43,7 +44,7 @@ public class Upgrade_IncreaseCriticalMultiplier : UpgradeBase
     #region 公共方法
     public override bool IsAvailable()
     {
-        return TowerManager.Instance.BonusCritMult.Value < 3.0f;
+        return TowerManager.Instance.BonusCritMult.Value < 5.0f;
     }
 
     /// <summary>

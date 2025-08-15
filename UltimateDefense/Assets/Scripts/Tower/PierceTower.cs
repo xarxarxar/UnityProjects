@@ -36,11 +36,11 @@ public class PierceTower : BaseTower
     protected override void CalculateAtkDamage()
     {
         //初始伤害为基础伤害的80%,每升级一次伤害提示10%
-        BulletDamage.Value = Mathf.RoundToInt(BaseDamage * (0.8f + TowerLevel * 0.1f) * (1f + TowerManager.Instance.BonusAtk.Value));
+        _bulletDamage.Value = Mathf.RoundToInt(BaseDamage * (0.8f + TowerLevel * 0.1f) * (1f + TowerManager.Instance.BonusAtk.Value));
     }
     protected override void CalculateBulletCap()
     {
-        BulletCapacity.Value = Mathf.RoundToInt(BaseCap * 0.8f) + TowerManager.Instance.BonusCap.Value;
+        _bulletCapacity.Value = Mathf.RoundToInt(BaseCap * 0.8f) + TowerManager.Instance.BonusCap.Value;
     }
 
 
@@ -59,7 +59,7 @@ public class PierceTower : BaseTower
 
         // 初始化子弹（发射方向，直线穿透类型）
         bullet.Init(_bulletInitPos.position, direction, isCritical, damage, BulletType.MultiPenetrate);
-
+        JellySquash();
         // 子弹数量减少
         CurrentBulletCount--;
 

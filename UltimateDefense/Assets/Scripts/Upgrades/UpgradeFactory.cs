@@ -26,7 +26,7 @@ public static class UpgradeFactory
             Upgrade_IncreaseTowerBulletCap.CreateDynamicUpgrade,
             Upgrade_IncreaseCriticalShotProb.CreateDynamicUpgrade,
             Upgrade_IncreaseCriticalMultiplier.CreateDynamicUpgrade,
-            Upgrade_SaveMoneyToBank.CreateDynamicUpgrade,
+            //Upgrade_SaveMoneyToBank.CreateDynamicUpgrade,
             Upgrade_IncreaseBankInterest.CreateDynamicUpgrade,
             Upgrade_IncreaseEnemyDieCoin.CreateDynamicUpgrade,
             Upgrade_IncreaseCrystalMaxHP.CreateDynamicUpgrade,
@@ -112,10 +112,10 @@ public static class UpgradeFactory
         {
             return new Upgrade_IncreaseCriticalMultiplier(icmp.Bonus, icmp.Cost);
         }
-        if (template is Upgrade_SaveMoneyToBank smtb)
-        {
-            return new Upgrade_SaveMoneyToBank();
-        }
+        //if (template is Upgrade_SaveMoneyToBank smtb)
+        //{
+        //    return new Upgrade_SaveMoneyToBank();
+        //}
         if (template is Upgrade_IncreaseBankInterest ibi)
         {
             return new Upgrade_IncreaseBankInterest(ibi.Bonus, ibi.Cost);

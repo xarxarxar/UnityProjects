@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
@@ -15,6 +16,18 @@ public class Crystal : BuildingBase
 
     //血条
     [SerializeField] private MySlider hpSlider;
+
+    //受伤
+    public SpriteRenderer spriteRenderer;
+    public float flashDuration = 0.1f; // 闪红时间
+    private Color originalColor = new Color32(225, 225, 225, 225);
+    public Color hitColor = new Color32(255, 102, 51, 255);
+
+    // Q 弹相关
+    public float squashAmount = 0.8f;  // 压缩比例
+    public float stretchAmount = 1.2f; // 拉伸比例
+    public float squashDuration = 0.15f; // Q 弹单程时长
+    private Vector3 originalScale=Vector3.one;
 
     /// <summary>
     /// 水晶被摧毁事件
@@ -35,11 +48,19 @@ public class Crystal : BuildingBase
 
     private void OnEnable()
     {
-        Init(100,null);
+        Init(1000,null);
     }
 
     protected void OnDisable()
     {
+        //杀掉颜色动画
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.DOKill();
+            spriteRenderer.color = originalColor;
+        }
+        transform.DOKill(); // 防止叠加
+        transform.localScale = originalScale;
         StopAllCoroutines();
     }
 
@@ -52,9 +73,15 @@ public class Crystal : BuildingBase
         _currentHP.Value = MaxHP.Value =maxHP;
 
         hpSlider.SetValue(1);
+        hpSlider.SetText($"{_currentHP.Value}/{MaxHP.Value}");
 
         _currentHP.OnValueChanged += OnHpChanged;
         MaxHP.OnValueChanged += OnHpChanged;
+
+        if (spriteRenderer == null)
+        {
+            spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        }
         //if(_recoverCoro != null) _recoverCoro = null;
         //_recoverCoro = StartCoroutine(RecoverIE());//启动水晶每秒回血的协程
     }
@@ -68,6 +95,8 @@ public class Crystal : BuildingBase
         if (_isInvincible) return;//无敌状态
 
         _currentHP.Value -= damage;
+        //FlashRed();
+        JellySquash();
         if (_currentHP.Value < 0) 
         {
             _currentHP.Value = 0;
@@ -150,5 +179,30 @@ public class Crystal : BuildingBase
     public void UpgradeCrystal()
     {
 
+    }
+
+    //闪红动画
+    private void FlashRed()
+    {
+        // 先杀掉之前的颜色动画，避免受击多次时颜色乱掉
+        spriteRenderer.DOKill();
+
+        // 颜色切换到红色，然后回到原色
+        spriteRenderer.DOColor(hitColor, flashDuration / BattleManager.Instance.GameSpeed.Value)
+            .OnComplete(() => spriteRenderer.DOColor(originalColor, flashDuration / BattleManager.Instance.GameSpeed.Value));
+    }
+
+    /// <summary>
+    /// Q 弹果冻效果
+    /// </summary>
+    public void JellySquash()
+    {
+        transform.DOKill(); // 防止叠加
+        transform.localScale = originalScale;
+
+        Sequence seq = DOTween.Sequence();
+        // Y 方向压缩拉伸，X 轴保持原始值
+        seq.Append(transform.DOScaleY(stretchAmount, squashDuration / BattleManager.Instance.GameSpeed.Value).SetEase(Ease.OutQuad));
+        seq.Append(transform.DOScaleY(originalScale.y, squashDuration / BattleManager.Instance.GameSpeed.Value).SetEase(Ease.OutBounce));
     }
 }

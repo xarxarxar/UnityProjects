@@ -28,13 +28,11 @@ public class Upgrade_GetMoney : UpgradeBase
         Description = $"立刻获得{Money}金币";
     }
 
-    
-
     public static Upgrade_GetMoney CreateDynamicUpgrade()
     {
         int[] moneys = { 100, 200, 500 };
         int bonus = moneys[Random.Range(0, moneys.Length)];
-        int cost = bonus/2;
+        int cost = Mathf.RoundToInt(bonus/10);
         return new Upgrade_GetMoney(bonus, cost);
     }
 

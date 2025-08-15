@@ -1,4 +1,4 @@
-
+using UnityEngine;
 public class Upgrade_IncreaseCriticalShotProb : UpgradeBase
 {
     #region 私有字段
@@ -25,7 +25,7 @@ public class Upgrade_IncreaseCriticalShotProb : UpgradeBase
     /// <param name="cost">消耗的金币数</param>
     public Upgrade_IncreaseCriticalShotProb(float bonus, int cost)
     {
-        UpgradeID = "IncreaseTowerBulletCap";
+        UpgradeID = "IncreaseCriticalShotProb";
         _bonus = bonus;
         Cost = cost;
         Description = $"炮塔暴击率 +{_bonus*100}%";
@@ -33,8 +33,9 @@ public class Upgrade_IncreaseCriticalShotProb : UpgradeBase
 
     public static Upgrade_IncreaseCriticalShotProb CreateDynamicUpgrade()
     {
-        float bonus = 0.1f;
-        int cost = 100;
+        float[] values = { 0.02f, 0.05f, 0.1f };
+        float bonus = values[Random.Range(0, values.Length)];
+        int cost = Mathf.RoundToInt(bonus * 2000);
         return new Upgrade_IncreaseCriticalShotProb(bonus, cost);
     }
 
@@ -43,7 +44,7 @@ public class Upgrade_IncreaseCriticalShotProb : UpgradeBase
     #region 公共方法
     public override bool IsAvailable()
     {
-        return TowerManager.Instance.BonusCritProb.Value < 0.5f;
+        return TowerManager.Instance.BonusCritProb.Value < 0.8f;
     }
 
     /// <summary>

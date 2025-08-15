@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,7 +29,7 @@ public abstract class BaseTower : MonoBehaviour
     /// <summary>
     /// 每秒旋转多少度
     /// </summary>
-    protected float rotateSpeed = 180.0f; // 每秒旋转多少度
+    protected float rotateSpeed = 200.0f; // 每秒旋转多少度
     /// <summary>
     /// 子弹预制体
     /// </summary>
@@ -61,12 +62,18 @@ public abstract class BaseTower : MonoBehaviour
     public abstract float BaseCritProb { get; } //暴击概率
     public abstract float BaseCritMult { get; } //暴击伤害倍率
     //子类需重写值的逻辑，炮塔最终的值
-    public Bindable<int> BulletDamage { get; } = new Bindable<int>(); //子弹伤害
-    public Bindable<int> BulletCapacity { get; } = new Bindable<int>(); //子弹容量
-    public Bindable<float> AttackRate { get; } = new Bindable<float>();//攻击间隔
-    public Bindable<float> ReloadTime {get; } = new Bindable<float>();//换弹时长
-    public Bindable<float> CriticalProb { get; } = new Bindable<float>();//暴击概率
-    public Bindable<float> CriticalMult { get; } = new Bindable<float>();//暴击伤害倍率
+    public Bindable<int> _bulletDamage = new Bindable<int>(); //子弹伤害
+    public Bindable<int> BulletDamage { get { CalculateAtkDamage(); return _bulletDamage; } } //子弹伤害
+    public Bindable<int> _bulletCapacity = new Bindable<int>(); //子弹容量
+    public Bindable<int> BulletCapacity { get { CalculateBulletCap(); return _bulletCapacity; } } //子弹容量
+    public Bindable<float> _attackRate = new Bindable<float>();//攻击间隔
+    public Bindable<float> AttackRate { get { CalculateAtkRate(); return _attackRate; } }//攻击间隔
+    public Bindable<float> _reloadTime = new Bindable<float>();//换弹时长
+    public Bindable<float> ReloadTime { get { CalculateReloadTime(); return _reloadTime; } }//换弹时长
+    public Bindable<float> _criticalProb = new Bindable<float>();//暴击概率
+    public Bindable<float> CriticalProb { get { CalculateCriticalProb(); return _criticalProb; } }//暴击概率
+    public Bindable<float> _criticalMult = new Bindable<float>();//暴击伤害倍率
+    public Bindable<float> CriticalMult { get { CalculateCriticalMult(); return _criticalMult; } }//暴击伤害倍率
 
 
     //子类不用修改
@@ -79,6 +86,12 @@ public abstract class BaseTower : MonoBehaviour
     private bool _isReloading = false; // 是否正在换弹
     private float noAttackTimer = 0f;//未处于攻击状态的时长
     private Coroutine _reloadCoroutine;//换弹协程
+
+    // Q 弹相关
+    public float squashAmount = 0.8f;  // 压缩比例
+    public float stretchAmount = 1.2f; // 拉伸比例
+    public float squashDuration = 0.15f; // Q 弹单程时长
+    private Vector3 originalScale = Vector3.one;
 
     //子类必须写好
     /// <summary>
@@ -104,6 +117,9 @@ public abstract class BaseTower : MonoBehaviour
         _gunBarrel.transform.localPosition = Vector3.zero;
         _gunBarrel.transform.localRotation = Quaternion.identity;
         _gunBarrel.transform.localScale = Vector3.one;
+
+        _gunBarrel.transform.DOKill(); // 防止叠加
+        _gunBarrel.transform.localScale = originalScale;
     }
 
     //攻击逻辑
@@ -138,42 +154,42 @@ public abstract class BaseTower : MonoBehaviour
     /// </summary>
     protected virtual void CalculateAtkDamage()
     {
-        BulletDamage.Value = Mathf.RoundToInt(BaseDamage * (1f + TowerManager.Instance.BonusAtk.Value));
+        _bulletDamage.Value = Mathf.RoundToInt(BaseDamage * (1f + TowerManager.Instance.BonusAtk.Value));
     }
     /// <summary>
     /// 计算弹夹容量
     /// </summary>
     protected virtual void CalculateBulletCap()
     {
-        BulletCapacity.Value = BaseCap + TowerManager.Instance.BonusCap.Value;
+        _bulletCapacity.Value = BaseCap + TowerManager.Instance.BonusCap.Value;
     }
     /// <summary>
     /// 计算每秒攻击次数
     /// </summary>
     protected virtual void CalculateAtkRate()
     {
-        AttackRate.Value = BaseAtkRate * (1f + TowerManager.Instance.BonusAttackRate.Value)*TowerManager.Instance.BonusTmpAttackRate.Value;
+        _attackRate.Value = BaseAtkRate * (1f + TowerManager.Instance.BonusAttackRate.Value)*TowerManager.Instance.BonusTmpAttackRate.Value;
     }
     /// <summary>
     /// 计算暴击概率
     /// </summary>
     protected virtual void CalculateCriticalProb()
     {
-        CriticalProb.Value = BaseCritProb + TowerManager.Instance.BonusCritProb.Value;
+        _criticalProb.Value = BaseCritProb + TowerManager.Instance.BonusCritProb.Value;
     }
     /// <summary>
     /// 计算换弹时间
     /// </summary>
     protected virtual void CalculateReloadTime()
     {
-        ReloadTime.Value = BaseReload * (1f - TowerManager.Instance.BonusReload.Value);
+        _reloadTime.Value = BaseReload * (1f - TowerManager.Instance.BonusReload.Value);
     }
     /// <summary>
     /// 计算暴击伤害倍率
     /// </summary>
     protected virtual void CalculateCriticalMult()
     {
-        CriticalMult.Value = BaseCritMult + TowerManager.Instance.BonusCritMult.Value;
+        _criticalMult.Value = BaseCritMult + TowerManager.Instance.BonusCritMult.Value;
     }
     /// <summary>
     /// 获取炮塔的描述
@@ -222,7 +238,7 @@ public abstract class BaseTower : MonoBehaviour
             noAttackTimer = 0f; // 在这儿重置计时器
 
             // === 射击后才等待攻击间隔 ===
-            CalculateAtkRate();//更新攻速
+            //CalculateAtkRate();//更新攻速
             yield return TimerUtility.WaitForGameSeconds((1f / AttackRate.Value));
         }
     }
@@ -279,8 +295,9 @@ public abstract class BaseTower : MonoBehaviour
         _isReloading = true;
 
         //更新等待时间
-        CalculateReloadTime();
+        //CalculateReloadTime();
         Debug.Log($"换弹时长为{ReloadTime.Value}");
+        _bulletText.text = "换弹中";
         // 显示倒计时 UI
         CountDownSlider(ReloadTime.Value);
 
@@ -303,5 +320,19 @@ public abstract class BaseTower : MonoBehaviour
     {
         Debug.Log("挑战结束");
         StopAllCoroutines();
+    }
+
+    /// <summary>
+    /// Q 弹果冻效果
+    /// </summary>
+    public void JellySquash()
+    {
+        _gunBarrel.transform.DOKill(); // 防止叠加
+        _gunBarrel.transform.localScale = originalScale;
+
+        Sequence seq = DOTween.Sequence();
+        // Y 方向压缩拉伸，X 轴保持原始值
+        seq.Append(_gunBarrel.transform.DOScaleY(stretchAmount, squashDuration /BattleManager.Instance.GameSpeed.Value).SetEase(Ease.OutQuad));
+        seq.Append(_gunBarrel.transform.DOScaleY(originalScale.y, squashDuration / BattleManager.Instance.GameSpeed.Value).SetEase(Ease.OutBounce));
     }
 }

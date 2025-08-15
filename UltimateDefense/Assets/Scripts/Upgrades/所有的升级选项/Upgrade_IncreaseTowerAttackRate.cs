@@ -38,9 +38,10 @@ public class Upgrade_IncreaseTowerAttackRate : UpgradeBase
 
     public static Upgrade_IncreaseTowerAttackRate CreateDynamicUpgrade()
     {
-        float attackRateBonus =0.1f;
-        int cost = 100;
-        return new Upgrade_IncreaseTowerAttackRate(attackRateBonus, cost);
+        float[] values = { 0.1f, 0.2f, 0.3f };
+        float bonus = values[Random.Range(0, values.Length)];
+        int cost = Mathf.RoundToInt(bonus * 300);
+        return new Upgrade_IncreaseTowerAttackRate(bonus, cost);
     }
 
     #endregion

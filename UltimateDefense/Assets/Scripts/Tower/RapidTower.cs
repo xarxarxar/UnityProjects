@@ -34,56 +34,58 @@ public class RapidTower : BaseTower
     protected override void CalculateAtkDamage()
     {
         //初始伤害为基础伤害的60%
-        BulletDamage.Value = Mathf.RoundToInt(BaseDamage * 0.6f * (1f + TowerManager.Instance.BonusAtk.Value));
+        _bulletDamage.Value = Mathf.RoundToInt(BaseDamage * 0.6f * (1f + TowerManager.Instance.BonusAtk.Value));
     }
     protected override void CalculateBulletCap()
     {
         //初始容量为基础弹夹容量的120%
-        BulletCapacity.Value = Mathf.RoundToInt(BaseCap * 1.2f) + TowerManager.Instance.BonusCap.Value;
+        _bulletCapacity.Value = Mathf.RoundToInt(BaseCap * 1.2f) + TowerManager.Instance.BonusCap.Value;
     }
     protected override void CalculateReloadTime()
     {
         //初始换弹时间为基础的80%
-        ReloadTime.Value = BaseReload * 0.8f * (1f - TowerManager.Instance.BonusReload.Value);
+        _reloadTime.Value = BaseReload * 0.8f * (1f - TowerManager.Instance.BonusReload.Value);
     }
 
     //实现父类的DoAttack方法
     protected override IEnumerator DoAttack()
+    {
+        Bullet bullet1 = TowerManager.Instance.BulletPool.Get();
+
+        float value1 = Random.value;
+        if (value1 < CriticalProb.Value)
         {
-            Bullet bullet1 = TowerManager.Instance.BulletPool.Get();
-
-            float value1 = Random.value;
-            if (value1 < CriticalProb.Value)
-            {
-                bullet1.Init(_bulletInitPos.position, currentTarget,
-                    true, Mathf.RoundToInt(BulletDamage.Value * CriticalMult.Value));
-            }
-            else
-            {
-                bullet1.Init(_bulletInitPos.position, currentTarget, false, BulletDamage.Value);
-            }
-            CurrentBulletCount--;
-            yield return TimerUtility.WaitForGameSeconds(0.1f);
-            
-            if (CurrentBulletCount == 0) 
-            { 
-                yield break;
-            }
-
-            Bullet bullet2 = TowerManager.Instance.BulletPool.Get();
-
-            float value2 = Random.value;
-            
-            if (value2 < CriticalProb.Value)
-            {
-                bullet2.Init(_bulletInitPos.position, currentTarget,
-                    true, Mathf.RoundToInt(BulletDamage.Value * CriticalMult.Value));
-            }
-            else
-            {
-                bullet2.Init(_bulletInitPos.position, currentTarget, false, BulletDamage.Value);
-            }
-            CurrentBulletCount--;
-            yield return null;
+            bullet1.Init(_bulletInitPos.position, currentTarget,
+                true, Mathf.RoundToInt(BulletDamage.Value * CriticalMult.Value));
         }
+        else
+        {
+            bullet1.Init(_bulletInitPos.position, currentTarget, false, BulletDamage.Value);
+        }
+        JellySquash();
+        CurrentBulletCount--;
+        yield return TimerUtility.WaitForGameSeconds(0.1f);
+        
+        if (CurrentBulletCount == 0) 
+        { 
+            yield break;
+        }
+
+        Bullet bullet2 = TowerManager.Instance.BulletPool.Get();
+
+        float value2 = Random.value;
+        
+        if (value2 < CriticalProb.Value)
+        {
+            bullet2.Init(_bulletInitPos.position, currentTarget,
+                true, Mathf.RoundToInt(BulletDamage.Value * CriticalMult.Value));
+        }
+        else
+        {
+            bullet2.Init(_bulletInitPos.position, currentTarget, false, BulletDamage.Value);
+        }
+        JellySquash();
+        CurrentBulletCount--;
+        yield return null;
+    }
 }

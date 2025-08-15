@@ -32,13 +32,14 @@ public class Upgrade_IncreaseEnemyDieCoin : UpgradeBase
         UpgradeID = "IncreaseEnemyDieCoin";
         _bonus = bonus;
         Cost = cost;
-        Description = $"击败敌人获取的金币 +{bonus}";
+        Description = $"敌人掉落金币 +{bonus}";
     }
 
     public static Upgrade_IncreaseEnemyDieCoin CreateDynamicUpgrade()
     {
-        int bonus = 2;
-        int cost = 100;
+        int[] moneys = { 1, 2, 5 };
+        int bonus = moneys[Random.Range(0, moneys.Length)];
+        int cost = bonus*50;
         return new Upgrade_IncreaseEnemyDieCoin(bonus, cost);
     }
 

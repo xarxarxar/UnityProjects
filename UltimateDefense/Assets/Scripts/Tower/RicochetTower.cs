@@ -52,7 +52,7 @@ public class RicochetTower : BaseTower
             maxChain: _maxChain,
             decayPercent: 0.7f // 每次弹射衰减70%
         );
-
+        JellySquash();
         // 扣除子弹数
         CurrentBulletCount--;
 

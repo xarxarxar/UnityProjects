@@ -34,12 +34,12 @@ public class SpreadTower : BaseTower
     protected override void CalculateAtkDamage()
     {
         //初始伤害为基础伤害的50%
-        BulletDamage.Value = Mathf.RoundToInt(BaseDamage *0.5f* (1f + TowerManager.Instance.BonusAtk.Value));
+        _bulletDamage.Value = Mathf.RoundToInt(BaseDamage *0.5f* (1f + TowerManager.Instance.BonusAtk.Value));
     }
     protected override void CalculateCriticalProb()
     {
         //初始暴击概率为基础暴击概率的2倍
-        CriticalProb.Value = BaseCritProb * 2.0f + TowerManager.Instance.BonusCritProb.Value;
+        _criticalProb.Value = BaseCritProb * 2.0f + TowerManager.Instance.BonusCritProb.Value;
     }
 
     //实现父类的DoAttack方法
@@ -74,7 +74,7 @@ public class SpreadTower : BaseTower
 
             bullet.Init(firePos, shootDir, isCrit, damage,type:BulletType.SinglePenetrate);
         }
-
+        JellySquash();
         // 消耗子弹
         CurrentBulletCount -= angleOffsets.Count;
 

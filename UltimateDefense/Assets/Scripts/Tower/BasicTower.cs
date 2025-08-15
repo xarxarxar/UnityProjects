@@ -40,7 +40,7 @@ public class BasicTower : BaseTower
         {
             bullet.Init(_bulletInitPos.position, currentTarget, false, BulletDamage.Value);
         }
-
+        JellySquash();
         CurrentBulletCount--;
         yield return null;
     }

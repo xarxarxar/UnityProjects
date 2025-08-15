@@ -34,6 +34,8 @@ public class UpgradeUI : MonoBehaviour
     private SimpleScrollSnap _simpleScrollSnapLeft;//左侧抽奖所在的区域
     [SerializeField]
     private SimpleScrollSnap _simpleScrollSnapRight;//右侧抽奖所在的区域
+    [SerializeField]
+    private int _upgradeIncreaseCoin=1;//每次刷新增加的钱数
 
     /// <summary>
     /// 刷新增益
@@ -116,16 +118,16 @@ public class UpgradeUI : MonoBehaviour
     //刷新升级属性按钮
     private void RefreshUpgrade()
     {
-        if (!CurrencyManager.Instance.SpendCoin(UpgradeManager.Instance.UpdateCount * 10))//刷新需要金币
+        if (!CurrencyManager.Instance.SpendCoin(UpgradeManager.Instance.UpdateCount * _upgradeIncreaseCoin))//刷新需要金币
         {
             return;
         }
        
         RefreshUpgradeButtons();
         UpgradeManager.Instance.UpdateCount++;
-        _updatePriceText.text = $"{UpgradeManager.Instance.UpdateCount * 10}";
+        _updatePriceText.text = $"{UpgradeManager.Instance.UpdateCount * _upgradeIncreaseCoin}";
 
-        SetTextColor(_updatePriceText, gold >= UpgradeManager.Instance.UpdateCount * 10);
+        SetTextColor(_updatePriceText, gold >= UpgradeManager.Instance.UpdateCount * _upgradeIncreaseCoin);
         OnRefreshBuff?.Invoke();
     }
 
@@ -152,8 +154,8 @@ public class UpgradeUI : MonoBehaviour
         _rightUpgrade = null;//升级属性置为null
 
         // 随机速度赋值
-        _simpleScrollSnapLeft.Velocity +=UnityEngine. Random.Range(5000, 10000) * Vector2.up;
-        _simpleScrollSnapRight.Velocity += UnityEngine.Random.Range(5000, 10000) * Vector2.up;
+        _simpleScrollSnapLeft.Velocity +=10000 * Vector2.up;
+        _simpleScrollSnapRight.Velocity += 10000 * Vector2.up;
 
         // 初始化左侧卡片
         for (int i = 0; i < _simpleScrollSnapLeft.NumberOfPanels; i++)
@@ -232,8 +234,8 @@ public class UpgradeUI : MonoBehaviour
                                 onFinish?.Invoke();
                         }
 
-                        leftCard.SetCost(0, 0.5f, Check);
-                        rightCard.SetCost(0, 0.5f, Check);
+                        leftCard.SetCost(0, 0.3f, Check);
+                        rightCard.SetCost(0, 0.3f, Check);
                     });
                 }
                 else
@@ -256,7 +258,7 @@ public class UpgradeUI : MonoBehaviour
                         anyAnimation = true;
                         PlayDiscountAnimation(() =>
                         {
-                            leftCard.SetCost(leftDiscount, 0.5f, CheckFinish);
+                            leftCard.SetCost(leftDiscount, 0.3f, CheckFinish);
                         }, side: -1, discount: leftDiscount);
                     }
 
@@ -266,7 +268,7 @@ public class UpgradeUI : MonoBehaviour
                         anyAnimation = true;
                         PlayDiscountAnimation(() =>
                         {
-                            rightCard.SetCost(rightDiscount, 0.5f, CheckFinish);
+                            rightCard.SetCost(rightDiscount, 0.3f, CheckFinish);
                         }, side: 1, discount: rightDiscount);
                     }
                 }
@@ -314,7 +316,7 @@ public class UpgradeUI : MonoBehaviour
     //金币变化
     private void OnCoinChange(int amount)
     {
-        SetTextColor(_updatePriceText, gold >= UpgradeManager.Instance.UpdateCount * 10);
+        SetTextColor(_updatePriceText, gold >= UpgradeManager.Instance.UpdateCount * _upgradeIncreaseCoin);
         // 初始化左侧卡片
         for (int i = 0; i < _simpleScrollSnapLeft.NumberOfPanels; i++)
         {
@@ -365,13 +367,13 @@ public class UpgradeUI : MonoBehaviour
 
         // 创建 DOTween 序列，延迟 0.5 秒后执行动画
         DOTween.Sequence()
-            .AppendInterval(0.2f)
+            .AppendInterval(0.1f)
             .AppendCallback(() =>
             {
                 if (side <= 0)
                 {
                     _discountLeft.SetActive(true);
-                    _discountLeft.transform.DOScale(Vector3.one, 0.5f)
+                    _discountLeft.transform.DOScale(Vector3.one, 0.3f)
                         .SetEase(Ease.OutBack)
                         .OnComplete(OnOneComplete);
                 }
@@ -379,7 +381,7 @@ public class UpgradeUI : MonoBehaviour
                 if (side >= 0)
                 {
                     _discountRight.SetActive(true);
-                    _discountRight.transform.DOScale(Vector3.one, 0.5f)
+                    _discountRight.transform.DOScale(Vector3.one, 0.3f)
                         .SetEase(Ease.OutBack)
                         .OnComplete(OnOneComplete);
                 }
