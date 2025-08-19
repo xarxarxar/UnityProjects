@@ -77,7 +77,7 @@ public class CurrencyManager : ManagerBase<CurrencyManager>,IManager
 
     private IEnumerator CoinSoundRoutine(int times, float interval)
     {
-        yield return new WaitForSeconds(0.8f);//和金币粒子特效飞行时长同步
+        yield return TimerUtility.WaitForGameSeconds(0.8f);//和金币粒子特效飞行时长同步
         for (int i = 0; i < times; i++)
         {
             AudioManager.Instance.PlaySFX("获得金币");
@@ -144,39 +144,60 @@ public class CurrencyManager : ManagerBase<CurrencyManager>,IManager
         _stage=InitStage.InBattle;
     }
 
-    //敌人死亡事件
+    // 敌人死亡事件
     private void OnEnemyDie(Enemy enemy)
     {
-        // 概率掉落金币
-        if (Random.value <= EnemyManager.EnemyDieCoinProb.Value)
+        if (enemy == null) return;
+
+        int baseCoin = EnemyManager.EnemyDieCoin.Value;
+        int enemyCoin = 0;
+        int getCoin = 0;
+        bool dropCoin = false;
+
+        // 1. 计算掉落金币
+        if (enemy.enemyType == EnemyType.Coin)
         {
-            int getCoin = 0;//得到了多少金币
-            // 掉落金币
+            enemyCoin = baseCoin * 10;
+            dropCoin = true; // 金币怪必掉落
+        }
+        else
+        {
+            // 普通敌人按照概率掉落
+            enemyCoin = baseCoin;
+            dropCoin = (Random.value <= EnemyManager.EnemyDieCoinProb.Value);
+        }
+
+        // 2. 扣欠款 & 计算实际得到的金币
+        if (dropCoin && enemyCoin > 0)
+        {
             if (BankManager.Instance.CurrentNeedReturn.Value > 0)
             {
-                //如果有欠款,则扣掉一半作为欠款
-                int backCoin = Mathf.RoundToInt(EnemyManager.EnemyDieCoin.Value / 2);//先还欠款
+                int backCoin = Mathf.RoundToInt(enemyCoin / 2); // 先还欠款
                 BankManager.Instance.CurrentNeedReturn.Value -= backCoin;
-                Debug.Log($"CurrentNeedReturn is {BankManager.Instance.CurrentNeedReturn.Value},backCoin is {backCoin}");
-                getCoin = EnemyManager.EnemyDieCoin.Value - backCoin;
+                getCoin = Mathf.Max(0, enemyCoin - backCoin);
             }
             else
             {
-                getCoin = EnemyManager.EnemyDieCoin.Value;
+                getCoin = enemyCoin;
             }
-            AddCoin(getCoin);
-            //播放金币粒子特效
-            //起点：世界坐标 → 屏幕坐标
-            Vector3 screenStart = Camera.main.WorldToScreenPoint(enemy.transform.position);
 
+            // 3. 增加金币
+            if (getCoin > 0)
+            {
+                int effectCount = (enemy.enemyType == EnemyType.Coin) ? 5 : 1; // 金币怪播放更多特效
+                AddCoin(getCoin, effectCount);
 
-            // 终点：（UI坐标 → 屏幕坐标）
-            Vector3 screenEnd = RectTransformUtility.WorldToScreenPoint(null, coinText.transform.position); ;
-
-            GameUIManager.Instance.PlayFlyCoinEffect(screenStart, screenEnd);
-            OnGetCoinFromEnemy?.Invoke(enemy, getCoin);
+                // 播放金币粒子特效
+                Vector3 screenStart = Camera.main.WorldToScreenPoint(enemy.transform.position);
+                Vector3 screenEnd = RectTransformUtility.WorldToScreenPoint(null, coinText.transform.position);
+                GameUIManager.Instance.PlayFlyCoinEffect(screenStart, screenEnd, effectCount);
+            }
         }
+
+        // 4. 事件通知（无论是不是金币怪都触发）
+        OnGetCoinFromEnemy?.Invoke(enemy, getCoin);
     }
+
 
     /// <summary>
     /// 更新 UI 显示金币数

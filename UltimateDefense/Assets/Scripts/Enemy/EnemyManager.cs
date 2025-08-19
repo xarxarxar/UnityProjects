@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -128,7 +129,6 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
     /// </summary>
     public override void Init()
     {
-        Debug.Log("enemymanager初始化");
         _allEnemies.Clear();
         _enemiesInRange.Clear();
         _enemyDieCoinProb.Value = 0.5f;
@@ -154,9 +154,10 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
     /// <param name="type">敌人类型枚举</param>
     /// <param name="spawnPos">生成位置（世界坐标）</param>
     /// <param name="pathPoints">由 PathfindingHelper 计算得到的世界坐标路径点数组</param>
-    public void SpawnEnemy(Enemy enemy, float xPos, int level)
+    public void SpawnEnemy(EnemyType enemyType,float xPos, int level,float yPos=13)
     {
-        enemy.Init(EnemyType.Normal, new Vector3(xPos, 13, 0), level, -1 * (_allEnemies.Count));
+        Enemy enemy = _enemyPool.Get();
+        enemy.Init(enemyType, new Vector3(xPos, yPos, 0), level, -1 * (_allEnemies.Count));
         EnemyUIManager.Instance.RegisterEnemyUI(enemy, new Vector3(0, 0.0f, 0));
         _allEnemies.Add(enemy);
         _enemyCurrentCount.Value = _allEnemies.Count;
@@ -286,9 +287,12 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
             {
                 while (BattleManager.Instance.IsPaused.Value) yield return null;
                 yield return TimerUtility.WaitForGameSeconds(WaveManager.Instance.SpawnEnemyInterval);
-                Enemy enemy = _enemyPool.Get();
+                
                 int currentRound = WaveManager.Instance.CurrentRound;
-                SpawnEnemy(enemy, Random.Range(-7.5f, 7.5f), Random.Range(Mathf.Max(1,currentRound - 3),currentRound));
+                // 随机获取一个 EnemyType 枚举值
+                Array types = Enum.GetValues(typeof(EnemyType));
+                EnemyType randomType = (EnemyType)types.GetValue(UnityEngine.Random.Range(0, types.Length));
+                SpawnEnemy(EnemyType.Boss, UnityEngine. Random.Range(-7f, 7f), UnityEngine.Random.Range(Mathf.Max(1,currentRound - 3),currentRound));
 
                 // 如果是最后一波 且是最后一个敌人
                 if (WaveManager.Instance.CurrentRound == WaveManager.Instance.MaxRound &&

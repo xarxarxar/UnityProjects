@@ -1,11 +1,24 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+/// <summary>
+/// 子弹的攻击方式，跟随目标，还是穿透目标
+/// </summary>
 public enum BulletType
 {
     FollowTarget,
     SinglePenetrate,
     MultiPenetrate
+}
+/// <summary>
+/// 子弹的种类，普通弹还是干冰弹还是火焰弹还是电击弹
+/// </summary>
+public enum BulletKind
+{
+    Normal,
+    Ice,
+    Fire,
+    Electric
 }
 
 [RequireComponent(typeof(Collider2D))]
@@ -16,6 +29,7 @@ public class Bullet : MonoBehaviour
     [SerializeField] private TrailRenderer _trailRenderer;
 
     private BulletType _bulletType;
+    private BulletKind _bulletKind=>TowerManager.Instance.CurrentBulletKind;
     private Enemy _targetEnemy;
     private bool _isCritical;
     private int _damage;
@@ -30,7 +44,7 @@ public class Bullet : MonoBehaviour
     private int _currentChain = 0;
     private float _decayPercent = 0f;
     private float _baseDamage;
-    private List<Enemy> _hitEnemies = new List<Enemy>();
+    private List<Enemy> _hitEnemies = new List<Enemy>();//已经击中过的敌人
 
     private void Start()
     {
@@ -59,6 +73,17 @@ public class Bullet : MonoBehaviour
         _isCritical = isCritical;
         _damage = damage;
         AudioManager.Instance.PlaySFX("开枪");
+        switch (_bulletKind)
+        {
+            case BulletKind.Normal:
+                GetComponent<SpriteRenderer>().color=Color.white; break;
+            case BulletKind.Ice:
+                GetComponent<SpriteRenderer>().color = Color.blue; break;
+            case BulletKind.Fire:
+                GetComponent<SpriteRenderer>().color = Color.red; break;
+            case BulletKind.Electric:
+                GetComponent<SpriteRenderer>().color = Color.yellow; break;
+        }
     }
 
     // 穿透型子弹（单穿/多穿）
@@ -70,6 +95,18 @@ public class Bullet : MonoBehaviour
         _damage = damage;
         _bulletType = type;
         AudioManager.Instance.PlaySFX("开枪");
+
+        switch (_bulletKind)
+        {
+            case BulletKind.Normal:
+                GetComponent<SpriteRenderer>().color = Color.white; break;
+            case BulletKind.Ice:
+                GetComponent<SpriteRenderer>().color = Color.blue; break;
+            case BulletKind.Fire:
+                GetComponent<SpriteRenderer>().color = Color.red; break;
+            case BulletKind.Electric:
+                GetComponent<SpriteRenderer>().color = Color.yellow; break;
+        }
     }
 
     // 弹射子弹（跟踪型 + 弹射次数 + 衰减百分比）
@@ -87,6 +124,18 @@ public class Bullet : MonoBehaviour
         _hitEnemies.Clear();
 
         AudioManager.Instance.PlaySFX("开枪");
+
+        switch (_bulletKind)
+        {
+            case BulletKind.Normal:
+                GetComponent<SpriteRenderer>().color = Color.white; break;
+            case BulletKind.Ice:
+                GetComponent<SpriteRenderer>().color = Color.blue; break;
+            case BulletKind.Fire:
+                GetComponent<SpriteRenderer>().color = Color.red; break;
+            case BulletKind.Electric:
+                GetComponent<SpriteRenderer>().color = Color.yellow; break;
+        }
     }
 
     #endregion
@@ -151,7 +200,8 @@ public class Bullet : MonoBehaviour
     {
         if (_targetEnemy != null)
         {
-            _targetEnemy.TakeDamage(_isCritical, _damage);
+            OnHitEnemy(_targetEnemy, _isCritical, _damage);
+            //_targetEnemy.TakeDamage(_isCritical, _damage);
             _hitEnemies.Add(_targetEnemy);
         }
 
@@ -206,7 +256,8 @@ public class Bullet : MonoBehaviour
         switch (_bulletType)
         {
             case BulletType.SinglePenetrate:
-                enemy.TakeDamage(_isCritical, _damage);
+                OnHitEnemy(enemy, _isCritical, _damage);
+                //enemy.TakeDamage(_isCritical, _damage);
                 _canDamage = false;
                 ReturnToPool();
                 break;
@@ -215,8 +266,39 @@ public class Bullet : MonoBehaviour
                 if (!_damagedEnemies.Contains(enemy))
                 {
                     _damagedEnemies.Add(enemy);
-                    enemy.TakeDamage(_isCritical, _damage);
+                    OnHitEnemy(enemy, _isCritical, _damage);
+                    //enemy.TakeDamage(_isCritical, _damage);
                 }
+                break;
+        }
+    }
+    public void OnHitEnemy(Enemy enemy, bool isCritical, int damage)
+    {
+        if (_bulletKind != BulletKind.Normal)
+        {
+            Debug.Log($"enemy is{enemy}，enemy.gameObject.activeInHierarchy is{enemy.gameObject.activeInHierarchy}");
+        }
+        if (!enemy.gameObject.activeInHierarchy) return;
+        // 1. 所有子弹都有的基础伤害
+        enemy.TakeDamage(isCritical,damage);
+        if (!enemy.gameObject.activeInHierarchy) return;
+        // 2. 如果敌人有护盾，跳过特殊效果
+        if (enemy.CurrentShield.Value>0) return;
+
+        
+        
+
+        // 3. 特殊效果
+        switch (_bulletKind)
+        {
+            case BulletKind.Ice:
+                enemy.SetSpeed(0.5f, 3.0f);
+                break;
+            case BulletKind.Fire:
+                enemy.SetBleed(Mathf.RoundToInt(damage/10), 3.0f,0.5f);
+                break;
+            case BulletKind.Electric:
+                enemy.SetSpeed(0,1.0f);
                 break;
         }
     }

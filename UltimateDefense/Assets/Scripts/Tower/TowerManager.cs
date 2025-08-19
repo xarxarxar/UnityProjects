@@ -127,6 +127,9 @@ public class TowerManager : ManagerBase<TowerManager>,IManager
     /// 当前的炮塔
     /// </summary>
     public BaseTower CurrentTower { get => _currentTower; }
+
+    public  BulletKind CurrentBulletKind;
+
     #endregion
 
     #region public 成员方法
@@ -143,7 +146,7 @@ public class TowerManager : ManagerBase<TowerManager>,IManager
         //_baseCritProb.Value = TowerDataManager.Instance.GetTowerData(_currentTower.TowerType).BaseCritProb;
         //_baseCritMult.Value = TowerDataManager.Instance.GetTowerData(_currentTower.TowerType).BaseCritMult;
         //_baseReload.Value = TowerDataManager.Instance.GetTowerData(_currentTower.TowerType).BaseReload;
-
+        
         //临时
         _bonusTmpAtkRate.Value = 1.0f;
 
@@ -154,6 +157,8 @@ public class TowerManager : ManagerBase<TowerManager>,IManager
         _bonusCritMult.Value = 1.5f;
         _bonusReload.Value = 0;
         _bonusCap.Value = 10;
+        CurrentBulletKind = BulletKind.Normal;
+
         if (_bulletPool == null) _bulletPool = new ObjectPool<Bullet>(_bulletPrefab, 10, transform);
 
         //启用对应炮塔的脚本

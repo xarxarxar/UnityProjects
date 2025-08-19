@@ -1,8 +1,7 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
-using DG.Tweening; // 引入 DOTween
+using DG.Tweening;
+using System.Collections;
 
 
 /// <summary>
@@ -29,13 +28,15 @@ public class Enemy : MonoBehaviour
     //敌人的最大生命值，实际值由等级计算
     public Bindable<int> maxHP = new Bindable<int>();
     //敌人的最大护盾值，默认无护盾
-    private Bindable<int> maxShield = new Bindable<int>();
+    public Bindable<int> maxShield = new Bindable<int>();
     //UI 渲染层级顺序，数值越高越靠前
     private int enemyLayer = 0;
     //攻击伤害
     private int _attackDamage = 1;
     //最大弹跳次数
     private int _bounsCount = 10;
+    //敌人的速度
+    private float _enemySpeed = 2;
     #endregion
 
     #region 私有字段（状态与运行时数据）
@@ -50,10 +51,24 @@ public class Enemy : MonoBehaviour
     public float flashDuration = 0.1f; // 闪红时间
     private Color originalColor=new Color32(104,207,220,225);
     public Color hitColor = new Color32(255, 102, 51, 255);
+
+    private Coroutine _setSpeedCoro = null;//减速的协程
+    private float _speedRate = 1;//速度的比例
+
+    private Coroutine _bleedCoro = null;//流血的协程
+
+    //Boss技能
+    //public List<BossSkill> Skills = new List<BossSkill>();
+
     /// <summary>
     /// 敌人当前血量
     /// </summary>
     public Bindable<int> CurrentHP { get => _currentHP; }
+
+    /// <summary>
+    /// 敌人当前护盾
+    /// </summary>
+    public Bindable<int> CurrentShield { get => _currentShield; }
     #endregion
 
     #region Unity 生命周期
@@ -77,7 +92,8 @@ public class Enemy : MonoBehaviour
         if (_rb.velocity.sqrMagnitude > 0.01f)
         {
             // 保持原方向，调整速度大小
-            _rb.velocity = _rb.velocity.normalized * 2*BattleManager.Instance.GameSpeed.Value;
+            _rb.velocity = _rb.velocity.normalized * _enemySpeed * _speedRate
+                * BattleManager.Instance.GameSpeed.Value;
         }
     }
     #endregion
@@ -96,12 +112,17 @@ public class Enemy : MonoBehaviour
         _isInRangeList = false;       // 重置范围触发标志
         enemyLayer = layer;           // 设置渲染层级
         _bounsCount = 10;             //最大弹跳次数
+        this.enemyType = enemyType;   //敌人类型
 
         // 根据等级动态计算最大生命值，一级就是一滴血,护盾默认为 0
         maxHP.Value = Mathf.RoundToInt(level * (1 + BattleManager.Instance.Debuff.AddHP * 0.1f));//算上debuff的，增加敌人10%HP
         _currentHP.Value = maxHP.Value;   //初始化血量
         maxShield.Value = 0;            //初始化护盾
-        _currentShield = maxShield;             // 初始化当前护盾为最大值
+        if (this.enemyType==EnemyType.Elite || this.enemyType == EnemyType.Boss)
+        {
+            maxShield.Value = Mathf.Max(1,Mathf.RoundToInt(maxHP.Value));          //初始化护盾
+        }
+        _currentShield.Value = maxShield.Value;             // 初始化当前护盾为最大值
         _currentHP.OnValueChanged += ChangeHP;  //添加值变化事件
         _currentShield.OnValueChanged += ChangeShield;//添加值变化事件
         ChangeShield(_currentHP.Value);         // 初始化护盾条填充
@@ -124,6 +145,28 @@ public class Enemy : MonoBehaviour
         _rb.velocity = Vector2.down.normalized;
 
         BattleManager.OnEndBattle += OnEndBattle;
+
+        switch (this.enemyType)
+        {
+            case EnemyType.Normal:
+                originalColor= new Color32(80, 140, 255, 255);// 柔和蓝
+                break;
+
+            case EnemyType.Coin:
+                originalColor = new Color32(212, 175, 55, 255);// 金色
+                break;
+
+            case EnemyType.Elite:
+                originalColor = new Color32(170, 100, 220, 255); // 紫色
+                break;
+
+            case EnemyType.Boss:
+                originalColor = new Color32(200, 70, 70, 255);// 深红
+                //Skills.Add(new BossSkill("加速", 10f, boss => boss.SetSpeed(2.0f,5)));
+                BossSkill_03();
+                break;
+        }
+        GetComponent<SpriteRenderer>().color = originalColor;
     }
 
 
@@ -145,6 +188,8 @@ public class Enemy : MonoBehaviour
 
         OnEnemyDamaged?.Invoke(this, isCritical, damage); // 通知外部
 
+
+
         if (_currentShield.Value > 0)            // 有护盾时先扣护盾
         {
             _currentShield.Value = Mathf.Max(_currentShield.Value - damage, 0);
@@ -153,11 +198,11 @@ public class Enemy : MonoBehaviour
         {
             _currentHP.Value = Mathf.Max(_currentHP.Value - damage, 0);
             FlashRed();//闪红
-            EnemyUIManager.Instance.UpdateEnemyHealth(transform, _currentHP.Value, maxHP.Value);
             //EnemyUIManager.Instance.UpdateEnemyHp(transform, _currentHP.Value);
             if (_currentHP.Value == 0)
                 Die();                    // 血量耗尽则死亡
         }
+        EnemyUIManager.Instance.UpdateEnemyHealth(this);
     }
 
     /// <summary>
@@ -169,10 +214,134 @@ public class Enemy : MonoBehaviour
         enemyLayer = layer;
     }
 
-    
+    /// <summary>
+    /// 设置敌人的速度，可用于干冰子弹
+    /// </summary>
+    /// <param name="rate">设置速度为百分之多少</param>
+    /// <param name="duration">持续时长，若为0，则一直持续</param>
+    public void SetSpeed(float rate, float duration = 0)//自己被设置速度
+    {
+        if(rate<0) return;
+        _speedRate = rate;
+        Vector2 dir = Vector2.zero;
+        if (rate == 0)
+        {
+            dir = _rb.velocity.normalized;
+        }
+        if (duration > 0)
+        {
+            if (_setSpeedCoro != null)
+            {
+                StopCoroutine(_setSpeedCoro);
+                _setSpeedCoro = null;
+            }
+            _setSpeedCoro = StartCoroutine(SetSpeedCoro(duration,dir));
+        }
+        else
+        {
+            return;
+        }
+    }
+
+    /// <summary>
+    /// 设置流血效果。可以用于中毒，灼烧等等
+    /// </summary>
+    /// <param name="damage">每次流血的血量</param>
+    /// <param name="timeDelat">每次流血的间隔</param>
+    /// <param name="duration">流血持续的时间</param>
+    public void SetBleed(int damage, float duration, float timeDelat=1.0f)
+    {
+        if (duration <= 0 || timeDelat<=0 || damage<=0) return;
+        if (_bleedCoro != null)
+        {
+            StopCoroutine(_bleedCoro);
+            _bleedCoro = null;
+        }
+        _bleedCoro = StartCoroutine(BleedCoro(damage, timeDelat,duration));
+    }
     #endregion
 
     #region 辅助方法
+
+    //每隔一段时间加速一会儿
+    private void BossSkill_01()
+    {
+        TimerUtility.RepeatDoing(
+            this,
+            10.0f,
+            () => { SetSpeed(2.0f, 5.0f); },
+            null,
+            0
+            );
+    }
+
+    //每隔一段时间为自己添加当前血量10%的护盾
+    private void BossSkill_02()
+    {
+        TimerUtility.RepeatDoing(
+            this,
+            10.0f,
+            () => { CurrentShield.Value += CurrentHP.Value;
+                EnemyUIManager.Instance.UpdateEnemyHealth(this);
+            },
+            null,
+            0
+            );
+    }
+
+    //每隔一段时间召唤一个小球，血量为2，自身扣除一点血量
+    private void BossSkill_03()
+    {
+        TimerUtility.RepeatDoing(
+            this,
+            10.0f,
+            () => {
+                EnemyManager.Instance.SpawnEnemy(EnemyType.Normal,Random.Range(-7.5f, 7.5f),1);
+                TakeDamage(false,1);
+            },
+            ()=>CurrentHP.Value>1,
+            5
+            );
+    }
+
+    //每隔一段时间召唤一个小球，血量为2，自身扣除一点血量
+    private void BossSkill_04()
+    {
+        TimerUtility.RepeatDoing(
+            this,
+            10.0f,
+            () => {
+                EnemyManager.Instance.SpawnEnemy(EnemyType.Normal, Random.Range(-7.5f, 7.5f), 1);
+                TakeDamage(false, 1);
+            },
+            () => CurrentHP.Value > 1,
+            5
+            );
+    }
+
+    private IEnumerator SetSpeedCoro(float duration,Vector2 dir)
+    {
+        yield return TimerUtility.WaitForGameSeconds(duration);
+        if (_speedRate == 0)
+        {
+            _rb.velocity=dir.normalized;
+        }
+        _speedRate = 1;
+        yield break;
+    }
+
+    private IEnumerator BleedCoro(int damage, float timeDelat=1, float duration=0)
+    {
+        float totalTime = 0;
+        while (totalTime < duration)
+        {
+            yield return TimerUtility.WaitForGameSeconds(timeDelat);
+            TakeDamage(false,damage);
+            totalTime += duration;
+        }
+        yield break;
+    }
+
     /// <summary>敌人死亡流程：设置标志、触发事件、回收对象</summary>
     private void Die()
     {
@@ -247,3 +416,30 @@ public class Enemy : MonoBehaviour
     }
     #endregion
 }
+
+//public class BossSkill
+//{
+//    public string Name;
+//    public float Cooldown;      // 技能冷却时间
+//    public float Timer;         // 计时器
+//    public System.Action<Enemy> Action; // 技能触发的方法
+
+//    public BossSkill(string name, float cooldown, System.Action<Enemy> action)
+//    {
+//        Name = name;
+//        Cooldown = cooldown;
+//        Timer = 0;
+//        Action = action;
+//    }
+
+//    // 更新时间，如果达到冷却时间就触发技能
+//    public void UpdateSkill(Enemy boss, float deltaTime)
+//    {
+//        Timer += deltaTime;
+//        if (Timer >= Cooldown)
+//        {
+//            Action?.Invoke(boss);
+//            Timer = 0;
+//        }
+//    }
+//}

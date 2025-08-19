@@ -16,6 +16,8 @@ public class EnemyUIManager : MonoBehaviour
         public Transform enemy;
         public RectTransform container;
         public Slider healthSlider;
+        public GameObject sliderBackground;
+        public GameObject sliderFill;
         public Text hpText;
         public Vector3 worldOffset;
         public bool hideWhenOffscreen;
@@ -82,6 +84,8 @@ public class EnemyUIManager : MonoBehaviour
         uiObj.transform.SetAsFirstSibling();
         var slider = uiObj.GetComponentInChildren<Slider>();
         var text = uiObj.GetComponentInChildren<Text>();
+        GameObject background = slider.transform.Find("Background").gameObject;
+        GameObject fill = slider.transform.Find("Fill Area").Find("Fill").gameObject;
 
         // 血条默认隐藏
         if (slider != null)
@@ -92,6 +96,8 @@ public class EnemyUIManager : MonoBehaviour
             enemy = enemy.transform,
             container = uiObj.GetComponent<RectTransform>(),
             healthSlider = slider,
+            sliderBackground= background,
+            sliderFill= fill,
             hpText = text,
             worldOffset = offset,
             hideWhenOffscreen = hideWhenOffscreen,
@@ -111,21 +117,34 @@ public class EnemyUIManager : MonoBehaviour
     /// <summary>
     /// 更新敌人血量（受击时调用）
     /// </summary>
-    public void UpdateEnemyHealth(Transform enemy, float current, float max)
+    public void UpdateEnemyHealth(Enemy enemy)
     {
-        var data = uiList.Find(d => d.enemy == enemy);
+        var data = uiList.Find(d => d.enemy == enemy.transform);
         if (data != null)
         {
             // 更新血条
             if (data.healthSlider != null)
             {
-                data.healthSlider.value = Mathf.Clamp01(current / max);
+                if (enemy.CurrentShield.Value > 0)
+                {
+                    data.sliderFill.GetComponent<Image>().color = new Color32(70,130,180,255);
+                    data.sliderBackground.GetComponent<Image>().color = new Color32(255,165,0,255);
+
+                    data.healthSlider.value = Mathf.Clamp01((float)enemy.CurrentShield.Value/enemy.maxShield.Value);
+                }
+                else
+                {
+                    data.sliderFill.GetComponent<Image>().color = new Color32(255, 165, 0, 255);
+                    data.sliderBackground.GetComponent<Image>().color = new Color32(94, 94, 94, 255);
+
+                    data.healthSlider.value = Mathf.Clamp01((float)enemy.CurrentHP.Value / enemy.maxHP.Value);
+                }
             }
 
             // 更新血量文本
             if (data.hpText != null)
             {
-                data.hpText.text = $"{Mathf.RoundToInt(current)}";
+                data.hpText.text = $"{Mathf.RoundToInt(enemy.CurrentHP.Value)}";
             }
 
             // 记录受击时间，使血条显示

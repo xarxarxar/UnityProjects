@@ -65,7 +65,8 @@ public class GamePlayingPanel : MonoBehaviour
     /// </summary>
     public void RefreshGoldDisplay(int amount)
     {
-        _goldText.text = CurrencyManager.Instance.Gold.ToString();
+        //_goldText.text = CurrencyManager.Instance.Gold.ToString();
+        UIUtils.PlayNumberAnimation(_goldText, CurrencyManager.Instance.Gold,0.5f);
     }
 
     /// <summary>
