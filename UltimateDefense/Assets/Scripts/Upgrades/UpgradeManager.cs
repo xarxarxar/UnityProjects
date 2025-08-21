@@ -10,7 +10,8 @@ public class UpgradeManager : ManagerBase<UpgradeManager>,IManager
     #region 私有字段
     private List<UpgradeBase> _purchasedUpgrades = new List<UpgradeBase>();             // 已购买升级列表
     private int _totalSpentGold;                              // 累计花费的金币，可用于成就统计
-    private int _updateCount = 0;//刷新升级面板的次数
+    private Bindable<int> _refreshCount =new Bindable<int>();//刷新升级面板的次数
+    private Bindable<int> _buyUpgradeCount =new Bindable<int>();//购买升级的次数
     #endregion
 
     #region 公开属性
@@ -22,7 +23,11 @@ public class UpgradeManager : ManagerBase<UpgradeManager>,IManager
     /// <summary>
     /// 刷新升级面板的次数
     /// </summary>
-    public int UpdateCount { get => _updateCount; set => _updateCount = value; }
+    public Bindable<int> RefreshCount { get => _refreshCount; set => _refreshCount = value; }
+    /// <summary>
+    /// 购买升级的次数
+    /// </summary>
+    public Bindable<int> BuyUpgradeCount { get => _buyUpgradeCount;}
 
     #endregion
 
@@ -53,7 +58,8 @@ public class UpgradeManager : ManagerBase<UpgradeManager>,IManager
     {
         _purchasedUpgrades.Clear();
         _totalSpentGold = 0;
-        _updateCount = 0;
+        _refreshCount.Value = 0;
+        _buyUpgradeCount.Value = 0;
     }
     /// <summary>
     /// 尝试购买指定升级：返回是否成功
@@ -72,7 +78,7 @@ public class UpgradeManager : ManagerBase<UpgradeManager>,IManager
         _purchasedUpgrades.Add(upgrade);
         _totalSpentGold += upgrade.Cost;
         OnUpgradePurchased?.Invoke(upgrade);
-
+        _buyUpgradeCount.Value++;
         Debug.Log($"购买了{upgrade.Description}");
 
         // 应用升级效果

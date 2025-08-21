@@ -22,8 +22,8 @@ public class Upgrade_GetMoney : UpgradeBase
     /// <param name="cost">消耗的金币数</param>
     public Upgrade_GetMoney(int count, int cost)
     {
-        UpgradeID = "GetMoney";
         money = count;
+        UpgradeID = $"GetMoney{money}";
         Cost = cost;
         Description = $"立刻获得{Money}金币";
     }

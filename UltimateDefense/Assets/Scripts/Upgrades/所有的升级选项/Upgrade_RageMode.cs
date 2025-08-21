@@ -25,8 +25,8 @@ public class Upgrade_RageMode : UpgradeBase
     /// <param name="cost">消耗的金币数</param>
     public Upgrade_RageMode(float dur, int cost)
     {
-        UpgradeID = "RageMode";
         duration = dur;
+        UpgradeID = $"RageMode{duration}";
         Cost = cost;
         Description = $"攻速变为当前300%，持续{duration}秒";
     }
@@ -35,7 +35,7 @@ public class Upgrade_RageMode : UpgradeBase
     {
         float[] durations = { 10, 15, 20 };
         float bonus = durations[Random.Range(0, durations.Length)];
-        int cost = Mathf.RoundToInt(bonus * 10);
+        int cost = Mathf.RoundToInt(bonus * (3 + UpgradeManager.Instance.RefreshCount.Value * 1));
         return new Upgrade_RageMode(bonus, cost);
     }
 

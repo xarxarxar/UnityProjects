@@ -28,16 +28,17 @@ public class Upgrade_IncreaseCrystalMaxHP : UpgradeBase
     /// <param name="cost">消耗的金币数</param>
     public Upgrade_IncreaseCrystalMaxHP(int bonus, int cost)
     {
-        UpgradeID = "IncreaseCrystalHP";
         _bonus = bonus;
+        UpgradeID = $"IncreaseCrystalHP{_bonus}";
         Cost = cost;
         Description = $"水晶最大生命值 +{bonus}";
     }
 
     public static Upgrade_IncreaseCrystalMaxHP CreateDynamicUpgrade()
     {
-        int bonus = 10;
-        int cost = 100;
+        int[] values = { 10, 20, 50 };
+        int bonus = values[Random.Range(0, values.Length)];
+        int cost = Mathf.RoundToInt(bonus * (5 + UpgradeManager.Instance.RefreshCount.Value * 2));
         return new Upgrade_IncreaseCrystalMaxHP(bonus, cost);
     }
 

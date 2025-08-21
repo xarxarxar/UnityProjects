@@ -9,8 +9,8 @@ public class GameEndPanel : MonoBehaviour
     [SerializeField] private Text _progressText;//完成了多少进度的 Text
     [SerializeField] private Slider _progressSlider;//完成了多少进度的 slider
 
-    [SerializeField] private Button _continueButton;//继续按钮
-    [SerializeField] private Button _doubleButton;//奖励翻倍按钮
+    [SerializeField] private BindableButton _continueButton;//继续按钮
+    [SerializeField] private BindableButton _doubleButton;//奖励翻倍按钮
 
     [SerializeField] private RewardStruct _diamondReward;//钻石奖励
     [SerializeField] private RewardStruct _crownReward;//王冠
@@ -44,7 +44,7 @@ public class GameEndPanel : MonoBehaviour
 
     private void Start()
     {
-        _continueButton.onClick.AddListener(ContinueButton);
+        _continueButton.AddListener(ContinueButton);
     }
 
 

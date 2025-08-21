@@ -51,7 +51,15 @@ public class WaveManager : ManagerBase<WaveManager>,IManager
     /// <summary>
     /// 只读属性，每个敌人生成的间隔时间
     /// </summary>
-    public float SpawnEnemyInterval { get => _spawnEnemyInterval; }
+    public float SpawnEnemyInterval
+    {
+        get => _spawnEnemyInterval;
+        set 
+        {
+            _spawnEnemyInterval = value;
+           
+        } 
+    }
     /// <summary>
     /// 只读属性，每波敌人生成的间隔时间
     /// </summary>

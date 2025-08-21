@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class DrawBlessPanel : BasePanel
 {
     [SerializeField]private LoopListView2 _loopListView;
-    [SerializeField] private Button _drawButton;//抽奖按钮
+    [SerializeField] private BindableButton _drawButton;//抽奖按钮
     [SerializeField] private RewardStruct _cost;//抽奖所需的花费
     [SerializeField] private SimpleScrollSnap _simpleScrollSnap;//抽奖所在的区域
 
@@ -20,7 +20,7 @@ public class DrawBlessPanel : BasePanel
         BlessManager.Instance.BlessCost = 1;
         _cost.Init(BlessManager.Instance.BlessCost);//花费
 
-        _drawButton.onClick.AddListener(DrawBless);
+        _drawButton.AddListener(DrawBless);
         //拥有的钻石数量要大于等于花费的数量
         //_drawButton.interactable=MetaCurrencyManager.Instance.DiamondCount.Value>= BlessManager.Instance.BlessCost;
         _cost.countText.color = MetaCurrencyManager.Instance.DiamondCount.Value >= BlessManager.Instance.BlessCost ? new Color32(239, 241, 245, 255) : new Color32(228, 73, 98, 255);
@@ -30,7 +30,7 @@ public class DrawBlessPanel : BasePanel
     private void OnDisable()
     {
         _simpleScrollSnap.GoToPanel(1);
-        _drawButton.onClick.RemoveAllListeners();
+        _drawButton.RemoveAllListeners();
     }
 
     //抽取祝福

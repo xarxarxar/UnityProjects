@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 降低借款利息
+/// </summary>
 public class Upgrade_DecreaseAdvanceInterest : UpgradeBase
 {
     #region 私有字段

@@ -31,16 +31,17 @@ public class Upgrade_IncreaseTowerReloadTime : UpgradeBase
     /// <param name="cost">消耗的金币数</param>
     public Upgrade_IncreaseTowerReloadTime(float bonus, int cost)
     {
-        UpgradeID = "IncreaseTowerReloadTime";
         _bonus = bonus;
+        UpgradeID = $"IncreaseTowerReloadTime{_bonus}";
         Cost = cost;
         Description = $"炮塔换弹时长 -{bonus}秒";
     }
 
     public static Upgrade_IncreaseTowerReloadTime CreateDynamicUpgrade()
     {
-        float bonus =0.1f;
-        int cost = 100;
+        float[] values = { 0.1f, 0.15f, 0.2f };
+        float bonus = values[Random.Range(0, values.Length)];
+        int cost = Mathf.RoundToInt(bonus*(200 + UpgradeManager.Instance.RefreshCount.Value * 70));
         return new Upgrade_IncreaseTowerReloadTime(bonus, cost);
     }
 

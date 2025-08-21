@@ -83,6 +83,7 @@ public class Enemy : MonoBehaviour
             spriteRenderer.DOKill();
             spriteRenderer.color = originalColor;
         }
+        _speedRate = 1;
         StopAllCoroutines();
     }
 
@@ -116,6 +117,7 @@ public class Enemy : MonoBehaviour
 
         // 根据等级动态计算最大生命值，一级就是一滴血,护盾默认为 0
         maxHP.Value = Mathf.RoundToInt(level * (1 + BattleManager.Instance.Debuff.AddHP * 0.1f));//算上debuff的，增加敌人10%HP
+        
         _currentHP.Value = maxHP.Value;   //初始化血量
         maxShield.Value = 0;            //初始化护盾
         if (this.enemyType==EnemyType.Elite || this.enemyType == EnemyType.Boss)
@@ -163,7 +165,7 @@ public class Enemy : MonoBehaviour
             case EnemyType.Boss:
                 originalColor = new Color32(200, 70, 70, 255);// 深红
                 //Skills.Add(new BossSkill("加速", 10f, boss => boss.SetSpeed(2.0f,5)));
-                BossSkill_03();
+                BossSkill_05();
                 break;
         }
         GetComponent<SpriteRenderer>().color = originalColor;
@@ -188,8 +190,6 @@ public class Enemy : MonoBehaviour
 
         OnEnemyDamaged?.Invoke(this, isCritical, damage); // 通知外部
 
-
-
         if (_currentShield.Value > 0)            // 有护盾时先扣护盾
         {
             _currentShield.Value = Mathf.Max(_currentShield.Value - damage, 0);
@@ -202,6 +202,13 @@ public class Enemy : MonoBehaviour
             if (_currentHP.Value == 0)
                 Die();                    // 血量耗尽则死亡
         }
+        EnemyUIManager.Instance.UpdateEnemyHealth(this);
+    }
+
+    public void RecoverHp(int value)
+    {
+        if (_isDead) return;               // 如果已死亡，忽略
+        _currentHP.Value = Mathf.Min(_currentHP.Value + value, maxHP.Value);
         EnemyUIManager.Instance.UpdateEnemyHealth(this);
     }
 
@@ -219,13 +226,14 @@ public class Enemy : MonoBehaviour
     /// </summary>
     /// <param name="rate">设置速度为百分之多少</param>
     /// <param name="duration">持续时长，若为0，则一直持续</param>
-    public void SetSpeed(float rate, float duration = 0)//自己被设置速度
+    public void SetSpeed(float rate, float duration = 0,UnityAction callback=null)//自己被设置速度
     {
         if(rate<0) return;
         _speedRate = rate;
         Vector2 dir = Vector2.zero;
         if (rate == 0)
         {
+            Debug.Log($"速度为{_rb.velocity.normalized}");
             dir = _rb.velocity.normalized;
         }
         if (duration > 0)
@@ -235,7 +243,7 @@ public class Enemy : MonoBehaviour
                 StopCoroutine(_setSpeedCoro);
                 _setSpeedCoro = null;
             }
-            _setSpeedCoro = StartCoroutine(SetSpeedCoro(duration,dir));
+            _setSpeedCoro = StartCoroutine(SetSpeedCoro(duration,dir, callback));
         }
         else
         {
@@ -304,29 +312,54 @@ public class Enemy : MonoBehaviour
             );
     }
 
-    //每隔一段时间召唤一个小球，血量为2，自身扣除一点血量
+    //每隔一段时间进行有丝分裂
     private void BossSkill_04()
     {
         TimerUtility.RepeatDoing(
             this,
             10.0f,
             () => {
-                EnemyManager.Instance.SpawnEnemy(EnemyType.Normal, Random.Range(-7.5f, 7.5f), 1);
-                TakeDamage(false, 1);
+                EnemyManager.Instance.SpawnEnemy(EnemyType.Boss, transform.position.x-1,
+                    Mathf.RoundToInt(CurrentHP.Value/2), transform.position.y);
+                EnemyManager.Instance.SpawnEnemy(EnemyType.Boss, transform.position.x + 1,
+                    Mathf.RoundToInt(CurrentHP.Value / 2), transform.position.y);
+                _isDead = true;
+                EnemyUIManager.Instance.RemoveEnemyUI(transform);
+                EnemyManager.Instance.EnemyPool.Return(this); ;
             },
             () => CurrentHP.Value > 1,
-            5
+            10
             );
     }
 
-    private IEnumerator SetSpeedCoro(float duration,Vector2 dir)
+    private void BossSkill_05()
+    {
+        bool isInSkill=false;//是否正在使用技能中
+        _currentHP.OnValueChanged += null;
+        _currentHP.OnValueChanged += OnCurrentHpChanged;
+        void OnCurrentHpChanged(int hp)
+        {
+            if (hp < Mathf.RoundToInt(maxHP.Value / 2) && !isInSkill)
+            {
+                isInSkill = true;
+                SetSpeed(0, 5, () => { RecoverHp(Mathf.RoundToInt(maxHP.Value / 5)); isInSkill = false; });
+            }
+        }
+    }
+
+    
+
+    private IEnumerator SetSpeedCoro(float duration,Vector2 dir, UnityAction callback = null)
     {
         yield return TimerUtility.WaitForGameSeconds(duration);
+        Debug.Log($"结束后初始速度为{dir.normalized}");
         if (_speedRate == 0)
         {
             _rb.velocity=dir.normalized;
+            Debug.Log($"结束后速度为{_rb.velocity.normalized}");
         }
         _speedRate = 1;
+        callback?.Invoke();
         yield break;
     }
 
@@ -346,6 +379,10 @@ public class Enemy : MonoBehaviour
     private void Die()
     {
         _isDead = true;
+        ParticleSystem particleSystem=EnemyManager.Instance.ExplosionEffectPool.Get();
+        particleSystem.transform.position=transform.position;
+        particleSystem.Play();
+        TimerUtility.Instance.Timer(0.5f, () =>{ EnemyManager.Instance.ExplosionEffectPool.Return(particleSystem); });
         EnemyUIManager.Instance.RemoveEnemyUI(transform);
         OnEnemyDie?.Invoke(this);
         EnemyManager.Instance.EnemyPool.Return(this);

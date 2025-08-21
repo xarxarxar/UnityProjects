@@ -103,6 +103,21 @@ public class AudioManager : ManagerBase<AudioManager>,IManager
     {
         sfxVolume = volume;
     }
+
+    /// <summary>
+    /// ªÒ»°audioclip
+    /// </summary>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    public AudioClip GetAudioClip(string key)
+    {
+        var clip = audioLibrary.GetClip(key);
+        if (clip != null)
+        {
+            return clip;
+        }
+        return null;
+    }
 }
 
 [System.Serializable]

@@ -25,17 +25,17 @@ public class Upgrade_IncreaseCriticalMultiplier : UpgradeBase
     /// <param name="cost">ÏûºÄµÄ½ð±ÒÊý</param>
     public Upgrade_IncreaseCriticalMultiplier(float bonus, int cost)
     {
-        UpgradeID = "IncreaseCriticalMultiplier";
         _bonus = bonus;
+        UpgradeID = $"IncreaseCriticalMultiplier{_bonus}";
         Cost = cost;
         Description = $"ÅÚËþ±©»÷ÉËº¦ +{_bonus * 100}%";
     }
 
     public static Upgrade_IncreaseCriticalMultiplier CreateDynamicUpgrade()
     {
-        float[] values = { 0.1f, 0.15f, 0.2f };
+        float[] values = { 0.05f, 0.1f, 0.15f };
         float bonus = values[Random.Range(0, values.Length)];
-        int cost =Mathf.RoundToInt(bonus* 300) ;
+        int cost = Mathf.RoundToInt(bonus * (500 + UpgradeManager.Instance.RefreshCount.Value * 100));
         return new Upgrade_IncreaseCriticalMultiplier(bonus, cost);
     }
 

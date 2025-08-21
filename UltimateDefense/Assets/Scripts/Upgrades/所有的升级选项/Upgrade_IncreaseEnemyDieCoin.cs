@@ -29,8 +29,8 @@ public class Upgrade_IncreaseEnemyDieCoin : UpgradeBase
     /// <param name="cost">消耗的金币数</param>
     public Upgrade_IncreaseEnemyDieCoin(int bonus, int cost)
     {
-        UpgradeID = "IncreaseEnemyDieCoin";
         _bonus = bonus;
+        UpgradeID = $"IncreaseEnemyDieCoin{_bonus}";
         Cost = cost;
         Description = $"敌人掉落金币 +{bonus}";
     }
@@ -39,7 +39,7 @@ public class Upgrade_IncreaseEnemyDieCoin : UpgradeBase
     {
         int[] moneys = { 1, 2, 5 };
         int bonus = moneys[Random.Range(0, moneys.Length)];
-        int cost = bonus*50;
+        int cost = Mathf.RoundToInt(bonus * (30 + UpgradeManager.Instance.RefreshCount.Value * 10));
         return new Upgrade_IncreaseEnemyDieCoin(bonus, cost);
     }
 

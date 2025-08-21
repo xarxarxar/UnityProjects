@@ -27,7 +27,7 @@ public static class UpgradeFactory
             Upgrade_IncreaseCriticalShotProb.CreateDynamicUpgrade,
             Upgrade_IncreaseCriticalMultiplier.CreateDynamicUpgrade,
             //Upgrade_SaveMoneyToBank.CreateDynamicUpgrade,
-            Upgrade_IncreaseBankInterest.CreateDynamicUpgrade,
+            //Upgrade_IncreaseBankInterest.CreateDynamicUpgrade,
             Upgrade_IncreaseEnemyDieCoin.CreateDynamicUpgrade,
             Upgrade_IncreaseCrystalMaxHP.CreateDynamicUpgrade,
             Upgrade_GetMoney.CreateDynamicUpgrade,
@@ -35,8 +35,10 @@ public static class UpgradeFactory
             Upgrade_SetCrystalInvincible.CreateDynamicUpgrade,
             Upgrade_SetEnemyHalf.CreateDynamicUpgrade,
             Upgrade_RageMode.CreateDynamicUpgrade,
-            Upgrade_DecreaseAdvanceInterest.CreateDynamicUpgrade,
-            Upgrade_IncreaseMaxAdvance.CreateDynamicUpgrade,
+            //Upgrade_DecreaseAdvanceInterest.CreateDynamicUpgrade,
+            //Upgrade_IncreaseMaxAdvance.CreateDynamicUpgrade,
+            Upgrade_ChangeBulletKind.CreateDynamicUpgrade,
+            Upgrade_BulletKindDuration.CreateDynamicUpgrade,
             // 可在此继续扩充其他类型升级的模板，例如减速、银行利息等
         };
     }
@@ -116,10 +118,10 @@ public static class UpgradeFactory
         //{
         //    return new Upgrade_SaveMoneyToBank();
         //}
-        if (template is Upgrade_IncreaseBankInterest ibi)
-        {
-            return new Upgrade_IncreaseBankInterest(ibi.Bonus, ibi.Cost);
-        }
+        //if (template is Upgrade_IncreaseBankInterest ibi)
+        //{
+        //    return new Upgrade_IncreaseBankInterest(ibi.Bonus, ibi.Cost);
+        //}
         if (template is Upgrade_IncreaseEnemyDieCoin iedc)
         {
             return new Upgrade_IncreaseEnemyDieCoin(iedc.Bonus, iedc.Cost);
@@ -148,13 +150,21 @@ public static class UpgradeFactory
         {
             return new Upgrade_RageMode(urm.Duration, urm.Cost);
         }
-        if (template is Upgrade_DecreaseAdvanceInterest udai)
+        //if (template is Upgrade_DecreaseAdvanceInterest udai)
+        //{
+        //    return new Upgrade_DecreaseAdvanceInterest(udai.Bonus, udai.Cost);
+        //}
+        //if (template is Upgrade_IncreaseMaxAdvance uima)
+        //{
+        //    return new Upgrade_IncreaseMaxAdvance(uima.Bonus, uima.Cost);
+        //}
+        if (template is Upgrade_ChangeBulletKind ucbk)
         {
-            return new Upgrade_DecreaseAdvanceInterest(udai.Bonus, udai.Cost);
+            return new Upgrade_ChangeBulletKind(ucbk.BulletKind, ucbk.Cost);
         }
-        if (template is Upgrade_IncreaseMaxAdvance uima)
+        if (template is Upgrade_BulletKindDuration ubkd)
         {
-            return new Upgrade_IncreaseMaxAdvance(uima.Bonus, uima.Cost);
+            return new Upgrade_BulletKindDuration(ubkd.Bonus, ubkd.Cost);
         }
 
         // 后续若添加其他 Upgrade 子类，在此继续扩充：

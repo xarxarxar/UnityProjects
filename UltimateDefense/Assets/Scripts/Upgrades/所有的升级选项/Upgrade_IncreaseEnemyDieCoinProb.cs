@@ -29,8 +29,8 @@ public class Upgrade_IncreaseEnemyDieCoinProb : UpgradeBase
     /// <param name="cost">消耗的金币数</param>
     public Upgrade_IncreaseEnemyDieCoinProb(float bonus, int cost)
     {
-        UpgradeID = "IncreaseEnemyDieCoinProb";
         _enemyDieCoinProbBonus = bonus;
+        UpgradeID = $"IncreaseEnemyDieCoinProb{_enemyDieCoinProbBonus}";
         Cost = cost;
         Description = $"敌人掉落金币概率 +{_enemyDieCoinProbBonus * 100}%";
     }
@@ -39,7 +39,7 @@ public class Upgrade_IncreaseEnemyDieCoinProb : UpgradeBase
     {
         float[] values = { 0.02f, 0.05f, 0.1f };
         float bonus = values[Random.Range(0, values.Length)];
-        int cost = Mathf.RoundToInt(bonus * 2000);
+        int cost = Mathf.RoundToInt(bonus * (1000 + UpgradeManager.Instance.RefreshCount.Value * 300));
         return new Upgrade_IncreaseEnemyDieCoinProb(bonus, cost);
     }
 

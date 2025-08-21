@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>
 /// 通用对象池，适用于任意继承 MonoBehaviour 的类型 T
 /// </summary>
-public class ObjectPool<T> where T : MonoBehaviour
+public class ObjectPool<T> where T : Component
 {
     private readonly T _prefab;
     private readonly Transform _parent;

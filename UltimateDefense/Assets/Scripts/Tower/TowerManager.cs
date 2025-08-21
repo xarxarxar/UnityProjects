@@ -1,6 +1,5 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -32,7 +31,6 @@ public class TowerManager : ManagerBase<TowerManager>,IManager
     //总的
     private Bindable<float> _totalAttackRate = new Bindable<float>();//总攻速
 
-    private bool _isInitialized;                      // 标记是否已初始化
     private TowerFactory _towerFactory;               // 引用 TowerFactory 单例，用于创建新塔
     [SerializeField] public Bullet _bulletPrefab;     //子弹预制体
     private ObjectPool<Bullet> _bulletPool;           //子弹对象池
@@ -42,32 +40,6 @@ public class TowerManager : ManagerBase<TowerManager>,IManager
     #endregion
 
     #region 公开属性
-    //基础属性
-    ///// <summary>
-    ///// 炮塔基础攻击
-    ///// </summary>
-    //public Bindable<int> BaseAtk => _baseAtk;
-    ///// <summary>
-    ///// 炮塔基础弹夹容量
-    ///// </summary>
-    //public Bindable<int> BaseCap => _baseCap;
-    ///// <summary>
-    ///// 炮塔基础射速
-    ///// </summary>
-    //public Bindable<float> BaseAtkRate => _baseAtkRate;
-    ///// <summary>
-    ///// 炮塔基础暴击概率
-    ///// </summary>
-    //public Bindable<float> BaseCritProb => _baseCritProb;
-    ///// <summary>
-    ///// 炮塔基础暴击伤害倍率
-    ///// </summary>
-    //public Bindable<float> BaseCritMult => _baseCritMult;
-    ///// <summary>
-    ///// 炮塔基础换弹时长
-    ///// </summary>
-    //public Bindable<float> BaseReload => _baseReload;
-
 
     //全局属性加成
     /// <summary>
@@ -105,15 +77,7 @@ public class TowerManager : ManagerBase<TowerManager>,IManager
     /// <summary>
     /// 每秒攻击次数，总的
     /// </summary>
-    public Bindable<float> TotalAttackRate 
-    {
-        get
-        {
-            //_totalAttackRate.Value = (BaseAtkRate.Value + BonusAttackRate.Value) * BonusTmpAttackRate.Value;
-            return _totalAttackRate;
-        }
-    }
-
+    public Bindable<float> TotalAttackRate => _totalAttackRate;
 
     /// <summary>
     /// 子弹对象池，供外部调用
@@ -128,7 +92,12 @@ public class TowerManager : ManagerBase<TowerManager>,IManager
     /// </summary>
     public BaseTower CurrentTower { get => _currentTower; }
 
+    /// <summary>
+    /// 当前子弹的形态
+    /// </summary>
     public  BulletKind CurrentBulletKind;
+    private Coroutine changeBulletKindCoro = null;
+    public float BullletKindDuration = 10;//元素子弹持续的时间
 
     #endregion
 
@@ -139,14 +108,6 @@ public class TowerManager : ManagerBase<TowerManager>,IManager
     /// <exception cref="System.NotImplementedException"></exception>
     public override void Init()
     {
-        //基础
-        //_baseAtk.Value = TowerDataManager.Instance.GetTowerData(_currentTower.TowerType).Level;
-        //_baseCap.Value = TowerDataManager.Instance.GetTowerData(_currentTower.TowerType).BaseCap;
-        //_baseAtkRate.Value = TowerDataManager.Instance.GetTowerData(_currentTower.TowerType).BaseAtkRate;
-        //_baseCritProb.Value = TowerDataManager.Instance.GetTowerData(_currentTower.TowerType).BaseCritProb;
-        //_baseCritMult.Value = TowerDataManager.Instance.GetTowerData(_currentTower.TowerType).BaseCritMult;
-        //_baseReload.Value = TowerDataManager.Instance.GetTowerData(_currentTower.TowerType).BaseReload;
-        
         //临时
         _bonusTmpAtkRate.Value = 1.0f;
 
@@ -158,6 +119,8 @@ public class TowerManager : ManagerBase<TowerManager>,IManager
         _bonusReload.Value = 0;
         _bonusCap.Value = 10;
         CurrentBulletKind = BulletKind.Normal;
+        changeBulletKindCoro = null;
+        BullletKindDuration = 10;
 
         if (_bulletPool == null) _bulletPool = new ObjectPool<Bullet>(_bulletPrefab, 10, transform);
 
@@ -209,6 +172,20 @@ public class TowerManager : ManagerBase<TowerManager>,IManager
     public void ApplyGlobalAttackBonus(int bonus)
     {
         _bonusAtk.Value += bonus;
+    }
+
+    /// <summary>
+    /// 临时改变子弹的形态
+    /// </summary>
+    /// <param name="bulletKind">子弹的形态，干冰弹，火焰弹，麻痹弹</param>
+    /// <param name="duration">持续时间</param>
+    public void ChangeBullet(BulletKind bulletKind,float duration=0)
+    {
+        CurrentBulletKind=bulletKind;
+        if(duration != 0)
+        {
+            changeBulletKindCoro = TimerUtility.Instance.Timer(duration, ()=> CurrentBulletKind=BulletKind.Normal, changeBulletKindCoro);
+        }
     }
     #endregion
 

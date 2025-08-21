@@ -25,8 +25,9 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
     [SerializeField]private List<Enemy> _enemiesInRange;        //进入攻击范围的所有Enemy
     private bool _isInitialized;                // 标记是否已初始化
     [SerializeField] public Enemy _enemyPrefab;     //敌人预制体
+    [SerializeField] public ParticleSystem _explosionEffectPrefab;     //爆炸特效预制体
     private ObjectPool<Enemy> _enemyPool;           //敌人对象池
-    private ObjectPool<EnemyBase> _enemyBasePool;   //敌人基类对象池
+    private ObjectPool<ParticleSystem> _explosionEffectPool;   //爆炸特效对象池
     private Bindable<float>  _enemyDieCoinProb=new Bindable<float>();//敌人死亡之后获得金币的概率
     private Bindable<float>  _enemySpeed=new Bindable<float>();//敌人移动速度
     private Bindable<int> _enemyDieCoin = new Bindable<int>();//敌人死亡之后获得的金币数量
@@ -63,14 +64,14 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
     public List<Enemy> EnemiesInRange { get => _enemiesInRange; }
 
     /// <summary>
-    /// 子弹对象池，供外部调用
+    /// 敌人对象池，供外部调用
     /// </summary>
     public ObjectPool<Enemy> EnemyPool { get => _enemyPool; }
 
     /// <summary>
-    /// 敌人对象池，供外部调用
+    /// 爆炸特效对象池
     /// </summary>
-    public ObjectPool<EnemyBase> EnemyBasePool { get => _enemyBasePool; }
+    public ObjectPool<ParticleSystem> ExplosionEffectPool { get => _explosionEffectPool; }
 
     /// <summary>
     /// 敌人死亡后，掉落金币的概率
@@ -132,7 +133,7 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
         _allEnemies.Clear();
         _enemiesInRange.Clear();
         _enemyDieCoinProb.Value = 0.5f;
-        _enemyDieCoin.Value = 50;
+        _enemyDieCoin.Value = 10;
         _enemyCurrentCount.Value = 0;
         _enemySpeed.Value = 0.5f * (1 + BattleManager.Instance.Debuff.AddSpeed * 0.1f);
         _enemyDamageNullifiedCount.Value = 0 + BattleManager.Instance.Debuff.DamageNullified;
@@ -145,6 +146,7 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
         //BattleManager.Instance.GameSpeed.OnValueChanged += GameSpeedChanged;
         BattleManager.Instance.IsPaused.OnValueChanged += GamePausedChanged;
         if (_enemyPool==null) _enemyPool = new ObjectPool<Enemy>(_enemyPrefab, 20, transform);//初始化敌人对象池
+        if (_explosionEffectPool == null) _explosionEffectPool = new ObjectPool<ParticleSystem>(_explosionEffectPrefab, 5, transform);//初始化敌人对象池
         StartCoroutine(GenerateEnemyIE());
     }
 
@@ -276,44 +278,76 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
 
     private IEnumerator GenerateEnemyIE()
     {
-        yield return null;
+        yield return TimerUtility.WaitForGameSeconds(5);
         while (true)
         {
-            //Debug.Log($"一波生成前，当前波次为{WaveManager.Instance.CurrentRound}");
             WaveManager.Instance.CurrentRound++;
 
-            int enemyCount = Mathf.RoundToInt(WaveManager.Instance.SingleWaveEnemyCount * (1 + BattleManager.Instance.Debuff.AddCount * 0.1f));
-            for (int i = 0; i < enemyCount; i++)
+            //每10关召唤Boss
+            if (WaveManager.Instance.CurrentRound % 10 == 0)
             {
-                while (BattleManager.Instance.IsPaused.Value) yield return null;
-                yield return TimerUtility.WaitForGameSeconds(WaveManager.Instance.SpawnEnemyInterval);
-                
-                int currentRound = WaveManager.Instance.CurrentRound;
-                // 随机获取一个 EnemyType 枚举值
-                Array types = Enum.GetValues(typeof(EnemyType));
-                EnemyType randomType = (EnemyType)types.GetValue(UnityEngine.Random.Range(0, types.Length));
-                SpawnEnemy(EnemyType.Boss, UnityEngine. Random.Range(-7f, 7f), UnityEngine.Random.Range(Mathf.Max(1,currentRound - 3),currentRound));
-
-                // 如果是最后一波 且是最后一个敌人
-                if (WaveManager.Instance.CurrentRound == WaveManager.Instance.MaxRound &&
-                    i == enemyCount - 1)
+                SpawnEnemy(EnemyType.Boss, 0, WaveManager.Instance.CurrentRound*5);
+                WaveManager.Instance.SpawnEnemyInterval += WaveManager.Instance.CurrentRound * 0.05f;
+                if (WaveManager.Instance.CurrentRound >= WaveManager.Instance.MaxRound)
                 {
-                    //Debug.Log("最后一个敌人生成完成，发送事件");
-                    OnLastEnemySpawned?.Invoke();  // 触发事件
+                    yield break;
                 }
+                while (BattleManager.Instance.IsPaused.Value) yield return null;
+                // 启动一个提醒协程（监听 GameSpeed 和暂停）
+                StartCoroutine(WaitAndNotifyBeforeTime(WaveManager.Instance.SpawnWaveInterval * 5, 3f, () =>
+                {
+                    OnAlmostNextWave?.Invoke();
+                }));
+                yield return TimerUtility.WaitForGameSeconds(WaveManager.Instance.SpawnWaveInterval*5);
             }
-            if (WaveManager.Instance.CurrentRound >= WaveManager.Instance.MaxRound) 
+            else
             {
-                yield break;
+                WaveManager.Instance.SpawnEnemyInterval += WaveManager.Instance.CurrentRound * 0.05f;
+                int enemyCount = Mathf.RoundToInt((WaveManager.Instance.SingleWaveEnemyCount + WaveManager.Instance.CurrentRound * 1) * (1 + BattleManager.Instance.Debuff.AddCount * 0.1f));
+                List<EnemyType> enemyTyps = new List<EnemyType>();
+                // 添加普通
+                for (int i = 0; i < Mathf.RoundToInt(enemyCount * 0.8f); i++) enemyTyps.Add(EnemyType.Normal);
+                // 添加精英
+                for (int i = 0; i < enemyCount - Mathf.RoundToInt(enemyCount * 0.8f); i++) enemyTyps.Add(EnemyType.Elite);
+
+                // 打乱顺序（Fisher–Yates 洗牌）
+                for (int i = enemyTyps.Count - 1; i > 0; i--)
+                {
+                    int rand = UnityEngine.Random.Range(0, i + 1);
+                    (enemyTyps[i], enemyTyps[rand]) = (enemyTyps[rand], enemyTyps[i]);
+                }
+
+                for (int i = 0; i < enemyCount; i++)
+                {
+                    while (BattleManager.Instance.IsPaused.Value) yield return null;
+
+                    int currentRound = WaveManager.Instance.CurrentRound;
+                    int level =Mathf.Min(WaveManager.Instance.MaxRound,UnityEngine.Random.Range(currentRound, currentRound+3)) ;
+                    SpawnEnemy(enemyTyps[i], UnityEngine.Random.Range(-7f, 7f),level);
+
+                    // 如果是最后一波 且是最后一个敌人
+                    if (WaveManager.Instance.CurrentRound == WaveManager.Instance.MaxRound &&
+                        i == enemyCount - 1)
+                    {
+                        //Debug.Log("最后一个敌人生成完成，发送事件");
+                        OnLastEnemySpawned?.Invoke();  // 触发事件
+                    }
+
+                    yield return TimerUtility.WaitForGameSeconds(WaveManager.Instance.SpawnEnemyInterval);
+                }
+                if (WaveManager.Instance.CurrentRound >= WaveManager.Instance.MaxRound)
+                {
+                    yield break;
+                }
+                while (BattleManager.Instance.IsPaused.Value) yield return null;
+                // 启动一个提醒协程（监听 GameSpeed 和暂停）
+                StartCoroutine(WaitAndNotifyBeforeTime(WaveManager.Instance.SpawnWaveInterval, 3f, () =>
+                {
+                    OnAlmostNextWave?.Invoke();
+                }));
+                yield return TimerUtility.WaitForGameSeconds(WaveManager.Instance.SpawnWaveInterval);
             }
-            while (BattleManager.Instance.IsPaused.Value) yield return null;
-            // 启动一个提醒协程（监听 GameSpeed 和暂停）
-            StartCoroutine(WaitAndNotifyBeforeTime(WaveManager.Instance.SpawnWaveInterval, 3f, () =>
-            {
-                OnAlmostNextWave?.Invoke();
-            }));
-            yield return TimerUtility.WaitForGameSeconds(WaveManager.Instance.SpawnWaveInterval);
-            //Debug.Log($"一波生成完毕，当前波次为{WaveManager.Instance.CurrentRound}");
+            
         }
     }
 

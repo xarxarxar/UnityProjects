@@ -25,8 +25,8 @@ public class Upgrade_SetCrystalInvincible : UpgradeBase
     /// <param name="cost">消耗的金币数</param>
     public Upgrade_SetCrystalInvincible(float dur, int cost)
     {
-        UpgradeID = "SetCrystalInvincible";
         duration = dur;
+        UpgradeID = $"SetCrystalInvincible{duration}";
         Cost = cost;
         Description = $"水晶无敌{duration}秒,不可叠加";
     }
@@ -37,7 +37,7 @@ public class Upgrade_SetCrystalInvincible : UpgradeBase
     {
         float[] times = { 10, 15, 20 };
         float bonus = times[Random.Range(0, times.Length)];
-        int cost = Mathf.RoundToInt(bonus*30);
+        int cost = Mathf.RoundToInt(bonus * (5 + UpgradeManager.Instance.RefreshCount.Value * 3));
         return new Upgrade_SetCrystalInvincible(bonus, cost);
     }
 

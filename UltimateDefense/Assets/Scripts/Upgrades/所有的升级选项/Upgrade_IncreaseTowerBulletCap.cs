@@ -27,16 +27,17 @@ public class Upgrade_IncreaseTowerBulletCap : UpgradeBase
     /// <param name="cost">消耗的金币数</param>
     public Upgrade_IncreaseTowerBulletCap(int bonus, int cost)
     {
-        UpgradeID = "IncreaseTowerBulletCap";
         _bonus = bonus;
+        UpgradeID = $"IncreaseTowerBulletCap{_bonus}";
         Cost = cost;
         Description = $"炮塔弹夹容量 +{bonus}";
     }
 
     public static Upgrade_IncreaseTowerBulletCap CreateDynamicUpgrade()
     {
-        int bonus = 1;
-        int cost = 100;
+        int[] values = { 1, 2, 3 };
+        int bonus = values[Random.Range(0, values.Length)];
+        int cost = Mathf.RoundToInt(bonus * (20 + UpgradeManager.Instance.RefreshCount.Value * 5));
         return new Upgrade_IncreaseTowerBulletCap(bonus, cost);
     }
 

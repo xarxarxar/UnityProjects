@@ -265,7 +265,17 @@ public abstract class BaseTower : MonoBehaviour
 
             if (_enemiesInRange.Count != 0)
             {
-                currentTarget = _enemiesInRange[0];
+                Enemy lowestHpEnemy = null;
+                float lowestHp = float.MaxValue;
+                foreach (var enemy in _enemiesInRange)
+                {
+                    if (enemy.CurrentHP.Value < lowestHp)
+                    {
+                        lowestHp = enemy.CurrentHP.Value;
+                        lowestHpEnemy = enemy;//找到血量最少的敌人
+                    }
+                }
+                currentTarget = lowestHpEnemy;
                 yield return StartCoroutine(RotateAndShootIE()); // 等待旋转和射击完成
             }
             else

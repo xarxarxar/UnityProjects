@@ -23,8 +23,8 @@ public class Upgrade_RecoverCrystal : UpgradeBase
     /// <param name="cost">消耗的金币数</param>
     public Upgrade_RecoverCrystal(int amount, int cost)
     {
-        UpgradeID = "RecoverCrystal";
         hp = amount;
+        UpgradeID = $"RecoverCrystal{hp}";
         Cost = cost;
         Description = $"恢复城墙{hp}点血量";
     }
@@ -35,7 +35,7 @@ public class Upgrade_RecoverCrystal : UpgradeBase
     {
         int[] hps = { 50, 100, 200 };
         int bonus = hps[Random.Range(0, hps.Length)];
-        int cost = bonus*2;
+        int cost = Mathf.RoundToInt(bonus * (0.5f + UpgradeManager.Instance.RefreshCount.Value * 0.2f));
         return new Upgrade_RecoverCrystal(bonus, cost);
     }
 

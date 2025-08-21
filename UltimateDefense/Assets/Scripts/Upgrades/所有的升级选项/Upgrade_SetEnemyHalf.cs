@@ -25,8 +25,8 @@ public class Upgrade_SetEnemyHalf : UpgradeBase
     /// <param name="cost">消耗的金币数</param>
     public Upgrade_SetEnemyHalf(int cou, int cost)
     {
-        UpgradeID = "SetEnemyHalf";
         count = cou;
+        UpgradeID = $"SetEnemyHalf{count}";
         Cost = cost;
         Description = $"随机选择{count}个敌人，生命值减半";
     }
@@ -37,7 +37,7 @@ public class Upgrade_SetEnemyHalf : UpgradeBase
     {
         int[] counts = { 10, 15, 20 };
         int bonus = counts[Random.Range(0, counts.Length)];
-        int cost = Mathf.RoundToInt(bonus * 30);
+        int cost = Mathf.RoundToInt(bonus * (3 + UpgradeManager.Instance.RefreshCount.Value * 1));
         return new Upgrade_SetEnemyHalf(bonus, cost);
     }
 

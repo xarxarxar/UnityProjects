@@ -191,11 +191,12 @@ public class CurrencyManager : ManagerBase<CurrencyManager>,IManager
                 Vector3 screenStart = Camera.main.WorldToScreenPoint(enemy.transform.position);
                 Vector3 screenEnd = RectTransformUtility.WorldToScreenPoint(null, coinText.transform.position);
                 GameUIManager.Instance.PlayFlyCoinEffect(screenStart, screenEnd, effectCount);
+                // 4. 事件通知（无论是不是金币怪都触发）
+                OnGetCoinFromEnemy?.Invoke(enemy, getCoin);
             }
         }
 
-        // 4. 事件通知（无论是不是金币怪都触发）
-        OnGetCoinFromEnemy?.Invoke(enemy, getCoin);
+       
     }
 
 

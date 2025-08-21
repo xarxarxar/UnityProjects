@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
 
 /// <summary>
 /// UI
@@ -9,14 +8,14 @@ using UnityEngine.UI;
 public class StartPanel : MonoBehaviour
 {
     #region 私有变量
-    [SerializeField] private Button _startBattleButton;  //开始挑战按钮
-    [SerializeField] private Button _onlineRewardButton; //在线奖励按钮
-    [SerializeField] private Button _signInButton;       //签到按钮
-    [SerializeField] private Button _dailyMissionButton; //每日任务按钮
-    [SerializeField] private Button _achievementButton;  //成就按钮
-    [SerializeField] private Button _settingButton;      //设置按钮
-    [SerializeField] private Button _rankButton;         //排行榜按钮
-    [SerializeField] private Button _shareButton;        //邀请有礼按钮
+    [SerializeField] private BindableButton _startBattleButton;  //开始挑战按钮
+    [SerializeField] private BindableButton _onlineRewardButton; //在线奖励按钮
+    [SerializeField] private BindableButton _signInButton;       //签到按钮
+    [SerializeField] private BindableButton _dailyMissionButton; //每日任务按钮
+    [SerializeField] private BindableButton _achievementButton;  //成就按钮
+    [SerializeField] private BindableButton _settingButton;      //设置按钮
+    [SerializeField] private BindableButton _rankButton;         //排行榜按钮
+    [SerializeField] private BindableButton _shareButton;        //邀请有礼按钮
 
     [SerializeField] private BasePanel _onlineRewardPanel;
     [SerializeField] private BasePanel _signInPanel;
@@ -25,7 +24,7 @@ public class StartPanel : MonoBehaviour
     [SerializeField] private BasePanel _settingPanel;
     [SerializeField] private BasePanel _rankPanel;
     [SerializeField] private BasePanel _sharePanel;
-    private Dictionary<Button, BasePanel> _buttonPanelMap;
+    private Dictionary<BindableButton, BasePanel> _buttonPanelMap;
 
 
     #endregion
@@ -40,9 +39,9 @@ public class StartPanel : MonoBehaviour
     #region 私有方法
     private void Start()
     {
-        _startBattleButton.onClick.AddListener(StartBattleButton);
+        _startBattleButton.AddListener(StartBattleButton);
 
-        _buttonPanelMap = new Dictionary<Button, BasePanel>
+        _buttonPanelMap = new Dictionary<BindableButton, BasePanel>
     {
         { _onlineRewardButton, _onlineRewardPanel },
         { _signInButton, _signInPanel },
@@ -55,7 +54,7 @@ public class StartPanel : MonoBehaviour
 
         foreach (var pair in _buttonPanelMap)
         {
-            pair.Key.onClick.AddListener(() =>
+            pair.Key.AddListener(() =>
             {
                 pair.Value.gameObject.SetActive(true);
             });
@@ -67,7 +66,6 @@ public class StartPanel : MonoBehaviour
     /// </summary>
     private void StartBattleButton()
     {
-        Debug.Log("点击开始挑战按钮");
         OnSatrtBattle?.Invoke();//开始挑战按钮被点击
         GameUIManager.Instance.HideMainMenu();//隐藏主菜单
         GameUIManager.Instance.ShowChooseDebuffPanel();

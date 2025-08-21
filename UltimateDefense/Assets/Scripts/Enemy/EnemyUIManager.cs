@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class EnemyUIManager : MonoBehaviour
 {
@@ -11,13 +12,12 @@ public class EnemyUIManager : MonoBehaviour
     public GameObject enemyUIPrefab;
     public float hideDelay = 2f; // 血条隐藏延迟秒数
 
+
     class EnemyUIData
     {
         public Transform enemy;
         public RectTransform container;
-        public Slider healthSlider;
-        public GameObject sliderBackground;
-        public GameObject sliderFill;
+        public HpSlider healthSlider;
         public Text hpText;
         public Vector3 worldOffset;
         public bool hideWhenOffscreen;
@@ -82,22 +82,19 @@ public class EnemyUIManager : MonoBehaviour
     {
         GameObject uiObj = Instantiate(enemyUIPrefab, canvas.transform);
         uiObj.transform.SetAsFirstSibling();
-        var slider = uiObj.GetComponentInChildren<Slider>();
+        //var slider = uiObj.GetComponentInChildren<Slider>();
         var text = uiObj.GetComponentInChildren<Text>();
-        GameObject background = slider.transform.Find("Background").gameObject;
-        GameObject fill = slider.transform.Find("Fill Area").Find("Fill").gameObject;
+        HpSlider hpSlider= uiObj.GetComponentInChildren<HpSlider>();
 
         // 血条默认隐藏
-        if (slider != null)
-            slider.gameObject.SetActive(false);
+        if (hpSlider != null)
+            hpSlider.gameObject.SetActive(false);
 
         EnemyUIData newData = new EnemyUIData
         {
             enemy = enemy.transform,
             container = uiObj.GetComponent<RectTransform>(),
-            healthSlider = slider,
-            sliderBackground= background,
-            sliderFill= fill,
+            healthSlider = hpSlider,
             hpText = text,
             worldOffset = offset,
             hideWhenOffscreen = hideWhenOffscreen,
@@ -105,8 +102,8 @@ public class EnemyUIManager : MonoBehaviour
         };
 
         // 初始化血条和血量文本
-        if (slider != null)
-            slider.value = Mathf.Clamp01(enemy.CurrentHP.Value / enemy.maxHP.Value);
+        if (hpSlider != null)
+            hpSlider.Init(enemy.CurrentHP.Value,enemy.maxHP.Value,enemy.CurrentShield.Value);
 
         if (text != null)
             text.text = $"{Mathf.RoundToInt(enemy.CurrentHP.Value)}";
@@ -123,22 +120,10 @@ public class EnemyUIManager : MonoBehaviour
         if (data != null)
         {
             // 更新血条
+
             if (data.healthSlider != null)
             {
-                if (enemy.CurrentShield.Value > 0)
-                {
-                    data.sliderFill.GetComponent<Image>().color = new Color32(70,130,180,255);
-                    data.sliderBackground.GetComponent<Image>().color = new Color32(255,165,0,255);
-
-                    data.healthSlider.value = Mathf.Clamp01((float)enemy.CurrentShield.Value/enemy.maxShield.Value);
-                }
-                else
-                {
-                    data.sliderFill.GetComponent<Image>().color = new Color32(255, 165, 0, 255);
-                    data.sliderBackground.GetComponent<Image>().color = new Color32(94, 94, 94, 255);
-
-                    data.healthSlider.value = Mathf.Clamp01((float)enemy.CurrentHP.Value / enemy.maxHP.Value);
-                }
+                data.healthSlider.UpdateBar(enemy.CurrentHP.Value, enemy.maxHP.Value, enemy.CurrentShield.Value);
             }
 
             // 更新血量文本

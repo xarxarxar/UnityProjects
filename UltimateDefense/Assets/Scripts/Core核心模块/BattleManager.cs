@@ -73,7 +73,6 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     public void StartBattle(Debuff debuff)
     {
-        
         _debuff = debuff;
         GameSpeed.Value= 1;
         _diamondCount = 0;
@@ -203,18 +202,6 @@ public class BattleManager : MonoBehaviour
     {
         //StartPanel.OnSatrtBattle += StartBattle;//点击开始挑战按钮之后
         ChooseDebuffPanel.OnDebuffChooseEnd += StartBattle;//选择debuff 完毕之后
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            SetGameSpeed(2);
-        }
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            SetGameSpeed(1);
-        }
     }
 
     //最后一个敌人生成之后

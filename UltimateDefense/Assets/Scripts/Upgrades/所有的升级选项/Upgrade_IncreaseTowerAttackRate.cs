@@ -30,8 +30,9 @@ public class Upgrade_IncreaseTowerAttackRate : UpgradeBase
     /// <param name="cost">消耗的金币数</param>
     public Upgrade_IncreaseTowerAttackRate(float attackRateBonus, int cost)
     {
-        UpgradeID = "IncreaseTowerAttackRate";
+        
         _attackRateBonus = attackRateBonus;
+        UpgradeID = $"IncreaseTowerAttackRate{_attackRateBonus}";
         Cost = cost;
         Description = $"每秒射击次数 +{_attackRateBonus}";
     }
@@ -40,7 +41,7 @@ public class Upgrade_IncreaseTowerAttackRate : UpgradeBase
     {
         float[] values = { 0.1f, 0.2f, 0.3f };
         float bonus = values[Random.Range(0, values.Length)];
-        int cost = Mathf.RoundToInt(bonus * 300);
+        int cost = Mathf.RoundToInt(bonus * (100 + UpgradeManager.Instance.RefreshCount.Value * 40));
         return new Upgrade_IncreaseTowerAttackRate(bonus, cost);
     }
 

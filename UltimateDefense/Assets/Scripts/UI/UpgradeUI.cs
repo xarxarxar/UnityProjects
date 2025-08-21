@@ -102,6 +102,8 @@ public class UpgradeUI : MonoBehaviour
             BuyUpgradeButton(1);
         });
 
+        RefreshUpgradeButtons();
+
     }
 
     /// <summary>
@@ -118,16 +120,16 @@ public class UpgradeUI : MonoBehaviour
     //刷新升级属性按钮
     private void RefreshUpgrade()
     {
-        if (!CurrencyManager.Instance.SpendCoin(UpgradeManager.Instance.UpdateCount * _upgradeIncreaseCoin))//刷新需要金币
+        if (!CurrencyManager.Instance.SpendCoin(UpgradeManager.Instance.RefreshCount.Value * _upgradeIncreaseCoin))//刷新需要金币
         {
             return;
         }
        
         RefreshUpgradeButtons();
-        UpgradeManager.Instance.UpdateCount++;
-        _updatePriceText.text = $"{UpgradeManager.Instance.UpdateCount * _upgradeIncreaseCoin}";
+        UpgradeManager.Instance.RefreshCount.Value++;
+        _updatePriceText.text = $"{UpgradeManager.Instance.RefreshCount.Value * _upgradeIncreaseCoin}";
 
-        SetTextColor(_updatePriceText, gold >= UpgradeManager.Instance.UpdateCount * _upgradeIncreaseCoin);
+        SetTextColor(_updatePriceText, gold >= UpgradeManager.Instance.RefreshCount.Value * _upgradeIncreaseCoin);
         OnRefreshBuff?.Invoke();
     }
 
@@ -316,7 +318,7 @@ public class UpgradeUI : MonoBehaviour
     //金币变化
     private void OnCoinChange(int amount)
     {
-        SetTextColor(_updatePriceText, gold >= UpgradeManager.Instance.UpdateCount * _upgradeIncreaseCoin);
+        SetTextColor(_updatePriceText, gold >= UpgradeManager.Instance.RefreshCount.Value * _upgradeIncreaseCoin);
         // 初始化左侧卡片
         for (int i = 0; i < _simpleScrollSnapLeft.NumberOfPanels; i++)
         {

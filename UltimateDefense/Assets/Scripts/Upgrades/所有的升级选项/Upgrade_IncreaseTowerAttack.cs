@@ -29,17 +29,17 @@ public class Upgrade_IncreaseTowerAttack : UpgradeBase
     /// <param name="cost">消耗的金币数</param>
     public Upgrade_IncreaseTowerAttack(float attackBonus, int cost)
     {
-        UpgradeID = "IncreaseTowerAttack";
         _attackBonus = attackBonus;
+        UpgradeID = $"IncreaseTowerAttack{_attackBonus}";
         Cost = cost;
         Description = $"炮塔伤害 +{_attackBonus*100}%";
     }
 
     public static Upgrade_IncreaseTowerAttack CreateDynamicUpgrade()
     {
-        float[] values = { 1.0f, 2.0f, 3.0f };
+        float[] values = { 0.2f, 0.4f, 0.6f };
         float bonus = values[Random.Range(0, values.Length)];
-        int cost = Mathf.RoundToInt(bonus * 20);
+        int cost = Mathf.RoundToInt(bonus * (100 + UpgradeManager.Instance.RefreshCount.Value * 100));
         return new Upgrade_IncreaseTowerAttack(bonus, cost);
     }
 

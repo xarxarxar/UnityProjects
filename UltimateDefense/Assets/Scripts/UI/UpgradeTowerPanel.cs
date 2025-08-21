@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class UpgradeTowerPanel : MonoBehaviour
 {
     //可序列化
-    [SerializeField] private Button _unlockButton;//解锁新炮塔的按钮
+    [SerializeField] private BindableButton _unlockButton;//解锁新炮塔的按钮
     [SerializeField] private RewardStruct _unlockCost;//解锁新炮塔的花费
     [SerializeField] private Text _chooseThisTower;//使用该炮塔的提示文本
     [SerializeField] private SimpleScrollSnap _simpleScrollSnap;//
@@ -46,7 +46,7 @@ public class UpgradeTowerPanel : MonoBehaviour
     //更新解锁按钮的状态
     private void UpdateButtonState()
     {
-        _unlockButton.onClick.RemoveAllListeners(); // 先移除旧监听器
+        _unlockButton.RemoveAllListeners(); // 先移除旧监听器
 
         if (TowerDataManager.Instance.GetTowerData(_currentTower.Type).Level == 0)//未解锁
         {
@@ -55,13 +55,13 @@ public class UpgradeTowerPanel : MonoBehaviour
             //是否有足够的金币
             _unlockCost.countText.color= MetaCurrencyManager.Instance.HasEnoughMoney(_unlockCost.type, _unlockCost.count)
                 ? new Color32(239, 241, 245, 255) : new Color32(228, 73, 98, 255);
-            _unlockButton.onClick.AddListener(() => UnlockTower(_currentTower));
+            _unlockButton.AddListener(() => UnlockTower(_currentTower));
         }
         else//已解锁
         {
             _unlockCost.gameObject.SetActive(false);
             _chooseThisTower.gameObject.SetActive(true);
-            _unlockButton.onClick.AddListener(() => ChooseThisTower(_currentTower));
+            _unlockButton.AddListener(() => ChooseThisTower(_currentTower));
             //当前选择的不是对局中使用的炮塔
             if (TowerDataManager.Instance.CurrentTowerType.Value != _currentTower.Type)
             {

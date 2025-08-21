@@ -23,12 +23,18 @@ public class TimerUtility : MonoBehaviour
     #region public 成员方法
     /// <summary>
     /// 延迟 delay 秒后调用 callback 方法
+    /// 如果 coroutine 不为空则先停止，再开启新的
     /// </summary>
-    /// <param name="delay">延迟秒数</param>
-    /// <param name="callback">回调方法</param>
-    public void Timer(float delay, Action callback)
+    public Coroutine Timer(float delay, Action callback, Coroutine coroutine = null)
     {
-        StartCoroutine(TimerCoroutine(delay, callback));
+        if (coroutine != null)
+        {
+            StopCoroutine(coroutine);
+            coroutine = null;
+        }
+
+        // 返回新的协程引用
+        return StartCoroutine(TimerCoroutine(delay, callback));
     }
 
     /// <summary>
@@ -86,7 +92,7 @@ public class TimerUtility : MonoBehaviour
     /// <param name="callback">回调方法</param>
     private IEnumerator TimerCoroutine(float delay, Action callback)
     {
-        yield return WaitForGameSeconds(delay / BattleManager.Instance.GameSpeed.Value);
+        yield return WaitForGameSeconds(delay);
         callback?.Invoke();
         yield break;
     }

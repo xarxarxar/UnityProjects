@@ -7,32 +7,32 @@ public class GamePlayingPanel : MonoBehaviour
     [SerializeField] private Text _bankText;        // 显示当前银行内的金币数的 UI 文本组件
     [SerializeField] private Text _roundText;       // 显示当前回合信息的 UI 文本组件
     [SerializeField] private Text _enemyCountText;  //显示当前敌人数量的Text
-    [SerializeField] private Button _openBankButton;  //打开银行面板的按钮
-    [SerializeField] private Button _openEnemyInfoButton;  //打开敌人信息面板的按钮
-    [SerializeField] private Button _openDoubleSpeedButton;  //打开两倍速的按钮
-    [SerializeField] private Button _openPauseButton;  //打开暂停面板的按钮
-    [SerializeField] private Button _openInfoButton;  //打开信息面板的按钮
+    [SerializeField] private BindableButton _openBankButton;  //打开银行面板的按钮
+    [SerializeField] private BindableButton _openEnemyInfoButton;  //打开敌人信息面板的按钮
+    [SerializeField] private BindableButton _openDoubleSpeedButton;  //打开两倍速的按钮
+    [SerializeField] private BindableButton _openPauseButton;  //打开暂停面板的按钮
+    [SerializeField] private BindableButton _openInfoButton;  //打开信息面板的按钮
     [SerializeField] private MySlider _mySlider;//下一波倒计时的slider
 
     private void OnEnable()
     {
         RefreshGoldDisplay(0);//刷新金币显示
         OnEnemyCountChanged(0);//刷新敌人显示
-        OnWaveChanged(0);//刷新波次显示
+        OnWaveChanged(1);//刷新波次显示
         OnBankMoneyChanged(0);//刷新银行金币显示
-        _openBankButton.onClick.AddListener(() => {
+        _openBankButton.AddListener(() => {
             BattleUIManager.Instance.ShowBankPanel();
         });
-        _openPauseButton.onClick.AddListener(() => {
+        _openPauseButton.AddListener(() => {
             BattleUIManager.Instance.ShowPausePanel();
         });
-        _openEnemyInfoButton.onClick.AddListener(() => {
+        _openEnemyInfoButton.AddListener(() => {
             BattleUIManager.Instance.ShowEnemyInfoInfoPanel();
         });
-        _openInfoButton.onClick.AddListener(() => { 
+        _openInfoButton.AddListener(() => { 
             BattleUIManager.Instance.ShowBattleTowerInfoPanel();
         });
-        _openDoubleSpeedButton.onClick.AddListener(() =>
+        _openDoubleSpeedButton.AddListener(() =>
         {
             BattleManager.Instance.GameSpeed.Value= BattleManager.Instance.GameSpeed.Value == 1 ? 2 : 1;
         });
@@ -51,11 +51,11 @@ public class GamePlayingPanel : MonoBehaviour
         CurrencyManager.OnCoinChange -= RefreshGoldDisplay;//金币变化时也刷新金币显示
         BankManager.Instance.CurrentSave.OnValueChanged -= OnBankMoneyChanged; ;//银行金币数量变化时
 
-        _openBankButton.onClick.RemoveAllListeners();
-        _openPauseButton.onClick.RemoveAllListeners();
-        _openInfoButton.onClick.RemoveAllListeners();
-        _openEnemyInfoButton.onClick.RemoveAllListeners();
-        _openDoubleSpeedButton.onClick.RemoveAllListeners();
+        _openBankButton.RemoveAllListeners();
+        _openPauseButton.RemoveAllListeners();
+        _openInfoButton.RemoveAllListeners();
+        _openEnemyInfoButton.RemoveAllListeners();
+        _openDoubleSpeedButton.RemoveAllListeners();
     }
 
 

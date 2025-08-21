@@ -25,8 +25,8 @@ public class Upgrade_IncreaseCriticalShotProb : UpgradeBase
     /// <param name="cost">消耗的金币数</param>
     public Upgrade_IncreaseCriticalShotProb(float bonus, int cost)
     {
-        UpgradeID = "IncreaseCriticalShotProb";
         _bonus = bonus;
+        UpgradeID = $"IncreaseCriticalShotProb{_bonus}";
         Cost = cost;
         Description = $"炮塔暴击率 +{_bonus*100}%";
     }
@@ -35,7 +35,7 @@ public class Upgrade_IncreaseCriticalShotProb : UpgradeBase
     {
         float[] values = { 0.02f, 0.05f, 0.1f };
         float bonus = values[Random.Range(0, values.Length)];
-        int cost = Mathf.RoundToInt(bonus * 2000);
+        int cost = Mathf.RoundToInt(bonus * (200 + UpgradeManager.Instance.RefreshCount.Value * 300));
         return new Upgrade_IncreaseCriticalShotProb(bonus, cost);
     }
 

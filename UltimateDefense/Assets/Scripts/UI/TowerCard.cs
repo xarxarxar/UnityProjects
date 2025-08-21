@@ -10,7 +10,7 @@ public class TowerCard : MonoBehaviour
     [SerializeField] private Text _maxlevelText;//已满级的Text
     [SerializeField] private Text _levelText;//等级Text
     [SerializeField] private GameObject _unlockMask;//未解锁的遮罩
-    [SerializeField] private Button _upgradeButton;//升级按钮
+    [SerializeField] private BindableButton _upgradeButton;//升级按钮
     [SerializeField] private RewardStruct _upgradeCost;//升级花费
     [SerializeField] private TowerType _type;//此卡片对应的炮塔类型
     [SerializeField] private CanvasGroup _canvasGroup;//此卡片对应的炮塔类型
@@ -60,7 +60,12 @@ public class TowerCard : MonoBehaviour
     //升级该塔
     private void UpGradeTower()
     {
-        if(MetaCurrencyManager.Instance.HasEnoughMoney(_upgradeCost.type, _upgradeCost.count))
+        if (TowerDataManager.Instance.GetTowerData(_type).Level >= TowerData.MaxLevel)
+        {
+            return;
+        }
+
+        if (MetaCurrencyManager.Instance.HasEnoughMoney(_upgradeCost.type, _upgradeCost.count))
         {
             TowerDataManager.Instance.UpgradeTower(_type);
             MetaCurrencyManager.Instance.SpendMetaCoin(_upgradeCost.type, _upgradeCost.count);
@@ -71,20 +76,18 @@ public class TowerCard : MonoBehaviour
     //更新升级按钮的状态
     private void UpdateUpgradeButton()
     {
-        _upgradeButton.onClick.RemoveAllListeners();
+        _upgradeButton.RemoveAllListeners();
         //未达到满级
         if (TowerDataManager.Instance.GetTowerData(_type).Level< TowerData.MaxLevel)
         {
-            _upgradeButton.interactable = true;
             //是否有足够的金币
             _upgradeCost.countText.color = MetaCurrencyManager.Instance.HasEnoughMoney(_upgradeCost.type, _upgradeCost.count)
                 ? new Color32(239, 241, 245, 255) : new Color32(228, 73, 98, 255);
             _maxlevelText.gameObject.SetActive(false);
-            _upgradeButton.onClick.AddListener(UpGradeTower);
+            _upgradeButton.AddListener(UpGradeTower);
         }
         else//达到满级
         {
-            _upgradeButton.interactable = false;
             _upgradeButton.gameObject.SetActive(false);
             _maxlevelText.gameObject.SetActive(true);
         }
