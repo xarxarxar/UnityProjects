@@ -1,5 +1,5 @@
-using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 /// <summary>
@@ -12,12 +12,16 @@ public class TaskReward : MonoBehaviour
     [SerializeField] private RewardStruct _rewardStruct;//奖励
     [SerializeField] private Text _desText;//描述Text
     [SerializeField] private GameObject _finishMask;//已完成遮罩
-    private bool _isFinished=false;//是否完成这个任务
+    private string _taskTag=string.Empty;//这个任务的标签
+    public bool _isFinished=false;//是否完成这个任务
+    //public bool _isClaimed=false;//是否已领取这个任务的奖励
     private int _needValue;//该任务需要的值
     private int _currentValue;//当前值
 
     private Color32 _normalColor = new Color32(0, 153, 249, 255);
     private Color32 _finishColor = new Color32(85, 241, 133, 255);
+
+    private UnityAction<string> OnReceiveReward;//领取奖励事件
 
     /// <summary>
     /// 该任务需要的值
@@ -30,7 +34,7 @@ public class TaskReward : MonoBehaviour
 
     private void OnEnable()
     {
-        
+
     }
 
     /// <summary>
@@ -40,13 +44,14 @@ public class TaskReward : MonoBehaviour
     /// <param name="count">奖励的数量</param>
     /// <param name="value">任务需要的数量</param>
     /// <param name="description">任务的描述</param>
-    public void Init(RewardType rewardType,int count,string description,int needValue,int currentValue)
+    public void Init(RewardType rewardType,int count,string description,
+        int needValue,int currentValue,bool isClaimed,UnityAction<string> OnReceive)
     {
         _rewardStruct.Init(rewardType, count);
         _desText.text = description;
         _taskSlider.interactable = false;
 
-        if (needValue == -1)//代表已领取该任务奖励
+        if (isClaimed)//代表已领取该任务奖励
         {
             _taskSlider.value = _taskSlider.maxValue;
             _taskSlider.transform.Find("Fill Area/Fill").GetComponent<Image>().color = _finishColor;
@@ -57,17 +62,23 @@ public class TaskReward : MonoBehaviour
         }
         _needValue= needValue;
         _currentValue = currentValue;
+        _taskTag= description;
         
-        _taskSlider.maxValue = needValue;
-        _taskSlider.minValue = 0;
-        _taskSlider.wholeNumbers = true;
+        //_taskSlider.maxValue = _needValue;
+        //_taskSlider.minValue = 0;
+        //_taskSlider.wholeNumbers = true;
         _taskSlider.transform.Find("Fill Area/Fill").GetComponent<Image>().color = _normalColor;
         _taskSlider.transform.Find("SliderText").GetComponent<Text>().text = $"{_currentValue}/{_needValue}";
         _finishMask.SetActive(false);
         _isFinished = false;
         UpdateStatus(_currentValue);
 
+        Debug.Log($"taskslider is {_taskSlider.name}, _taskSlider.maxValue is {_taskSlider.maxValue},_taskSlider.minValue is {_taskSlider.minValue},current is {_taskSlider.value}");
+
+        _receiveButton.onClick.RemoveAllListeners(); // 先清理
         _receiveButton.onClick.AddListener(ReceiveReward);
+
+        OnReceiveReward = OnReceive;
     }
 
     private void OnDisable()
@@ -87,6 +98,7 @@ public class TaskReward : MonoBehaviour
         _taskSlider.transform.Find("Fill Area/Fill").GetComponent<Image>().color= _finishColor;
         _taskSlider.transform.Find("SliderText").GetComponent<Text>().text= "完成";
         _finishMask.SetActive(true);
+        OnReceiveReward?.Invoke(_taskTag);
     }
 
     /// <summary>
@@ -108,7 +120,7 @@ public class TaskReward : MonoBehaviour
             _isFinished=true;
         }
 
-        _taskSlider.value = _currentValue;
+        _taskSlider.value = (float)_currentValue/ _needValue;
         _taskSlider.transform.Find("SliderText").GetComponent<Text>().text = $"{_currentValue}/{_needValue}";
     }
 }

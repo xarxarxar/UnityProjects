@@ -14,13 +14,15 @@ public class PlayerInfo
     public int TodayOnlineMinutes;   // 今天在线时长（分钟）
     public Dictionary<TowerType,int> TowerDatas = new Dictionary<TowerType, int>();//炮塔的等级数据
     public TowerType CurrentTowerType;//当前使用的炮塔
-    
+    // 在线奖励，每日任务，邀请有利这种每日刷新的奖励的领取情况,
+    public Dictionary<string, bool> DailyRewardReceived = new Dictionary<string, bool>();
 
     // 构造函数
     public PlayerInfo(string userName = null, string avatarUrl = null, 
         int passCount = 0,int diamondCount=0, int crownCount=0,
-        int unlockCount=0, DateTime? lastLoginDate = null, int todayOnlineMinutes = 0,
-        Dictionary<TowerType, int> towerDatas = null, TowerType currentTowerType =TowerType.Basic )
+        int unlockCount=0, DateTime? lastLoginDate = null, int todayOnlineMinutes = 0, int reveiveMinutesReward = 0,
+        Dictionary<TowerType, int> towerDatas = null, TowerType currentTowerType =TowerType.Basic,
+        Dictionary<string, bool> dailyRewardReceived =null)
     {
         UserName = string.IsNullOrEmpty(userName) ? "游客" : userName;
         AavtarUrl = string.IsNullOrEmpty(avatarUrl) ? "" : avatarUrl;//头像默认为空
@@ -48,6 +50,18 @@ public class PlayerInfo
                 TowerDatas[kv.Key] = kv.Value;
             }
         }
+        if (dailyRewardReceived == null)
+        {
+            DailyRewardReceived.Clear();
+        }
+        else
+        {
+            DailyRewardReceived.Clear();
+            foreach (var kv in dailyRewardReceived)
+            {
+                DailyRewardReceived[kv.Key] = kv.Value;
+            }
+        }
 
     }
 }
@@ -64,6 +78,8 @@ public class BindablePlayerInfo
     public Bindable<DateTime> LastLoginDate = new Bindable<DateTime>();// 上一次登录的日期
     public Bindable<TowerType> CurrentTowerType=new Bindable<TowerType>();//当前使用的炮塔
     public Dictionary<TowerType, int> TowerDatas;//防御塔的等级数据
+    // 在线奖励，每日任务，邀请有利这种每日刷新的奖励的领取情况,
+    public Dictionary<string,bool> DailyRewardReceived = new Dictionary<string, bool>(); 
 
     // 构造函数
     public BindablePlayerInfo(string userName = null, string avatarUrl = null,
@@ -110,6 +126,11 @@ public class BindablePlayerInfo
         {
             TowerDatas[kv.Key] = kv.Value;
         }
+        DailyRewardReceived.Clear();
+        foreach (var kv in playerInfo.DailyRewardReceived)
+        {
+            DailyRewardReceived[kv.Key] = kv.Value;
+        }
     }
 
     /// <summary>
@@ -127,7 +148,8 @@ public class BindablePlayerInfo
             unlockCount: UnlockCount.Value,
             lastLoginDate: LastLoginDate.Value,
             todayOnlineMinutes: TodayOnlineMinutes.Value,
-            towerDatas: TowerDatas
+            towerDatas: TowerDatas,
+            dailyRewardReceived:DailyRewardReceived
         );
     }
 }

@@ -47,13 +47,30 @@ public class DailyMissionPanel : BasePanel
     {
         for (int i = 0; i < taskRewards.Count; i++)
         {
+            string description = _descriptions[i];
+            if (!DataManager.Instance.PlayerInfo.DailyRewardReceived.ContainsKey(description))
+            {
+                DataManager.Instance.PlayerInfo.DailyRewardReceived[description] = false;
+            }
             if (i == taskRewards.Count - 1)
             {
-                taskRewards[i].Init(RewardType.Crown, 1, _descriptions[i], _needValues[i], _currentValues[i]);
+                taskRewards[i].Init(RewardType.Crown, 1, description, _needValues[i],
+                    _currentValues[i], DataManager.Instance.PlayerInfo.DailyRewardReceived[description],
+                    (taskTag) =>
+                    {
+                        DataManager.Instance.PlayerInfo.DailyRewardReceived[taskTag] = true;
+                        DataManager.Instance.SavePlayerInfo();
+                    });
             }
             else
             {
-                taskRewards[i].Init(RewardType.Diamond, _needValues[i], _descriptions[i], _needValues[i], _currentValues[i]);
+                taskRewards[i].Init(RewardType.Diamond, _needValues[i], description, _needValues[i], 
+                    _currentValues[i], DataManager.Instance.PlayerInfo.DailyRewardReceived[description],
+                    (taskTag) =>
+                    {
+                        DataManager.Instance.PlayerInfo.DailyRewardReceived[taskTag] = true;
+                        DataManager.Instance.SavePlayerInfo();
+                    });
             }
         }
     }

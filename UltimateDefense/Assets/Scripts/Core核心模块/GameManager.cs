@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 /// <summary>
 /// 控制整个的游戏流程，游戏的入口
@@ -57,6 +56,7 @@ public class GameManager : MonoBehaviour
         {
             yield return new WaitForSeconds(10f); // 等待60秒
             DataManager.Instance.PlayerInfo.TodayOnlineMinutes.Value += 1;
+            DataManager.Instance.SavePlayerInfo();
             Debug.Log("在线时间 +1 分钟，总在线分钟：" + DataManager.Instance.PlayerInfo.TodayOnlineMinutes.Value);
         }
     }

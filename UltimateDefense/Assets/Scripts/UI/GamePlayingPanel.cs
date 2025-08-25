@@ -8,7 +8,7 @@ public class GamePlayingPanel : MonoBehaviour
     [SerializeField] private Text _roundText;       // 显示当前回合信息的 UI 文本组件
     [SerializeField] private Text _enemyCountText;  //显示当前敌人数量的Text
     [SerializeField] private BindableButton _openBankButton;  //打开银行面板的按钮
-    [SerializeField] private BindableButton _openEnemyInfoButton;  //打开敌人信息面板的按钮
+    //[SerializeField] private BindableButton _openEnemyInfoButton;  //打开敌人信息面板的按钮
     [SerializeField] private BindableButton _openDoubleSpeedButton;  //打开两倍速的按钮
     [SerializeField] private BindableButton _openPauseButton;  //打开暂停面板的按钮
     [SerializeField] private BindableButton _openInfoButton;  //打开信息面板的按钮
@@ -26,9 +26,9 @@ public class GamePlayingPanel : MonoBehaviour
         _openPauseButton.AddListener(() => {
             BattleUIManager.Instance.ShowPausePanel();
         });
-        _openEnemyInfoButton.AddListener(() => {
-            BattleUIManager.Instance.ShowEnemyInfoInfoPanel();
-        });
+        //_openEnemyInfoButton.AddListener(() => {
+        //    BattleUIManager.Instance.ShowEnemyInfoInfoPanel();
+        //});
         _openInfoButton.AddListener(() => { 
             BattleUIManager.Instance.ShowBattleTowerInfoPanel();
         });
@@ -54,7 +54,7 @@ public class GamePlayingPanel : MonoBehaviour
         _openBankButton.RemoveAllListeners();
         _openPauseButton.RemoveAllListeners();
         _openInfoButton.RemoveAllListeners();
-        _openEnemyInfoButton.RemoveAllListeners();
+        //_openEnemyInfoButton.RemoveAllListeners();
         _openDoubleSpeedButton.RemoveAllListeners();
     }
 
