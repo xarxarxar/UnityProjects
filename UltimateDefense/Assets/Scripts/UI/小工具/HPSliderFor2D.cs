@@ -1,59 +1,76 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class HPSliderFor2D : MonoBehaviour
 {
-    [SerializeField]private SpriteRenderer spriteRenderer;
-    private Bindable<int> maxBlood = new Bindable<int>();
-    private Vector2 spriteSize=Vector2.zero;
-    private float defaultWidth = 0;
-    private float currentBlood = 0;
+    [Header("UI 引用")]
+    public Image line;       // 分割条
+    public Image hpBar;       // 血条（红色）
+    public Image shieldBar;   // 护盾条（蓝色）
 
-    private void Start()
+    private float baseWidth = 0f; // 最大血量时背景的基准宽度（可在 Inspector 设置）
+    private Material mat = null;
+    public int segments = 10;    // 想要的线段数量
+
+
+    public void Init(int currentHp, int maxHp, int currentShield)
     {
-        spriteSize = spriteRenderer.size;
-        defaultWidth = spriteRenderer.size.x;
-    }
-
-    /// <summary>
-    /// 初始化血条
-    /// </summary>
-    public void Init(Bindable<int> maxBlood,float currentBlood= -1)
-    {
-        spriteSize = spriteRenderer.size;
-        defaultWidth = spriteRenderer.size.x;
-
-        // 解绑旧事件
-        if (this.maxBlood != null)
-            this.maxBlood.OnValueChanged -= OnMaxHpChanged;
-
-        // 替换引用并绑定新事件
-        this.maxBlood = maxBlood;
-        this.maxBlood.OnValueChanged += OnMaxHpChanged;
-
-        if (currentBlood >= 0) 
+        if (mat == null)
         {
-            SetBlood(currentBlood);
+            // 给Image创建一个实例化材质，避免修改到原始材质
+            mat = Instantiate(line.material);
+            line.material = mat;
+        }
+        if (baseWidth == 0f)
+        {
+            baseWidth = GetComponent<RectTransform>().sizeDelta.x;
         }
 
+        UpdateBar(currentHp, maxHp, currentShield);
     }
-
 
     /// <summary>
-    /// 设置血量
+    /// 更新血条
     /// </summary>
-    /// <param name="blood"></param>
-    public void SetBlood(float blood)
+    /// <param name="currentHp">当前血量</param>
+    /// <param name="maxHp">最大血量</param>
+    /// <param name="currentShield">当前护盾值</param>
+    public void UpdateBar(int currentHp, int maxHp, int currentShield)
     {
-        blood = Mathf.Clamp(blood, 0, maxBlood.Value);
+        // 背景的值：取 maxHP 和 (HP+盾) 的最大值
+        int total = Mathf.Max(maxHp, currentHp + currentShield);
+        //画黑线
+        SetSegments(CalculateSegments(total));
 
-        currentBlood =blood;
-        spriteSize.x= (blood/maxBlood.Value)*defaultWidth;
-        spriteRenderer.size= spriteSize;
+        // 血条宽度：当前 HP / 背景最大值
+        float hpWidth = baseWidth * ((float)currentHp / total);
+        hpWidth = Mathf.Max(hpWidth, 0);
+        hpBar.rectTransform.sizeDelta = new Vector2(hpWidth, hpBar.rectTransform.sizeDelta.y);
+
+        // 填充护盾条（紧贴在血条后面）
+        float shieldWidth = baseWidth * ((float)currentShield / total);
+        shieldWidth = Mathf.Max(shieldWidth, 0);
+        shieldBar.rectTransform.sizeDelta = new Vector2(shieldWidth, shieldBar.rectTransform.sizeDelta.y);
     }
 
-    private void OnMaxHpChanged(int maxHp)
+    public void SetSegments(int count)
     {
-        //更新血条
-        SetBlood(currentBlood);
+        segments = count;
+        mat.SetFloat("_Segments", segments);
+    }
+
+    int CalculateSegments(int total)
+    {
+        total = total / 10;
+        if (total <= 1) return 0;
+
+        if (total <= 5)
+            return total - 1;
+
+        if (total <= 20)
+            return (5 + Mathf.RoundToInt((total - 5) / 3f)) - 1;
+
+        // total > 20
+        return (Mathf.Min(20, 10 + Mathf.RoundToInt((total - 20) / 5f))) - 1;
     }
 }

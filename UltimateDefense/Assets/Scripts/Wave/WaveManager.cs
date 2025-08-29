@@ -5,7 +5,7 @@ using UnityEngine.Events;
 /// <summary>
 /// 管理怪物波次生成流程
 /// </summary>
-public class WaveManager : ManagerBase<WaveManager>,IManager
+public class WaveManager : ManagerBase<WaveManager>
 {
     #region 私有属性
     private int _currentRound=0;                         // 当前回合数（1–100）
@@ -117,6 +117,7 @@ public class WaveManager : ManagerBase<WaveManager>,IManager
     {
         base.Awake();
         _stage=InitStage.InBattle;
+        Index = 2;
         // _keyWaves = new List<Wave_SO>(Resources.LoadAll<Wave_SO>("Configs/ScriptableObjects/Waves/"));
         // _poolConfig = Resources.Load<EnemyPoolConfig>("Configs/EnemyPoolConfig");
     }

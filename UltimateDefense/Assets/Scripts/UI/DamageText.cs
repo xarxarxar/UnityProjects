@@ -19,8 +19,8 @@ public class DamageText : MonoBehaviour
         //transform.SetParent(BattleUIManager.Instance.DamageTextParent, false);  // 在 screen-space canvas 上
         transform.position = screenPos;
 
-        _text.text = damage.ToString();
-        _text.transform.localScale = isCrit ? Vector3.one * 1.2f : Vector3.one;
+        _text.text = ((float)damage/10).ToString();
+        _text.transform.localScale = isCrit ? Vector3.one * 1.5f : Vector3.one;
         _text.color = isCrit ? Color.yellow : Color.white;
 
         // 播放动画等

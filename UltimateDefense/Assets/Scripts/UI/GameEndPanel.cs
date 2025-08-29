@@ -5,7 +5,7 @@ public class GameEndPanel : MonoBehaviour
 {
     [SerializeField] private Text _titleText;//挑战成功还是失败的Text
     [SerializeField] private Text _descriptionText;//描述一下
-    //[SerializeField] private Text _metaCoinText;//获取了多少局外金币
+    //[SerializeField] private Text _metaCoinText;//获取了多少钻石
     [SerializeField] private Text _progressText;//完成了多少进度的 Text
     [SerializeField] private Slider _progressSlider;//完成了多少进度的 slider
 
@@ -54,8 +54,9 @@ public class GameEndPanel : MonoBehaviour
         gameObject.SetActive(false);
         BattleUIManager.Instance.HideBattleScene();
         GameUIManager.Instance.ShowMainMenu();//返回到主菜单
+
     }
 
 
-    
+
 }

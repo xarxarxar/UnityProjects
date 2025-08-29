@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PanelManager : ManagerBase<PanelManager>,IManager
+public class PanelManager : ManagerBase<PanelManager>
 {
     public List<BasePanel> OutPanels= new List<BasePanel>();
     protected override void Awake()

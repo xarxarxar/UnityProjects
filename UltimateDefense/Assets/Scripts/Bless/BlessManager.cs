@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BlessManager : ManagerBase<BlessManager>,IManager
+public class BlessManager : ManagerBase<BlessManager>
 {
     public override string Description { get; } = "管理对局开始时的祝福，局内的Manager";
     [SerializeField]private Bless _bless;//对局开始前选择的祝福
@@ -29,6 +29,7 @@ public class BlessManager : ManagerBase<BlessManager>,IManager
     {
         base.Awake();
         _stage = InitStage.InBattle;//局内Manager
+        Index = 0;
     }
 
     public override void Init()

@@ -1,10 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class AudioManager : ManagerBase<AudioManager>,IManager
+public class AudioManager : MonoBehaviour
 {
-    public override string Description { get; } = "管理音频的播放，局外的Manager";
     [Header("Audio Sources")]
     public AudioSource bgmSourcePrefab;
     public AudioSource sfxSourcePrefab;
@@ -17,15 +14,28 @@ public class AudioManager : ManagerBase<AudioManager>,IManager
     public AudioLibrary audioLibrary;
 
     private AudioSource currentBgm;
+    private static AudioManager _instance;//单例
+    /// <summary>
+    /// GameManger单例
+    /// </summary>
+    public static AudioManager Instance { get => _instance; }
 
-    protected override void Awake()
+
+    protected void Awake()
     {
-        base.Awake();
-        _stage = InitStage.OutBattle;//局外的Manager
-        
+        if (_instance == null)
+        {
+            _instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+
     }
 
-    public override void Init()
+    private void Start()
     {
         if (audioLibrary != null)
             audioLibrary.Init();

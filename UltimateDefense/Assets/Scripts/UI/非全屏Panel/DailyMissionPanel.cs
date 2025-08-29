@@ -1,50 +1,47 @@
 using System.Collections.Generic;
-using System.Diagnostics;
 
 public class DailyMissionPanel : BasePanel
 {
     public List<TaskReward> taskRewards = new List<TaskReward>();//所有任务
-    int[] _needValues = new int[] { 1000, 100, 100, 1000, 1 };
-    int[] _rewardValues = new int[] { 10, 10, 10, 10, 1 };
-    int[] _currentValues = new int[] { 0,0,0,0,0};
+    int[] _needValues = new int[] { 1000, 100, 100, 1 };
+    int[] _rewardValues = new int[] { 10, 10, 10, 1 };
+    int[] _currentValues = new int[] { 0,0,0,0};
     string[] _descriptions = new string[] 
     { 
         "累计消灭1000个敌人",
         "累计完成100个回合",
         "累计刷新增益100次",
-        "银行累计存入1000元",
+        //"银行累计存入1000元",
         "通关1次"
     };
 
-
-    private int _todayEnemyDieCount = 0;
-    private int _todayWaveChangeCount = 0;
-    private int _todayRefreshBuffCount = 0;
-
-
     public override void Init()
     {
-        Enemy.OnEnemyDie += (enemy) =>
+        BattleManager.OnEndBattle += (isSuccess) =>
         {
-            _currentValues[0]++;
+            DataManager.Instance.PlayerInfo.TodayEnemyDieCount.Value += EnemyManager.Instance.SignleEnemyDieCount.Value;
+            DataManager.Instance.PlayerInfo.TodayWaveCount.Value += WaveManager.Instance.CurrentRound;
+            DataManager.Instance.PlayerInfo.TodayFreshCount.Value += UpgradeManager.Instance.RefreshCount.Value;
+
             taskRewards[0].UpdateStatus(taskRewards[0].CurrentValue + 1);
-        };
-        WaveManager.OnWaveChanged += (value) =>
-        {
-            _currentValues[1]++;
             taskRewards[1].UpdateStatus(taskRewards[1].CurrentValue + 1);
-        };
-        UpgradeUI.OnRefreshBuff += () =>
-        {
-            _currentValues[2]++;
             taskRewards[2].UpdateStatus(taskRewards[2].CurrentValue + 1);
+            if (isSuccess) 
+            {
+                DataManager.Instance.PlayerInfo.TodayPassCount.Value++;
+                _currentValues[3] = DataManager.Instance.PlayerInfo.TodayPassCount.Value;
+                taskRewards[3].UpdateStatus(taskRewards[3].CurrentValue + 1);
+            }
+            DataManager.Instance.SavePlayerInfo();
         };
-        
     }
 
     //初始化面板状态，当打开的时候初始化
     protected override void InitPanel()
     {
+        _currentValues[0] = DataManager.Instance.PlayerInfo.TodayEnemyDieCount.Value;
+        _currentValues[1] = DataManager.Instance.PlayerInfo.TodayWaveCount.Value;
+        _currentValues[2] = DataManager.Instance.PlayerInfo.TodayFreshCount.Value;
         for (int i = 0; i < taskRewards.Count; i++)
         {
             string description = _descriptions[i];
@@ -54,7 +51,7 @@ public class DailyMissionPanel : BasePanel
             }
             if (i == taskRewards.Count - 1)
             {
-                taskRewards[i].Init(RewardType.Crown, 1, description, _needValues[i],
+                taskRewards[i].Init(RewardType.Crown, _rewardValues[i], description, _needValues[i],
                     _currentValues[i], DataManager.Instance.PlayerInfo.DailyRewardReceived[description],
                     (taskTag) =>
                     {
@@ -64,7 +61,7 @@ public class DailyMissionPanel : BasePanel
             }
             else
             {
-                taskRewards[i].Init(RewardType.Diamond, _needValues[i], description, _needValues[i], 
+                taskRewards[i].Init(RewardType.Diamond, _rewardValues[i], description, _needValues[i], 
                     _currentValues[i], DataManager.Instance.PlayerInfo.DailyRewardReceived[description],
                     (taskTag) =>
                     {

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BankManager : ManagerBase<BankManager>,IManager
+public class BankManager : ManagerBase<BankManager>
 {
     private Bindable<float> _saveInterest=new Bindable<float>();//存款利息
     private Bindable<float> _advanceInterest=new Bindable<float>();//借款利息
@@ -50,6 +50,7 @@ public class BankManager : ManagerBase<BankManager>,IManager
     {
         base.Awake();
         _stage=InitStage.InBattle;
+        Index = -1;
     }
 
     private void OnDisable()

@@ -17,7 +17,7 @@ public class SciencePanel : MonoBehaviour
         if (index < 0 || index >= 50) return null;
 
         // 从池中获取Item（name要与预制体名一致）
-        LoopListViewItem2 item = listView.NewListViewItem("ScienceNode");
+        LoopListViewItem2 item = listView.NewListViewItem("Element");
 
         // 设置数据
         ScienceNodeItem script = item.GetComponent<ScienceNodeItem>();

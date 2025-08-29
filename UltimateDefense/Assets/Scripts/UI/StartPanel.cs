@@ -69,6 +69,7 @@ public class StartPanel : MonoBehaviour
         OnSatrtBattle?.Invoke();//开始挑战按钮被点击
         GameUIManager.Instance.HideMainMenu();//隐藏主菜单
         GameUIManager.Instance.ShowChooseDebuffPanel();
+        AudioManager.Instance.PlayBGM("对局中BGM");
         gameObject.SetActive(false);
     }
 

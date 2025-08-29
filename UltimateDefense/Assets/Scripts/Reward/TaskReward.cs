@@ -73,7 +73,7 @@ public class TaskReward : MonoBehaviour
         _isFinished = false;
         UpdateStatus(_currentValue);
 
-        Debug.Log($"taskslider is {_taskSlider.name}, _taskSlider.maxValue is {_taskSlider.maxValue},_taskSlider.minValue is {_taskSlider.minValue},current is {_taskSlider.value}");
+        //Debug.Log($"taskslider is {_taskSlider.name}, _taskSlider.maxValue is {_taskSlider.maxValue},_taskSlider.minValue is {_taskSlider.minValue},current is {_taskSlider.value}");
 
         _receiveButton.onClick.RemoveAllListeners(); // 先清理
         _receiveButton.onClick.AddListener(ReceiveReward);
@@ -94,7 +94,7 @@ public class TaskReward : MonoBehaviour
             GameUIManager.Instance.ShowQuickTip("未达到领取要求");
             return;
         } 
-        MetaCurrencyManager.Instance.AddMetaCoin(_rewardStruct.type, _rewardStruct.count);
+        MetaCurrencyManager.Instance.AddMetaCoin(_rewardStruct.type, _rewardStruct.count,true);
         _taskSlider.transform.Find("Fill Area/Fill").GetComponent<Image>().color= _finishColor;
         _taskSlider.transform.Find("SliderText").GetComponent<Text>().text= "完成";
         _finishMask.SetActive(true);

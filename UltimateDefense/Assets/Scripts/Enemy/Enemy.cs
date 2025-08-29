@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using DG.Tweening;
 using System.Collections;
+using UnityEngine.EventSystems;
 
 
 /// <summary>
@@ -84,6 +85,7 @@ public class Enemy : MonoBehaviour
             spriteRenderer.color = originalColor;
         }
         _speedRate = 1;
+        transform.localScale = Vector3.one;
         StopAllCoroutines();
     }
 
@@ -116,7 +118,7 @@ public class Enemy : MonoBehaviour
         this.enemyType = enemyType;   //敌人类型
 
         // 根据等级动态计算最大生命值，一级就是一滴血,护盾默认为 0
-        maxHP.Value = Mathf.RoundToInt(level * (1 + BattleManager.Instance.Debuff.AddHP * 0.1f));//算上debuff的，增加敌人10%HP
+        maxHP.Value = Mathf.RoundToInt(level * (1 + BattleManager.Instance.Debuff.AddHP * 0.1f)*10);//算上debuff的，增加敌人10%HP
         
         _currentHP.Value = maxHP.Value;   //初始化血量
         maxShield.Value = 0;            //初始化护盾
@@ -129,6 +131,8 @@ public class Enemy : MonoBehaviour
         _currentShield.OnValueChanged += ChangeShield;//添加值变化事件
         ChangeShield(_currentHP.Value);         // 初始化护盾条填充
         ChangeHP(_currentShield.Value);         // 初始化血条填充
+        SetScale();//设置体型大小
+
 
         //免疫伤害
         _damageNullifiedCount = EnemyManager.Instance.EnemyDamageNullifiedCount.Value;
@@ -202,6 +206,7 @@ public class Enemy : MonoBehaviour
             if (_currentHP.Value == 0)
                 Die();                    // 血量耗尽则死亡
         }
+        SetScale();//设置体型大小
         EnemyUIManager.Instance.UpdateEnemyHealth(this);
     }
 
@@ -400,10 +405,27 @@ public class Enemy : MonoBehaviour
         //shieldSlider.fillAmount = maxShield == 0 ? 0f : (float)_currentShield / maxShield;
     }
 
+    /// <summary>
+    /// 设置体型大小
+    /// </summary>
+    private void SetScale()
+    {
+        if (CurrentHP.Value <= 0)
+        {
+            transform.localScale = Vector3.one;
+            return;
+        }
+        float level01 = (CurrentHP.Value - 1f) / 49f;
+        float t = Mathf.SmoothStep(0f, 1f, level01);
+        float scale = Mathf.Lerp(1.0f, 1.6f, t);
+        transform.localScale = Vector3.one * scale;
+    }
+
     //挑战结束
     private void OnEndBattle(bool success)
     {
         EnemyManager.Instance.EnemyPool.Return(this);
+        EnemyUIManager.Instance.RemoveEnemyUI(transform);
         StopAllCoroutines();
     }
 
@@ -451,6 +473,8 @@ public class Enemy : MonoBehaviour
             OnMoveOutRange?.Invoke(this);
         }
     }
+
+    
     #endregion
 }
 

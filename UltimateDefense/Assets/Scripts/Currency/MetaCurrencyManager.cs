@@ -4,7 +4,7 @@ using UnityEngine.Events;
 /// <summary>
 /// 局外资源管理器，局外货币可以用于升级属性，等等
 /// </summary>
-public class MetaCurrencyManager : ManagerBase<MetaCurrencyManager>,IManager
+public class MetaCurrencyManager : ManagerBase<MetaCurrencyManager>
 {
     #region 公共静态事件
     #endregion
@@ -39,7 +39,7 @@ public class MetaCurrencyManager : ManagerBase<MetaCurrencyManager>,IManager
     /// <summary>
     /// 增加局外货币
     /// </summary>
-    public void AddMetaCoin(RewardType rewardType,int amount)
+    public void AddMetaCoin(RewardType rewardType,int amount,bool showUI=false)
     {
         if(rewardType ==RewardType.Diamond)
         {
@@ -50,7 +50,11 @@ public class MetaCurrencyManager : ManagerBase<MetaCurrencyManager>,IManager
         {
             CrownCount.Value += amount;
         }
-        GameUIManager.Instance.ShowGetRewardPanel((rewardType, amount));
+        if (showUI)
+        {
+            GameUIManager.Instance.ShowGetRewardPanel((rewardType, amount));
+        }
+        
     }
 
     /// <summary>

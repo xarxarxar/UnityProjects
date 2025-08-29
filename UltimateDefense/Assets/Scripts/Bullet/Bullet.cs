@@ -73,6 +73,11 @@ public class Bullet : MonoBehaviour
         _isCritical = isCritical;
         _damage = damage;
         AudioManager.Instance.PlaySFX("开枪");
+
+        if (_trailRenderer == null)
+        {
+            _trailRenderer=GetComponent<TrailRenderer>();
+        }
         switch (_bulletKind)
         {
             case BulletKind.Normal:
@@ -89,6 +94,7 @@ public class Bullet : MonoBehaviour
     // 穿透型子弹（单穿/多穿）
     public void Init(Vector3 position, Vector3 direction, bool isCritical, int damage, BulletType type)
     {
+        Debug.Log("Init2");
         transform.position = position;
         _direction = direction.normalized;
         _isCritical = isCritical;
@@ -112,6 +118,7 @@ public class Bullet : MonoBehaviour
     // 弹射子弹（跟踪型 + 弹射次数 + 衰减百分比）
     public void InitChainBullet(Vector3 position, Enemy enemy, bool isCritical, int damage, int maxChain, float decayPercent)
     {
+        Debug.Log("Init3");
         transform.position = position;
         _bulletType = BulletType.FollowTarget;
         _targetEnemy = enemy;
@@ -144,12 +151,17 @@ public class Bullet : MonoBehaviour
     {
         if (BattleManager.Instance.IsPaused.Value)
         {
-            if (_trailRenderer != null) _trailRenderer.emitting = false;
+            if (_trailRenderer != null) 
+            {
+                _trailRenderer.enabled = false;
+                _trailRenderer.emitting = false;
+            } 
             return;
         }
 
         if (_trailRenderer != null)
         {
+            _trailRenderer.enabled = true;
             _trailRenderer.emitting = true;
             _trailRenderer.time = _baseTrailTime / BattleManager.Instance.GameSpeed.Value;
         }
@@ -190,7 +202,7 @@ public class Bullet : MonoBehaviour
     {
         transform.position += _direction * _moveSpeed * BattleManager.Instance.GameSpeed.Value * Time.deltaTime;
 
-        if (_bulletType == BulletType.MultiPenetrate && transform.position.y >= 15f)
+        if ((_bulletType == BulletType.MultiPenetrate || _bulletType == BulletType.SinglePenetrate) && transform.position.y >= 15f)
         {
             ReturnToPool();
         }
@@ -284,8 +296,6 @@ public class Bullet : MonoBehaviour
         if (!enemy.gameObject.activeInHierarchy) return;
         // 2. 如果敌人有护盾，跳过特殊效果
         if (enemy.CurrentShield.Value>0) return;
-
-        
         
 
         // 3. 特殊效果
@@ -310,10 +320,16 @@ public class Bullet : MonoBehaviour
 
     private void OnEndBattle(bool success)
     {
+        
         if (gameObject.activeSelf)
         {
             ReturnToPool();
         }
         
+    }
+
+    private void OnDestroy()
+    {
+        Debug.Log($"{name}子弹被销毁");
     }
 }

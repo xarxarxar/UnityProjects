@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// 管理奖励的类型
 /// </summary>
-public class RewardManager : ManagerBase<RewardManager>,IManager
+public class RewardManager : ManagerBase<RewardManager>
 {
     [SerializeField] private Sprite _coinSprite;    //金币图标
     [SerializeField] private Sprite _diamondSprite; //钻石图标

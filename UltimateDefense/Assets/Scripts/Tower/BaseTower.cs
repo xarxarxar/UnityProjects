@@ -30,10 +30,6 @@ public abstract class BaseTower : MonoBehaviour
     /// 每秒旋转多少度
     /// </summary>
     protected float rotateSpeed = 200.0f; // 每秒旋转多少度
-    /// <summary>
-    /// 子弹预制体
-    /// </summary>
-    [SerializeField] protected Bullet _bullet;//子弹
 
     //子类只需修改数值
     private int _currentBulletCount;
@@ -55,12 +51,12 @@ public abstract class BaseTower : MonoBehaviour
     public int TowerLevel { get; set; }
 
     //子类需重写值的逻辑，炮塔基础值，也就是一级时候的值
-    public abstract int BaseDamage { get; }    //子弹伤害
-    public abstract int BaseCap { get; }       //子弹容量
-    public abstract float BaseAtkRate { get; } //攻击间隔
-    public abstract float BaseReload { get; }  //换弹时长
-    public abstract float BaseCritProb { get; } //暴击概率
-    public abstract float BaseCritMult { get; } //暴击伤害倍率
+    public int BaseDamage => TowerDataManager.Instance.GetTowerData(TowerType).BaseDamage;    //子弹伤害
+    public int BaseCap => TowerDataManager.Instance.GetTowerData(TowerType).BaseCap;       //子弹容量
+    public float BaseAtkRate => TowerDataManager.Instance.GetTowerData(TowerType).BaseAtkRate; //攻击间隔
+    public float BaseReload => TowerDataManager.Instance.GetTowerData(TowerType).BaseReload;  //换弹时长
+    public float BaseCritProb => TowerDataManager.Instance.GetTowerData(TowerType).BaseCritProb; //暴击概率
+    public float BaseCritMult => TowerDataManager.Instance.GetTowerData(TowerType).BaseCritMult; //暴击伤害倍率
     //子类需重写值的逻辑，炮塔最终的值
     public Bindable<int> _bulletDamage = new Bindable<int>(); //子弹伤害
     public Bindable<int> BulletDamage { get { CalculateAtkDamage(); return _bulletDamage; } } //子弹伤害
@@ -145,6 +141,9 @@ public abstract class BaseTower : MonoBehaviour
         CalculateReloadTime();
         CalculateCriticalProb();
         CalculateCriticalMult();
+        _slider.gameObject.SetActive(false);
+        _isReloading = false;
+
     }
 
     
@@ -191,17 +190,6 @@ public abstract class BaseTower : MonoBehaviour
     {
         _criticalMult.Value = BaseCritMult + TowerManager.Instance.BonusCritMult.Value;
     }
-    /// <summary>
-    /// 获取炮塔的描述
-    /// </summary>
-    /// <returns></returns>
-    public abstract string GetDescription();
-
-    /// <summary>
-    /// 获取升级的属性的描述
-    /// </summary>
-    /// <returns></returns>
-    public abstract string GetUpgradeDescription();
 
     //子类不用重写
     //旋转并射击的协程
@@ -263,19 +251,9 @@ public abstract class BaseTower : MonoBehaviour
                 continue;
             }
 
-            if (_enemiesInRange.Count != 0)
+            if (EnemyManager.Instance.CurrentTargerEnemy != null)
             {
-                Enemy lowestHpEnemy = null;
-                float lowestHp = float.MaxValue;
-                foreach (var enemy in _enemiesInRange)
-                {
-                    if (enemy.CurrentHP.Value < lowestHp)
-                    {
-                        lowestHp = enemy.CurrentHP.Value;
-                        lowestHpEnemy = enemy;//找到血量最少的敌人
-                    }
-                }
-                currentTarget = lowestHpEnemy;
+                currentTarget = EnemyManager.Instance.CurrentTargerEnemy;
                 yield return StartCoroutine(RotateAndShootIE()); // 等待旋转和射击完成
             }
             else
@@ -329,7 +307,14 @@ public abstract class BaseTower : MonoBehaviour
     private void OnEndBattle(bool success)
     {
         Debug.Log("挑战结束");
+        EndBattle();
         StopAllCoroutines();
+        enabled = false;
+    }
+
+    protected virtual void EndBattle()
+    {
+
     }
 
     /// <summary>
@@ -345,4 +330,8 @@ public abstract class BaseTower : MonoBehaviour
         seq.Append(_gunBarrel.transform.DOScaleY(stretchAmount, squashDuration /BattleManager.Instance.GameSpeed.Value).SetEase(Ease.OutQuad));
         seq.Append(_gunBarrel.transform.DOScaleY(originalScale.y, squashDuration / BattleManager.Instance.GameSpeed.Value).SetEase(Ease.OutBounce));
     }
+
+    
+
+    
 }

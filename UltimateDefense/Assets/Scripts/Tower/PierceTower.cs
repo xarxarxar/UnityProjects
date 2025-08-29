@@ -9,44 +9,30 @@ public class PierceTower : BaseTower
 {
     public override TowerType TowerType { get => TowerType.Piercing; }
 
-    public override int BaseDamage => 1;//1-4-7-10
-    public override int BaseCap => 6;//6-8-10
-    public override float BaseAtkRate => 1;
-    public override float BaseReload => 3;
-    public override float BaseCritProb => 0.1f;
-    public override float BaseCritMult => 1.2f;
+    private int coin = 0;
 
-    public override string GetDescription()
+    protected override void Init()
     {
-        return $"子弹可穿透敌人，初始伤害降低，初始弹夹容量降低";
-    }
-
-    public override string GetUpgradeDescription()
-    {
-        // 如果是偶数等级且不为0，提升弹夹容量
-        if (TowerLevel % 2 == 0 && TowerLevel != 0)
-        {
-            return "弹夹容量+1";
-        }
-
-        // 其余情况（等级0 或 奇数等级），提升基础伤害
-        return "基础伤害+1";
+        base.Init();
+        coin = 0;
+        CurrencyManager.OnCoinChange += OnCoinChange;
     }
 
     protected override void CalculateAtkDamage()
     {
         //初始伤害为基础伤害的80%,每升级一次伤害提示10%
-        _bulletDamage.Value = Mathf.RoundToInt(BaseDamage * (0.8f + TowerLevel * 0.1f) * (1f + TowerManager.Instance.BonusAtk.Value));
+        _bulletDamage.Value = Mathf.RoundToInt(BaseDamage* (1f + TowerManager.Instance.BonusAtk.Value));
     }
     protected override void CalculateBulletCap()
     {
-        _bulletCapacity.Value = Mathf.RoundToInt(BaseCap * 0.8f) + TowerManager.Instance.BonusCap.Value;
+        _bulletCapacity.Value = BaseCap + TowerManager.Instance.BonusCap.Value;
     }
 
 
     //实现父类的DoAttack方法
     protected override IEnumerator DoAttack()
     {
+        Debug.Log($"穿透形态攻击");
         // 计算发射方向（指向目标敌人）
         Vector3 direction = (currentTarget.transform.position - _bulletInitPos.position).normalized;
 
@@ -64,5 +50,24 @@ public class PierceTower : BaseTower
         CurrentBulletCount--;
 
         yield return null;
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="count"></param>
+    private void OnCoinChange(int count)
+    {
+        coin += count;
+        if (coin >= 100)
+        {
+            Crystal.Instance.Recover(coin/100);
+            coin = 0;
+        }
+    }
+
+    protected override void EndBattle()
+    {
+        base.EndBattle();
+        CurrencyManager.OnCoinChange -= OnCoinChange;
     }
 }

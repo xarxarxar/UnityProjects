@@ -79,11 +79,10 @@ public class BattleManager : MonoBehaviour
         
         BattleUIManager.Instance.ShowBattleScene();//显示战斗场景
         IsPaused.Value = false;
-        ManagerRegistry.InitManagers(InitStage.InBattle);
-
-        ScienceManager.Instance.ApplyScience();//应用科技点
+        //ScienceManager.Instance.ApplyScience();//应用科技点
         EnemyManager.OnLastEnemySpawned += OnLastEnemySpawned;
         Crystal.OnCrystalDestroyed += OnCrystalDestroyed;
+        ManagerRegistry.InitManagers(InitStage.InBattle);
     }
 
     /// <summary>
@@ -95,7 +94,7 @@ public class BattleManager : MonoBehaviour
     public void EndBattle(bool success)
     {
         IsPaused.Value = true;
-        SignleMetaCoinCount();//计算这次挑战获取了多少局外金币
+        SignleMetaCoinCount();//计算这次挑战获取了多少钻石
         BattleUIManager.Instance.ShowEndPanel(success);//显示游戏结算界面
         
         EnemyManager.OnLastEnemySpawned -= OnLastEnemySpawned;

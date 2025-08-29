@@ -48,7 +48,12 @@ public class Crystal : BuildingBase
 
     private void OnEnable()
     {
-        Init(1000,null);
+        if (!DataManager.Instance.PlayerInfo.Config.ContainsKey("CrystalMaxHp"))
+        {
+            DataManager.Instance.PlayerInfo.Config["CrystalMaxHp"] = 1000;
+        }
+        MaxHP.Value = Mathf.RoundToInt(DataManager.Instance.PlayerInfo.Config["CrystalMaxHp"]) ;//初始值应该从配置文件中读取
+        Init(MaxHP.Value, null);
     }
 
     protected void OnDisable()
@@ -70,7 +75,7 @@ public class Crystal : BuildingBase
     /// <param name="maxHP">最大生命值</param>
     public override void Init(int maxHP,Grid grid)
     {
-        _currentHP.Value = MaxHP.Value =maxHP;
+        _currentHP.Value = maxHP;
 
         hpSlider.SetValue(1);
         hpSlider.SetText($"{_currentHP.Value}/{MaxHP.Value}");

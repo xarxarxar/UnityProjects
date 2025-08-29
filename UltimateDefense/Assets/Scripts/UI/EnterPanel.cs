@@ -9,6 +9,7 @@ public class EnterPanel : MonoBehaviour
 
     private void Start()
     {
+        AudioManager.Instance.PlayBGM("登陆界面BGM");
         EnterButton.onClick.AddListener(EnterGameButton);
         DataManager.OnDataLoaded+= OnDataLoaded;
     }
@@ -62,5 +63,6 @@ public class EnterPanel : MonoBehaviour
     private void OnDataLoaded()
     {
         StartCoroutine(LoadNewSceneAsyncIE("GameScene"));  // 把场景名字改成你要加载的
+        AudioManager.Instance.PlayBGM("主界面BGM");
     }
 }

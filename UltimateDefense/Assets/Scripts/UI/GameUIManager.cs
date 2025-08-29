@@ -1,10 +1,11 @@
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Events;
 
 /// <summary>
 /// 管理游戏中的所有局内 UI 界面与显示逻辑
 /// </summary>
-public class GameUIManager : ManagerBase<GameUIManager>,IManager
+public class GameUIManager : ManagerBase<GameUIManager>
 {
     [SerializeField]private GameObject _enterPanel;//进入游戏Panel
     [SerializeField]private GameObject _startPanel;//游戏主界面
@@ -51,6 +52,7 @@ public class GameUIManager : ManagerBase<GameUIManager>,IManager
     /// </summary>
     public void ShowMainMenu()
     {
+        AudioManager.Instance.PlayBGM("主界面BGM");
         _startPanel.SetActive(true);
         _guidePanel.SetActive(true);
     }
@@ -133,6 +135,22 @@ public class GameUIManager : ManagerBase<GameUIManager>,IManager
     }
 
     /// <summary>
+    /// 打开设置面板
+    /// </summary>
+    public void ShowSettingPanel()
+    {
+        _settingPanel.gameObject.SetActive(true);
+    }
+
+    /// <summary>
+    /// 隐藏设置面板
+    /// </summary>
+    public void HideSettingPanel()
+    {
+        _settingPanel.gameObject.SetActive(false);
+    }
+
+    /// <summary>
     /// 播放流光特效
     /// </summary>
     /// <param name="screenStartPos"></param>
@@ -171,8 +189,10 @@ public class GameUIManager : ManagerBase<GameUIManager>,IManager
     /// <summary>
     /// 播放流光特效（金币先散开再飞向目标，依次飞过去）
     /// </summary>
-    public void PlayFlyCoinEffect(Vector3 screenStart, Vector3 screenEnd, int count = 1)
+    public void PlayFlyCoinEffect(Vector3 screenStart, Vector3 screenEnd, int count = 1,
+        UnityAction signleCallback=null,UnityAction totalCallback=null)
     {
+        int finishedCount = 0; // 记录已完成的金币数量
         for (int i = 0; i < count; i++)
         {
             GameObject flyCoin = Instantiate(flyCoinPrefab, canvasTransform);
@@ -222,6 +242,12 @@ public class GameUIManager : ManagerBase<GameUIManager>,IManager
             seq.OnComplete(() =>
             {
                 Destroy(flyCoin);
+                signleCallback?.Invoke();
+                finishedCount++;
+                if (finishedCount >= count) // 所有金币完成
+                {
+                    totalCallback?.Invoke();
+                }
                 // 触发音效或粒子
             });
 

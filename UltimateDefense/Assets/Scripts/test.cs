@@ -1,14 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class test : MonoBehaviour
+public class test : MonoBehaviour, IPointerClickHandler
 {
-    [SerializeField]private List<UpgradeBase> upgradeBases=new List<UpgradeBase>();
-
-    // Update is called once per frame
-    void Update()
+    public void OnPointerClick(PointerEventData eventData)
     {
-        
+        Debug.Log("enemy±»µã»÷");
     }
 }

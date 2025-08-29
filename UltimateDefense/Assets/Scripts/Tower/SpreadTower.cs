@@ -10,36 +10,15 @@ public class SpreadTower : BaseTower
 {
     public override TowerType TowerType { get => TowerType.Spread; }
 
-    public override int BaseDamage => 1;//1-4-7-10
-    public override int BaseCap => 6;//6-8-10
-    public override float BaseAtkRate => 1;
-    public override float BaseReload => 3;
-    public override float BaseCritProb => 0.1f;
-    public override float BaseCritMult => 1.2f;
-
-    public override string GetDescription()
-    {
-        return $"每次攻击呈扇形射出三颗子弹，弹夹不满三颗时全部射出，初始伤害降低，暴击概率翻倍";
-    }
-
-    public override string GetUpgradeDescription()
-    {
-        // 判断等级是否为2的倍数且不为 0
-        bool isEvenAndNotZero = TowerLevel != 0 && TowerLevel % 2 == 0;
-
-        // 返回对应的描述文本
-        return isEvenAndNotZero ? "暴击概率+1%" : "伤害+10%";
-    }
-
     protected override void CalculateAtkDamage()
     {
-        //初始伤害为基础伤害的50%
-        _bulletDamage.Value = Mathf.RoundToInt(BaseDamage *0.5f* (1f + TowerManager.Instance.BonusAtk.Value));
+        //初始伤害为
+        _bulletDamage.Value = Mathf.RoundToInt(BaseDamage* (1f + TowerManager.Instance.BonusAtk.Value));
     }
     protected override void CalculateCriticalProb()
     {
         //初始暴击概率为基础暴击概率的2倍
-        _criticalProb.Value = BaseCritProb * 2.0f + TowerManager.Instance.BonusCritProb.Value;
+        _criticalProb.Value = BaseCritProb + TowerManager.Instance.BonusCritProb.Value;
     }
 
     //实现父类的DoAttack方法
@@ -70,6 +49,11 @@ public class SpreadTower : BaseTower
             Bullet bullet = TowerManager.Instance.BulletPool.Get();
 
             bool isCrit = Random.value < CriticalProb.Value;
+            //暴击恢复城墙血量
+            if (isCrit)
+            {
+                Crystal.Instance.Recover(1);
+            }
             int damage = isCrit ? Mathf.RoundToInt(BulletDamage.Value * CriticalMult.Value) : BulletDamage.Value;
 
             bullet.Init(firePos, shootDir, isCrit, damage,type:BulletType.SinglePenetrate);

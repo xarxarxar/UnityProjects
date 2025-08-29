@@ -34,12 +34,12 @@ public class Upgrade_IncreaseTowerReloadTime : UpgradeBase
         _bonus = bonus;
         UpgradeID = $"IncreaseTowerReloadTime{_bonus}";
         Cost = cost;
-        Description = $"炮塔换弹时长 -{bonus}秒";
+        Description = $"炮塔换弹时长 -{bonus*100}%";
     }
 
     public static Upgrade_IncreaseTowerReloadTime CreateDynamicUpgrade()
     {
-        float[] values = { 0.1f, 0.15f, 0.2f };
+        float[] values = { 0.05f, 0.1f, 0.15f };
         float bonus = values[Random.Range(0, values.Length)];
         int cost = Mathf.RoundToInt(bonus*(200 + UpgradeManager.Instance.RefreshCount.Value * 70));
         return new Upgrade_IncreaseTowerReloadTime(bonus, cost);
@@ -50,7 +50,7 @@ public class Upgrade_IncreaseTowerReloadTime : UpgradeBase
     #region 公共方法
     public override bool IsAvailable()
     {
-        return TowerManager.Instance.BonusReload.Value > 1.0f;
+        return TowerManager.Instance.BonusReload.Value <0.8f;
     }
 
     /// <summary>
@@ -59,7 +59,11 @@ public class Upgrade_IncreaseTowerReloadTime : UpgradeBase
     public override void Apply()
     {
         // 通知 Manager 保存全局加成
-        TowerManager.Instance.BonusReload.Value -= _bonus;
+        TowerManager.Instance.BonusReload.Value += _bonus;
+        if (TowerManager.Instance.BonusReload.Value >= 0.8f)
+        {
+            TowerManager.Instance.BonusReload.Value = 0.8f;
+        }
     }
 
     #endregion

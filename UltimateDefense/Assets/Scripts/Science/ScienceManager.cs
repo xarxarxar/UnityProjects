@@ -1,21 +1,17 @@
 using UnityEngine;
 
-public class ScienceManager : ManagerBase<ScienceManager>,IManager
+public class ScienceManager : ManagerBase<ScienceManager>
 {
     public override string Description { get; } = "管理科技树，局外的Manager";
     [SerializeField]
-    private Bindable<int> _unlockIndex=new Bindable<int>();//玩家已解锁的科技index,0表示一个都未解锁
+    //private Bindable<int> _unlockIndex=new Bindable<int>();//玩家已解锁的科技index,0表示一个都未解锁
     private readonly ScienceNodeData[] baseSciences = new ScienceNodeData[]//基础科技
     {
-        new ScienceNodeData { description = "炮塔攻击力+1", effectType = ScienceEffectType.IncreaseDamageFlat, value = 1,costType=RewardType.Diamond,cost=1 },
-        new ScienceNodeData { description = "每秒攻击次数+0.1", effectType = ScienceEffectType.IncreaseAttackSpeedPct, value = 0.1f,costType=RewardType.Diamond,cost=1 },
-        new ScienceNodeData { description = "换弹时间-0.1秒", effectType = ScienceEffectType.ReduceReloadTime, value = 0.1f,costType=RewardType.Diamond,cost=1 },
-        new ScienceNodeData { description = "换弹时间-0.2秒", effectType = ScienceEffectType.ReduceReloadTime, value = 0.1f,costType=RewardType.Diamond,cost=1 },
-        new ScienceNodeData { description = "换弹时间-0.3秒", effectType = ScienceEffectType.ReduceReloadTime, value = 0.1f,costType=RewardType.Diamond,cost=1 },
-        new ScienceNodeData { description = "换弹时间-0.4秒", effectType = ScienceEffectType.ReduceReloadTime, value = 0.1f,costType=RewardType.Diamond,cost=1 },
-        new ScienceNodeData { description = "换弹时间-0.5秒", effectType = ScienceEffectType.ReduceReloadTime, value = 0.1f,costType=RewardType.Diamond,cost=1 },
-        new ScienceNodeData { description = "换弹时间-0.6秒", effectType = ScienceEffectType.ReduceReloadTime, value = 0.1f,costType=RewardType.Diamond,cost=1 },
-        new ScienceNodeData { description = "换弹时间-0.7秒", effectType = ScienceEffectType.ReduceReloadTime, value = 0.1f,costType=RewardType.Diamond,cost=1 },
+        new ScienceNodeData { description = "城墙初始最大血量+100", effectType = ScienceEffectType.CrystalMaxHP, value = 1,costType=RewardType.Diamond,cost=1 },
+        new ScienceNodeData { description = "每次刷新所需金币-1", effectType = ScienceEffectType.FreshCoinCount, value = 0.1f,costType=RewardType.Diamond,cost=1 },
+        new ScienceNodeData { description = "敌人初始掉落金币+1", effectType = ScienceEffectType.EnemyDieCount, value = 0.1f,costType=RewardType.Diamond,cost=1 },
+        new ScienceNodeData { description = "对局初始金币+100", effectType = ScienceEffectType.DefaultCoinCount, value = 0.1f,costType=RewardType.Diamond,cost=1 },
+        new ScienceNodeData { description = "刷新出的Buff相同时，固定折扣-10%", effectType = ScienceEffectType.Discount, value = 0.1f,costType=RewardType.Diamond,cost=1 },
         // 可以继续添加 6 个作为第 4~9 个
     };
 
@@ -27,7 +23,7 @@ public class ScienceManager : ManagerBase<ScienceManager>,IManager
     /// <summary>
     /// 玩家已解锁的科技index
     /// </summary>
-    public Bindable<int> UnlockIndex { get => _unlockIndex; set => _unlockIndex = value; }
+    //public Bindable<int> UnlockIndex => DataManager.Instance.PlayerInfo.UnlockCount;
 
     protected override void Awake()
     {
@@ -37,28 +33,43 @@ public class ScienceManager : ManagerBase<ScienceManager>,IManager
 
     public override void Init()
     {
-        _unlockIndex.Value=-1;//表示一个都没解锁
+        //DataManager.Instance.PlayerInfo.UnlockCount.Value=-1;//表示一个都没解锁
     }
 
     /// <summary>
     /// 应用科技点数
     /// </summary>
-    public void ApplyScience()
-    {
-        for (int i = 0; i <= _unlockIndex.Value; i++)
-        {
-            ApplySignleScience(i);
-        }
-    }
+    //public void ApplyScience()
+    //{
+    //    for (int i = 0; i <= DataManager.Instance.PlayerInfo.UnlockCount.Value; i++)
+    //    {
+    //        ApplySignleScience(i);
+    //    }
+    //}
 
     /// <summary>
     /// 解锁最新的一个科技点
     /// </summary>
     public void UnlockScience(int index)
     {
-        if (index != _unlockIndex.Value + 1) return;
-        _unlockIndex.Value++;
+        if (index != DataManager.Instance.PlayerInfo.UnlockCount.Value + 1) return;
+        RewardType rewardType= GetScienceDataByIndex(index).costType;
+        int count= GetScienceDataByIndex(index).cost;
+        if (!MetaCurrencyManager.Instance.HasEnoughMoney(rewardType, count) )
+        {
+            if(rewardType==RewardType.Diamond)
+            {
+                GameUIManager.Instance.ShowQuickTip("钻石不足");
+            }
+            else if(rewardType==RewardType.Crown)
+            {
+                GameUIManager.Instance.ShowQuickTip("王冠不足");
+            }
+            return;
+        }
         DataManager.Instance.PlayerInfo.UnlockCount.Value++;
+        ApplySignleScience(DataManager.Instance.PlayerInfo.UnlockCount.Value);
+        //DataManager.Instance.PlayerInfo.UnlockCount.Value++;
     }
 
     /// <summary>
@@ -69,24 +80,25 @@ public class ScienceManager : ManagerBase<ScienceManager>,IManager
     {
         if(index<0) return null;
         ScienceNodeData scienceData = null;
-        if (index % 10 != 9)
-        {
-            scienceData = baseSciences[index % 10];
-        }
-        else
-        {
-            // 特殊科技：创建一个新的 ScienceData 对象
-            scienceData = new ScienceNodeData
-            {
-                //name = "测试皮肤",
-                description = "测试皮肤描述",
-                effectType = ScienceEffectType.UnlockSkin,
-                value = 0,
-                costType = RewardType.Crown,
-                cost = 1,
-                extraData = skinNames[(index / 10) % skinNames.Length] // 注意皮肤 index 对应关系
-            };
-        }
+        //if (index % 10 != 9)
+        //{
+        //    scienceData = baseSciences[index % 10];
+        //}
+        //else
+        //{
+        //    // 特殊科技：创建一个新的 ScienceData 对象
+        //    scienceData = new ScienceNodeData
+        //    {
+        //        //name = "测试皮肤",
+        //        description = "测试皮肤描述",
+        //        effectType = ScienceEffectType.UnlockSkin,
+        //        value = 0,
+        //        costType = RewardType.Crown,
+        //        cost = 1,
+        //        extraData = skinNames[(index / 10) % skinNames.Length] // 注意皮肤 index 对应关系
+        //    };
+        //}
+        scienceData = baseSciences[index % 5];
         return scienceData;
     }
 
@@ -99,22 +111,41 @@ public class ScienceManager : ManagerBase<ScienceManager>,IManager
         ScienceNodeData scienceData= GetScienceDataByIndex(index);
         switch(scienceData.effectType)
         {
-            case ScienceEffectType.IncreaseDamageFlat:
-                TowerManager.Instance.BonusAtk.Value +=Mathf.RoundToInt(scienceData.value);
+            case ScienceEffectType.CrystalMaxHP:
+                if (!DataManager.Instance.PlayerInfo.Config.ContainsKey("CrystalMaxHp"))
+                {
+                    DataManager.Instance.PlayerInfo.Config["CrystalMaxHp"] = 1000;
+                }
+                DataManager.Instance.PlayerInfo.Config["CrystalMaxHp"] += 100;
                 break;
 
-            case ScienceEffectType.IncreaseAttackSpeedPct:
-                TowerManager.Instance.BonusAttackRate.Value +=scienceData.value;
+            case ScienceEffectType.FreshCoinCount:
                 break;
 
-            case ScienceEffectType.ReduceReloadTime:
-                TowerManager.Instance.BonusReload.Value -=scienceData.value;
+            case ScienceEffectType.EnemyDieCount:
+                if (!DataManager.Instance.PlayerInfo.Config.ContainsKey("EnemyDieCoin"))
+                {
+                    DataManager.Instance.PlayerInfo.Config["EnemyDieCoin"] = 10;
+                }
+                DataManager.Instance.PlayerInfo.Config["EnemyDieCoin"] += 1;
                 break;
 
-            case ScienceEffectType.UnlockSkin:
-                //SkinManager.Instance.UnlockSkin(data.extraData); // 传皮肤名
+            case ScienceEffectType.DefaultCoinCount:
+                if (!DataManager.Instance.PlayerInfo.Config.ContainsKey("InitialCoin"))
+                {
+                    DataManager.Instance.PlayerInfo.Config["InitialCoin"] = 1000;
+                }
+                DataManager.Instance.PlayerInfo.Config["InitialCoin"] += 100;
+                break;
+            case ScienceEffectType.Discount:
+                if (!DataManager.Instance.PlayerInfo.Config.ContainsKey("SameDiscount"))
+                {
+                    DataManager.Instance.PlayerInfo.Config["SameDiscount"] = 0.5f;
+                }
+                DataManager.Instance.PlayerInfo.Config["SameDiscount"] -= 0.1f;
                 break;
         }
+        DataManager.Instance.SavePlayerInfo();
     }
 
     
@@ -144,8 +175,9 @@ public class ScienceNodeData
 
 public enum ScienceEffectType
 {
-    IncreaseDamageFlat,      // +1伤害
-    IncreaseAttackSpeedPct,  // +1%攻速
-    ReduceReloadTime,        // -0.1秒换弹
-    UnlockSkin               // 解锁皮肤
+    CrystalMaxHP,      // +100城墙最大血量
+    FreshCoinCount,  // -1每次刷新所需金币
+    EnemyDieCount,        // +1敌人掉落金币
+    DefaultCoinCount,               // +100初始金币
+    Discount,               // -10%固定折扣
 }

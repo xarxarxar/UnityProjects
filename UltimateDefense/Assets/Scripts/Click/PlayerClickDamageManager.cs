@@ -6,7 +6,7 @@ using static UnityEngine.GraphicsBuffer;
 /// <summary>
 /// 负责管理，点击造成的伤害
 /// </summary>
-public class PlayerClickDamageManager : ManagerBase<PlayerClickDamageManager>,IManager
+public class PlayerClickDamageManager : ManagerBase<PlayerClickDamageManager>
 {
     private int _damage=10;//点击造成的伤害
     private float _criticalProb = 0.3f;//点击造成伤害暴击的概率
@@ -31,6 +31,7 @@ public class PlayerClickDamageManager : ManagerBase<PlayerClickDamageManager>,IM
     {
         base.Awake();
         _stage=InitStage.InBattle;
+        Index = -1;
     }
 
     private void OnDisable()

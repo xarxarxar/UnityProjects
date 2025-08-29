@@ -3,8 +3,10 @@ using UnityEngine;
 using UnityEngine.Events;
 using Newtonsoft.Json;
 using System.Collections;
+using System;
+using System.Linq;
 
-public class DataManager : ManagerBase<DataManager>,IManager
+public class DataManager : ManagerBase<DataManager>
 {
     [SerializeField] private BindablePlayerInfo _playerInfo=new BindablePlayerInfo();//全局的玩家信息
 
@@ -101,14 +103,44 @@ public class DataManager : ManagerBase<DataManager>,IManager
             string json = File.ReadAllText(SaveFilePath);
             PlayerInfo tmpPlayerInfo= JsonConvert.DeserializeObject<PlayerInfo>(json);
             _playerInfo.CopyFromPlayerInfo(tmpPlayerInfo);//从PlayerInfo转为BindablePlayerInfo
-            Debug.Log("[加载成功] PlayerInfo 加载完成");
+            JudgeTheSameDay();//判断是否是同一天
         }
         else
         {
-            Debug.LogWarning("[加载失败] 未找到保存的 PlayerInfo，返回默认对象");
             SavePlayerInfoLocal();//保存一个
         }
         callback?.Invoke();
+    }
+
+    //判断是否是同一天
+    private void JudgeTheSameDay()
+    {
+        DateTime now = DateTime.Now;
+        if (now.Date != _playerInfo.LastLoginDate.Value.Date)
+        {
+            // 不同一天
+            RefreshDailyPlayerInfo();
+        }
+    }
+
+    /// <summary>
+    /// 刷新日结玩家数据，登录时检刷新，或者是过了凌晨自动刷新
+    /// </summary>
+    public void RefreshDailyPlayerInfo()
+    {
+        _playerInfo.LastLoginDate.Value = DateTime.Now;
+        _playerInfo.TodayOnlineMinutes.Value = 0;
+        _playerInfo.TodayEnemyDieCount.Value = 0;
+        _playerInfo.TodayWaveCount.Value = 0;
+        _playerInfo.TodayFreshCount.Value = 0;
+        _playerInfo.TodayPassCount.Value = 0;
+        _playerInfo.TodayShareCount.Value = 0;
+
+        foreach (var key in _playerInfo.DailyRewardReceived.Keys.ToList())
+        {
+            _playerInfo.DailyRewardReceived[key] = false;
+        }
+        SavePlayerInfo();
     }
     #endregion
 }

@@ -5,16 +5,9 @@ using UnityEngine;
 /// <summary>
 /// 管理所有炮塔的生成、销毁与全局属性加成
 /// </summary>
-public class TowerManager : ManagerBase<TowerManager>,IManager
+public class TowerManager : ManagerBase<TowerManager>   
 {
     #region 私有属性
-    //炮塔全局基础属性
-    private Bindable<int> _baseAtk = new Bindable<int>();         //炮塔基础攻击
-    private Bindable<int> _baseCap = new Bindable<int>();         //炮塔基础弹夹容量
-    private Bindable<float> _baseAtkRate = new Bindable<float>();   //炮塔基础攻击间隔
-    private Bindable<float> _baseCritProb = new Bindable<float>();//炮塔基础暴击概率
-    private Bindable<float> _baseCritMult = new Bindable<float>();//炮塔基础暴击伤害倍率
-    private Bindable<float> _baseReload = new Bindable<float>();  //炮塔基础换弹时长
 
     //全局加成
     private Bindable<float> _bonusAtk = new Bindable<float>();         // 全局攻击力加成值
@@ -115,9 +108,9 @@ public class TowerManager : ManagerBase<TowerManager>,IManager
         _bonusAtk.Value = 0;
         _bonusAtkRate.Value = 0;
         _bonusCritProb.Value = 0;
-        _bonusCritMult.Value = 1.5f;
+        _bonusCritMult.Value = 0f;
         _bonusReload.Value = 0;
-        _bonusCap.Value = 10;
+        _bonusCap.Value = 0;
         CurrentBulletKind = BulletKind.Normal;
         changeBulletKindCoro = null;
         BullletKindDuration = 10;
@@ -125,7 +118,7 @@ public class TowerManager : ManagerBase<TowerManager>,IManager
         if (_bulletPool == null) _bulletPool = new ObjectPool<Bullet>(_bulletPrefab, 10, transform);
 
         //启用对应炮塔的脚本
-        TowerType currentType = TowerDataManager.Instance.CurrentTowerType.Value;
+        TowerType currentType = DataManager.Instance.PlayerInfo.CurrentTowerType.Value;
         // 获取所有继承自 BaseTower 的脚本（即便禁用了也能拿到）
         BaseTower[] allTowerScripts = _towerObject.GetComponents<BaseTower>();
         foreach (BaseTower script in allTowerScripts)
@@ -198,6 +191,7 @@ public class TowerManager : ManagerBase<TowerManager>,IManager
     {
         base.Awake();
         _stage=InitStage.InBattle;
+        Index = 2;
     }
 
 
@@ -210,10 +204,28 @@ public class TowerManager : ManagerBase<TowerManager>,IManager
 /// </summary>
 public enum TowerType
 {
-    Basic,    // 基础形态：普通单发塔
-    RapidFire,// 连发形态：每次连续发射两颗子弹
-    Ricochet, // 弹射形态：子弹击中后弹射至另一个敌人
-    Spread,   // 散射形态：每次扇形发射三颗子弹
-    Sniper,   // 狙击形态：攻击间隔更长但伤害更高
-    Piercing  // 穿透形态：子弹穿透敌人造成伤害
+    /// <summary>
+    /// 基础形态：普通单发塔
+    /// </summary>
+    Basic,    // 
+    /// <summary>
+    /// 连发形态：每次连续发射两颗子弹
+    /// </summary>
+    RapidFire,// 
+    /// <summary>
+    /// 弹射形态：子弹击中后弹射至另一个敌人
+    /// </summary>
+    Ricochet, // 
+    /// <summary>
+    /// 散射形态：每次扇形发射三颗子弹
+    /// </summary>
+    Spread,   // 
+    /// <summary>
+    /// 狙击形态：攻击间隔更长但伤害更高
+    /// </summary>
+    Sniper,   // 
+    /// <summary>
+    /// 穿透形态：子弹穿透敌人造成伤害
+    /// </summary>
+    Piercing  // 
 }

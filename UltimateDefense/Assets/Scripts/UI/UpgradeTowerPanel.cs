@@ -28,7 +28,8 @@ public class UpgradeTowerPanel : MonoBehaviour
     {
         _unlockCost.Init(RewardType.Crown, 1);
 
-        _simpleScrollSnap.StartingPanel = (int)TowerDataManager.Instance.CurrentTowerType.Value;//起始位置
+        Debug.Log($"初始为{DataManager.Instance.PlayerInfo.CurrentTowerType.Value}");
+        _simpleScrollSnap.StartingPanel = (int)DataManager.Instance.PlayerInfo.CurrentTowerType.Value;//起始位置
         _currentTower = _simpleScrollSnap.Content.GetChild(_simpleScrollSnap.StartingPanel).GetComponent<TowerCard>();
         //_currentTower.ActivateCard();
         
@@ -63,7 +64,7 @@ public class UpgradeTowerPanel : MonoBehaviour
             _chooseThisTower.gameObject.SetActive(true);
             _unlockButton.AddListener(() => ChooseThisTower(_currentTower));
             //当前选择的不是对局中使用的炮塔
-            if (TowerDataManager.Instance.CurrentTowerType.Value != _currentTower.Type)
+            if (DataManager.Instance.PlayerInfo.CurrentTowerType.Value != _currentTower.Type)
             {
                 _chooseThisTower.text = "选择";
                 _chooseThisTower.color = new Color32(239, 241, 245, 255);
@@ -81,10 +82,6 @@ public class UpgradeTowerPanel : MonoBehaviour
     //解锁炮塔
     private void UnlockTower(TowerCard towerCard)
     {
-        if (TowerDataManager.Instance.GetTowerData(TowerType.Basic).Level <= 10)//基础形态到10级了可以解锁
-        {
-            return;
-        }
 
         //金币足够
         if (MetaCurrencyManager.Instance.HasEnoughMoney(_unlockCost.type, _unlockCost.count))
@@ -100,14 +97,16 @@ public class UpgradeTowerPanel : MonoBehaviour
     //选定这个炮塔
     private void ChooseThisTower(TowerCard towerCard)
     {
-        //当前选择的不是对局中使用的炮塔
-        if (TowerDataManager.Instance.CurrentTowerType.Value == _currentTower.Type)
+        Debug.Log("选择炮塔");
+        //当前选择的已经是对局中使用的炮塔
+        if (DataManager.Instance.PlayerInfo.CurrentTowerType.Value == _currentTower.Type)
         {
             return;
         }
 
         _unlockCost.gameObject.SetActive(false);
-        TowerDataManager.Instance.CurrentTowerType.Value = _currentTower.Type;
+        DataManager.Instance.PlayerInfo.CurrentTowerType.Value = _currentTower.Type;
+        DataManager.Instance.SavePlayerInfo();
         UpdateButtonState();
     }
 

@@ -10,58 +10,42 @@ public class SniperTower : BaseTower
 
     private int _shotCount;//射击的次数，狙击炮塔每五次必定暴击一次，暴击伤害也更高
 
-    public override int BaseDamage => 1;//1-4-7-10
-    public override int BaseCap => 6;//6-8-10
-    public override float BaseAtkRate => 1;
-    public override float BaseReload => 3;
-    public override float BaseCritProb => 0.1f;
-    public override float BaseCritMult => 1.2f;
+    private int totalDamage = 0;//单局总伤害
 
     protected override void Init()
     {
         base.Init();
         _shotCount = 0;
+        totalDamage = 0;
     }
 
-    public override string GetDescription()
-    {
-        return $"攻击范围扩大到全屏，基础弹夹容量降低，基础攻速降低，基础暴击伤害倍率增大";
-    }
-
-    public override string GetUpgradeDescription()
-    {
-        // 判断等级是否为2的倍数且不为 0
-        bool isEvenAndNotZero = TowerLevel != 0 && TowerLevel % 2 == 0;
-
-        // 返回对应的描述文本
-        return isEvenAndNotZero ? "弹夹容量+1" : "攻速+10%";
-    }
 
     protected override void CalculateBulletCap()
     {
         //初始容量为基础弹夹容量的一半
-        _bulletCapacity.Value = Mathf.RoundToInt(BaseCap * 0.5f) + TowerManager.Instance.BonusCap.Value;
+        _bulletCapacity.Value = BaseCap + TowerManager.Instance.BonusCap.Value;
     }
     protected override void CalculateAtkRate()
     {
         //初始每秒攻击次数为基础攻击0.5倍
-        _attackRate.Value = BaseAtkRate / 2.0f * (1f + TowerManager.Instance.BonusAttackRate.Value) * TowerManager.Instance.BonusTmpAttackRate.Value;
+        _attackRate.Value = BaseAtkRate* (1f + TowerManager.Instance.BonusAttackRate.Value) * TowerManager.Instance.BonusTmpAttackRate.Value;
     }
     protected override void CalculateCriticalMult()
     {
         //初始暴击伤害倍率为基础暴击倍率的2倍
-        _criticalMult.Value = BaseCritMult * 2 + TowerManager.Instance.BonusCritMult.Value;
+        _criticalMult.Value = BaseCritMult + TowerManager.Instance.BonusCritMult.Value;
     }
 
     //实现父类的DoAttack方法
     protected override IEnumerator DoAttack()
     {
         Bullet bullet = TowerManager.Instance.BulletPool.Get();
-
+        int dam = 0;
         if (_shotCount >= 5)//必定暴击
         {
+            dam = Mathf.RoundToInt(BulletDamage.Value * CriticalMult.Value);
             bullet.Init(_bulletInitPos.position, currentTarget,
-                true, Mathf.RoundToInt(BulletDamage.Value * CriticalMult.Value));
+                true, dam);
             _shotCount = 0;
         }
         else//随机暴击
@@ -69,13 +53,21 @@ public class SniperTower : BaseTower
             float value = Random.value;
             if (value < CriticalProb.Value)
             {
+                dam = Mathf.RoundToInt(BulletDamage.Value * CriticalMult.Value);
                 bullet.Init(_bulletInitPos.position, currentTarget,
-                    true, Mathf.RoundToInt(BulletDamage.Value * CriticalMult.Value));
+                    true, dam);
             }
             else
             {
-                bullet.Init(_bulletInitPos.position, currentTarget, false, BulletDamage.Value);
+                dam = BulletDamage.Value;
+                bullet.Init(_bulletInitPos.position, currentTarget, false, dam);
             }
+        }
+        totalDamage += dam;
+        if (totalDamage >= 100)//每造成100伤害，恢复一点生命
+        {
+            Crystal.Instance.Recover(totalDamage/100);
+            totalDamage = 0;
         }
         JellySquash();
         CurrentBulletCount--;

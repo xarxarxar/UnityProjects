@@ -9,10 +9,18 @@ public class PausePanel : BasePanel
     {
         base.OnEnable();
         BattleManager.Instance.PauseGame();//‘›Õ£”Œœ∑
+        _settingButton.AddListener(GameUIManager.Instance.ShowSettingPanel);
+        _exitButton.AddListener(() =>
+        {
+            BattleManager.Instance.EndBattle(false);
+            gameObject.SetActive(false);
+        });
     }
 
     private void OnDisable()
     {
         BattleManager.Instance.ResumeGame();//ª÷∏¥”Œœ∑
+        _settingButton.RemoveAllListeners();
+        _exitButton.RemoveAllListeners();
     }
 }

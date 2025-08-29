@@ -18,7 +18,7 @@ public enum EnemyType
 /// <summary>
 /// 管理场上所有敌人的生成、注销与查找
 /// </summary>
-public class EnemyManager : ManagerBase<EnemyManager>,IManager
+public class EnemyManager : ManagerBase<EnemyManager>
 {
     #region 私有属性
     [SerializeField]private List<Enemy> _allEnemies;            // 场上所有活着的 Enemy 实例列表
@@ -34,6 +34,8 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
     private Bindable<int> _enemyCurrentCount = new Bindable<int>();//当前所有敌人数量
     private Bindable<int> _enemyDamageNullifiedCount = new Bindable<int>();//敌人免疫伤害次数
     private BuildingBase _targetBuilding;              //敌人的目标建筑物
+    private Enemy _currentTargerEnemy;//当前的目标敌人
+    private Bindable<Enemy> _currentClickedEnemy=new Bindable<Enemy>();//当前被点击的敌人
     // 存储暂停前所有敌人的速度
     private Dictionary<Rigidbody2D, Vector2> _enemyVelocityMap = new Dictionary<Rigidbody2D, Vector2>();
     //private int _enemyTotalCount = 0;                //敌人生成的数量,从开始到结束的总数量，包括死亡的
@@ -109,6 +111,19 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
     /// </summary>
     public Bindable<int> EnemyDamageNullifiedCount { get => _enemyDamageNullifiedCount; set => _enemyDamageNullifiedCount = value; }
 
+    /// <summary>
+    /// 单次关卡消灭的敌人数量
+    /// </summary>
+    public Bindable<int> SignleEnemyDieCount { get; private set; } = new Bindable<int>();
+    /// <summary>
+    /// 当前的目标敌人
+    /// </summary>
+    public Enemy CurrentTargerEnemy { get => _currentTargerEnemy; set => _currentTargerEnemy = value; }
+    /// <summary>
+    /// 当前被点击的敌人
+    /// </summary>
+    public Bindable<Enemy> CurrentClickedEnemy { get => _currentClickedEnemy; set => _currentClickedEnemy = value; }
+
     #endregion
 
     #region 常量
@@ -132,12 +147,20 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
     {
         _allEnemies.Clear();
         _enemiesInRange.Clear();
+        _currentTargerEnemy = null;
+        _currentClickedEnemy.Value = null;
         _enemyDieCoinProb.Value = 0.5f;
-        _enemyDieCoin.Value = 10;
+
+        if (!DataManager.Instance.PlayerInfo.Config.ContainsKey("EnemyDieCoin"))
+        {
+            DataManager.Instance.PlayerInfo.Config["EnemyDieCoin"] = 10;
+        }
+        _enemyDieCoin.Value = Mathf.RoundToInt(DataManager.Instance.PlayerInfo.Config["EnemyDieCoin"]);
         _enemyCurrentCount.Value = 0;
         _enemySpeed.Value = 0.5f * (1 + BattleManager.Instance.Debuff.AddSpeed * 0.1f);
         _enemyDamageNullifiedCount.Value = 0 + BattleManager.Instance.Debuff.DamageNullified;
         _targetBuilding = Crystal.Instance;//设置初始目标建筑为水晶
+        SignleEnemyDieCount.Value = 0;
 
         Enemy.OnMoveInRange += OnMoveInRange;
         Enemy.OnMoveOutRange += OnMoveOutRange;
@@ -175,12 +198,39 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
             _enemiesInRange.Remove(enemy);
         if (_allEnemies.Contains(enemy))
             _allEnemies.Remove(enemy);
+        if(_currentTargerEnemy == enemy)
+        {
+            _currentTargerEnemy = null;
+            if (_enemiesInRange.Count != 0)
+            {
+                Enemy lowestHpEnemy = null;
+                float lowestHp = float.MaxValue;
+                foreach (var ene in _enemiesInRange)
+                {
+                    if (ene.CurrentHP.Value < lowestHp)
+                    {
+                        lowestHp = ene.CurrentHP.Value;
+                        lowestHpEnemy = ene;//找到血量最少的敌人
+                    }
+                }
+                _currentTargerEnemy = lowestHpEnemy;
+            }
+            else
+            {
+                _currentTargerEnemy = null;
+            }
+        }
+        if (_currentClickedEnemy.Value == enemy)
+        {
+            _currentClickedEnemy.Value = null;
+        }
 
-        for(int i=0;i< _allEnemies.Count; i++)
+        for (int i=0;i< _allEnemies.Count; i++)
         {
             _allEnemies[i].SetOrderLayer(-1*i);
         }
         _enemyCurrentCount.Value = _allEnemies.Count;
+        SignleEnemyDieCount.Value++;
     }
 
     #endregion
@@ -194,6 +244,7 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
     {
         base.Awake();
         _stage=InitStage.InBattle;
+        Index = 3;
         // _allEnemies = new List<Enemy>();
         // _isInitialized = false;
     }
@@ -266,6 +317,11 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
     private void OnMoveInRange(Enemy enemy)
     {
         _enemiesInRange.Add(enemy);
+        //当前的目标敌人为空或者进来的敌人是被玩家点击的敌人
+        if (_currentTargerEnemy == null || _currentClickedEnemy.Value==enemy)
+        {
+            _currentTargerEnemy = enemy;
+        }
     }
     //敌人移出攻击范围
     private void OnMoveOutRange(Enemy enemy)
@@ -273,12 +329,33 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
         if (_enemiesInRange.Contains(enemy))
         {
             _enemiesInRange.Remove(enemy);
+            if (_currentTargerEnemy == enemy)
+            {
+                if (_enemiesInRange.Count != 0)
+                {
+                    Enemy lowestHpEnemy = null;
+                    float lowestHp = float.MaxValue;
+                    foreach (var ene in _enemiesInRange)
+                    {
+                        if (ene.CurrentHP.Value < lowestHp)
+                        {
+                            lowestHp = ene.CurrentHP.Value;
+                            lowestHpEnemy = ene;//找到血量最少的敌人
+                        }
+                    }
+                    _currentTargerEnemy = lowestHpEnemy;
+                }
+                else
+                {
+                    _currentTargerEnemy = null;
+                }
+            }
         }
     }
 
     private IEnumerator GenerateEnemyIE()
     {
-        yield return TimerUtility.WaitForGameSeconds(5);
+        yield return TimerUtility.WaitForGameSeconds(3);
         while (true)
         {
             WaveManager.Instance.CurrentRound++;
@@ -323,7 +400,7 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
 
                     int currentRound = WaveManager.Instance.CurrentRound;
                     int level =Mathf.Min(WaveManager.Instance.MaxRound,UnityEngine.Random.Range(currentRound, currentRound+3)) ;
-                    SpawnEnemy(enemyTyps[i], UnityEngine.Random.Range(-7f, 7f),level);
+                    SpawnEnemy(enemyTyps[i], UnityEngine.Random.Range(-6f, 6f),level);
 
                     // 如果是最后一波 且是最后一个敌人
                     if (WaveManager.Instance.CurrentRound == WaveManager.Instance.MaxRound &&
@@ -376,6 +453,7 @@ public class EnemyManager : ManagerBase<EnemyManager>,IManager
         _enemiesInRange.Clear();
         StopAllCoroutines();
     }
+
     #endregion
 }
 

@@ -5,7 +5,7 @@ using UnityEngine.UI; // 用于 UI 组件引用
 /// <summary>
 /// 管理游戏中的所有局内 UI 界面与显示逻辑
 /// </summary>
-public class BattleUIManager : ManagerBase<BattleUIManager>,IManager
+public class BattleUIManager : ManagerBase<BattleUIManager> 
 {
     #region 常量
     public const string UIPrefabPath = "Prefabs/UI/"; // Resources 中 UI 预制体路径前缀
@@ -270,6 +270,7 @@ public class BattleUIManager : ManagerBase<BattleUIManager>,IManager
     {
         base.Awake();
         _stage=InitStage.InBattle;
+        Index = 3;
         // _isInitialized = false;
         // _goldText = GameObject.Find("UI/GoldText").GetComponent<Text>();
         // _roundText = GameObject.Find("UI/RoundText").GetComponent<Text>();

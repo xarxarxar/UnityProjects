@@ -40,7 +40,7 @@ public class GamePlayingPanel : MonoBehaviour
         EnemyManager.Instance.EnemyCurrentCount.OnValueChanged += OnEnemyCountChanged;
         EnemyManager.OnAlmostNextWave += OnAlmostNextWave;
         CurrencyManager.OnCoinChange += RefreshGoldDisplay;//金币变化时也刷新金币显示
-        BankManager.Instance.CurrentSave.OnValueChanged += OnBankMoneyChanged;
+        //BankManager.Instance.CurrentSave.OnValueChanged += OnBankMoneyChanged;
     }
 
     private void OnDisable()
@@ -49,7 +49,7 @@ public class GamePlayingPanel : MonoBehaviour
         EnemyManager.Instance.EnemyCurrentCount.OnValueChanged -= OnEnemyCountChanged;
         EnemyManager.OnAlmostNextWave -= OnAlmostNextWave;
         CurrencyManager.OnCoinChange -= RefreshGoldDisplay;//金币变化时也刷新金币显示
-        BankManager.Instance.CurrentSave.OnValueChanged -= OnBankMoneyChanged; ;//银行金币数量变化时
+        //BankManager.Instance.CurrentSave.OnValueChanged -= OnBankMoneyChanged; ;//银行金币数量变化时
 
         _openBankButton.RemoveAllListeners();
         _openPauseButton.RemoveAllListeners();
