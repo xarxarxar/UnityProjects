@@ -9,6 +9,7 @@ public abstract class BuildingBase : MonoBehaviour
 {
     [Header("血量设置")]
     [SerializeField] protected Bindable<int> _currentHP = new Bindable<int>();          // 当前生命值
+    [SerializeField] protected Bindable<int> _currentShield = new Bindable<int>();          // 当前生命值
 
     private Grid occupGrid;//所占的格子
 
@@ -29,6 +30,16 @@ public abstract class BuildingBase : MonoBehaviour
     /// </summary>
     [field: SerializeField]
     public Bindable<int> MaxHP { get; set; }
+    /// <summary>
+    /// 当前护盾
+    /// </summary>
+    protected Bindable<int> CurrentShield { get => _currentShield; set => _currentShield = value; }
+
+    /// <summary>
+    /// 最大护盾值
+    /// </summary>
+    [field: SerializeField]
+    public Bindable<int> MaxShield { get; set; }
 
     /// <summary>
     /// 建筑被摧毁的实例事件，订阅者可接收到本实例

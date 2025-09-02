@@ -56,7 +56,7 @@ public class BuildingUIInBattle : MonoBehaviour
             // 终点：世界坐标 → 屏幕坐标
             Vector3 screenEnd = Camera.main.WorldToScreenPoint(BuildManager.instance.SelectedGrid.transform.position);
 
-            GameUIManager.Instance.PlayFlyEffect(screenStart, screenEnd);
+            //GameUIManager.Instance.PlayFlyEffect(screenStart, screenEnd);
         }
     }
 }

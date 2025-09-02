@@ -10,18 +10,6 @@ public class HpSlider : MonoBehaviour
     public Slider shieldSlider;       // 护盾条
     public Slider hpSlider;       // 血条
 
-    /// <summary>
-    /// 初始化血条
-    /// </summary>
-    /// <param name="currentHp"></param>
-    /// <param name="maxHp"></param>
-    /// <param name="currentShield"></param>
-    public void Init(int currentHp, int maxHp, int currentShield)
-    {
-        shieldSlider.maxValue = currentShield;
-        hpSlider.maxValue = maxHp;
-        UpdateBar(currentHp, maxHp, currentShield);
-    }
 
     /// <summary>
     /// 更新血条
@@ -29,16 +17,18 @@ public class HpSlider : MonoBehaviour
     /// <param name="currentHp">当前血量</param>
     /// <param name="maxHp">最大血量</param>
     /// <param name="currentShield">当前护盾值</param>
-    public void UpdateBar(int currentHp,int maxHp,int currentShield)
+    public void UpdateBar(int currentHp,int maxHp,int currentShield, int maxShield)
     {
         //有护盾
         if (currentShield > 0)
         {
+            shieldSlider.maxValue = maxShield;
             shieldSlider.gameObject.SetActive(true);
             hpSlider.gameObject.SetActive(false);
             shieldSlider.value = currentShield;
             return;
         }
+        hpSlider.maxValue = maxHp;
         shieldSlider.gameObject.SetActive(false);
         hpSlider.gameObject.SetActive(true);
         hpSlider.value = currentHp;

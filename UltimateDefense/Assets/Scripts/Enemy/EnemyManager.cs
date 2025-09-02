@@ -26,8 +26,10 @@ public class EnemyManager : ManagerBase<EnemyManager>
     private bool _isInitialized;                // 标记是否已初始化
     [SerializeField] public Enemy _enemyPrefab;     //敌人预制体
     [SerializeField] public ParticleSystem _explosionEffectPrefab;     //爆炸特效预制体
+    [SerializeField] public EnemyExplode _explosionAnimPrefab;     //敌人自爆预制体
     private ObjectPool<Enemy> _enemyPool;           //敌人对象池
     private ObjectPool<ParticleSystem> _explosionEffectPool;   //爆炸特效对象池
+    private ObjectPool<EnemyExplode> _explosionAnimPool;   //敌人自爆动画对象池
     private Bindable<float>  _enemyDieCoinProb=new Bindable<float>();//敌人死亡之后获得金币的概率
     private Bindable<float>  _enemySpeed=new Bindable<float>();//敌人移动速度
     private Bindable<int> _enemyDieCoin = new Bindable<int>();//敌人死亡之后获得的金币数量
@@ -73,7 +75,10 @@ public class EnemyManager : ManagerBase<EnemyManager>
     /// <summary>
     /// 爆炸特效对象池
     /// </summary>
-    public ObjectPool<ParticleSystem> ExplosionEffectPool { get => _explosionEffectPool; }
+    public ObjectPool<ParticleSystem> ExplosionEffectPool { get => _explosionEffectPool; } /// <summary>
+    /// 敌人自爆对象池
+    /// </summary>
+    public ObjectPool<EnemyExplode> ExplosionAnimPool { get => _explosionAnimPool; }
 
     /// <summary>
     /// 敌人死亡后，掉落金币的概率
@@ -170,6 +175,7 @@ public class EnemyManager : ManagerBase<EnemyManager>
         BattleManager.Instance.IsPaused.OnValueChanged += GamePausedChanged;
         if (_enemyPool==null) _enemyPool = new ObjectPool<Enemy>(_enemyPrefab, 20, transform);//初始化敌人对象池
         if (_explosionEffectPool == null) _explosionEffectPool = new ObjectPool<ParticleSystem>(_explosionEffectPrefab, 5, transform);//初始化敌人对象池
+        if (_explosionAnimPool == null) _explosionAnimPool = new ObjectPool<EnemyExplode>(_explosionAnimPrefab, 5, transform);//初始化敌人对象池
         StartCoroutine(GenerateEnemyIE());
     }
 

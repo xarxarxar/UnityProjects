@@ -8,14 +8,16 @@ public class Crystal : BuildingBase
     private static Crystal _instance;
     [SerializeField] private int _recoverHpPerSecond = 1;//水晶每秒恢复的生命值
     [SerializeField] private string _name="水晶";
-    private Coroutine _recoverCoro;     //水晶每秒恢复生命值的协程
+    //private Coroutine _recoverCoro;     //水晶每秒恢复生命值的协程
 
     //水晶无敌
     private bool _isInvincible=false;//是否处于无敌状态
     private Coroutine _invincibleCoro = null;
 
-    //血条
-    [SerializeField] private MySlider hpSlider;
+    //血条和护盾条
+    [SerializeField] private Transform _container;//血条和护盾条的父物体
+    [SerializeField] private MySlider hpSlider;//血条
+    [SerializeField] private MySlider shieldSlider;//护盾条
 
     //受伤
     public SpriteRenderer spriteRenderer;
@@ -53,7 +55,9 @@ public class Crystal : BuildingBase
             DataManager.Instance.PlayerInfo.Config["CrystalMaxHp"] = 1000;
         }
         MaxHP.Value = Mathf.RoundToInt(DataManager.Instance.PlayerInfo.Config["CrystalMaxHp"]) ;//初始值应该从配置文件中读取
-        Init(MaxHP.Value, null);
+        Init(MaxHP.Value,0);
+
+        
     }
 
     protected void OnDisable()
@@ -73,15 +77,24 @@ public class Crystal : BuildingBase
     /// 初始化水晶
     /// </summary>
     /// <param name="maxHP">最大生命值</param>
-    public override void Init(int maxHP,Grid grid)
+    public void Init(int maxHP,int maxShield)
     {
-        _currentHP.Value = maxHP;
+        Vector3 worldPos = transform.position;   // 2D物体世界坐标
+        Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos); // 转换到屏幕坐标
+        _container.position = screenPos;  // UI 直接设置为屏幕坐标
+        _container.gameObject.SetActive(true);
 
-        hpSlider.SetValue(1);
-        hpSlider.SetText($"{_currentHP.Value}/{MaxHP.Value}");
+        _currentHP.Value = maxHP;
+        _currentShield.Value = maxShield;
+
+        OnHpChanged(_currentHP.Value);
+        OnShieldChanged(_currentShield.Value);
 
         _currentHP.OnValueChanged += OnHpChanged;
         MaxHP.OnValueChanged += OnHpChanged;
+
+        _currentShield.OnValueChanged += OnShieldChanged;
+        MaxShield.OnValueChanged += OnShieldChanged;
 
         if (spriteRenderer == null)
         {
@@ -99,19 +112,29 @@ public class Crystal : BuildingBase
     {
         if (_isInvincible) return;//无敌状态
 
-        _currentHP.Value -= damage;
+        
         //FlashRed();
         JellySquash();
-        if (_currentHP.Value < 0) 
+
+        if (_currentShield.Value > 0)
         {
-            _currentHP.Value = 0;
-            if (_recoverCoro != null)
+            _currentShield.Value = Mathf.Max(_currentShield.Value - damage, 0);
+            if (_currentShield.Value <= 0)//护盾破碎
             {
-                StopCoroutine(_recoverCoro);
-                _recoverCoro = null;
+                _currentShield.Value = 0;
+                MaxShield.Value = 0;
             }
-            OnCrystalDestroyed?.Invoke();//水晶被摧毁事件
-        } 
+        }
+        else
+        {
+            _currentHP.Value = Mathf.Max(_currentHP.Value - damage, 0);
+            if (_currentHP.Value <= 0)
+            {
+                _currentHP.Value = 0;
+                _container.gameObject.SetActive(false);
+                OnCrystalDestroyed?.Invoke();//水晶被摧毁事件
+            }
+        }
     }
 
     /// <summary>
@@ -120,22 +143,41 @@ public class Crystal : BuildingBase
     /// <param name="hp"></param>
     public void Recover(int hp)
     {
+        // 先加血
         _currentHP.Value += hp;
+
+        // 如果超过最大生命
         if (_currentHP.Value > MaxHP.Value)
         {
+            // 算出多余的部分
+            int overflow = _currentHP.Value - MaxHP.Value;
+
+            // 血量封顶
             _currentHP.Value = MaxHP.Value;
+
+            // 把溢出部分转化为护盾
+            //AddShield(overflow);
         }
     }
 
-    //每秒恢复血量的协程
-    //private IEnumerator RecoverIE()
-    //{
-    //while (RecoverHpPerSecond > 0)
-    // {
-    //     Recover(RecoverHpPerSecond);
-    //     yield return TimerUtility.WaitForGameSeconds(1);//等待一秒
-    // }
-    //}
+    /// <summary>
+    /// 为水晶添加护盾
+    /// </summary>
+    public void AddShield(int count)
+    {
+        if(count<=0) return;
+        shieldSlider.gameObject.SetActive(true);
+        if (MaxShield.Value <= 0)
+        {
+            MaxShield.Value=count;
+            _currentShield.Value = 0;
+        }
+        else
+        {
+            MaxShield.Value += count;
+        }
+        _currentShield.Value += count;
+    }
 
     /// <summary>
     /// 设置水晶暂时无敌
@@ -158,6 +200,22 @@ public class Crystal : BuildingBase
         hpSlider.SetText($"{_currentHP.Value}/{MaxHP.Value}");
     }
 
+    private void OnShieldChanged(int shield)
+    {
+        Debug.Log("添加护盾");
+        if (MaxShield.Value <= 0)
+        {
+            shieldSlider.SetValue(0);
+            shieldSlider.gameObject.SetActive(false);
+        }
+        else
+        {
+            shieldSlider.SetValue((float)_currentShield.Value / MaxShield.Value);
+        }
+        
+        shieldSlider.SetText($"{_currentShield.Value}/{MaxShield.Value}");
+    }
+
     //无敌的协程
     private IEnumerator InvincibleCoro(float duration)
     {
@@ -178,13 +236,6 @@ public class Crystal : BuildingBase
         _isInvincible = false;
     }
 
-    /// <summary>
-    /// 升级水晶
-    /// </summary>
-    public void UpgradeCrystal()
-    {
-
-    }
 
     //闪红动画
     private void FlashRed()
@@ -210,4 +261,6 @@ public class Crystal : BuildingBase
         seq.Append(transform.DOScaleY(stretchAmount, squashDuration / BattleManager.Instance.GameSpeed.Value).SetEase(Ease.OutQuad));
         seq.Append(transform.DOScaleY(originalScale.y, squashDuration / BattleManager.Instance.GameSpeed.Value).SetEase(Ease.OutBounce));
     }
+    
+
 }

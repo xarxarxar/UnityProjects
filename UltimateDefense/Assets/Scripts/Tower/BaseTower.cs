@@ -2,6 +2,7 @@ using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 /// <summary>
@@ -80,6 +81,7 @@ public abstract class BaseTower : MonoBehaviour
     private bool _isPaused=> BattleManager.Instance.IsPaused.Value;//是否暂停
     private bool _isRotating = false; // 是否正在旋转
     private bool _isReloading = false; // 是否正在换弹
+    private UnityAction _afterReload = null;//换弹结束之后的回调方法
     private float noAttackTimer = 0f;//未处于攻击状态的时长
     private Coroutine _reloadCoroutine;//换弹协程
 
@@ -116,6 +118,21 @@ public abstract class BaseTower : MonoBehaviour
 
         _gunBarrel.transform.DOKill(); // 防止叠加
         _gunBarrel.transform.localScale = originalScale;
+    }
+
+    /// <summary>
+    /// 给予临时子弹
+    /// </summary>
+    public void GiveTmpBullet(int count,UnityAction callback)
+    {
+        _afterReload= callback;
+        CurrentBulletCount += count;
+        if (_isReloading)
+        {
+            _slider.gameObject.SetActive(false);
+            _isReloading = false;
+            StopCoroutine(_reloadCoroutine);
+        }
     }
 
     //攻击逻辑
@@ -282,9 +299,6 @@ public abstract class BaseTower : MonoBehaviour
     {
         _isReloading = true;
 
-        //更新等待时间
-        //CalculateReloadTime();
-        Debug.Log($"换弹时长为{ReloadTime.Value}");
         _bulletText.text = "换弹中";
         // 显示倒计时 UI
         CountDownSlider(ReloadTime.Value);
@@ -295,6 +309,8 @@ public abstract class BaseTower : MonoBehaviour
         CurrentBulletCount = BulletCapacity.Value;
 
         _isReloading = false;
+        _afterReload?.Invoke();
+        yield break;
     }
 
     //进度条倒计时

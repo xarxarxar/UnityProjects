@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -155,36 +156,41 @@ public class GameUIManager : ManagerBase<GameUIManager>
     /// </summary>
     /// <param name="screenStartPos"></param>
     /// <param name="screenEndPos"></param>
-    public void PlayFlyEffect(Vector3 screenStart, Vector3 screenEnd, int count = 3)
+    // 修改 PlayFlyEffect 返回一个 Tween 或者 Coroutine 可等待
+    public IEnumerator PlayFlyEffectAsync(Vector3 screenStart, Vector3 screenEnd,
+        int count = 3, float duration = 0.6f)
     {
+        
+        int finishedCount = 0;
+
         for (int i = 0; i < count; i++)
         {
             GameObject flyCoin = Instantiate(flyLightPrefab, canvasTransform);
             flyCoin.transform.position = screenStart;
 
-            // 计算中间控制点（弧线弯曲点）
             Vector3 midPoint = (screenStart + screenEnd) / 2f;
-
-            // 添加随机偏移，使每个轨迹略有不同
-            float horizontalOffset = Random.Range(-100f, 100f); // 左右
-            float verticalOffset = Random.Range(100f, 200f);    // 向上更高一点
-
+            float horizontalOffset = Random.Range(-100f, 100f);
+            float verticalOffset = Random.Range(100f, 200f);
             midPoint += new Vector3(horizontalOffset, verticalOffset, 0f);
 
-            // 设置路径
             Vector3[] path = new Vector3[] { screenStart, midPoint, screenEnd };
 
-            // 使用 DoTween 路径飞行
             flyCoin.transform
-                .DOPath(path, 0.6f, PathType.CatmullRom)
+                .DOPath(path, duration, PathType.CatmullRom)
                 .SetEase(Ease.InOutQuad)
                 .OnComplete(() =>
                 {
                     Destroy(flyCoin);
-                    // 可触发粒子、音效等
+                    finishedCount++;
                 });
         }
+        // 等待所有特效完成
+        while (finishedCount < count)
+        {
+            yield return null;
+        }
     }
+
 
     /// <summary>
     /// 播放流光特效（金币先散开再飞向目标，依次飞过去）

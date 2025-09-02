@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class MySlider : MonoBehaviour
 {
     [SerializeField]private Text text;
-    private Slider slider;
+    [SerializeField] private Slider slider;
     private Coroutine _countdownCoroutine;//倒计时协程
     private float _gameSpeed => BattleManager.Instance.GameSpeed.Value;
 
@@ -49,7 +49,7 @@ public class MySlider : MonoBehaviour
         {
             slider = GetComponent<Slider>();
         }
-        gameObject.SetActive(true);
+        //gameObject.SetActive(true);
 
         slider.value = value;
     }

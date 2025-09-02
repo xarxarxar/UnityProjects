@@ -149,7 +149,7 @@ public static class UpgradeFactory
         }
         if (template is Upgrade_RageMode urm)
         {
-            return new Upgrade_RageMode(urm.Duration, urm.Cost);
+            return new Upgrade_RageMode(urm.Times, urm.Cost);
         }
         //if (template is Upgrade_DecreaseAdvanceInterest udai)
         //{

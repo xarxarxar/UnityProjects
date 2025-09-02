@@ -9,13 +9,13 @@ using UnityEngine;
 public class Upgrade_RageMode : UpgradeBase
 {
     #region 私有字段
-    private float duration;//持续的时长
+    private float times;//赠送的子弹倍数
 
     #endregion
     /// <summary>
     /// 时长
     /// </summary>
-    public float Duration { get => duration; }
+    public float Times { get => times; }
     #region 构造函数
 
     /// <summary>
@@ -23,22 +23,22 @@ public class Upgrade_RageMode : UpgradeBase
     /// </summary>
     /// <param name="attackBonus">要增加的攻击力数值</param>
     /// <param name="cost">消耗的金币数</param>
-    public Upgrade_RageMode(float dur, int cost)
+    public Upgrade_RageMode(float times, int cost)
     {
-        duration = dur;
-        UpgradeID = $"RageMode{duration}";
+        this.times = times;
+        UpgradeID = $"RageMode{Times}";
         Cost = cost;
-        Description = $"攻速变为当前300%，持续{duration}秒";
+        int givedBulletCount = Mathf.RoundToInt(TowerManager.Instance.CurrentTower.BulletCapacity.Value * times);
+        Description = $"赠送临时子弹{givedBulletCount}颗，进入火力全开模式";
     }
 
     public static Upgrade_RageMode CreateDynamicUpgrade()
     {
-        float[] durations = { 10, 15, 20 };
-        float bonus = durations[Random.Range(0, durations.Length)];
-        int cost = Mathf.RoundToInt(bonus * (3 + UpgradeManager.Instance.RefreshCount.Value * 1));
+        float[] times = { 4, 6, 8 };//赠送子弹是当前弹夹容量的多少倍
+        float bonus = times[Random.Range(0, times.Length)];
+        int cost = Mathf.RoundToInt(bonus * (15 + UpgradeManager.Instance.RefreshCount.Value * 5));
         return new Upgrade_RageMode(bonus, cost);
     }
-
     #endregion
 
     /// <summary>
@@ -47,6 +47,12 @@ public class Upgrade_RageMode : UpgradeBase
     /// </summary>
     public override void Apply()
     {
-        TowerManager.Instance.SetTmpAtkRate(3.0f, duration);
+        int givedBulletCount = Mathf.RoundToInt(TowerManager.Instance.CurrentTower.BulletCapacity.Value * times);
+        TowerManager.Instance.SetTmpAtkRate(4.0f);
+        TowerManager.Instance.CurrentTower.GiveTmpBullet(givedBulletCount, () =>
+        {
+            TowerManager.Instance.SetTmpAtkRate(1.0f);
+        });
+
     }
 }

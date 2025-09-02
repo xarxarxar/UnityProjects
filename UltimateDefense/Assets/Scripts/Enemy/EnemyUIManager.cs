@@ -16,7 +16,7 @@ public class EnemyUIManager : MonoBehaviour
     public Image crossHair;//准心
     private ObjectPool<RectTransform> enemyUIPool;
 
-
+    [System.Serializable]
     class EnemyUIData
     {
         public Transform enemy;
@@ -29,7 +29,7 @@ public class EnemyUIManager : MonoBehaviour
         public float lastHitTime;  // 上次受击时间
     }
 
-    private List<EnemyUIData> uiList = new List<EnemyUIData>();
+    [SerializeField]private List<EnemyUIData> uiList = new List<EnemyUIData>();
     private Camera mainCam;
 
     void Awake()
@@ -99,10 +99,9 @@ public class EnemyUIManager : MonoBehaviour
     {
         GameObject uiObj = enemyUIPool.Get().gameObject;
         uiObj.transform.SetAsFirstSibling();
-        //var slider = uiObj.GetComponentInChildren<Slider>();
-        var text = uiObj.GetComponentInChildren<Text>();
-        HpSlider hpSlider= uiObj.GetComponentInChildren<HpSlider>();
-        Button crosshairbutton= uiObj.GetComponentInChildren<Button>();
+        var text = uiObj.GetComponentInChildren<Text>(true);
+        HpSlider hpSlider= uiObj.GetComponentInChildren<HpSlider>(true);
+        Button crosshairbutton= uiObj.GetComponentInChildren<Button>(true);
 
         // 血条默认隐藏
         if (hpSlider != null)
@@ -124,7 +123,8 @@ public class EnemyUIManager : MonoBehaviour
 
         // 初始化血条和血量文本
         if (hpSlider != null)
-            hpSlider.Init(enemy.CurrentHP.Value,enemy.maxHP.Value,enemy.CurrentShield.Value);
+            hpSlider.UpdateBar(enemy.CurrentHP.Value,enemy.maxHP.Value,
+                enemy.CurrentShield.Value,enemy.maxShield.Value);
 
         if (text != null)
         {
@@ -152,7 +152,8 @@ public class EnemyUIManager : MonoBehaviour
             // 更新血条
             if (data.healthSlider != null)
             {
-                data.healthSlider.UpdateBar(enemy.CurrentHP.Value, enemy.maxHP.Value, enemy.CurrentShield.Value);
+                data.healthSlider.UpdateBar(enemy.CurrentHP.Value, enemy.maxHP.Value,
+                    enemy.CurrentShield.Value,enemy.maxShield.Value);
             }
 
             // 更新血量文本
@@ -177,11 +178,12 @@ public class EnemyUIManager : MonoBehaviour
         {
             enemyUIPool.Return(data.container.gameObject.GetComponent<RectTransform>());
             uiList.Remove(data);
+            if (crossHair.transform.IsChildOf(data.container))
+            {
+                crossHair.gameObject.SetActive(false);
+            }
         }
-        if (crossHair.transform.IsChildOf(data.container))
-        {
-            crossHair.gameObject.SetActive(false);
-        }
+        
     }
 
     private void OnCurrentClickedEnemyChanged(Enemy enemy)

@@ -140,16 +140,19 @@ public class TowerManager : ManagerBase<TowerManager>
     /// </summary>
     /// <param name="value">临时攻速的倍数</param>
     /// <param name="duration">持续的时间</param>
-    public void SetTmpAtkRate(float value,float duration)
+    public void SetTmpAtkRate(float value,float duration=0)
     {
-        if (_tmpAtkRateCoro != null)
-        {
-            StopCoroutine( _tmpAtkRateCoro );
-            _tmpAtkRateCoro = null;
-        }
         _bonusTmpAtkRate.Value = value;
-        Debug.Log($"_bonusTmpAtkRate 为{_bonusTmpAtkRate.Value},持续时间为{duration}");
-        StartCoroutine(SetTmpAtkRateCoro(duration));
+        if (duration != 0)
+        {
+            if (_tmpAtkRateCoro != null)
+            {
+                StopCoroutine(_tmpAtkRateCoro);
+                _tmpAtkRateCoro = null;
+            }
+            StartCoroutine(SetTmpAtkRateCoro(duration));
+        }
+
     }
     private IEnumerator SetTmpAtkRateCoro(float duration)
     {

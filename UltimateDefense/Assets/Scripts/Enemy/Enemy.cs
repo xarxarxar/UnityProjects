@@ -35,9 +35,11 @@ public class Enemy : MonoBehaviour
     //攻击伤害
     private int _attackDamage = 1;
     //最大弹跳次数
-    private int _bounsCount = 10;
+    private int _bounsCount = 5;
     //敌人的速度
     private float _enemySpeed = 2;
+    //敌人的体型大小
+    private float _enemyScale = 1;
     #endregion
 
     #region 私有字段（状态与运行时数据）
@@ -114,7 +116,7 @@ public class Enemy : MonoBehaviour
         _isDead = false;              // 重置死亡状态
         _isInRangeList = false;       // 重置范围触发标志
         enemyLayer = layer;           // 设置渲染层级
-        _bounsCount = 10;             //最大弹跳次数
+        _bounsCount = 5;             //最大弹跳次数
         this.enemyType = enemyType;   //敌人类型
 
         // 根据等级动态计算最大生命值，一级就是一滴血,护盾默认为 0
@@ -131,6 +133,7 @@ public class Enemy : MonoBehaviour
         _currentShield.OnValueChanged += ChangeShield;//添加值变化事件
         ChangeShield(_currentHP.Value);         // 初始化护盾条填充
         ChangeHP(_currentShield.Value);         // 初始化血条填充
+        _enemyScale = 1;
         SetScale();//设置体型大小
 
 
@@ -203,8 +206,15 @@ public class Enemy : MonoBehaviour
             _currentHP.Value = Mathf.Max(_currentHP.Value - damage, 0);
             FlashRed();//闪红
             //EnemyUIManager.Instance.UpdateEnemyHp(transform, _currentHP.Value);
-            if (_currentHP.Value == 0)
+            if (_currentHP.Value <= 0)
+            {
                 Die();                    // 血量耗尽则死亡
+                ParticleSystem particleSystem = EnemyManager.Instance.ExplosionEffectPool.Get();
+                particleSystem.transform.position = transform.position;
+                particleSystem.Play();
+                TimerUtility.Instance.Timer(0.5f, () => { EnemyManager.Instance.ExplosionEffectPool.Return(particleSystem); });
+            }
+                
         }
         SetScale();//设置体型大小
         EnemyUIManager.Instance.UpdateEnemyHealth(this);
@@ -381,13 +391,9 @@ public class Enemy : MonoBehaviour
     }
 
     /// <summary>敌人死亡流程：设置标志、触发事件、回收对象</summary>
-    private void Die()
+    private void Die()//isExploed是否是自爆
     {
         _isDead = true;
-        ParticleSystem particleSystem=EnemyManager.Instance.ExplosionEffectPool.Get();
-        particleSystem.transform.position=transform.position;
-        particleSystem.Play();
-        TimerUtility.Instance.Timer(0.5f, () =>{ EnemyManager.Instance.ExplosionEffectPool.Return(particleSystem); });
         EnemyUIManager.Instance.RemoveEnemyUI(transform);
         OnEnemyDie?.Invoke(this);
         EnemyManager.Instance.EnemyPool.Return(this);
@@ -417,8 +423,8 @@ public class Enemy : MonoBehaviour
         }
         float level01 = (CurrentHP.Value - 1f) / 49f;
         float t = Mathf.SmoothStep(0f, 1f, level01);
-        float scale = Mathf.Lerp(1.0f, 1.6f, t);
-        transform.localScale = Vector3.one * scale;
+        _enemyScale = Mathf.Lerp(1.0f, 1.6f, t);
+        transform.localScale = Vector3.one * _enemyScale;
     }
 
     //挑战结束
@@ -445,11 +451,19 @@ public class Enemy : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Building")|| collision.gameObject.CompareTag("Crystal"))
         {
-            collision.transform.parent.GetComponent<BuildingBase>().TakeDamage(_attackDamage);
-            
+            BuildingBase building = collision.transform.parent.GetComponent<BuildingBase>();
+            building.TakeDamage(_attackDamage);
+
             if (_bounsCount == 1)
             {
-                collision.transform.parent.GetComponent<BuildingBase>().TakeDamage(_currentHP.Value*2);
+                EnemyExplode enemyExplode = EnemyManager.Instance.ExplosionAnimPool.Get();
+                BuildingBase targetBuilding = building; // 提前保存引用
+                int damage =Mathf.RoundToInt(_currentHP.Value * 0.3f) ;
+                enemyExplode.Init(transform.position, originalColor, _enemyScale, () =>
+                {
+                    Debug.Log($"造成自爆伤，目标是{collision.transform.parent.name}，伤害为{damage}");
+                    targetBuilding.TakeDamage(damage);
+                });
                 Die();
                 _bounsCount = 0;
             }
