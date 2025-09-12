@@ -4,18 +4,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using static UnityEditor.Timeline.TimelinePlaybackControls;
 
 public class ChooseDebuffPanel : MonoBehaviour
 {
     public static event UnityAction<Debuff> OnDebuffChooseEnd;//debuff选择完毕
     [SerializeField] private Text _titleText;//标题
     [SerializeField]private Debuff _debuff;
+    [SerializeField]private Button startChooseButton;//开始抽取按钮
     [SerializeField]private Button startChallengeButton;//开始挑战按钮
     [SerializeField]private Button _giveupChallengeButton;//放弃挑战按钮
     //[SerializeField]private DebuffStruct _debuffStructPrefab;//debuffStruct预制体
     //[SerializeField]private List<DebuffStruct>  _debuffStructs=new List<DebuffStruct>();//debuffStruct预制体
     [SerializeField]private Transform _debuffStructParent;//debuffStruct预制体生成的父物体
+    [SerializeField]private Transform _debuffStructRealParent;//debuffStruct预制体最终的父物体
     [SerializeField]private List<DebuffStruct> debuffStructs=new List<DebuffStruct>();//所有的DebuffStruct
     private int _chooseCount = 0;//选择debuff的个数，个数不能大于通关次数
 
@@ -30,90 +31,75 @@ public class ChooseDebuffPanel : MonoBehaviour
 
     private void OnEnable()
     {
-        //if (DataManager.Instance.PlayerInfo.PassCount.Value == 0)//如果通关次数为0，则直接跳过这一步
-        //{
-        //    OnDebuffChooseEnd?.Invoke(new Debuff(_debuff));
-        //    gameObject.SetActive(false);
-        //}
+        if (DataManager.Instance.PlayerInfo.PassCount.Value == 0)//如果通关次数为0，则直接跳过这一步
+        {
+            OnDebuffChooseEnd?.Invoke(new Debuff(_debuff));
+            gameObject.SetActive(false);
+        }
         _debuff = new Debuff();
         _chooseCount = 0;
-        //_titleText.text = $"您已通关了{DataManager.Instance.PlayerInfo.PassCount.Value}次\r\n需抽取{DataManager.Instance.PlayerInfo.PassCount.Value}个Debuff再进行挑战";
+        _titleText.text = $"您已通关了{DataManager.Instance.PlayerInfo.PassCount.Value}次\r\n需抽取{DataManager.Instance.PlayerInfo.PassCount.Value}个Debuff再进行挑战";
 
-        SetButtonStatus(startChallengeButton, false);
-        InitAllDebuffStructs();//初始化debuffstruct
-        startChallengeButton.onClick.AddListener(StartChallengeButton);
+        _debuffStructParent.GetComponent<GridLayoutGroup>().cellSize = new Vector2(430, 100);
+        Canvas.ForceUpdateCanvases();
+        startChooseButton.gameObject.SetActive(true);
+        startChallengeButton.gameObject.SetActive(false);
+
+        startChooseButton.GetComponent<Transform>().localScale = Vector3.one;
+        startChallengeButton.GetComponent<Transform>().localScale = Vector3.one;
+        _giveupChallengeButton.GetComponent<Transform>().localScale = Vector3.one;
+
+
+        startChooseButton.onClick.AddListener(StartChooseButton);
+        startChallengeButton.onClick.AddListener(StartChallenge);
         _giveupChallengeButton.onClick.AddListener(() =>
         {
             gameObject.SetActive(false);
             GameUIManager.Instance.ShowMainMenu();
         });
 
-        DebuffStruct.OnChangeDebuffStruct += OnChangeDebuffStruct;
+        //DebuffStruct.OnChangeDebuffStruct += OnChangeDebuffStruct;
     }
 
     private void OnDisable()
     {
-        debuffStructs.Clear();
-        foreach (Transform child in _debuffStructParent)
+        _debuffStructParent.gameObject.SetActive(true);
+        foreach (Transform child in _debuffStructRealParent)
         {
             Destroy(child.gameObject);
         }
 
-
+        startChooseButton.onClick.RemoveAllListeners();
         startChallengeButton.onClick.RemoveAllListeners();
-        DebuffStruct.OnChangeDebuffStruct -= OnChangeDebuffStruct;
+        _giveupChallengeButton.onClick.RemoveAllListeners();
+        startChooseButton.gameObject.SetActive(true);
+        startChallengeButton.gameObject.SetActive(false);
     }
 
-    //开始挑战
-    private void StartChallengeButton()
+    private void StartChallenge()
     {
-        //OnDebuffChooseEnd?.Invoke(new Debuff(_debuff));
-        //gameObject.SetActive(false);
+        OnDebuffChooseEnd?.Invoke(_debuff);
+        gameObject.SetActive(false);
+    }
+
+    //开始抽取debuff
+    private void StartChooseButton()
+    {
+        _debuffStructParent.GetComponent<GridLayoutGroup>().cellSize = new Vector2(430, 100);
+        Canvas.ForceUpdateCanvases();
 
         PlayAnim();
     }
 
-    //初始化debuffstruct
-    private void InitAllDebuffStructs()
-    {
-        
-    }
-
-    //debuffstruct改变时
-    private void OnChangeDebuffStruct(DebuffType debuffType,int delta)
-    {
-        switch (debuffType)
-        {
-            case DebuffType.AddHP:
-                _debuff.AddHP = Mathf.Max(0, _debuff.AddHP + delta);
-                break;
-            case DebuffType.AddSpeed:
-                _debuff.AddSpeed = Mathf.Max(0, _debuff.AddSpeed + delta);
-                break;
-            case DebuffType.AddCount:
-                _debuff.AddCount = Mathf.Max(0, _debuff.AddCount + delta);
-                break;
-            case DebuffType.DamageNullified:
-                _debuff.DamageNullified = Mathf.Max(0, _debuff.DamageNullified + delta);
-                break;
-        }
-        _chooseCount = _debuff.AddHP + _debuff.AddSpeed + _debuff.AddCount+ _debuff.DamageNullified;
-
-        //设置开始挑战按钮的状态
-        SetButtonStatus(startChallengeButton, _chooseCount >= DataManager.Instance.PlayerInfo.PassCount.Value);
-        
-    }
-
-    //设置按钮的状态
-    private void SetButtonStatus(Button button,bool active)
-    {
-
-        
-    }
 
     //播放抽取动画
     private void PlayAnim()
     {
+        startChooseButton.gameObject.SetActive(false);
+        _giveupChallengeButton.gameObject.SetActive(false);
+        target.gameObject.SetActive(true);
+        target.sprite = boxClosed;
+
         GridLayoutGroup grid = _debuffStructParent.GetComponent<GridLayoutGroup>();
         Vector2 currentSize = grid.cellSize;
         float targetX = 130f;
@@ -129,11 +115,11 @@ public class ChooseDebuffPanel : MonoBehaviour
             () => grid.cellSize.x,
             x => grid.cellSize = new Vector2(x, currentSize.y),
             targetX,
-            1.0f
+            0.5f
         ).SetEase(Ease.OutQuad);
 
         // 2. target 渐显
-        Tween fadeTween = target.DOFade(1f, 1.0f).SetEase(Ease.Linear);
+        Tween fadeTween = target.DOFade(1f, 0.5f).SetEase(Ease.Linear);
 
         // 同时进行
         seq.Join(gridTween);
@@ -142,6 +128,7 @@ public class ChooseDebuffPanel : MonoBehaviour
         // 动画完成后再执行 FlyImage
         seq.OnComplete(() =>
         {
+            Debug.Log("动画执行完毕");
             completedCount = 0;
 
             foreach (var img in debuffStructs)
@@ -178,24 +165,20 @@ public class ChooseDebuffPanel : MonoBehaviour
             .SetEase(Ease.InOutQuad));
         
 
-
         seq.OnComplete(() =>
         {
-            CanvasGroup canvasGroup = img.GetComponent<CanvasGroup>();
-
-            // 透明到 0
-            canvasGroup.alpha = 0;
-            img.gameObject.SetActive(false);
             completedCount++;
 
             // 等所有 images 完成
             if (completedCount == debuffStructs.Count)
             {
+                _debuffStructParent.gameObject.SetActive(false);
                 PlayTargetAnimation();
             }
         });
     }
 
+    //播放最终选择的动画
     private void PlayTargetAnimation()
     {
         // 先把 rotation 归零，避免累计误差
@@ -204,7 +187,7 @@ public class ChooseDebuffPanel : MonoBehaviour
         // 创建序列
         Sequence seq = DOTween.Sequence();
 
-        // 摇三次（每次左右一次）
+        // 摇五次（每次左右一次）
         for (int i = 0; i < 5; i++)
         {
             seq.Append(target.rectTransform.DORotate(new Vector3(0, 0, 20f), 0.1f));
@@ -224,11 +207,10 @@ public class ChooseDebuffPanel : MonoBehaviour
     //抽取debuff
     private IEnumerator ChooseDebuffsCoroutine()
     {
-        _debuffStructParent.GetComponent<GridLayoutGroup>().cellSize = new Vector2(400, 100);
         Dictionary<DebuffStruct, int> chosenCount = new Dictionary<DebuffStruct, int>();
         Vector3 flyEffectEndPos = Vector3.zero;
 
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < DataManager.Instance.PlayerInfo.PassCount.Value; i++)
         {
             List<DebuffStruct> available = debuffStructs.FindAll(d =>
             {
@@ -244,10 +226,35 @@ public class ChooseDebuffPanel : MonoBehaviour
 
             DebuffStruct selected = available[Random.Range(0, available.Count)];
 
+            switch (selected._debuffType)
+            {
+                case DebuffType.AddCount:
+                    _debuff.AddCount++;
+                    break;
+                case DebuffType.AddHP:
+                    _debuff.AddHP++;
+                    break;
+                case DebuffType.InitialMoneyDecrease:
+                    _debuff.InitialMoneyDecrease++;
+                    break;
+                case DebuffType.DamageNullified:
+                    _debuff.DamageNullified++;
+                    break;
+                case DebuffType.EnemyMaxBoundCount:
+                    _debuff.EnemyMaxBoundCount++;
+                    break;
+                case DebuffType.CrystalMaxHpDecrease:
+                    _debuff.CrystalMaxHpDecrease++;
+                    break;
+                case DebuffType.EliteEnemyCount:
+                    _debuff.EliteEnemyCount++;
+                    break;
+            }
+
             if (!chosenCount.ContainsKey(selected))
             {
                 chosenCount[selected] = 0;
-                DebuffStruct tmpDebuff = Instantiate(selected, _debuffStructParent);
+                DebuffStruct tmpDebuff = Instantiate(selected, _debuffStructRealParent);
                 tmpDebuff.gameObject.SetActive(true);
                 tmpDebuff.GetComponent<CanvasGroup>().alpha = 1.0f;
                 tmpDebuff._debuffType = selected._debuffType;
@@ -256,11 +263,12 @@ public class ChooseDebuffPanel : MonoBehaviour
             }
             else
             {
-                foreach (Transform child in _debuffStructParent)
+                foreach (Transform child in _debuffStructRealParent)
                 {
                     DebuffStruct debuff = child.GetComponent<DebuffStruct>();
                     if (debuff != null && debuff._debuffType == selected._debuffType)
                     {
+                        Debug.Log("已有");
                         flyEffectEndPos = debuff.transform.position;
                         debuff._countText.text = (chosenCount[selected] + 1).ToString();
                     }
@@ -271,11 +279,15 @@ public class ChooseDebuffPanel : MonoBehaviour
             Vector3 screenEnd = RectTransformUtility.WorldToScreenPoint(null, flyEffectEndPos);
 
             // 等待飞行特效完成
-            yield return StartCoroutine(GameUIManager.Instance.PlayFlyEffectAsync(screenStart, screenEnd, 3,1.0f/3));
+            yield return StartCoroutine(GameUIManager.Instance.PlayFlyEffectAsync(screenStart, screenEnd, 3,1.0f/ DataManager.Instance.PlayerInfo.PassCount.Value));
 
             chosenCount[selected]++;
             Debug.Log($"选中: {selected._debuffType}, 当前次数 = {chosenCount[selected]}");
         }
+
+        startChallengeButton.gameObject.SetActive(true);
+        _giveupChallengeButton.gameObject.SetActive(true);
+        target.gameObject.SetActive(false);
     }
 }
 
@@ -291,9 +303,19 @@ public class Debuff
     public int AddHP;
 
     /// <summary>
-    /// 敌人增加10%的移速的个数
+    /// 初始金币减少10%的个数
     /// </summary>
-    public int AddSpeed;
+    public int InitialMoneyDecrease;
+
+    /// <summary>
+    /// 精英怪数量增加10%的个数
+    /// </summary>
+    public int EliteEnemyCount;
+
+    /// <summary>
+    /// 城墙初始最大生命值减少10%的个数
+    /// </summary>
+    public int CrystalMaxHpDecrease;
 
     /// <summary>
     /// 敌人增加10%的数量的个数
@@ -305,9 +327,15 @@ public class Debuff
     /// </summary>
     public int DamageNullified;
 
+    /// <summary>
+    /// 敌人最大反弹次数-1
+    /// </summary>
+    public int EnemyMaxBoundCount;
+
     public Debuff()
     {
-        AddHP = 0; AddSpeed=0; AddCount = 0;
+        AddHP = 0; InitialMoneyDecrease = 0; EliteEnemyCount = 0; CrystalMaxHpDecrease = 0; AddCount = 0;
+        DamageNullified = 0; EnemyMaxBoundCount = 0;
     }
 
     //拷贝一份
@@ -326,8 +354,6 @@ public class Debuff
         {
             case DebuffType.AddHP:
                 return "敌人生命值增加 10%";
-            case DebuffType.AddSpeed:
-                return "敌人移动速度增加 10%";
             case DebuffType.AddCount:
                 return "敌人数量增加 10%";
             case DebuffType.DamageNullified:

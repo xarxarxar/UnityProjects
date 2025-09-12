@@ -9,6 +9,6 @@ public class SkillUseFireBullet : PlayerSkillBase
 {
     public override void SkillEffect()
     {
-        TowerManager.Instance.ChangeBullet(BulletKind.Fire, 60);
+        
     }
 }

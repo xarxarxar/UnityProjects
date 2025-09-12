@@ -11,8 +11,15 @@ public class GamePlayingPanel : MonoBehaviour
     //[SerializeField] private BindableButton _openEnemyInfoButton;  //打开敌人信息面板的按钮
     [SerializeField] private BindableButton _openDoubleSpeedButton;  //打开两倍速的按钮
     [SerializeField] private BindableButton _openPauseButton;  //打开暂停面板的按钮
-    [SerializeField] private BindableButton _openInfoButton;  //打开信息面板的按钮
     [SerializeField] private MySlider _mySlider;//下一波倒计时的slider
+
+    private void Update()
+    {
+        if (Input.GetKeyUp(KeyCode.Escape))
+        {
+            BattleUIManager.Instance.ShowPausePanel();
+        }
+    }
 
     private void OnEnable()
     {
@@ -25,12 +32,6 @@ public class GamePlayingPanel : MonoBehaviour
         });
         _openPauseButton.AddListener(() => {
             BattleUIManager.Instance.ShowPausePanel();
-        });
-        //_openEnemyInfoButton.AddListener(() => {
-        //    BattleUIManager.Instance.ShowEnemyInfoInfoPanel();
-        //});
-        _openInfoButton.AddListener(() => { 
-            BattleUIManager.Instance.ShowBattleTowerInfoPanel();
         });
         _openDoubleSpeedButton.AddListener(() =>
         {
@@ -53,7 +54,6 @@ public class GamePlayingPanel : MonoBehaviour
 
         _openBankButton.RemoveAllListeners();
         _openPauseButton.RemoveAllListeners();
-        _openInfoButton.RemoveAllListeners();
         //_openEnemyInfoButton.RemoveAllListeners();
         _openDoubleSpeedButton.RemoveAllListeners();
     }

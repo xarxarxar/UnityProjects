@@ -29,8 +29,8 @@ public class BattleUIManager : ManagerBase<BattleUIManager>
     [SerializeField] private GameObject _battleScene;//战斗场景的父物体
     [SerializeField]private DamageText _damageTextPrefab; //伤害文字的预制体引用
     [SerializeField]private GetCoinText _getCoinTextPrefab; //显示从敌人身上获取了多少金币的预制体引用
-    [SerializeField]private BattleTowerInfoPanel _battleInfoPrefab; //战斗中的炮塔信息面板的预制体引用
     [SerializeField]private EnemyInfoPanel _enemyInfoPrefab; //战斗中的敌人信息面板的预制体引用
+    [SerializeField]private WelfarePanel _welfarePanelPrefab; //福利面板的预制体引用
     private bool _isInitialized;                      // 标记是否完成 UI 初始化
     private ObjectPool<DamageText> _damageTextPool;//显示伤害文字的对象池
     private ObjectPool<GetCoinText> _getCoinTextPool;//显示从敌人身上获取了多少金币的文字
@@ -160,21 +160,6 @@ public class BattleUIManager : ManagerBase<BattleUIManager>
         _pausePanel.gameObject.SetActive(true);
     }
 
-    /// <summary>
-    /// 显示战斗中炮塔的信息
-    /// </summary>
-    public void ShowBattleTowerInfoPanel()
-    {
-        _battleInfoPrefab.gameObject.SetActive(true);
-    }
-
-    /// <summary>
-    /// 隐藏战斗中炮塔的信息
-    /// </summary>
-    public void HideBattleTowerInfoPanel()
-    {
-        _battleInfoPrefab.gameObject.SetActive(false);
-    }
 
     /// <summary>
     /// 显示战斗中敌人的信息
@@ -217,8 +202,14 @@ public class BattleUIManager : ManagerBase<BattleUIManager>
     {
         _endPanel.Init(isSuccess);
     }
+    /// <summary>
+    /// 显示福利面板
+    /// </summary>
+    public void ShowWelfarePanel()
+    {
+        _welfarePanelPrefab.gameObject.SetActive(true);
+    }
 
-    
 
     /// <summary>
     /// 刷新回合显示，参数 round 为当前回合

@@ -37,12 +37,12 @@ public class UpgradeManager : ManagerBase<UpgradeManager>
     public int UpgradeIncreaseCoin { get => _upgradeIncreaseCoin; set => _upgradeIncreaseCoin = value; }
 
     /// <summary>
-    /// 购买升级的花费
+    /// 刷新的花费
     /// </summary>
     public Bindable<int> FreshCost=> _freshCost;
 
     /// <summary>
-    /// 购买升级的花费
+    /// 相同商品时的折扣
     /// </summary>
     public Bindable<float> SameDiscount { get; set; }=new Bindable<float>() { };
     #endregion
@@ -106,7 +106,7 @@ public class UpgradeManager : ManagerBase<UpgradeManager>
         OnUpgradePurchased?.Invoke(upgrade);
         _buyUpgradeCount.Value++;
         //FreshCost.Value += _upgradeIncreaseCoin;
-        Debug.Log($"购买了{upgrade.Description}");
+        //Debug.Log($"购买了{upgrade.Description}");
 
         // 应用升级效果
         upgrade.Apply();

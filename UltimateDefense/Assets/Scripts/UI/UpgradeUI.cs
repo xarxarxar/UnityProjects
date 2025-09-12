@@ -50,7 +50,7 @@ public class UpgradeUI : MonoBehaviour
 
     private void OnDisable()
     {
-        
+        _refreshButton.onClick.RemoveAllListeners();
     }
 
     /// <summary>
@@ -82,6 +82,7 @@ public class UpgradeUI : MonoBehaviour
         _discountLeft.SetActive(false);
         _discountRight.SetActive(false);
 
+        Debug.Log("游戏开始，为刷新增加点击事件");
         _refreshButton.onClick.AddListener(RefreshUpgrade);
         _updatePriceText.text = "0";
 
@@ -110,6 +111,7 @@ public class UpgradeUI : MonoBehaviour
     /// </summary>
     public void DestroyUpgrade()
     {
+        Debug.Log("游戏结束后销毁升级的数据");
         _refreshButton.onClick.RemoveAllListeners();
         _leftButton.onClick.RemoveAllListeners();
         _rightButton.onClick.RemoveAllListeners();
@@ -119,6 +121,7 @@ public class UpgradeUI : MonoBehaviour
     //刷新升级属性按钮
     private void RefreshUpgrade()
     {
+        Debug.Log("刷新按钮");
         if (!CurrencyManager.Instance.SpendCoin(UpgradeManager.Instance.FreshCost.Value))//刷新需要金币
         {
             return;
@@ -126,12 +129,10 @@ public class UpgradeUI : MonoBehaviour
        
         RefreshUpgradeButtons();
         UpgradeManager.Instance.RefreshCount.Value++;
-        
 
         SetTextColor(_updatePriceText, gold >= UpgradeManager.Instance.FreshCost.Value);
         UpgradeManager.Instance.FreshCost.Value += UpgradeManager.Instance.UpgradeIncreaseCoin;//更新刷新所需的金币
         _updatePriceText.text = $"{UpgradeManager.Instance.FreshCost.Value}";
-        Debug.Log($"刷新所需金币为{UpgradeManager.Instance.FreshCost.Value}");
         OnRefreshBuff?.Invoke();
     }
 
@@ -295,7 +296,6 @@ public class UpgradeUI : MonoBehaviour
     /// <param name="side">-1表示左侧，1表示右侧</param>
     private void BuyUpgradeButton(int side)
     {
-        Debug.Log($"side is {side},_leftUpgrade is {_leftUpgrade},_rightUpgrade is {_rightUpgrade}");
         if (side == -1)//左边的按钮
         {
             if (_leftUpgrade==null) return;
@@ -364,7 +364,6 @@ public class UpgradeUI : MonoBehaviour
             completedCount++;
             if (completedCount >= targetCount)
             {
-                Debug.Log("打折动画完成！");
                 onComplete?.Invoke();
             }
         }

@@ -9,7 +9,7 @@ public class SkillUseIceBullet : PlayerSkillBase
 {
     public override void SkillEffect()
     {
-        TowerManager.Instance.ChangeBullet(BulletKind.Ice,60);
+        
     }
 
     

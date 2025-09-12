@@ -5,9 +5,12 @@ using UnityEngine.UI;
 public enum DebuffType
 {
     AddHP,
-    AddSpeed,
+    InitialMoneyDecrease,
+    EliteEnemyCount,
+    CrystalMaxHpDecrease,
     AddCount,
-    DamageNullified
+    DamageNullified,
+    EnemyMaxBoundCount
 }
 
 public class DebuffStruct : MonoBehaviour

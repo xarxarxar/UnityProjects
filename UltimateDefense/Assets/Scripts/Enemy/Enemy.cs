@@ -30,14 +30,12 @@ public class Enemy : MonoBehaviour
     public Bindable<int> maxHP = new Bindable<int>();
     //敌人的最大护盾值，默认无护盾
     public Bindable<int> maxShield = new Bindable<int>();
-    //UI 渲染层级顺序，数值越高越靠前
-    private int enemyLayer = 0;
     //攻击伤害
     private int _attackDamage = 1;
     //最大弹跳次数
     private int _bounsCount = 5;
     //敌人的速度
-    private float _enemySpeed = 2;
+    private float _enemySpeed = 0.5f;
     //敌人的体型大小
     private float _enemyScale = 1;
     #endregion
@@ -60,8 +58,6 @@ public class Enemy : MonoBehaviour
 
     private Coroutine _bleedCoro = null;//流血的协程
 
-    //Boss技能
-    //public List<BossSkill> Skills = new List<BossSkill>();
 
     /// <summary>
     /// 敌人当前血量
@@ -99,6 +95,7 @@ public class Enemy : MonoBehaviour
             // 保持原方向，调整速度大小
             _rb.velocity = _rb.velocity.normalized * _enemySpeed * _speedRate
                 * BattleManager.Instance.GameSpeed.Value;
+            //Debug.Log($"{name}的速度为{_rb.velocity}");
         }
     }
     #endregion
@@ -110,13 +107,13 @@ public class Enemy : MonoBehaviour
     /// <param name="position">生成位置</param>
     /// <param name="level">敌人等级，用于计算生命值</param>
     /// <param name="layer">UI 渲染层级</param>
-    public void Init(EnemyType enemyType, Vector3 position, int level, int layer)
+    public void Init(EnemyType enemyType, Vector3 position, int level)
     {
         transform.position = position;// 设置初始位置
         _isDead = false;              // 重置死亡状态
         _isInRangeList = false;       // 重置范围触发标志
-        enemyLayer = layer;           // 设置渲染层级
-        _bounsCount = 5;             //最大弹跳次数
+        //_bounsCount = 5-BattleManager.Instance.Debuff.EnemyMaxBoundCount;             //最大弹跳次数
+        _bounsCount = 1;             //最大弹跳次数
         this.enemyType = enemyType;   //敌人类型
 
         // 根据等级动态计算最大生命值，一级就是一滴血,护盾默认为 0
@@ -140,7 +137,6 @@ public class Enemy : MonoBehaviour
         //免疫伤害
         _damageNullifiedCount = EnemyManager.Instance.EnemyDamageNullifiedCount.Value;
 
-        SetOrderLayer(enemyLayer);          // 更新 Canvas 排序层级
 
         if (_rb == null)
         {
@@ -152,6 +148,7 @@ public class Enemy : MonoBehaviour
         }
 
         _rb.velocity = Vector2.down.normalized;
+        _rb.simulated = true;
 
         BattleManager.OnEndBattle += OnEndBattle;
 
@@ -184,12 +181,13 @@ public class Enemy : MonoBehaviour
     /// </summary>
     /// <param name="isCritical">是否暴击</param>
     /// <param name="damage">伤害值</param>
-    public void TakeDamage(bool isCritical, int damage)
+    /// <param name="isRealDamage">是否是真实伤害</param>
+    public void TakeDamage(bool isCritical, int damage,bool isRealDamage=false)
     {
         if (_isDead) return;               // 如果已死亡，忽略伤害
 
         AudioManager.Instance.PlaySFX("被击中");
-        if (_damageNullifiedCount > 0)//有免伤次数
+        if (_damageNullifiedCount > 0  && !isRealDamage)//有免伤次数,且不是真实伤害
         {
             _damageNullifiedCount--;
             return;
@@ -197,7 +195,7 @@ public class Enemy : MonoBehaviour
 
         OnEnemyDamaged?.Invoke(this, isCritical, damage); // 通知外部
 
-        if (_currentShield.Value > 0)            // 有护盾时先扣护盾
+        if (_currentShield.Value > 0 && !isRealDamage)            // 有护盾时先扣护盾
         {
             _currentShield.Value = Mathf.Max(_currentShield.Value - damage, 0);
         }
@@ -213,11 +211,11 @@ public class Enemy : MonoBehaviour
                 particleSystem.transform.position = transform.position;
                 particleSystem.Play();
                 TimerUtility.Instance.Timer(0.5f, () => { EnemyManager.Instance.ExplosionEffectPool.Return(particleSystem); });
+                return;
             }
-                
         }
         SetScale();//设置体型大小
-        EnemyUIManager.Instance.UpdateEnemyHealth(this);
+        EnemyUIManager.Instance.UpdateEnemyHealth(this,isRealDamage);
     }
 
     public void RecoverHp(int value)
@@ -225,15 +223,6 @@ public class Enemy : MonoBehaviour
         if (_isDead) return;               // 如果已死亡，忽略
         _currentHP.Value = Mathf.Min(_currentHP.Value + value, maxHP.Value);
         EnemyUIManager.Instance.UpdateEnemyHealth(this);
-    }
-
-    /// <summary>
-    /// 设置或更新敌人的 Canvas 渲染层级
-    /// </summary>
-    /// <param name="layer">渲染层级</param>
-    public void SetOrderLayer(int layer)
-    {
-        enemyLayer = layer;
     }
 
     /// <summary>
@@ -430,6 +419,7 @@ public class Enemy : MonoBehaviour
     //挑战结束
     private void OnEndBattle(bool success)
     {
+        Debug.Log($"{name}回到对象池");
         EnemyManager.Instance.EnemyPool.Return(this);
         EnemyUIManager.Instance.RemoveEnemyUI(transform);
         StopAllCoroutines();
@@ -461,7 +451,6 @@ public class Enemy : MonoBehaviour
                 int damage =Mathf.RoundToInt(_currentHP.Value * 0.3f) ;
                 enemyExplode.Init(transform.position, originalColor, _enemyScale, () =>
                 {
-                    Debug.Log($"造成自爆伤，目标是{collision.transform.parent.name}，伤害为{damage}");
                     targetBuilding.TakeDamage(damage);
                 });
                 Die();
@@ -491,30 +480,3 @@ public class Enemy : MonoBehaviour
     
     #endregion
 }
-
-//public class BossSkill
-//{
-//    public string Name;
-//    public float Cooldown;      // 技能冷却时间
-//    public float Timer;         // 计时器
-//    public System.Action<Enemy> Action; // 技能触发的方法
-
-//    public BossSkill(string name, float cooldown, System.Action<Enemy> action)
-//    {
-//        Name = name;
-//        Cooldown = cooldown;
-//        Timer = 0;
-//        Action = action;
-//    }
-
-//    // 更新时间，如果达到冷却时间就触发技能
-//    public void UpdateSkill(Enemy boss, float deltaTime)
-//    {
-//        Timer += deltaTime;
-//        if (Timer >= Cooldown)
-//        {
-//            Action?.Invoke(boss);
-//            Timer = 0;
-//        }
-//    }
-//}

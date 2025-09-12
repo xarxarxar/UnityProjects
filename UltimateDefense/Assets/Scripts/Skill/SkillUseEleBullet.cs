@@ -9,6 +9,6 @@ public class SkillUseEleBullet : PlayerSkillBase
 {
     public override void SkillEffect()
     {
-        TowerManager.Instance.ChangeBullet(BulletKind.Electric, 60);
+        
     }
 }

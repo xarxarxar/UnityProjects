@@ -59,7 +59,7 @@ public class Upgrade_SetEnemyHalf : UpgradeBase
             for(int i = 0; i < EnemyManager.Instance.AllEnemies.Count; i++)
             {
                 int damage = Mathf.Max(1, Mathf.RoundToInt(EnemyManager.Instance.AllEnemies[i].CurrentHP.Value / 2));
-                EnemyManager.Instance.AllEnemies[i].TakeDamage(false, damage);
+                EnemyManager.Instance.AllEnemies[i].TakeDamage(false, damage,true);
             }
         }
         else
@@ -70,7 +70,7 @@ public class Upgrade_SetEnemyHalf : UpgradeBase
             foreach (var enemy in shuffled)
             {
                 int damage = Mathf.RoundToInt(enemy.CurrentHP.Value / 2f);
-                enemy.TakeDamage(false, damage);
+                enemy.TakeDamage(false, damage, true);
             }
         }
     }

@@ -9,24 +9,24 @@ public class ObjectPool<T> where T : Component
     private readonly T _prefab;
     private readonly Transform _parent;
     private readonly Queue<T> _poolQueue;
+    private readonly HashSet<T> _inPoolSet; // 用于跟踪哪些对象在池中
 
     /// <summary>
     /// 构造对象池
     /// </summary>
-    /// <param name="prefab">需要池化的预制体</param>
-    /// <param name="initialSize">初始池大小</param>
-    /// <param name="parent">可选的父物体</param>
     public ObjectPool(T prefab, int initialSize, Transform parent = null)
     {
         _prefab = prefab;
         _parent = parent;
         _poolQueue = new Queue<T>();
+        _inPoolSet = new HashSet<T>();
 
         for (int i = 0; i < initialSize; i++)
         {
             var obj = CreateNew();
             obj.gameObject.SetActive(false);
             _poolQueue.Enqueue(obj);
+            _inPoolSet.Add(obj);
         }
     }
 
@@ -36,6 +36,7 @@ public class ObjectPool<T> where T : Component
     public T Get()
     {
         T obj = _poolQueue.Count > 0 ? _poolQueue.Dequeue() : CreateNew();
+        _inPoolSet.Remove(obj);
         obj.gameObject.SetActive(true);
         return obj;
     }
@@ -45,8 +46,14 @@ public class ObjectPool<T> where T : Component
     /// </summary>
     public void Return(T obj)
     {
+        if (_inPoolSet.Contains(obj))
+        {
+            obj.gameObject.SetActive(false);
+            return;
+        }
         obj.gameObject.SetActive(false);
         _poolQueue.Enqueue(obj);
+        _inPoolSet.Add(obj);
     }
 
     /// <summary>

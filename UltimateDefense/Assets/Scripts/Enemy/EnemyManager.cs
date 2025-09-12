@@ -27,9 +27,14 @@ public class EnemyManager : ManagerBase<EnemyManager>
     [SerializeField] public Enemy _enemyPrefab;     //敌人预制体
     [SerializeField] public ParticleSystem _explosionEffectPrefab;     //爆炸特效预制体
     [SerializeField] public EnemyExplode _explosionAnimPrefab;     //敌人自爆预制体
+    
+
     private ObjectPool<Enemy> _enemyPool;           //敌人对象池
+    public Transform _enemyPoolParent;           //敌人对象池父物体
     private ObjectPool<ParticleSystem> _explosionEffectPool;   //爆炸特效对象池
+    public Transform _explosionEffectPoolParent;   //爆炸特效对象池父物体
     private ObjectPool<EnemyExplode> _explosionAnimPool;   //敌人自爆动画对象池
+    [SerializeField] public Transform _explosionAnimPoolParent;     //敌人自爆预制体父物体
     private Bindable<float>  _enemyDieCoinProb=new Bindable<float>();//敌人死亡之后获得金币的概率
     private Bindable<float>  _enemySpeed=new Bindable<float>();//敌人移动速度
     private Bindable<int> _enemyDieCoin = new Bindable<int>();//敌人死亡之后获得的金币数量
@@ -40,6 +45,7 @@ public class EnemyManager : ManagerBase<EnemyManager>
     private Bindable<Enemy> _currentClickedEnemy=new Bindable<Enemy>();//当前被点击的敌人
     // 存储暂停前所有敌人的速度
     private Dictionary<Rigidbody2D, Vector2> _enemyVelocityMap = new Dictionary<Rigidbody2D, Vector2>();
+    private float _eliteEnemyProportion = 0.2f;//精英怪所占的比例
     //private int _enemyTotalCount = 0;                //敌人生成的数量,从开始到结束的总数量，包括死亡的
     #endregion
 
@@ -152,9 +158,11 @@ public class EnemyManager : ManagerBase<EnemyManager>
     {
         _allEnemies.Clear();
         _enemiesInRange.Clear();
+        _enemyVelocityMap.Clear(); // 清空旧数据
         _currentTargerEnemy = null;
         _currentClickedEnemy.Value = null;
         _enemyDieCoinProb.Value = 0.5f;
+        _eliteEnemyProportion = 0.2f + BattleManager.Instance.Debuff.EliteEnemyCount * 0.1f;
 
         if (!DataManager.Instance.PlayerInfo.Config.ContainsKey("EnemyDieCoin"))
         {
@@ -162,7 +170,7 @@ public class EnemyManager : ManagerBase<EnemyManager>
         }
         _enemyDieCoin.Value = Mathf.RoundToInt(DataManager.Instance.PlayerInfo.Config["EnemyDieCoin"]);
         _enemyCurrentCount.Value = 0;
-        _enemySpeed.Value = 0.5f * (1 + BattleManager.Instance.Debuff.AddSpeed * 0.1f);
+        _enemySpeed.Value = 0.5f;
         _enemyDamageNullifiedCount.Value = 0 + BattleManager.Instance.Debuff.DamageNullified;
         _targetBuilding = Crystal.Instance;//设置初始目标建筑为水晶
         SignleEnemyDieCount.Value = 0;
@@ -173,10 +181,13 @@ public class EnemyManager : ManagerBase<EnemyManager>
         BattleManager.OnEndBattle += OnEndBattle;
         //BattleManager.Instance.GameSpeed.OnValueChanged += GameSpeedChanged;
         BattleManager.Instance.IsPaused.OnValueChanged += GamePausedChanged;
-        if (_enemyPool==null) _enemyPool = new ObjectPool<Enemy>(_enemyPrefab, 20, transform);//初始化敌人对象池
-        if (_explosionEffectPool == null) _explosionEffectPool = new ObjectPool<ParticleSystem>(_explosionEffectPrefab, 5, transform);//初始化敌人对象池
-        if (_explosionAnimPool == null) _explosionAnimPool = new ObjectPool<EnemyExplode>(_explosionAnimPrefab, 5, transform);//初始化敌人对象池
-        StartCoroutine(GenerateEnemyIE());
+        if (_enemyPool == null)
+        {
+            _enemyPool = new ObjectPool<Enemy>(_enemyPrefab, 20, _enemyPoolParent);//初始化敌人对象池
+        }
+            if (_explosionEffectPool == null) _explosionEffectPool = new ObjectPool<ParticleSystem>(_explosionEffectPrefab, 5, _explosionEffectPoolParent);//初始化敌人对象池
+        if (_explosionAnimPool == null) _explosionAnimPool = new ObjectPool<EnemyExplode>(_explosionAnimPrefab, 5, _explosionAnimPoolParent);//初始化敌人对象池
+        StartCoroutine(GenerateEnemyIEByLetter());
     }
 
     /// <summary>
@@ -188,9 +199,17 @@ public class EnemyManager : ManagerBase<EnemyManager>
     public void SpawnEnemy(EnemyType enemyType,float xPos, int level,float yPos=13)
     {
         Enemy enemy = _enemyPool.Get();
-        enemy.Init(enemyType, new Vector3(xPos, yPos, 0), level, -1 * (_allEnemies.Count));
+        // 给 enemy 设置一个唯一名字
+        enemy.name = $"Enemy_{Guid.NewGuid()}"; // 使用 Guid 保证唯一
+        enemy.Init(enemyType, new Vector3(xPos, yPos, 0), level);
         EnemyUIManager.Instance.RegisterEnemyUI(enemy, new Vector3(0, 0.0f, 0));
+        if (_allEnemies.Contains(enemy))
+        {
+            BattleManager.Instance.PauseGame();//暂停游戏
+            Debug.Log($"allenemys已经添加了{enemy.name}");
+        }
         _allEnemies.Add(enemy);
+        
         _enemyCurrentCount.Value = _allEnemies.Count;
     }
 
@@ -203,7 +222,15 @@ public class EnemyManager : ManagerBase<EnemyManager>
         if (_enemiesInRange.Contains(enemy))
             _enemiesInRange.Remove(enemy);
         if (_allEnemies.Contains(enemy))
+        {
             _allEnemies.Remove(enemy);
+        }
+        else
+        {
+            BattleManager.Instance.PauseGame();//暂停游戏
+            Debug.Log($"_allEnemies中没有{enemy.name}");
+        }
+            
         if(_currentTargerEnemy == enemy)
         {
             _currentTargerEnemy = null;
@@ -230,11 +257,6 @@ public class EnemyManager : ManagerBase<EnemyManager>
         {
             _currentClickedEnemy.Value = null;
         }
-
-        for (int i=0;i< _allEnemies.Count; i++)
-        {
-            _allEnemies[i].SetOrderLayer(-1*i);
-        }
         _enemyCurrentCount.Value = _allEnemies.Count;
         SignleEnemyDieCount.Value++;
     }
@@ -253,37 +275,6 @@ public class EnemyManager : ManagerBase<EnemyManager>
         Index = 3;
         // _allEnemies = new List<Enemy>();
         // _isInitialized = false;
-    }
-
-    //游戏速度变化时
-    private void GameSpeedChanged(int speed)
-    {
-        if (speed == 1)
-        {
-            for (int i = 0; i < _allEnemies.Count; i++)
-            {
-                if (_allEnemies[i].GetComponent<Rigidbody2D>().gravityScale == 0.25f) return;
-                _allEnemies[i].GetComponent<Rigidbody2D>().gravityScale = 0.25f;
-                // 获取 Rigidbody2D 组件
-                Rigidbody2D rb = _allEnemies[i].GetComponent<Rigidbody2D>();
-
-                // 将当前速度向量乘以 2，实现加倍
-                rb.velocity = rb.velocity / 2f;
-            }
-        }
-        if(speed==2)
-        {
-            for (int i = 0; i < _allEnemies.Count; i++)
-            {
-                if (_allEnemies[i].GetComponent<Rigidbody2D>().gravityScale == 1) return;
-                _allEnemies[i].GetComponent<Rigidbody2D>().gravityScale = 1;
-                // 获取 Rigidbody2D 组件
-                Rigidbody2D rb = _allEnemies[i].GetComponent<Rigidbody2D>();
-
-                // 将当前速度向量乘以 2，实现加倍
-                rb.velocity = rb.velocity * 2f;
-            }
-        }
     }
 
     //游戏暂停状态变化时
@@ -389,9 +380,9 @@ public class EnemyManager : ManagerBase<EnemyManager>
                 int enemyCount = Mathf.RoundToInt((WaveManager.Instance.SingleWaveEnemyCount + WaveManager.Instance.CurrentRound * 1) * (1 + BattleManager.Instance.Debuff.AddCount * 0.1f));
                 List<EnemyType> enemyTyps = new List<EnemyType>();
                 // 添加普通
-                for (int i = 0; i < Mathf.RoundToInt(enemyCount * 0.8f); i++) enemyTyps.Add(EnemyType.Normal);
+                for (int i = 0; i < Mathf.RoundToInt(enemyCount * (1- _eliteEnemyProportion)); i++) enemyTyps.Add(EnemyType.Normal);
                 // 添加精英
-                for (int i = 0; i < enemyCount - Mathf.RoundToInt(enemyCount * 0.8f); i++) enemyTyps.Add(EnemyType.Elite);
+                for (int i = 0; i < enemyCount - Mathf.RoundToInt(enemyCount * (1 - _eliteEnemyProportion)); i++) enemyTyps.Add(EnemyType.Elite);
 
                 // 打乱顺序（Fisher–Yates 洗牌）
                 for (int i = enemyTyps.Count - 1; i > 0; i--)
@@ -405,7 +396,8 @@ public class EnemyManager : ManagerBase<EnemyManager>
                     while (BattleManager.Instance.IsPaused.Value) yield return null;
 
                     int currentRound = WaveManager.Instance.CurrentRound;
-                    int level =Mathf.Min(WaveManager.Instance.MaxRound,UnityEngine.Random.Range(currentRound, currentRound+3)) ;
+                    int level =Mathf.RoundToInt(Mathf.Min(WaveManager.Instance.MaxRound, UnityEngine.Random.Range(currentRound, currentRound + 3))
+                        * (1 + BattleManager.Instance.Debuff.AddHP * 0.1f));
                     SpawnEnemy(enemyTyps[i], UnityEngine.Random.Range(-6f, 6f),level);
 
                     // 如果是最后一波 且是最后一个敌人
@@ -434,6 +426,56 @@ public class EnemyManager : ManagerBase<EnemyManager>
         }
     }
 
+    private IEnumerator GenerateEnemyIEByLetter ()
+    {
+        yield return TimerUtility.WaitForGameSeconds(3);
+        while (true)
+        {
+            WaveManager.Instance.CurrentRound++;
+
+            int[,] enemyArray = Letters7x7.LetterMap["A"];
+
+            int currentRound = WaveManager.Instance.CurrentRound;
+            int level = Mathf.RoundToInt(Mathf.Min(WaveManager.Instance.MaxRound, UnityEngine.Random.Range(currentRound, currentRound + 3))
+                * (1 + BattleManager.Instance.Debuff.AddHP * 0.1f));
+            for (int i = enemyArray.GetLength(0) - 1; i >= 0; i--)
+            {
+                while (BattleManager.Instance.IsPaused.Value) yield return null;
+
+                for (int j = enemyArray.GetLength(1) - 1; j >= 0; j--)
+                {
+                    while (BattleManager.Instance.IsPaused.Value) yield return null;
+
+                    if (enemyArray[i, j] == 1)
+                    {
+                        SpawnEnemy(EnemyType.Elite, -5f + j * (10/6.0f), level);
+                    }
+
+                    // 如果是最后一波 且是第一个生成的敌人（逆序的最后一个）
+                    if (WaveManager.Instance.CurrentRound == WaveManager.Instance.MaxRound &&
+                        i == 0 && j == 0)
+                    {
+                        OnLastEnemySpawned?.Invoke();  // 触发事件
+                    }
+
+                    
+                }
+                yield return TimerUtility.WaitForGameSeconds(EnemyScale(level)* 3.0f);
+            }
+            if (WaveManager.Instance.CurrentRound >= WaveManager.Instance.MaxRound)
+            {
+                yield break;
+            }
+            // 启动一个提醒协程（监听 GameSpeed 和暂停）
+            StartCoroutine(WaitAndNotifyBeforeTime(WaveManager.Instance.SpawnWaveInterval, 3f, () =>
+            {
+                OnAlmostNextWave?.Invoke();
+            }));
+            yield return TimerUtility.WaitForGameSeconds(WaveManager.Instance.SpawnWaveInterval);
+
+        }
+    }
+
     //启动一个提醒协程
     private IEnumerator WaitAndNotifyBeforeTime(float totalTime, float notifyBefore, System.Action callback)
     {
@@ -455,9 +497,18 @@ public class EnemyManager : ManagerBase<EnemyManager>
     //挑战结束
     private void OnEndBattle(bool success)
     {
+        BattleManager.Instance.IsPaused.OnValueChanged -= GamePausedChanged;
         _allEnemies.Clear();
         _enemiesInRange.Clear();
         StopAllCoroutines();
+    }
+
+    private float EnemyScale(int level)
+    {
+        float level01 = (level - 1f) / 49f;
+        float t = Mathf.SmoothStep(0f, 1f, level01);
+        return Mathf.Lerp(1.0f, 1.6f, t);
+        
     }
 
     #endregion

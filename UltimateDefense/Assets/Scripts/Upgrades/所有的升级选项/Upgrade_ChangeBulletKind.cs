@@ -28,15 +28,15 @@ public class Upgrade_ChangeBulletKind : UpgradeBase
         Cost = cost;
         if (kind == BulletKind.Ice)
         {
-            Description = $"切换到干冰子弹，减速敌人，持续{TowerManager.Instance.BullletKindDuration}秒";
+            Description = $"特殊子弹：{TowerManager.Instance.BulletKindCount}颗干冰子弹，对敌人造成减速";
         }
         else if (kind == BulletKind.Fire)
         {
-            Description = $"切换到火焰子弹，对敌人造成持续伤害，持续{TowerManager.Instance.BullletKindDuration}秒";
+            Description = $"特殊子弹：{TowerManager.Instance.BulletKindCount}颗火焰子弹，对敌人造成持续伤害";
         }
         else if (kind == BulletKind.Electric)
         {
-            Description = $"切换到电击子弹，对敌人造成短暂眩晕，持续{TowerManager.Instance.BullletKindDuration}秒";
+            Description = $"特殊子弹：{TowerManager.Instance.BulletKindCount}颗电击子弹，对敌人造成短暂眩晕";
         }
 
     }
@@ -64,7 +64,7 @@ public class Upgrade_ChangeBulletKind : UpgradeBase
     public override void Apply()
     {
         // 通知 Manager 保存全局加成
-        TowerManager.Instance.ChangeBullet(bulletKind, TowerManager.Instance.BullletKindDuration);
+        TowerManager.Instance.ChangeBullet(bulletKind);
     }
 
     #endregion

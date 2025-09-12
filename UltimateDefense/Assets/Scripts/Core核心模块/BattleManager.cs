@@ -14,6 +14,7 @@ public class BattleManager : MonoBehaviour
     #endregion
 
     #region 静态事件
+    public static event UnityAction OnStartBattle;//挑战开始
     public static event UnityAction<bool> OnEndBattle;//挑战结束
     #endregion
 
@@ -79,10 +80,10 @@ public class BattleManager : MonoBehaviour
         
         BattleUIManager.Instance.ShowBattleScene();//显示战斗场景
         IsPaused.Value = false;
-        //ScienceManager.Instance.ApplyScience();//应用科技点
         EnemyManager.OnLastEnemySpawned += OnLastEnemySpawned;
         Crystal.OnCrystalDestroyed += OnCrystalDestroyed;
         ManagerRegistry.InitManagers(InitStage.InBattle);
+        OnStartBattle?.Invoke();
     }
 
     /// <summary>
@@ -141,27 +142,6 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     public void AddClear()
     {
-
-    }
-
-    /// <summary>
-    /// 修改debuff
-    /// </summary>
-    public void ChangeDebuff(DebuffType debuffType,int delta)
-    {
-        switch (debuffType)
-        {
-            case DebuffType.AddHP:
-                _debuff.AddHP = Mathf.Max(0, _debuff.AddHP + delta);
-                break;
-            case DebuffType.AddSpeed:
-                _debuff.AddSpeed = Mathf.Max(0, _debuff.AddSpeed + delta);
-                break;
-            case DebuffType.AddCount:
-                _debuff.AddCount = Mathf.Max(0, _debuff.AddCount + delta);
-                break;
-        }
-
 
     }
 
@@ -236,5 +216,6 @@ public class BattleManager : MonoBehaviour
     {
         EndBattle(false);
     }
+
     #endregion
 }

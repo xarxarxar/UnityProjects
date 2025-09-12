@@ -7,8 +7,13 @@ using UnityEngine;
 /// </summary>
 public class CriticalBless : Bless
 {
+    /// <summary>
+    /// 前n回合必定暴击
+    /// </summary>
+    /// <param name="rarity"></param>
     public CriticalBless(int rarity) : base(rarity)
     {
+
     }
 
     public override void Apply()

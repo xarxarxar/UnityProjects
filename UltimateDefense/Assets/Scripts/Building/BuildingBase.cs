@@ -63,6 +63,11 @@ public abstract class BuildingBase : MonoBehaviour
     {
         if (damage <= 0) return;
 
+        if(_currentHP.Value <= 0)
+        {
+            return;
+        }
+
         _currentHP.Value -= damage;
         if (_currentHP.Value <= 0)
         {

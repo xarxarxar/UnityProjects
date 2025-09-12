@@ -47,7 +47,7 @@ public class WaveManager : ManagerBase<WaveManager>
     /// <summary>
     /// 只读属性，每波生成多少敌人
     /// </summary>
-    public int SingleWaveEnemyCount { get => _singleWaveEnemyCount; }
+    public int SingleWaveEnemyCount { get => _singleWaveEnemyCount; set => _singleWaveEnemyCount=value; }
     /// <summary>
     /// 只读属性，每个敌人生成的间隔时间
     /// </summary>
@@ -79,6 +79,7 @@ public class WaveManager : ManagerBase<WaveManager>
     {
         Debug.Log("wavemanager 初始化");
         _currentRound = 0;
+        _singleWaveEnemyCount = 20;
     }
     /// <summary>
     /// 启动下一回合怪物生成流程

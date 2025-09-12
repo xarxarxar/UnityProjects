@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 public class EnemyExplode : MonoBehaviour
 {
-    public Color flashColor = Color.red; // 闪红颜色
+    public Color flashColor = new Color(1f, 0.6f, 0.3f); // 暖橙色 // 闪红颜色
     private Color _defaultColor;
     private SpriteRenderer spriteRenderer;
     private float _changeScale = 1.5f;//变大的倍数，要乘以最初的倍数
@@ -17,14 +17,14 @@ public class EnemyExplode : MonoBehaviour
     /// <param name="scale"></param>
     public void Init(Vector3 pos,Color defalutColor,float scale,UnityAction callback)
     {
-
-        transform.position = pos;
+        transform.position = new Vector3(pos.x,pos.y,1);
+        transform.localScale =Vector3.one* scale;
         if(spriteRenderer == null)
         {
             spriteRenderer = GetComponent<SpriteRenderer>();
         }
         _defaultColor= defalutColor;
-        _changeScale = scale * 1.5f;
+        _changeScale = scale * 1.2f;
         gameObject.SetActive(true);
         PlayExplosion(callback);
     }
@@ -36,12 +36,12 @@ public class EnemyExplode : MonoBehaviour
         Sequence seq = DOTween.Sequence();
 
         // 1. 缩放到1.5倍
-        Tweener scaleTween = transform.DOScale(1.5f, scaleDuration);
+        Tweener scaleTween = transform.DOScale(_changeScale, scaleDuration);
         scaleTween.timeScale = BattleManager.Instance.GameSpeed.Value;
         seq.Append(scaleTween);
 
         // 2. 闪红次数固定5次，频率逐渐加快
-        int flashCount = 12;
+        int flashCount = 6;
         float singleFlashDuration = 0.5f;
         
         Sequence flashSeq = DOTween.Sequence();
@@ -49,7 +49,7 @@ public class EnemyExplode : MonoBehaviour
         {
             if (singleFlashDuration > 0.1f)
             {
-                singleFlashDuration *= Mathf.Pow(0.85f, i);
+                singleFlashDuration *= Mathf.Pow(0.9f, i);
             }
             singleFlashDuration = Mathf.Max(0.1f, singleFlashDuration);
             

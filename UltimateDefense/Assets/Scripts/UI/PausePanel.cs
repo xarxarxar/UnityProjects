@@ -23,4 +23,12 @@ public class PausePanel : BasePanel
         _settingButton.RemoveAllListeners();
         _exitButton.RemoveAllListeners();
     }
+
+    private void Update()
+    {
+        if (Input.GetKeyUp(KeyCode.Return))
+        {
+            OnCloseButton();
+        }
+    }
 }

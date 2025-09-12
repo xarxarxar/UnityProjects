@@ -24,7 +24,7 @@ public class BasePanel : MonoBehaviour
         InitPanel();
     }
 
-    private void OnCloseButton()
+    public void OnCloseButton()
     {
         // 动画缩放到 0，然后关闭面板
         transform.DOScale(Vector3.zero, 0.3f)

@@ -89,8 +89,7 @@ public class TowerManager : ManagerBase<TowerManager>
     /// 当前子弹的形态
     /// </summary>
     public  BulletKind CurrentBulletKind;
-    private Coroutine changeBulletKindCoro = null;
-    public float BullletKindDuration = 10;//元素子弹持续的时间
+    public int BulletKindCount;//特殊子弹的个数
 
     #endregion
 
@@ -111,9 +110,8 @@ public class TowerManager : ManagerBase<TowerManager>
         _bonusCritMult.Value = 0f;
         _bonusReload.Value = 0;
         _bonusCap.Value = 0;
+        BulletKindCount = 20;
         CurrentBulletKind = BulletKind.Normal;
-        changeBulletKindCoro = null;
-        BullletKindDuration = 10;
 
         if (_bulletPool == null) _bulletPool = new ObjectPool<Bullet>(_bulletPrefab, 10, transform);
 
@@ -174,13 +172,28 @@ public class TowerManager : ManagerBase<TowerManager>
     /// 临时改变子弹的形态
     /// </summary>
     /// <param name="bulletKind">子弹的形态，干冰弹，火焰弹，麻痹弹</param>
-    /// <param name="duration">持续时间</param>
-    public void ChangeBullet(BulletKind bulletKind,float duration=0)
+    /// <param name="duration">持续的子弹个数</param>
+    public void ChangeBullet(BulletKind bulletKind)
     {
         CurrentBulletKind=bulletKind;
-        if(duration != 0)
+        int tmpCount = 0;
+        int lastBulletCount=CurrentTower.CurrentBulletCount;
+        BaseTower.OnCurrentBulletCountChanged -= OnCurrentBulletCountChanged;
+        BaseTower.OnCurrentBulletCountChanged += OnCurrentBulletCountChanged;
+
+        void OnCurrentBulletCountChanged(int value)
         {
-            changeBulletKindCoro = TimerUtility.Instance.Timer(duration, ()=> CurrentBulletKind=BulletKind.Normal, changeBulletKindCoro);
+            if(value< lastBulletCount)//这才是子弹减少了
+            {
+                Debug.Log("子弹减少了");
+                tmpCount += (lastBulletCount - value);//子弹减少了这么多
+                if (tmpCount >= BulletKindCount)
+                {
+                    CurrentBulletKind = BulletKind.Normal;
+                    BaseTower.OnCurrentBulletCountChanged -= OnCurrentBulletCountChanged;
+                }
+            }
+            lastBulletCount = value;
         }
     }
     #endregion

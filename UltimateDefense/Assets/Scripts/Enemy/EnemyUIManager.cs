@@ -97,7 +97,14 @@ public class EnemyUIManager : MonoBehaviour
     /// </summary>
     public void RegisterEnemyUI(Enemy enemy, Vector3 offset, bool hideWhenOffscreen = true)
     {
+        if (uiList.Any(d => d.enemy == enemy.transform))
+        {
+            Debug.LogWarning($"重复注册 {enemy.name} 的UI，忽略");
+            return;
+        }
+
         GameObject uiObj = enemyUIPool.Get().gameObject;
+        uiObj.name=enemy.name;
         uiObj.transform.SetAsFirstSibling();
         var text = uiObj.GetComponentInChildren<Text>(true);
         HpSlider hpSlider= uiObj.GetComponentInChildren<HpSlider>(true);
@@ -144,7 +151,7 @@ public class EnemyUIManager : MonoBehaviour
     /// <summary>
     /// 更新敌人血量（受击时调用）
     /// </summary>
-    public void UpdateEnemyHealth(Enemy enemy)
+    public void UpdateEnemyHealth(Enemy enemy,bool isRealDamage=false)
     {
         var data = uiList.Find(d => d.enemy == enemy.transform);
         if (data != null)
@@ -153,7 +160,7 @@ public class EnemyUIManager : MonoBehaviour
             if (data.healthSlider != null)
             {
                 data.healthSlider.UpdateBar(enemy.CurrentHP.Value, enemy.maxHP.Value,
-                    enemy.CurrentShield.Value,enemy.maxShield.Value);
+                    enemy.CurrentShield.Value,enemy.maxShield.Value, isRealDamage);
             }
 
             // 更新血量文本
@@ -173,15 +180,25 @@ public class EnemyUIManager : MonoBehaviour
 
     public void RemoveEnemyUI(Transform enemy)
     {
+        
         var data = uiList.Find(d => d.enemy == enemy);
         if (data != null)
         {
+            Debug.Log($"注销{enemy.name}的UI");
             enemyUIPool.Return(data.container.gameObject.GetComponent<RectTransform>());
+            if (data.container.gameObject.activeSelf)
+            {
+                Debug.Log($"{enemy.name}的UI未注销成功");
+            }
             uiList.Remove(data);
             if (crossHair.transform.IsChildOf(data.container))
             {
                 crossHair.gameObject.SetActive(false);
             }
+        }
+        else
+        {
+            Debug.Log($"未找到{enemy.name}的UI");
         }
         
     }

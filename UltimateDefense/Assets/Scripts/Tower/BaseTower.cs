@@ -1,6 +1,7 @@
 using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -32,6 +33,8 @@ public abstract class BaseTower : MonoBehaviour
     /// </summary>
     protected float rotateSpeed = 200.0f; // 每秒旋转多少度
 
+    public static UnityAction<int> OnCurrentBulletCountChanged;//当前子弹数量发生变化
+
     //子类只需修改数值
     private int _currentBulletCount;
     public int CurrentBulletCount
@@ -43,6 +46,7 @@ public abstract class BaseTower : MonoBehaviour
             {
                 _currentBulletCount = value;
                 _bulletText.text = value.ToString();
+                OnCurrentBulletCountChanged?.Invoke(value);
             }
         }
     }
@@ -322,7 +326,6 @@ public abstract class BaseTower : MonoBehaviour
     //挑战结束
     private void OnEndBattle(bool success)
     {
-        Debug.Log("挑战结束");
         EndBattle();
         StopAllCoroutines();
         enabled = false;

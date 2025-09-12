@@ -54,14 +54,13 @@ public class Crystal : BuildingBase
         {
             DataManager.Instance.PlayerInfo.Config["CrystalMaxHp"] = 1000;
         }
-        MaxHP.Value = Mathf.RoundToInt(DataManager.Instance.PlayerInfo.Config["CrystalMaxHp"]) ;//初始值应该从配置文件中读取
+        MaxHP.Value = Mathf.RoundToInt(DataManager.Instance.PlayerInfo.Config["CrystalMaxHp"] * (1 - BattleManager.Instance.Debuff.CrystalMaxHpDecrease * 0.1f)) ;//初始值应该从配置文件中读取
         Init(MaxHP.Value,0);
-
-        
     }
 
     protected void OnDisable()
     {
+        _container.gameObject.SetActive(false);
         //杀掉颜色动画
         if (spriteRenderer != null)
         {
@@ -112,7 +111,11 @@ public class Crystal : BuildingBase
     {
         if (_isInvincible) return;//无敌状态
 
-        
+        if (_currentHP.Value <= 0)
+        {
+            return;
+        }
+
         //FlashRed();
         JellySquash();
 

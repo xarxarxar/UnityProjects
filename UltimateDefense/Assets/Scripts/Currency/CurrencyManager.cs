@@ -12,6 +12,7 @@ public class CurrencyManager : ManagerBase<CurrencyManager>
     #region 私有属性
     private int _gold=0;                          // 当前玩家持有的局内金币数量
     private bool _isInitialized;                // 标记是否已加载过存档
+    private int _initMoney = 0;//初始金币
     
     private EnemyManager EnemyManager=>EnemyManager.Instance;//EnemyManager单例
     #endregion
@@ -26,7 +27,7 @@ public class CurrencyManager : ManagerBase<CurrencyManager>
     /// <summary>
     /// 只读属性，暴露当前金币数
     /// </summary>
-    public int Gold { get { return _gold; } }
+    public int Gold { get => _gold; set => _gold = value; }
 
     #endregion
 
@@ -56,7 +57,8 @@ public class CurrencyManager : ManagerBase<CurrencyManager>
         {
             DataManager.Instance.PlayerInfo.Config["InitialCoin"] = 1000;
         }
-        AddCoin(Mathf.RoundToInt(DataManager.Instance.PlayerInfo.Config["InitialCoin"]) );
+        AddCoin(Mathf.RoundToInt(DataManager.Instance.PlayerInfo.Config["InitialCoin"] * (1 - BattleManager.Instance.Debuff.InitialMoneyDecrease * 0.1f)) );
+        
         Enemy.OnEnemyDie += OnEnemyDie;//订阅敌人死亡事件
     }
 
@@ -68,10 +70,8 @@ public class CurrencyManager : ManagerBase<CurrencyManager>
     public void AddCoin(int amount,int playMultiSound=1)
     {
         _gold += amount;
-        // UpdateUI();
-        // SaveGold();
+
         PlayCoinSoundMultiple(playMultiSound,0.06f);
-        //AudioManager.Instance.PlaySFX("获得金币");
         OnCoinChange?.Invoke(amount);
     }
 

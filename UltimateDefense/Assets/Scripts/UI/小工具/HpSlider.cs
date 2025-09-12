@@ -14,24 +14,38 @@ public class HpSlider : MonoBehaviour
     /// <summary>
     /// 更新血条
     /// </summary>
-    /// <param name="currentHp">当前血量</param>
-    /// <param name="maxHp">最大血量</param>
-    /// <param name="currentShield">当前护盾值</param>
-    public void UpdateBar(int currentHp,int maxHp,int currentShield, int maxShield)
+    /// <param name="currentHp"></param>
+    /// <param name="maxHp"></param>
+    /// <param name="currentShield"></param>
+    /// <param name="maxShield"></param>
+    /// <param name="targetSlider">显示哪个条，默认是先显示护盾条，再显示血条</param>
+    public void UpdateBar(int currentHp,int maxHp,int currentShield, int maxShield,bool isRealDamage = false)
     {
         //有护盾
-        if (currentShield > 0)
+        if (!isRealDamage)
         {
-            shieldSlider.maxValue = maxShield;
-            shieldSlider.gameObject.SetActive(true);
-            hpSlider.gameObject.SetActive(false);
-            shieldSlider.value = currentShield;
-            return;
+            if (currentShield > 0)
+            {
+                shieldSlider.maxValue = maxShield;
+                shieldSlider.gameObject.SetActive(true);
+                hpSlider.gameObject.SetActive(false);
+                shieldSlider.value = currentShield;
+                return;
+            }
+            else
+            {
+                hpSlider.maxValue = maxHp;
+                shieldSlider.gameObject.SetActive(false);
+                hpSlider.gameObject.SetActive(true);
+                hpSlider.value = currentHp;
+            }
         }
-        hpSlider.maxValue = maxHp;
-        shieldSlider.gameObject.SetActive(false);
-        hpSlider.gameObject.SetActive(true);
-        hpSlider.value = currentHp;
-
+        else
+        {
+            hpSlider.maxValue = maxHp;
+            shieldSlider.gameObject.SetActive(false);
+            hpSlider.gameObject.SetActive(true);
+            hpSlider.value = currentHp;
+        }
     }
 }
