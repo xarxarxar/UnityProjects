@@ -1,4 +1,5 @@
 using DanielLochner.Assets.SimpleScrollSnap; // 引入命名空间
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,8 +31,8 @@ public class UpgradeTowerPanel : MonoBehaviour
 
         Debug.Log($"初始为{DataManager.Instance.PlayerInfo.CurrentTowerType.Value}");
         _simpleScrollSnap.StartingPanel = (int)DataManager.Instance.PlayerInfo.CurrentTowerType.Value;//起始位置
+        _simpleScrollSnap.GoToPanel((int)DataManager.Instance.PlayerInfo.CurrentTowerType.Value);//起始位置
         _currentTower = _simpleScrollSnap.Content.GetChild(_simpleScrollSnap.StartingPanel).GetComponent<TowerCard>();
-        //_currentTower.ActivateCard();
         
         for (int i=0;i< _simpleScrollSnap.NumberOfPanels; i++)
         {
@@ -82,7 +83,6 @@ public class UpgradeTowerPanel : MonoBehaviour
     //解锁炮塔
     private void UnlockTower(TowerCard towerCard)
     {
-
         //金币足够
         if (MetaCurrencyManager.Instance.HasEnoughMoney(_unlockCost.type, _unlockCost.count))
         {

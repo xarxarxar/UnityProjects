@@ -14,7 +14,7 @@ public class WelfarePanel : BasePanel
 
     protected override void InitPanel()
     {
-        CoinCount = UpgradeManager.Instance.RefreshCount.Value * 80;
+        CoinCount = UpgradeManager.Instance.RefreshCount.Value * 90;
         CoinCountText.text = $"¡Á{CoinCount}";
 
         DiamonButton.onClick.RemoveAllListeners();

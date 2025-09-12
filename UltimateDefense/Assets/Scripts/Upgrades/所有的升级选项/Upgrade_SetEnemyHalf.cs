@@ -35,9 +35,9 @@ public class Upgrade_SetEnemyHalf : UpgradeBase
 
     public static Upgrade_SetEnemyHalf CreateDynamicUpgrade()
     {
-        int[] counts = { 10, 15, 20 };
+        int[] counts = { 5, 7, 10 };
         int bonus = counts[Random.Range(0, counts.Length)];
-        int cost = Mathf.RoundToInt(bonus * (3 + UpgradeManager.Instance.RefreshCount.Value * 1));
+        int cost = Mathf.RoundToInt(bonus * (2 + UpgradeManager.Instance.RefreshCount.Value * 1));
         return new Upgrade_SetEnemyHalf(bonus, cost);
     }
 

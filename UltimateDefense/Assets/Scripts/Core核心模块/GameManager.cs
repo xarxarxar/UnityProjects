@@ -54,7 +54,7 @@ public class GameManager : MonoBehaviour
     //计算在线时长
     private IEnumerator TrackOnlineTime()
     {
-
+        Debug.Log("开始统计在线时长");
         while (true)
         {
             yield return new WaitForSeconds(10f); // 等待60秒

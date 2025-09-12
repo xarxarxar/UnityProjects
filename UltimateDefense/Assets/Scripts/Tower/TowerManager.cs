@@ -181,6 +181,23 @@ public class TowerManager : ManagerBase<TowerManager>
         BaseTower.OnCurrentBulletCountChanged -= OnCurrentBulletCountChanged;
         BaseTower.OnCurrentBulletCountChanged += OnCurrentBulletCountChanged;
 
+
+        switch (bulletKind)
+        {
+            case BulletKind.Normal:
+                _currentTower._bulletText.color = Color.white; break;
+            case BulletKind.Ice:
+                _currentTower._bulletText.color = new Color32(135, 206, 250, 255); // 浅蓝 #ADD8E6
+                break;
+            case BulletKind.Fire:
+                _currentTower._bulletText.color = new Color32(255, 99, 71, 255);  // 浅珊瑚红 #FFA07A
+                break;
+            case BulletKind.Electric:
+                _currentTower._bulletText.color = new Color32(0, 255, 255, 255); //
+                break;
+        }
+
+
         void OnCurrentBulletCountChanged(int value)
         {
             if(value< lastBulletCount)//这才是子弹减少了
@@ -190,6 +207,7 @@ public class TowerManager : ManagerBase<TowerManager>
                 if (tmpCount >= BulletKindCount)
                 {
                     CurrentBulletKind = BulletKind.Normal;
+                    _currentTower._bulletText.color = Color.white;
                     BaseTower.OnCurrentBulletCountChanged -= OnCurrentBulletCountChanged;
                 }
             }

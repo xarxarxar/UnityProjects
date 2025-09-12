@@ -20,13 +20,12 @@ public class BattleManager : MonoBehaviour
 
     #region 私有属性
     private static BattleManager _instance;//单例实例，供全局访问 Instance
-    private bool _isGameOver;//标记当前游戏是否结束（胜利或失败）。
     private int _startGold;//本局开局所给的初始金币数（受技能树或其他影响）。
-    private Bindable<int> _gameSpeed = new Bindable<int>();//
     [SerializeField]
     private Debuff _debuff=new Debuff();//通关之后选择的Debuff
     private int _diamondCount = 0;//单次挑战获取的局外钻石数量
-    private int _crownCount = 0;//单次挑战获取的局外王冠数量
+    private int _crownCount = 1;//单次挑战获取的局外王冠数量
+    private int lastNonZeroSpeed = 1; // 默认1倍速
     #endregion
 
     #region 公开属性
@@ -39,17 +38,13 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     public int StartGold { get { return _startGold; } }
     /// <summary>
-    /// 只读属性，标记本局是否因水晶被破坏而失败。
+    /// 只读属性，是否正在战斗中
     /// </summary>
-    public bool IsFailed { get; private set; }
+    public bool IsBatting { get; private set; }
     /// <summary>
     /// 公开属性，用于设置游戏整体倍速（同时修改 Time.timeScale）。最小限制 1.0f
     /// </summary>
     public Bindable<int> GameSpeed { get ; set;}=new Bindable<int>();
-    /// <summary>
-    /// 公开属性，标记游戏是否处于“暂停”状态，用于实现暂停/恢复功能。
-    /// </summary>
-    public Bindable<bool> IsPaused { get; private set; } = new Bindable<bool>();
     /// <summary>
     /// 通关之后选择的Debuff
     /// </summary>
@@ -65,6 +60,19 @@ public class BattleManager : MonoBehaviour
 
     #endregion
 
+    private void Update()
+    {
+        if (Input.GetKeyUp(KeyCode.T))
+        {
+            Debug.Log("按了3");
+            SetGameSpeed(3);
+        }
+        if (Input.GetKeyUp(KeyCode.O))
+        {
+            SetGameSpeed(1);
+        }
+    }
+
     #region public成员方法
     /// <summary>
     /// 开始新一局战斗
@@ -74,12 +82,15 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     public void StartBattle(Debuff debuff)
     {
+        Debug.Log("开始战斗");
         _debuff = debuff;
         GameSpeed.Value= 1;
+        lastNonZeroSpeed = 1;
         _diamondCount = 0;
-        
+        IsBatting = true;
+
+
         BattleUIManager.Instance.ShowBattleScene();//显示战斗场景
-        IsPaused.Value = false;
         EnemyManager.OnLastEnemySpawned += OnLastEnemySpawned;
         Crystal.OnCrystalDestroyed += OnCrystalDestroyed;
         ManagerRegistry.InitManagers(InitStage.InBattle);
@@ -94,39 +105,24 @@ public class BattleManager : MonoBehaviour
     /// <param name="success"></param>
     public void EndBattle(bool success)
     {
-        IsPaused.Value = true;
+        IsBatting = false;
         SignleMetaCoinCount();//计算这次挑战获取了多少钻石
         BattleUIManager.Instance.ShowEndPanel(success);//显示游戏结算界面
         
         EnemyManager.OnLastEnemySpawned -= OnLastEnemySpawned;
         EnemyManager.Instance.EnemyCurrentCount.OnValueChanged -= OnEnemyCountChanged;
+        Crystal.OnCrystalDestroyed -= OnCrystalDestroyed;
+        Debug.Log($"挑战结束了{success}");
         OnEndBattle?.Invoke(success);
     }
 
-    /// <summary>
-    /// 复活
-    /// </summary>
-    public void Relive()
-    {
-
-    }
-
-    /// <summary>
-    /// 进入下一回合：
-    /// _currentRound++，如果小于 MaxRounds 则调用 WaveManager.StartNextRound()；
-    /// 否则调用 EndGame(true)。
-    /// </summary>
-    public void NextRound()
-    {
-
-    }
 
     /// <summary>
     /// 暂停游戏：_isPaused = true; Time.timeScale = 0;
     /// </summary>
     public void PauseGame()
     {
-        IsPaused.Value = true;
+        GameSpeed.Value = 0;
     }
 
     /// <summary>
@@ -134,15 +130,7 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     public void ResumeGame()
     {
-        IsPaused.Value = false;
-    }
-
-    /// <summary>
-    /// 累积一条通关次数：_totalClears++; SaveProgress();
-    /// </summary>
-    public void AddClear()
-    {
-
+        GameSpeed.Value = lastNonZeroSpeed;
     }
 
     /// <summary>
@@ -151,7 +139,8 @@ public class BattleManager : MonoBehaviour
     /// <param name="speed"></param>
     public void SetGameSpeed(int speed)
     {
-        GameSpeed.Value=speed;
+        if(speed<=0) { return; }
+        GameSpeed.Value=lastNonZeroSpeed=speed;
     }
     #endregion
 
@@ -179,21 +168,24 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     private void Start()
     {
-        //StartPanel.OnSatrtBattle += StartBattle;//点击开始挑战按钮之后
+        Debug.Log("为debuff按钮添加StartBattle点击事件");
         ChooseDebuffPanel.OnDebuffChooseEnd += StartBattle;//选择debuff 完毕之后
     }
 
     //最后一个敌人生成之后
     private void OnLastEnemySpawned()
     {
+        Debug.Log("最后一个敌人已生成");
         EnemyManager.Instance.EnemyCurrentCount.OnValueChanged += OnEnemyCountChanged;
     }
 
     //敌人数量变化
     private void OnEnemyCountChanged(int count)
     {
+        
         if (count == 0)//敌人全部死亡了
         {
+            Debug.Log("敌人全部死亡了");
             EndBattle(true);//胜利了
         }
     }

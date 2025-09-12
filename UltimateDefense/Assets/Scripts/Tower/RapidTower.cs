@@ -18,22 +18,6 @@ public class RapidTower : BaseTower
         bulletcount = 0;
     }
 
-    protected override void CalculateAtkDamage()
-    {
-        //初始伤害
-        _bulletDamage.Value = Mathf.RoundToInt(BaseDamage * (1f + TowerManager.Instance.BonusAtk.Value));
-    }
-    protected override void CalculateBulletCap()
-    {
-        //初始容量为基础弹夹容量的120%
-        _bulletCapacity.Value = BaseCap + TowerManager.Instance.BonusCap.Value;
-    }
-    protected override void CalculateReloadTime()
-    {
-        //初始换弹时间为
-        _reloadTime.Value = BaseReload * (1f - TowerManager.Instance.BonusReload.Value);
-    }
-
     //实现父类的DoAttack方法
     protected override IEnumerator DoAttack()
     {

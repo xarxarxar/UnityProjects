@@ -34,7 +34,8 @@ public class UpgradeUI : MonoBehaviour
     [SerializeField]
     private SimpleScrollSnap _simpleScrollSnapRight;//右侧抽奖所在的区域
     [SerializeField]
-    //private int _upgradeIncreaseCoin=1;//每次刷新增加的钱数
+    private MySlider coolDownSlider;//冷却条
+    private bool isInCoolDown = false;//是否正在冷却
 
     /// <summary>
     /// 刷新增益
@@ -68,10 +69,11 @@ public class UpgradeUI : MonoBehaviour
         {
             _simpleScrollSnapRight.Content.GetChild(i).GetComponent<UpgradeCard>().Init();
         }
-
+        isInCoolDown = false;
         InitComponentStatus();
 
         CurrencyManager.OnCoinChange += OnCoinChange;
+        coolDownSlider.gameObject.SetActive(false);
     }
 
     //初始化组件
@@ -82,7 +84,6 @@ public class UpgradeUI : MonoBehaviour
         _discountLeft.SetActive(false);
         _discountRight.SetActive(false);
 
-        Debug.Log("游戏开始，为刷新增加点击事件");
         _refreshButton.onClick.AddListener(RefreshUpgrade);
         _updatePriceText.text = "0";
 
@@ -111,7 +112,6 @@ public class UpgradeUI : MonoBehaviour
     /// </summary>
     public void DestroyUpgrade()
     {
-        Debug.Log("游戏结束后销毁升级的数据");
         _refreshButton.onClick.RemoveAllListeners();
         _leftButton.onClick.RemoveAllListeners();
         _rightButton.onClick.RemoveAllListeners();
@@ -121,11 +121,21 @@ public class UpgradeUI : MonoBehaviour
     //刷新升级属性按钮
     private void RefreshUpgrade()
     {
-        Debug.Log("刷新按钮");
+
+        if (isInCoolDown)//正在冷却
+        {
+            return;
+        }
+
         if (!CurrencyManager.Instance.SpendCoin(UpgradeManager.Instance.FreshCost.Value))//刷新需要金币
         {
             return;
         }
+        isInCoolDown = true;
+        TimerUtility.Instance.Timer(5.0f, () =>{
+            isInCoolDown = false;
+        });
+        coolDownSlider.StartCountDown(5.0f);
        
         RefreshUpgradeButtons();
         UpgradeManager.Instance.RefreshCount.Value++;

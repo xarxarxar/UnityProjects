@@ -36,7 +36,7 @@ public class CreateWelfare : MonoBehaviour
     //开始阶段性生成福利
     private void SpawnWelfare(int value)
     {
-        if(value-lastRefresh>=7)
+        if(value-lastRefresh>=7 && CurrencyManager.Instance.Gold<= value * 10)
         {
             lastRefresh = 999;
             StartCoroutine(SpawnWelfareLoop());
@@ -54,7 +54,6 @@ public class CreateWelfare : MonoBehaviour
 
     private void ShowThis()
     {
-        Debug.Log("显示福利");
         var button = GetComponent<Button>();
         button.enabled = true;
 

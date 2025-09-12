@@ -32,10 +32,8 @@ public class BattleUIManager : ManagerBase<BattleUIManager>
     [SerializeField]private EnemyInfoPanel _enemyInfoPrefab; //战斗中的敌人信息面板的预制体引用
     [SerializeField]private WelfarePanel _welfarePanelPrefab; //福利面板的预制体引用
     private bool _isInitialized;                      // 标记是否完成 UI 初始化
-    private ObjectPool<DamageText> _damageTextPool;//显示伤害文字的对象池
+    public ObjectPool<DamageText> _damageTextPool;//显示伤害文字的对象池
     private ObjectPool<GetCoinText> _getCoinTextPool;//显示从敌人身上获取了多少金币的文字
-
-    [SerializeField] private BuildingChoosePanel _buildingUIInBattlePanel;//在战斗中显示所有建筑的面板
     #endregion
 
     #region 公开属性
@@ -120,21 +118,6 @@ public class BattleUIManager : ManagerBase<BattleUIManager>
         _gamePlayingPanel.SetActive(false);
     }
 
-    /// <summary>
-    /// 显示战斗中建造的面板
-    /// </summary>
-    public void ShowBuildingPanelInBattle()
-    {
-        _buildingUIInBattlePanel.ShowPanel();
-    }
-
-    /// <summary>
-    /// 隐藏战斗中建造的面板
-    /// </summary>
-    public void HideBuildingPanelInBattle()
-    {
-        _buildingUIInBattlePanel.HidePanel();
-    }
 
     /// <summary>
     /// 显示银行面板
@@ -312,10 +295,15 @@ public class BattleUIManager : ManagerBase<BattleUIManager>
         // 世界坐标 → 屏幕坐标
         Vector3 worldPos = enemy.transform.position + Vector3.up * 1.2f;  // 头顶偏移
         Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
+        if (isCritical)
+        {
+            //dmgText.Init(screenPos, isCritical, (damage / 10.0f).ToString());
+            // 创建伤害Text（属于 screen-space canvas）
+            DamageText dmgText = _damageTextPool.Get();  // 用对象池
+            dmgText.Init(screenPos, isCritical, "暴击");
+        }
 
-        // 创建伤害Text（属于 screen-space canvas）
-        DamageText dmgText = _damageTextPool.Get();  // 用对象池
-        dmgText.Init(screenPos, isCritical, damage);
+        
     }
 
     //敌人掉落金币
@@ -326,8 +314,8 @@ public class BattleUIManager : ManagerBase<BattleUIManager>
         Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
 
         // 创建伤害Text（属于 screen-space canvas）
-        GetCoinText dmgText = GetCoinTextPool.Get();  // 用对象池
-        dmgText.Init(screenPos, amount);
+        //GetCoinText dmgText = GetCoinTextPool.Get();  // 用对象池
+        //dmgText.Init(screenPos, amount);
     }
 
 

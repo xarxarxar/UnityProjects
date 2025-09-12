@@ -233,20 +233,23 @@ public class GameUIManager : ManagerBase<GameUIManager>
             Sequence seq = DOTween.Sequence();
 
             // 1. 先散开（0.2 秒）
-            seq.Append(flyCoin.transform.DOMove(spreadTarget, 0.2f / BattleManager.Instance.GameSpeed.Value).SetEase(Ease.OutQuad));
+            seq.Append(flyCoin.transform.DOMove(spreadTarget, 0.2f).SetEase(Ease.OutQuad));
 
             // 2. 停顿 0.2 秒
-            seq.AppendInterval(0.2f/BattleManager.Instance.GameSpeed.Value);
+            seq.AppendInterval(0.2f);
 
             // 3. 再飞向终点
             seq.Append(flyCoin.transform
-                .DOPath(path, 0.6f / BattleManager.Instance.GameSpeed.Value, PathType.CatmullRom)
+                .DOPath(path, 0.6f, PathType.CatmullRom)
                 .SetEase(Ease.InOutQuad)
             );
 
             // 4. 完成时销毁
             seq.OnComplete(() =>
             {
+                // 解绑订阅
+                BattleManager.Instance.GameSpeed.OnValueChanged -= OnSpeedChanged;
+
                 Destroy(flyCoin);
                 signleCallback?.Invoke();
                 finishedCount++;
@@ -257,8 +260,19 @@ public class GameUIManager : ManagerBase<GameUIManager>
                 // 触发音效或粒子
             });
 
-            // 让每个金币依次延迟 0.02 秒开始
-            seq.SetDelay(i * 0.05f / BattleManager.Instance.GameSpeed.Value);
+            // 让每个金币依次延迟 0.05 秒开始
+            seq.SetDelay(i * 0.05f);
+
+            // 初始化时同步 GameSpeed
+            seq.timeScale = BattleManager.Instance.GameSpeed.Value;
+
+            // 临时订阅方法
+            void OnSpeedChanged(int speed)
+            {
+                if (seq != null && seq.IsActive())
+                    seq.timeScale = speed;
+            }
+            BattleManager.Instance.GameSpeed.OnValueChanged += OnSpeedChanged;
         }
     }
 

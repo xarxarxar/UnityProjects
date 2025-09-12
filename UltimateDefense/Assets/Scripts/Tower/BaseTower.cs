@@ -15,7 +15,7 @@ public abstract class BaseTower : MonoBehaviour
     /// <summary>
     /// 子弹数量Text
     /// </summary>
-    [SerializeField] protected Text _bulletText; // 拖到Inspector里绑定Text组件
+    [SerializeField] public Text _bulletText; // 拖到Inspector里绑定Text组件
     /// <summary>
     /// 换弹现实的slider
     /// </summary>
@@ -82,7 +82,7 @@ public abstract class BaseTower : MonoBehaviour
     protected Enemy currentTarget;//当前的攻击目标
     private List<Enemy> _enemiesInRange => EnemyManager.Instance.EnemiesInRange;//在攻击范围内的所有敌人
     private float _gameSpeed => BattleManager.Instance.GameSpeed.Value;
-    private bool _isPaused=> BattleManager.Instance.IsPaused.Value;//是否暂停
+    private bool _isPaused=> BattleManager.Instance.GameSpeed.Value==0;//是否暂停
     private bool _isRotating = false; // 是否正在旋转
     private bool _isReloading = false; // 是否正在换弹
     private UnityAction _afterReload = null;//换弹结束之后的回调方法
@@ -345,9 +345,29 @@ public abstract class BaseTower : MonoBehaviour
         _gunBarrel.transform.localScale = originalScale;
 
         Sequence seq = DOTween.Sequence();
+
+        // 初始化时同步 GameSpeed
+        seq.timeScale = BattleManager.Instance.GameSpeed.Value;
+
+        BattleManager.Instance.GameSpeed.OnValueChanged -= OnSpeedChanged;
+        // 临时订阅方法
+        void OnSpeedChanged(int speed)
+        {
+            if (seq != null && seq.IsActive())
+                seq.timeScale = speed;
+        }
+        BattleManager.Instance.GameSpeed.OnValueChanged += OnSpeedChanged;
+
         // Y 方向压缩拉伸，X 轴保持原始值
-        seq.Append(_gunBarrel.transform.DOScaleY(stretchAmount, squashDuration /BattleManager.Instance.GameSpeed.Value).SetEase(Ease.OutQuad));
-        seq.Append(_gunBarrel.transform.DOScaleY(originalScale.y, squashDuration / BattleManager.Instance.GameSpeed.Value).SetEase(Ease.OutBounce));
+        seq.Append(_gunBarrel.transform.DOScaleY(stretchAmount, squashDuration ).SetEase(Ease.OutQuad));
+        seq.Append(_gunBarrel.transform.DOScaleY(originalScale.y, squashDuration).SetEase(Ease.OutBounce));
+
+        // 动画结束后解绑 + 回收
+        seq.OnComplete(() =>
+        {
+            BattleManager.Instance.GameSpeed.OnValueChanged -= OnSpeedChanged;
+        });
+
     }
 
     

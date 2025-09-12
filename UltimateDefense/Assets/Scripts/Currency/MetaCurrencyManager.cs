@@ -25,6 +25,11 @@ public class MetaCurrencyManager : ManagerBase<MetaCurrencyManager>
         base.Awake();
         _stage=InitStage.OutBattle;
     }
+
+    private void OnDisable()
+    {
+        BattleManager.OnEndBattle -= OnEndBattle;
+    }
     #endregion
 
     #region 公共方法
@@ -44,7 +49,6 @@ public class MetaCurrencyManager : ManagerBase<MetaCurrencyManager>
         if(rewardType ==RewardType.Diamond)
         {
             DiamondCount.Value += amount;
-            
         }
         if(rewardType == RewardType.Crown)
         {
@@ -124,8 +128,15 @@ public class MetaCurrencyManager : ManagerBase<MetaCurrencyManager>
     private void OnEndBattle(bool success)
     {
         Debug.Log("挑战结束，增加局外金币");
-        AddMetaCoin(RewardType.Diamond,BattleManager.Instance.DiamondCount);
-        AddMetaCoin(RewardType.Crown,BattleManager.Instance.CrownCount);
+
+        if(BattleManager.Instance.DiamondCount!=0)
+        {
+            AddMetaCoin(RewardType.Diamond, BattleManager.Instance.DiamondCount);
+        }
+        if(success)
+        {
+            AddMetaCoin(RewardType.Crown, BattleManager.Instance.CrownCount);
+        }
     }
     #endregion
 }

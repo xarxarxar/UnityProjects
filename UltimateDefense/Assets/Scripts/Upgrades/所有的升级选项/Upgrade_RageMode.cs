@@ -29,14 +29,14 @@ public class Upgrade_RageMode : UpgradeBase
         UpgradeID = $"RageMode{Times}";
         Cost = cost;
         int givedBulletCount = Mathf.RoundToInt(TowerManager.Instance.CurrentTower.BulletCapacity.Value * times);
-        Description = $"赠送临时子弹{givedBulletCount}颗，进入火力全开模式";
+        Description = $"临时赠送{times}倍弹夹容量，进入火力全开模式";
     }
 
     public static Upgrade_RageMode CreateDynamicUpgrade()
     {
-        float[] times = { 4, 6, 8 };//赠送子弹是当前弹夹容量的多少倍
+        float[] times = { 2, 3, 5 };//赠送子弹是当前弹夹容量的多少倍
         float bonus = times[Random.Range(0, times.Length)];
-        int cost = Mathf.RoundToInt(bonus * (15 + UpgradeManager.Instance.RefreshCount.Value * 5));
+        int cost = Mathf.RoundToInt(bonus * (7 + UpgradeManager.Instance.RefreshCount.Value * 3));
         return new Upgrade_RageMode(bonus, cost);
     }
     #endregion
@@ -48,7 +48,7 @@ public class Upgrade_RageMode : UpgradeBase
     public override void Apply()
     {
         int givedBulletCount = Mathf.RoundToInt(TowerManager.Instance.CurrentTower.BulletCapacity.Value * times);
-        TowerManager.Instance.SetTmpAtkRate(4.0f);
+        TowerManager.Instance.SetTmpAtkRate(2.5f);
         TowerManager.Instance.CurrentTower.GiveTmpBullet(givedBulletCount, () =>
         {
             TowerManager.Instance.SetTmpAtkRate(1.0f);

@@ -35,13 +35,6 @@ public class SciencePanel : MonoBehaviour
         return item;
     }
 
-    private void Update()
-    {
-        if(Input.GetKeyUp(KeyCode.O)) 
-        {
-            listView.MovePanelToItemIndex(10,0);
-        }
-    }
 }
 
 

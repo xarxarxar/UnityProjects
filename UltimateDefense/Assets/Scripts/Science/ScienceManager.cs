@@ -147,8 +147,6 @@ public class ScienceManager : ManagerBase<ScienceManager>
         }
         DataManager.Instance.SavePlayerInfo();
     }
-
-    
 }
 
 public class ScienceNodeData

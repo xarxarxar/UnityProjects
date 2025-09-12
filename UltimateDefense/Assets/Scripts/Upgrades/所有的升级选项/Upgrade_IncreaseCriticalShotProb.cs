@@ -33,9 +33,9 @@ public class Upgrade_IncreaseCriticalShotProb : UpgradeBase
 
     public static Upgrade_IncreaseCriticalShotProb CreateDynamicUpgrade()
     {
-        float[] values = { 0.02f, 0.05f, 0.1f };
+        float[] values = { 0.02f, 0.05f, 0.08f };
         float bonus = values[Random.Range(0, values.Length)];
-        int cost = Mathf.RoundToInt(bonus * (200 + UpgradeManager.Instance.RefreshCount.Value * 300));
+        int cost = Mathf.RoundToInt(bonus * (200 + UpgradeManager.Instance.RefreshCount.Value * 200));
         return new Upgrade_IncreaseCriticalShotProb(bonus, cost);
     }
 

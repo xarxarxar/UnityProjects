@@ -48,6 +48,10 @@ public class Upgrade_IncreaseTowerAttackRate : UpgradeBase
     #endregion
 
     #region 公共方法
+    public override bool IsAvailable()
+    {
+        return TowerManager.Instance.BonusAttackRate.Value < 3.0f;
+    }
 
     /// <summary>
     /// 并通知 TowerManager 记录全局加成，保证后续新塔继承

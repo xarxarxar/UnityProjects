@@ -1,14 +1,13 @@
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class GamePlayingPanel : MonoBehaviour
 {
     [SerializeField] private Text _goldText;        // 显示当前金币数的 UI 文本组件
-    [SerializeField] private Text _bankText;        // 显示当前银行内的金币数的 UI 文本组件
+    [SerializeField] private Text _goldAnimText;        // 显示获得的金币数的 UI 文本组件
     [SerializeField] private Text _roundText;       // 显示当前回合信息的 UI 文本组件
     [SerializeField] private Text _enemyCountText;  //显示当前敌人数量的Text
-    [SerializeField] private BindableButton _openBankButton;  //打开银行面板的按钮
-    //[SerializeField] private BindableButton _openEnemyInfoButton;  //打开敌人信息面板的按钮
     [SerializeField] private BindableButton _openDoubleSpeedButton;  //打开两倍速的按钮
     [SerializeField] private BindableButton _openPauseButton;  //打开暂停面板的按钮
     [SerializeField] private MySlider _mySlider;//下一波倒计时的slider
@@ -26,16 +25,14 @@ public class GamePlayingPanel : MonoBehaviour
         RefreshGoldDisplay(0);//刷新金币显示
         OnEnemyCountChanged(0);//刷新敌人显示
         OnWaveChanged(1);//刷新波次显示
-        OnBankMoneyChanged(0);//刷新银行金币显示
-        _openBankButton.AddListener(() => {
-            BattleUIManager.Instance.ShowBankPanel();
-        });
+        _goldAnimText.gameObject.SetActive(false);
         _openPauseButton.AddListener(() => {
             BattleUIManager.Instance.ShowPausePanel();
         });
         _openDoubleSpeedButton.AddListener(() =>
         {
-            BattleManager.Instance.GameSpeed.Value= BattleManager.Instance.GameSpeed.Value == 1 ? 2 : 1;
+            int speed = BattleManager.Instance.GameSpeed.Value == 1 ? 2 : 1;
+            BattleManager.Instance.SetGameSpeed(speed);
         });
         WaveManager.OnWaveChanged += OnWaveChanged;
         EnemyManager.Instance.EnemyCurrentCount.OnValueChanged += OnEnemyCountChanged;
@@ -50,11 +47,8 @@ public class GamePlayingPanel : MonoBehaviour
         EnemyManager.Instance.EnemyCurrentCount.OnValueChanged -= OnEnemyCountChanged;
         EnemyManager.OnAlmostNextWave -= OnAlmostNextWave;
         CurrencyManager.OnCoinChange -= RefreshGoldDisplay;//金币变化时也刷新金币显示
-        //BankManager.Instance.CurrentSave.OnValueChanged -= OnBankMoneyChanged; ;//银行金币数量变化时
 
-        _openBankButton.RemoveAllListeners();
         _openPauseButton.RemoveAllListeners();
-        //_openEnemyInfoButton.RemoveAllListeners();
         _openDoubleSpeedButton.RemoveAllListeners();
     }
 
@@ -65,7 +59,12 @@ public class GamePlayingPanel : MonoBehaviour
     /// </summary>
     public void RefreshGoldDisplay(int amount)
     {
-        //_goldText.text = CurrencyManager.Instance.Gold.ToString();
+        if (amount > 0)
+        {
+            _goldAnimText.text = $"+{amount}";
+            PlayGoldAnim();
+        }
+        
         UIUtils.PlayNumberAnimation(_goldText, CurrencyManager.Instance.Gold,0.5f);
     }
 
@@ -87,16 +86,57 @@ public class GamePlayingPanel : MonoBehaviour
         _enemyCountText.text = count.ToString();
     }
 
-    //银行金币数量变化时
-    private void OnBankMoneyChanged(int amount)
-    {
-        _bankText.text= amount.ToString();
-    }
 
     //马上下一波
     private void OnAlmostNextWave()
     {
         _mySlider.StartCountDown(3);
+    }
+
+    Sequence GoldAnimSeq = DOTween.Sequence();
+    public void PlayGoldAnim()
+    {
+        GoldAnimSeq.Kill();
+
+        _goldAnimText.gameObject.SetActive(true);
+        // 确保初始状态
+        _goldAnimText.transform.localScale = Vector3.zero;
+        _goldAnimText.color = new Color(
+            _goldAnimText.color.r,
+            _goldAnimText.color.g,
+            _goldAnimText.color.b,
+            0f
+        );
+
+        GoldAnimSeq = DOTween.Sequence();
+        // 初始化时同步 GameSpeed
+        GoldAnimSeq.timeScale = BattleManager.Instance.GameSpeed.Value;
+
+        BattleManager.Instance.GameSpeed.OnValueChanged -= OnSpeedChanged;
+        // 临时订阅
+        void OnSpeedChanged(int speed)
+        {
+            if (GoldAnimSeq != null && GoldAnimSeq.IsActive())
+                GoldAnimSeq.timeScale = speed;
+        }
+        BattleManager.Instance.GameSpeed.OnValueChanged += OnSpeedChanged;
+        // 1. scale 从 0 到 1
+        GoldAnimSeq.Append(_goldAnimText.transform.DOScale(1f, 0.3f).SetEase(Ease.OutBack));
+
+        // 2. 透明度 0 → 1
+        GoldAnimSeq.Join(_goldAnimText.DOFade(1f, 0.3f));
+
+        // 3. 保持 2 秒
+        GoldAnimSeq.AppendInterval(2f);
+
+        // 4. 渐渐消失
+        GoldAnimSeq.Append(_goldAnimText.DOFade(0f, 0.5f));
+
+        // 5. 动画完成时可以回收或隐藏
+        GoldAnimSeq.OnComplete(() =>
+        {
+            BattleManager.Instance.GameSpeed.OnValueChanged -= OnSpeedChanged;
+        });
     }
     #endregion
 }

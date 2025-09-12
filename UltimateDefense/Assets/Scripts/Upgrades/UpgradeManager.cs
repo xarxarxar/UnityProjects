@@ -73,7 +73,6 @@ public class UpgradeManager : ManagerBase<UpgradeManager>
     /// </summary>
     public override void Init()
     {
-        Debug.Log("UpgradeManager初始化");
         _purchasedUpgrades.Clear();
         _totalSpentGold = 0;
         _refreshCount.Value = 0;
@@ -94,9 +93,7 @@ public class UpgradeManager : ManagerBase<UpgradeManager>
         // 检查金币是否足够
         if (!CurrencyManager.Instance.SpendCoin(upgrade.Cost))
         {
-            //BattleUIManager.Instance.ShowToast("金币不足，无法购买升级");
             GameUIManager.Instance.ShowQuickTip("金币不足");
-            Debug.Log($"金币不足，无法购买升级");
             return false;
         }
 
@@ -105,8 +102,6 @@ public class UpgradeManager : ManagerBase<UpgradeManager>
         _totalSpentGold += upgrade.Cost;
         OnUpgradePurchased?.Invoke(upgrade);
         _buyUpgradeCount.Value++;
-        //FreshCost.Value += _upgradeIncreaseCoin;
-        //Debug.Log($"购买了{upgrade.Description}");
 
         // 应用升级效果
         upgrade.Apply();

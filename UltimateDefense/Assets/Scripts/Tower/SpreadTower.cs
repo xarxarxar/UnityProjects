@@ -10,16 +10,6 @@ public class SpreadTower : BaseTower
 {
     public override TowerType TowerType { get => TowerType.Spread; }
 
-    protected override void CalculateAtkDamage()
-    {
-        //初始伤害为
-        _bulletDamage.Value = Mathf.RoundToInt(BaseDamage* (1f + TowerManager.Instance.BonusAtk.Value));
-    }
-    protected override void CalculateCriticalProb()
-    {
-        //初始暴击概率为基础暴击概率的2倍
-        _criticalProb.Value = BaseCritProb + TowerManager.Instance.BonusCritProb.Value;
-    }
 
     //实现父类的DoAttack方法
     protected override IEnumerator DoAttack()

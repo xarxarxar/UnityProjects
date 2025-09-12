@@ -45,22 +45,6 @@ public class WaveManager : ManagerBase<WaveManager>
     /// </summary>
     public bool IsInKeyWave { get { return _isInKeyWave; } }
     /// <summary>
-    /// 只读属性，每波生成多少敌人
-    /// </summary>
-    public int SingleWaveEnemyCount { get => _singleWaveEnemyCount; set => _singleWaveEnemyCount=value; }
-    /// <summary>
-    /// 只读属性，每个敌人生成的间隔时间
-    /// </summary>
-    public float SpawnEnemyInterval
-    {
-        get => _spawnEnemyInterval;
-        set 
-        {
-            _spawnEnemyInterval = value;
-           
-        } 
-    }
-    /// <summary>
     /// 只读属性，每波敌人生成的间隔时间
     /// </summary>
     public float SpawnWaveInterval { get => _spawnWaveInterval; }

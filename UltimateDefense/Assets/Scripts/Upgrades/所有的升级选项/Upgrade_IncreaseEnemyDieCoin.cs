@@ -37,9 +37,9 @@ public class Upgrade_IncreaseEnemyDieCoin : UpgradeBase
 
     public static Upgrade_IncreaseEnemyDieCoin CreateDynamicUpgrade()
     {
-        int[] moneys = { 1, 2, 5 };
+        int[] moneys = { 3, 5, 8 };
         int bonus = moneys[Random.Range(0, moneys.Length)];
-        int cost = Mathf.RoundToInt(bonus * (30 + UpgradeManager.Instance.RefreshCount.Value * 10));
+        int cost = Mathf.RoundToInt(bonus * (3 + UpgradeManager.Instance.RefreshCount.Value * 3));
         return new Upgrade_IncreaseEnemyDieCoin(bonus, cost);
     }
 

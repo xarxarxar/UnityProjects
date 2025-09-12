@@ -33,14 +33,14 @@ public class Upgrade_BulletKindDuration :  UpgradeBase
         UpgradeID = $"Upgrade_BulletKindDuration{bonus}";
         _bonus = bonus;
         Cost = cost;
-        Description = $"每次特殊子弹颗数+{_bonus}";
+        Description = $"每次元素子弹颗数+{_bonus}";
     }
 
     public static Upgrade_BulletKindDuration CreateDynamicUpgrade()
     {
         int[] values = { 1, 3, 5 };
         int bonus = values[Random.Range(0, values.Length)];
-        int cost = Mathf.RoundToInt(bonus * (15 + UpgradeManager.Instance.RefreshCount.Value * 5));
+        int cost = Mathf.RoundToInt(bonus * (5 + UpgradeManager.Instance.RefreshCount.Value * 3));
         return new Upgrade_BulletKindDuration(bonus, cost);
     }
 

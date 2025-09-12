@@ -60,6 +60,7 @@ public class Bullet : MonoBehaviour
         _damagedEnemies.Clear();
         _hitEnemies.Clear();
         _currentChain = 0;
+        
     }
 
     #region 初始化方法
@@ -72,35 +73,55 @@ public class Bullet : MonoBehaviour
         _targetEnemy = enemy;
         _isCritical = isCritical;
         _damage = damage;
+        _maxChainCount = 0;
         AudioManager.Instance.PlaySFX("开枪");
 
         if (_trailRenderer == null)
         {
             _trailRenderer=GetComponent<TrailRenderer>();
         }
+
+        _trailRenderer.Clear();
+
+
         switch (_bulletKind)
         {
             case BulletKind.Normal:
-                GetComponent<SpriteRenderer>().color=Color.white; break;
+                GetComponent<SpriteRenderer>().color=Color.white;
+                _trailRenderer.startColor = Color.white;
+                break;
             case BulletKind.Ice:
-                GetComponent<SpriteRenderer>().color = Color.blue; break;
+                GetComponent<SpriteRenderer>().color = new Color32(135, 206, 250, 255);
+                _trailRenderer.startColor = new Color32(135, 206, 250, 255);
+                break;
             case BulletKind.Fire:
-                GetComponent<SpriteRenderer>().color = Color.red; break;
+                GetComponent<SpriteRenderer>().color = new Color32(255, 99, 71, 255);
+                _trailRenderer.startColor = new Color32(255, 99, 71, 255);
+                break;
             case BulletKind.Electric:
-                GetComponent<SpriteRenderer>().color = Color.yellow; break;
+                GetComponent<SpriteRenderer>().color = new Color32(0, 255, 255, 255);
+                _trailRenderer.startColor = new Color32(0, 255, 255, 255);
+                break;
         }
     }
 
     // 穿透型子弹（单穿/多穿）
     public void Init(Vector3 position, Vector3 direction, bool isCritical, int damage, BulletType type)
     {
-        Debug.Log("Init2");
         transform.position = position;
         _direction = direction.normalized;
         _isCritical = isCritical;
         _damage = damage;
+        _maxChainCount = 0;
         _bulletType = type;
         AudioManager.Instance.PlaySFX("开枪");
+
+
+        if (_trailRenderer == null)
+        {
+            _trailRenderer = GetComponent<TrailRenderer>();
+        }
+        _trailRenderer.Clear();
 
         switch (_bulletKind)
         {
@@ -118,7 +139,6 @@ public class Bullet : MonoBehaviour
     // 弹射子弹（跟踪型 + 弹射次数 + 衰减百分比）
     public void InitChainBullet(Vector3 position, Enemy enemy, bool isCritical, int damage, int maxChain, float decayPercent)
     {
-        Debug.Log("Init3");
         transform.position = position;
         _bulletType = BulletType.FollowTarget;
         _targetEnemy = enemy;
@@ -131,6 +151,12 @@ public class Bullet : MonoBehaviour
         _hitEnemies.Clear();
 
         AudioManager.Instance.PlaySFX("开枪");
+
+        if (_trailRenderer == null)
+        {
+            _trailRenderer = GetComponent<TrailRenderer>();
+        }
+        _trailRenderer.Clear();
 
         switch (_bulletKind)
         {
@@ -149,21 +175,19 @@ public class Bullet : MonoBehaviour
 
     private void Update()
     {
-        if (BattleManager.Instance.IsPaused.Value)
-        {
-            if (_trailRenderer != null) 
-            {
-                _trailRenderer.enabled = false;
-                _trailRenderer.emitting = false;
-            } 
-            return;
-        }
-
         if (_trailRenderer != null)
         {
-            _trailRenderer.enabled = true;
-            _trailRenderer.emitting = true;
-            _trailRenderer.time = _baseTrailTime / BattleManager.Instance.GameSpeed.Value;
+            if (BattleManager.Instance.GameSpeed.Value <= 0f)
+            {
+                // 暂停时不发射拖尾
+                _trailRenderer.emitting = false;
+            }
+            else
+            {
+                // 恢复
+                _trailRenderer.emitting = true;
+                _trailRenderer.time = _baseTrailTime / BattleManager.Instance.GameSpeed.Value;
+            }
         }
 
         switch (_bulletType)
@@ -213,12 +237,12 @@ public class Bullet : MonoBehaviour
         if (_targetEnemy != null)
         {
             OnHitEnemy(_targetEnemy, _isCritical, _damage);
-            //_targetEnemy.TakeDamage(_isCritical, _damage);
             _hitEnemies.Add(_targetEnemy);
         }
 
         if (_currentChain < _maxChainCount)
         {
+            
             Enemy next = FindNextEnemy(_targetEnemy);
             if (next != null)
             {
@@ -265,11 +289,12 @@ public class Bullet : MonoBehaviour
         Enemy enemy = other.GetComponent<Enemy>();
         if (enemy == null) return;
 
+        
+
         switch (_bulletType)
         {
             case BulletType.SinglePenetrate:
                 OnHitEnemy(enemy, _isCritical, _damage);
-                //enemy.TakeDamage(_isCritical, _damage);
                 _canDamage = false;
                 ReturnToPool();
                 break;
@@ -279,7 +304,6 @@ public class Bullet : MonoBehaviour
                 {
                     _damagedEnemies.Add(enemy);
                     OnHitEnemy(enemy, _isCritical, _damage);
-                    //enemy.TakeDamage(_isCritical, _damage);
                 }
                 break;
         }
@@ -305,7 +329,7 @@ public class Bullet : MonoBehaviour
                 enemy.SetSpeed(0.5f, 3.0f);
                 break;
             case BulletKind.Fire:
-                enemy.SetBleed(Mathf.RoundToInt(damage/10), 3.0f,0.5f);
+                enemy.SetBleed(Mathf.RoundToInt(damage/5.0f), 3.0f,0.5f);
                 break;
             case BulletKind.Electric:
                 enemy.SetSpeed(0,1.0f);
@@ -328,8 +352,4 @@ public class Bullet : MonoBehaviour
         
     }
 
-    private void OnDestroy()
-    {
-        Debug.Log($"{name}子弹被销毁");
-    }
 }

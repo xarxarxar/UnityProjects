@@ -35,9 +35,21 @@ public class EnemyExplode : MonoBehaviour
 
         Sequence seq = DOTween.Sequence();
 
+        seq.timeScale = BattleManager.Instance.GameSpeed.Value;
+
+        BattleManager.Instance.GameSpeed.OnValueChanged -= OnSpeedChanged;
+        // 临时订阅方法
+        void OnSpeedChanged(int speed)
+        {
+            if (seq != null && seq.IsActive())
+                seq.timeScale = speed;
+        }
+        BattleManager.Instance.GameSpeed.OnValueChanged += OnSpeedChanged;
+
         // 1. 缩放到1.5倍
         Tweener scaleTween = transform.DOScale(_changeScale, scaleDuration);
-        scaleTween.timeScale = BattleManager.Instance.GameSpeed.Value;
+        
+
         seq.Append(scaleTween);
 
         // 2. 闪红次数固定5次，频率逐渐加快
@@ -56,14 +68,17 @@ public class EnemyExplode : MonoBehaviour
             flashSeq.Append(spriteRenderer.DOColor(flashColor, singleFlashDuration / 2));
             flashSeq.Append(spriteRenderer.DOColor(_defaultColor, singleFlashDuration / 2));
         }
-        flashSeq.timeScale = BattleManager.Instance.GameSpeed.Value;
+        
         // 3. 并行播放缩放和闪红
         seq.Join(flashSeq);
 
         // 4. 最后消失
-        seq.AppendCallback(() =>
+        seq.OnComplete(() =>
         {
+            BattleManager.Instance.GameSpeed.OnValueChanged -= OnSpeedChanged;
             ParticleSystem particleSystem = EnemyManager.Instance.ExplosionEffectPool.Get();
+            var main = particleSystem.main;         // 拿到副本
+            main.simulationSpeed = BattleManager.Instance.GameSpeed.Value;  // 修改副本
             particleSystem.transform.position = transform.position;
             particleSystem.Play();
             EnemyManager.Instance.ExplosionAnimPool.Return(this);

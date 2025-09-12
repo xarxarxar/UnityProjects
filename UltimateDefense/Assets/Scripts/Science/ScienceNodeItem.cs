@@ -56,6 +56,7 @@ public class ScienceNodeItem : MonoBehaviour
         if (MetaCurrencyManager.Instance.SpendMetaCoin(_unlockCost.type, _unlockCost.count))
         {
             ScienceManager.Instance.UnlockScience(_index);
+            AudioManager.Instance.PlaySFX("Éý¼¶");
         }
         else
         {

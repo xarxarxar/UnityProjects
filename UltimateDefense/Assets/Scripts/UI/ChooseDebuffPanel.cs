@@ -35,6 +35,7 @@ public class ChooseDebuffPanel : MonoBehaviour
         {
             OnDebuffChooseEnd?.Invoke(new Debuff(_debuff));
             gameObject.SetActive(false);
+            return;
         }
         _debuff = new Debuff();
         _chooseCount = 0;
@@ -51,6 +52,7 @@ public class ChooseDebuffPanel : MonoBehaviour
 
 
         startChooseButton.onClick.AddListener(StartChooseButton);
+        Debug.LogWarning("为startChallengeButton添加点击事件");
         startChallengeButton.onClick.AddListener(StartChallenge);
         _giveupChallengeButton.onClick.AddListener(() =>
         {
@@ -70,6 +72,7 @@ public class ChooseDebuffPanel : MonoBehaviour
         }
 
         startChooseButton.onClick.RemoveAllListeners();
+        Debug.LogWarning("为startChallengeButton移除点击事件");
         startChallengeButton.onClick.RemoveAllListeners();
         _giveupChallengeButton.onClick.RemoveAllListeners();
         startChooseButton.gameObject.SetActive(true);
@@ -78,6 +81,7 @@ public class ChooseDebuffPanel : MonoBehaviour
 
     private void StartChallenge()
     {
+        Debug.Log("debuff选择完毕开始挑战");
         OnDebuffChooseEnd?.Invoke(_debuff);
         gameObject.SetActive(false);
     }
@@ -128,7 +132,6 @@ public class ChooseDebuffPanel : MonoBehaviour
         // 动画完成后再执行 FlyImage
         seq.OnComplete(() =>
         {
-            Debug.Log("动画执行完毕");
             completedCount = 0;
 
             foreach (var img in debuffStructs)
@@ -228,8 +231,8 @@ public class ChooseDebuffPanel : MonoBehaviour
 
             switch (selected._debuffType)
             {
-                case DebuffType.AddCount:
-                    _debuff.AddCount++;
+                case DebuffType.AddSpeed:
+                    _debuff.AddSpeed++;
                     break;
                 case DebuffType.AddHP:
                     _debuff.AddHP++;
@@ -239,9 +242,6 @@ public class ChooseDebuffPanel : MonoBehaviour
                     break;
                 case DebuffType.DamageNullified:
                     _debuff.DamageNullified++;
-                    break;
-                case DebuffType.EnemyMaxBoundCount:
-                    _debuff.EnemyMaxBoundCount++;
                     break;
                 case DebuffType.CrystalMaxHpDecrease:
                     _debuff.CrystalMaxHpDecrease++;
@@ -268,7 +268,6 @@ public class ChooseDebuffPanel : MonoBehaviour
                     DebuffStruct debuff = child.GetComponent<DebuffStruct>();
                     if (debuff != null && debuff._debuffType == selected._debuffType)
                     {
-                        Debug.Log("已有");
                         flyEffectEndPos = debuff.transform.position;
                         debuff._countText.text = (chosenCount[selected] + 1).ToString();
                     }
@@ -282,7 +281,6 @@ public class ChooseDebuffPanel : MonoBehaviour
             yield return StartCoroutine(GameUIManager.Instance.PlayFlyEffectAsync(screenStart, screenEnd, 3,1.0f/ DataManager.Instance.PlayerInfo.PassCount.Value));
 
             chosenCount[selected]++;
-            Debug.Log($"选中: {selected._debuffType}, 当前次数 = {chosenCount[selected]}");
         }
 
         startChallengeButton.gameObject.SetActive(true);
@@ -318,24 +316,20 @@ public class Debuff
     public int CrystalMaxHpDecrease;
 
     /// <summary>
-    /// 敌人增加10%的数量的个数
+    /// 敌人增加10%的速度
     /// </summary>
-    public int AddCount;
+    public int AddSpeed;
 
     /// <summary>
     /// 敌人免疫伤害次数
     /// </summary>
     public int DamageNullified;
 
-    /// <summary>
-    /// 敌人最大反弹次数-1
-    /// </summary>
-    public int EnemyMaxBoundCount;
 
     public Debuff()
     {
-        AddHP = 0; InitialMoneyDecrease = 0; EliteEnemyCount = 0; CrystalMaxHpDecrease = 0; AddCount = 0;
-        DamageNullified = 0; EnemyMaxBoundCount = 0;
+        AddHP = 0; InitialMoneyDecrease = 0; EliteEnemyCount = 0; CrystalMaxHpDecrease = 0; AddSpeed = 0;
+        DamageNullified = 0;
     }
 
     //拷贝一份
@@ -348,18 +342,4 @@ public class Debuff
         }
     }
 
-    public static string GetDescription(DebuffType type)
-    {
-        switch (type)
-        {
-            case DebuffType.AddHP:
-                return "敌人生命值增加 10%";
-            case DebuffType.AddCount:
-                return "敌人数量增加 10%";
-            case DebuffType.DamageNullified:
-                return "敌人免疫伤害次数";
-            default:
-                return "未知效果";
-        }
-    }
 }

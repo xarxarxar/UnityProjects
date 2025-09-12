@@ -37,7 +37,7 @@ public class Upgrade_SetCrystalInvincible : UpgradeBase
     {
         float[] times = { 10, 15, 20 };
         float bonus = times[Random.Range(0, times.Length)];
-        int cost = Mathf.RoundToInt(bonus * (5 + UpgradeManager.Instance.RefreshCount.Value * 3));
+        int cost = Mathf.RoundToInt(bonus * (3 + UpgradeManager.Instance.RefreshCount.Value * 1));
         return new Upgrade_SetCrystalInvincible(bonus, cost);
     }
 

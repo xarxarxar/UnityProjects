@@ -98,6 +98,7 @@ public class TaskReward : MonoBehaviour
         _taskSlider.transform.Find("Fill Area/Fill").GetComponent<Image>().color= _finishColor;
         _taskSlider.transform.Find("SliderText").GetComponent<Text>().text= "完成";
         _finishMask.SetActive(true);
+        AudioManager.Instance.PlaySFX("领取奖励");
         OnReceiveReward?.Invoke(_taskTag);
     }
 

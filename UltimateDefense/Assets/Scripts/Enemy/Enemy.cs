@@ -30,10 +30,6 @@ public class Enemy : MonoBehaviour
     public Bindable<int> maxHP = new Bindable<int>();
     //敌人的最大护盾值，默认无护盾
     public Bindable<int> maxShield = new Bindable<int>();
-    //攻击伤害
-    private int _attackDamage = 1;
-    //最大弹跳次数
-    private int _bounsCount = 5;
     //敌人的速度
     private float _enemySpeed = 0.5f;
     //敌人的体型大小
@@ -41,13 +37,11 @@ public class Enemy : MonoBehaviour
     #endregion
 
     #region 私有字段（状态与运行时数据）
-    private Rigidbody2D _rb = null;
     private Bindable<int> _currentHP = new Bindable<int>();       // 当前生命值
     private Bindable<int> _currentShield = new Bindable<int>();   // 当前护盾值
     private int _damageNullifiedCount;         // 免疫伤害次数
     private bool _isDead;           // 是否已死亡
     private bool _isInRangeList;    // 是否已触发进入攻击范围
-    private bool _isPaused => BattleManager.Instance.IsPaused.Value;  // 游戏是否暂停
     public SpriteRenderer spriteRenderer;
     public float flashDuration = 0.1f; // 闪红时间
     private Color originalColor=new Color32(104,207,220,225);
@@ -72,8 +66,6 @@ public class Enemy : MonoBehaviour
 
     #region Unity 生命周期
 
-
-
     private void OnDisable() 
     {
         //杀掉颜色动画
@@ -87,15 +79,42 @@ public class Enemy : MonoBehaviour
         StopAllCoroutines();
     }
 
-    void FixedUpdate()
+    void Update()
     {
-        // 如果当前速度为0，则不处理（避免除以0）
-        if (_rb.velocity.sqrMagnitude > 0.01f)
+        // 每秒向下移动 speed 个单位
+        transform.Translate(Vector2.down * _enemySpeed * _speedRate * Time.deltaTime
+            * BattleManager.Instance.GameSpeed.Value *(1+BattleManager.Instance.Debuff.AddSpeed*0.1f));
+
+        if(transform.position.y < EnemyManager.Instance.AttackYValue  && !_isInRangeList)
         {
-            // 保持原方向，调整速度大小
-            _rb.velocity = _rb.velocity.normalized * _enemySpeed * _speedRate
-                * BattleManager.Instance.GameSpeed.Value;
-            //Debug.Log($"{name}的速度为{_rb.velocity}");
+            _isInRangeList=true;
+            OnMoveInRange?.Invoke(this);
+        }
+        if (transform.position.y >= EnemyManager.Instance.AttackYValue && _isInRangeList)
+        {
+            _isInRangeList = false;
+            OnMoveOutRange?.Invoke(this);
+        }
+
+        if (transform.position.y < (-4.5f + transform.localScale.x * 0.5f) && !_isDead)//可以攻击
+        {
+            if(enemyType==EnemyType.Elite)
+            {
+                EnemyExplode enemyExplode = EnemyManager.Instance.ExplosionAnimPool.Get();
+                int damage = Mathf.RoundToInt(_currentHP.Value * 0.3f);
+                enemyExplode.Init(transform.position, originalColor, _enemyScale, () =>
+                {
+                    Explode();
+                    Crystal.Instance.TakeDamage(damage);
+                });
+            }
+            else
+            {
+                Explode();
+                Crystal.Instance.TakeDamage(Mathf.RoundToInt(CurrentHP.Value / 10.0f) );
+            }
+            
+            Die();
         }
     }
     #endregion
@@ -112,8 +131,6 @@ public class Enemy : MonoBehaviour
         transform.position = position;// 设置初始位置
         _isDead = false;              // 重置死亡状态
         _isInRangeList = false;       // 重置范围触发标志
-        //_bounsCount = 5-BattleManager.Instance.Debuff.EnemyMaxBoundCount;             //最大弹跳次数
-        _bounsCount = 1;             //最大弹跳次数
         this.enemyType = enemyType;   //敌人类型
 
         // 根据等级动态计算最大生命值，一级就是一滴血,护盾默认为 0
@@ -126,53 +143,20 @@ public class Enemy : MonoBehaviour
             maxShield.Value = Mathf.Max(1,Mathf.RoundToInt(maxHP.Value));          //初始化护盾
         }
         _currentShield.Value = maxShield.Value;             // 初始化当前护盾为最大值
-        _currentHP.OnValueChanged += ChangeHP;  //添加值变化事件
-        _currentShield.OnValueChanged += ChangeShield;//添加值变化事件
-        ChangeShield(_currentHP.Value);         // 初始化护盾条填充
-        ChangeHP(_currentShield.Value);         // 初始化血条填充
+
         _enemyScale = 1;
         SetScale();//设置体型大小
-
 
         //免疫伤害
         _damageNullifiedCount = EnemyManager.Instance.EnemyDamageNullifiedCount.Value;
 
-
-        if (_rb == null)
-        {
-            _rb = GetComponent<Rigidbody2D>();
-        }
         if (spriteRenderer == null)
         {
             spriteRenderer = GetComponent<SpriteRenderer>();
         }
-
-        _rb.velocity = Vector2.down.normalized;
-        _rb.simulated = true;
-
         BattleManager.OnEndBattle += OnEndBattle;
 
-        switch (this.enemyType)
-        {
-            case EnemyType.Normal:
-                originalColor= new Color32(80, 140, 255, 255);// 柔和蓝
-                break;
-
-            case EnemyType.Coin:
-                originalColor = new Color32(212, 175, 55, 255);// 金色
-                break;
-
-            case EnemyType.Elite:
-                originalColor = new Color32(170, 100, 220, 255); // 紫色
-                break;
-
-            case EnemyType.Boss:
-                originalColor = new Color32(200, 70, 70, 255);// 深红
-                //Skills.Add(new BossSkill("加速", 10f, boss => boss.SetSpeed(2.0f,5)));
-                BossSkill_05();
-                break;
-        }
-        GetComponent<SpriteRenderer>().color = originalColor;
+        ChangeType(this.enemyType);
     }
 
 
@@ -190,6 +174,10 @@ public class Enemy : MonoBehaviour
         if (_damageNullifiedCount > 0  && !isRealDamage)//有免伤次数,且不是真实伤害
         {
             _damageNullifiedCount--;
+            Vector3 worldPos = transform.position + Vector3.up * 1.2f;  // 头顶偏移
+            Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
+            DamageText dmgText = BattleUIManager.Instance.DamageTextPool.Get();  // 用对象池
+            dmgText.Init(screenPos, false, "免疫");
             return;
         }
 
@@ -207,15 +195,13 @@ public class Enemy : MonoBehaviour
             if (_currentHP.Value <= 0)
             {
                 Die();                    // 血量耗尽则死亡
-                ParticleSystem particleSystem = EnemyManager.Instance.ExplosionEffectPool.Get();
-                particleSystem.transform.position = transform.position;
-                particleSystem.Play();
-                TimerUtility.Instance.Timer(0.5f, () => { EnemyManager.Instance.ExplosionEffectPool.Return(particleSystem); });
+                Explode();
+
                 return;
             }
         }
         SetScale();//设置体型大小
-        EnemyUIManager.Instance.UpdateEnemyHealth(this,isRealDamage);
+        EnemyUIManager.Instance.UpdateEnemyHealth(this,isRealDamage,isCritical);
     }
 
     public void RecoverHp(int value)
@@ -234,12 +220,6 @@ public class Enemy : MonoBehaviour
     {
         if(rate<0) return;
         _speedRate = rate;
-        Vector2 dir = Vector2.zero;
-        if (rate == 0)
-        {
-            Debug.Log($"速度为{_rb.velocity.normalized}");
-            dir = _rb.velocity.normalized;
-        }
         if (duration > 0)
         {
             if (_setSpeedCoro != null)
@@ -247,7 +227,7 @@ public class Enemy : MonoBehaviour
                 StopCoroutine(_setSpeedCoro);
                 _setSpeedCoro = null;
             }
-            _setSpeedCoro = StartCoroutine(SetSpeedCoro(duration,dir, callback));
+            _setSpeedCoro = StartCoroutine(SetSpeedCoro(duration,callback));
         }
         else
         {
@@ -351,17 +331,40 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 修改敌人的类型
+    /// </summary>
+    public void ChangeType(EnemyType type)
+    {
+        enemyType = type;
+        switch (enemyType)
+        {
+            case EnemyType.Normal:
+                originalColor = new Color32(80, 140, 255, 255);// 柔和蓝
+                break;
+
+            case EnemyType.Coin:
+                originalColor = new Color32(212, 175, 55, 255);// 金色
+                break;
+
+            case EnemyType.Elite:
+                originalColor = new Color32(170, 100, 220, 255); // 紫色
+                break;
+
+            case EnemyType.Boss:
+                originalColor = new Color32(200, 70, 70, 255);// 深红
+                //Skills.Add(new BossSkill("加速", 10f, boss => boss.SetSpeed(2.0f,5)));
+                BossSkill_05();
+                break;
+        }
+        spriteRenderer.color = originalColor;
+    }
+
     
 
-    private IEnumerator SetSpeedCoro(float duration,Vector2 dir, UnityAction callback = null)
+    private IEnumerator SetSpeedCoro(float duration,UnityAction callback = null)
     {
         yield return TimerUtility.WaitForGameSeconds(duration);
-        Debug.Log($"结束后初始速度为{dir.normalized}");
-        if (_speedRate == 0)
-        {
-            _rb.velocity=dir.normalized;
-            Debug.Log($"结束后速度为{_rb.velocity.normalized}");
-        }
         _speedRate = 1;
         callback?.Invoke();
         yield break;
@@ -387,17 +390,16 @@ public class Enemy : MonoBehaviour
         OnEnemyDie?.Invoke(this);
         EnemyManager.Instance.EnemyPool.Return(this);
     }
-
-    /// <summary>更新血条 UI 填充比例</summary>
-    private void ChangeHP(int currentHp)
+    //爆炸
+    private void Explode()
     {
-        //hpSlider.fillAmount = maxHP == 0 ? 0f : (float)CurrentHP / maxHP;
-    }
-
-    /// <summary>更新护盾条 UI 填充比例</summary>
-    private void ChangeShield(int currentShield)
-    {
-        //shieldSlider.fillAmount = maxShield == 0 ? 0f : (float)_currentShield / maxShield;
+        if (!BattleManager.Instance.IsBatting) return;//战斗已经结束
+        ParticleSystem particleSystem = EnemyManager.Instance.ExplosionEffectPool.Get();
+        var main = particleSystem.main;         // 拿到副本
+        main.simulationSpeed = BattleManager.Instance.GameSpeed.Value;  // 修改副本
+        particleSystem.transform.position = transform.position;
+        particleSystem.Play();
+        TimerUtility.Instance.Timer(0.5f, () => { EnemyManager.Instance.ExplosionEffectPool.Return(particleSystem); });
     }
 
     /// <summary>
@@ -419,7 +421,6 @@ public class Enemy : MonoBehaviour
     //挑战结束
     private void OnEndBattle(bool success)
     {
-        Debug.Log($"{name}回到对象池");
         EnemyManager.Instance.EnemyPool.Return(this);
         EnemyUIManager.Instance.RemoveEnemyUI(transform);
         StopAllCoroutines();
@@ -428,55 +429,39 @@ public class Enemy : MonoBehaviour
     //闪红动画
     private void FlashRed()
     {
-        // 先杀掉之前的颜色动画，避免受击多次时颜色乱掉
-        spriteRenderer.DOKill();
+        spriteRenderer.DOKill(true);
 
-        // 颜色切换到红色，然后回到原色
-        spriteRenderer.DOColor(hitColor, flashDuration/BattleManager.Instance.GameSpeed.Value)
-            .OnComplete(() => spriteRenderer.DOColor(originalColor, flashDuration / BattleManager.Instance.GameSpeed.Value));
-    }
+        // 创建第一个红色过渡
+        var toRed = spriteRenderer.DOColor(hitColor, flashDuration)
+            .SetEase(Ease.Linear);
 
-    //碰撞
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Building")|| collision.gameObject.CompareTag("Crystal"))
+        // 创建第二个还原过渡
+        var toNormal = spriteRenderer.DOColor(originalColor, flashDuration)
+            .SetEase(Ease.Linear);
+
+        // 合并为一个序列
+        var seq = DOTween.Sequence();
+        seq.Append(toRed);
+        seq.Append(toNormal);
+
+        // 初始化时同步 GameSpeed
+        seq.timeScale = BattleManager.Instance.GameSpeed.Value;
+
+        // 临时订阅
+        void OnSpeedChanged(int speed)
         {
-            BuildingBase building = collision.transform.parent.GetComponent<BuildingBase>();
-            building.TakeDamage(_attackDamage);
-
-            if (_bounsCount == 1)
-            {
-                EnemyExplode enemyExplode = EnemyManager.Instance.ExplosionAnimPool.Get();
-                BuildingBase targetBuilding = building; // 提前保存引用
-                int damage =Mathf.RoundToInt(_currentHP.Value * 0.3f) ;
-                enemyExplode.Init(transform.position, originalColor, _enemyScale, () =>
-                {
-                    targetBuilding.TakeDamage(damage);
-                });
-                Die();
-                _bounsCount = 0;
-            }
-            _bounsCount--;
+            if (seq != null && seq.IsActive())
+                seq.timeScale = speed;
         }
-    }
+        BattleManager.Instance.GameSpeed.OnValueChanged += OnSpeedChanged;
 
-    //进入区域
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("AttackArea"))
+        // 动画结束后解绑
+        seq.OnComplete(() =>
         {
-            OnMoveInRange?.Invoke(this);
-        }
+            BattleManager.Instance.GameSpeed.OnValueChanged -= OnSpeedChanged;
+        });
     }
 
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.CompareTag("AttackArea"))
-        {
-            OnMoveOutRange?.Invoke(this);
-        }
-    }
 
-    
     #endregion
 }

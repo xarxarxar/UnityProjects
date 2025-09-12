@@ -149,9 +149,9 @@ public class EnemyUIManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 更新敌人血量（受击时调用）
+    /// 更新敌人血量（受击时调用）,是否是真伤，是否是暴击
     /// </summary>
-    public void UpdateEnemyHealth(Enemy enemy,bool isRealDamage=false)
+    public void UpdateEnemyHealth(Enemy enemy,bool isRealDamage=false,bool isCri=false)
     {
         var data = uiList.Find(d => d.enemy == enemy.transform);
         if (data != null)
@@ -160,7 +160,7 @@ public class EnemyUIManager : MonoBehaviour
             if (data.healthSlider != null)
             {
                 data.healthSlider.UpdateBar(enemy.CurrentHP.Value, enemy.maxHP.Value,
-                    enemy.CurrentShield.Value,enemy.maxShield.Value, isRealDamage);
+                    enemy.CurrentShield.Value,enemy.maxShield.Value, isRealDamage, isCri);
             }
 
             // 更新血量文本
@@ -184,21 +184,12 @@ public class EnemyUIManager : MonoBehaviour
         var data = uiList.Find(d => d.enemy == enemy);
         if (data != null)
         {
-            Debug.Log($"注销{enemy.name}的UI");
             enemyUIPool.Return(data.container.gameObject.GetComponent<RectTransform>());
-            if (data.container.gameObject.activeSelf)
-            {
-                Debug.Log($"{enemy.name}的UI未注销成功");
-            }
             uiList.Remove(data);
             if (crossHair.transform.IsChildOf(data.container))
             {
                 crossHair.gameObject.SetActive(false);
             }
-        }
-        else
-        {
-            Debug.Log($"未找到{enemy.name}的UI");
         }
         
     }

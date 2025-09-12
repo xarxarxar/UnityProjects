@@ -10,6 +10,7 @@ public class ObjectPool<T> where T : Component
     private readonly Transform _parent;
     private readonly Queue<T> _poolQueue;
     private readonly HashSet<T> _inPoolSet; // 用于跟踪哪些对象在池中
+    private readonly List<T> _allObjects;   // 跟踪所有创建过的对象
 
     /// <summary>
     /// 构造对象池
@@ -20,6 +21,7 @@ public class ObjectPool<T> where T : Component
         _parent = parent;
         _poolQueue = new Queue<T>();
         _inPoolSet = new HashSet<T>();
+        _allObjects = new List<T>();
 
         for (int i = 0; i < initialSize; i++)
         {
@@ -62,7 +64,24 @@ public class ObjectPool<T> where T : Component
     private T CreateNew()
     {
         var instance = Object.Instantiate(_prefab, _parent);
+        _allObjects.Add(instance);
         return instance;
+    }
+
+    /// <summary>
+    /// 回收所有已取出的对象
+    /// </summary>
+    public void ReturnAll()
+    {
+        foreach (var obj in _allObjects)
+        {
+            if (!_inPoolSet.Contains(obj)) // 在外面
+            {
+                obj.gameObject.SetActive(false);
+                _poolQueue.Enqueue(obj);
+                _inPoolSet.Add(obj);
+            }
+        }
     }
 
     /// <summary>

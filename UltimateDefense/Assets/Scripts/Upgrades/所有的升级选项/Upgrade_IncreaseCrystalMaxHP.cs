@@ -36,9 +36,9 @@ public class Upgrade_IncreaseCrystalMaxHP : UpgradeBase
 
     public static Upgrade_IncreaseCrystalMaxHP CreateDynamicUpgrade()
     {
-        int[] values = { 10, 20, 50 };
+        int[] values = { 20, 40, 60 };
         int bonus = values[Random.Range(0, values.Length)];
-        int cost = Mathf.RoundToInt(bonus * (5 + UpgradeManager.Instance.RefreshCount.Value * 2));
+        int cost = Mathf.RoundToInt(bonus * (1 + UpgradeManager.Instance.RefreshCount.Value * 0.4f));
         return new Upgrade_IncreaseCrystalMaxHP(bonus, cost);
     }
 

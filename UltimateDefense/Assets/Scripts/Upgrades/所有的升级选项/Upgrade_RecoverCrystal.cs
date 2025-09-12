@@ -26,7 +26,7 @@ public class Upgrade_RecoverCrystal : UpgradeBase
         hp = amount;
         UpgradeID = $"RecoverCrystal{hp}";
         Cost = cost;
-        Description = $"恢复城墙{hp}点血量";
+        Description = $"恢复城墙{hp}生命值,溢出部分的一半转为护盾";
     }
 
 
@@ -35,7 +35,7 @@ public class Upgrade_RecoverCrystal : UpgradeBase
     {
         int[] hps = { 50, 100, 200 };
         int bonus = hps[Random.Range(0, hps.Length)];
-        int cost = Mathf.RoundToInt(bonus * (0.5f + UpgradeManager.Instance.RefreshCount.Value * 0.2f));
+        int cost = Mathf.RoundToInt(bonus * (0.3f + UpgradeManager.Instance.RefreshCount.Value * 0.15f));
         return new Upgrade_RecoverCrystal(bonus, cost);
     }
 
@@ -50,7 +50,19 @@ public class Upgrade_RecoverCrystal : UpgradeBase
     public override void Apply()
     {
         // 通知 Manager 保存全局加成
-        Crystal.Instance.Recover(hp);
+        if(hp> Crystal.Instance.MaxHP.Value - Crystal.Instance.CurrentHP.Value)
+        {
+            int needHP = Crystal.Instance.MaxHP.Value - Crystal.Instance.CurrentHP.Value;
+            Crystal.Instance.Recover(needHP);
+            int shieldValue = Mathf.RoundToInt((hp - needHP) / 2);
+            Crystal.Instance.AddShield(shieldValue);
+        }
+        else
+        {
+            Crystal.Instance.Recover(hp);
+        }
+
+        
     }
 
     #endregion

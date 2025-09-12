@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -16,7 +17,7 @@ public class Upgrade_SummonCoinEnemy : UpgradeBase
     {
         UpgradeID = $"SummonCoinEnemy";
         Cost = cost;
-        Description = $"召唤一只金币球,消灭后获得大量金币";
+        Description = $"将一个敌人转为金币球，消灭可获得大量金币";
     }
 
     public static Upgrade_SummonCoinEnemy CreateDynamicUpgrade()
@@ -35,10 +36,21 @@ public class Upgrade_SummonCoinEnemy : UpgradeBase
     /// </summary>
     public override void Apply()
     {
-        // 通知 Manager 保存全局加成
-        int currentRound = WaveManager.Instance.CurrentRound;
-        int level = Mathf.Min(WaveManager.Instance.MaxRound, Random.Range(currentRound, currentRound + 3));
-        EnemyManager.Instance.SpawnEnemy(EnemyType.Coin, Random.Range(-6f, 6f), level);
+        // 先过滤掉 Coin
+        var candidates = EnemyManager.Instance.AllEnemies
+            .Where(e => e.enemyType != EnemyType.Coin)
+            .ToList();
+        // 判断是否有候选
+        Enemy randomEnemy = null;
+        if (candidates.Count > 0)
+        {
+            int index = Random.Range(0, candidates.Count);
+            randomEnemy = candidates[index];
+        }
+        if (randomEnemy != null)
+        {
+            randomEnemy.ChangeType(EnemyType.Coin);
+        }
     }
 
     #endregion

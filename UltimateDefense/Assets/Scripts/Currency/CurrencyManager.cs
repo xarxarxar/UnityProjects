@@ -100,7 +100,7 @@ public class CurrencyManager : ManagerBase<CurrencyManager>
         if (_gold >= amount)
         {
             _gold -= amount;
-            OnCoinChange?.Invoke(amount);
+            OnCoinChange?.Invoke(amount*-1);
             return true;
         }
         return false;
@@ -161,7 +161,7 @@ public class CurrencyManager : ManagerBase<CurrencyManager>
         // 1. ¼ÆËãµôÂä½ğ±Ò
         if (enemy.enemyType == EnemyType.Coin)
         {
-            enemyCoin = baseCoin * 10;
+            enemyCoin = baseCoin * 20;
             dropCoin = true; // ½ğ±Ò¹Ö±ØµôÂä
         }
         else

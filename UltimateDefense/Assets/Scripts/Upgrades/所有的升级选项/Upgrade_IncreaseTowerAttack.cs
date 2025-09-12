@@ -37,9 +37,9 @@ public class Upgrade_IncreaseTowerAttack : UpgradeBase
 
     public static Upgrade_IncreaseTowerAttack CreateDynamicUpgrade()
     {
-        float[] values = { 0.2f, 0.4f, 0.6f };
+        float[] values = { 0.5f, 0.7f, 1.0f };
         float bonus = values[Random.Range(0, values.Length)];
-        int cost = Mathf.RoundToInt(bonus * (100 + UpgradeManager.Instance.RefreshCount.Value * 100));
+        int cost = Mathf.RoundToInt(bonus * (20 + UpgradeManager.Instance.RefreshCount.Value * 20));
         return new Upgrade_IncreaseTowerAttack(bonus, cost);
     }
 

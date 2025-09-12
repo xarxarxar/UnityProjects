@@ -8,7 +8,7 @@ public class RicochetTower : BaseTower
 {
     public override TowerType TowerType { get => TowerType.Ricochet; }
 
-    private int _maxChain=3;//最大弹射的次数
+    private int _maxChain=2;//最大弹射的次数
 
     protected override void Init()
     {
@@ -28,14 +28,14 @@ public class RicochetTower : BaseTower
         bool isCritical = Random.value < CriticalProb.Value;
         int damage = isCritical ? Mathf.RoundToInt(BulletDamage.Value * CriticalMult.Value) : BulletDamage.Value;
 
-        // 初始化为弹射子弹：最多弹射 3 次（即命中 4 个敌人）
+        // 初始化为弹射子弹：最多弹射 2 次（即命中 3 个敌人）
         bullet.InitChainBullet(
             _bulletInitPos.position,
             currentTarget,
             isCritical,
             damage,
             maxChain: _maxChain,
-            decayPercent: 0.25f // 每次弹射衰减25%
+            decayPercent: 0.3f // 每次弹射衰减30%
         );
         JellySquash();
         // 扣除子弹数

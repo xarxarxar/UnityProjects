@@ -28,14 +28,16 @@ public class GameEndPanel : MonoBehaviour
             _titleText.text = $"挑战成功";
             _descriptionText.text = $"你击败了所有敌人";
             _progressSlider.value = 1 ;
-            _crownReward.Init(1);//若胜利，则获得一个钻石
+            _crownReward.Init(1);//若胜利，则获得一个王冠
+            AudioManager.Instance.PlaySFX("胜利");
         }
         else
         {
             _titleText.text = $"挑战失败";
             _descriptionText.text = $"你被击败了";
-            _progressSlider.value = WaveManager.Instance.CurrentRound/100f;
+            _progressSlider.value = WaveManager.Instance.CurrentRound/ WaveManager.Instance.MaxRound*1f;
             _crownReward.gameObject.SetActive(false);//否则不获得王冠
+            AudioManager.Instance.PlaySFX("失败");
         }
 
         _progressText.text = $"{_progressSlider.value*100}%";

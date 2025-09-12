@@ -109,10 +109,7 @@ public class TimerUtility : MonoBehaviour
 
         while (timer < time)
         {
-            if (!BattleManager.Instance.IsPaused.Value)
-            {
-                timer += Time.deltaTime * BattleManager.Instance.GameSpeed.Value;
-            }
+            timer += Time.deltaTime * BattleManager.Instance.GameSpeed.Value;
             yield return null;
         }
     }

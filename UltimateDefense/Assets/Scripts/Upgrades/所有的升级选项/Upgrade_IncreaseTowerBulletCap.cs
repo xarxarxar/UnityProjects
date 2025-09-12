@@ -35,9 +35,9 @@ public class Upgrade_IncreaseTowerBulletCap : UpgradeBase
 
     public static Upgrade_IncreaseTowerBulletCap CreateDynamicUpgrade()
     {
-        int[] values = { 1, 2, 3 };
+        int[] values = { 2, 5, 8 };
         int bonus = values[Random.Range(0, values.Length)];
-        int cost = Mathf.RoundToInt(bonus * (20 + UpgradeManager.Instance.RefreshCount.Value * 5));
+        int cost = Mathf.RoundToInt(bonus * (5 + UpgradeManager.Instance.RefreshCount.Value * 3));
         return new Upgrade_IncreaseTowerBulletCap(bonus, cost);
     }
 
@@ -56,7 +56,6 @@ public class Upgrade_IncreaseTowerBulletCap : UpgradeBase
     {
         // 通知 Manager 保存全局加成
         TowerManager.Instance.BonusCap.Value += _bonus;
-        Debug.Log($"GlobalIncreaseBulletCap is {TowerManager.Instance.BonusCap}");
     }
 
     #endregion

@@ -30,9 +30,9 @@ public class Upgrade_GetMoney : UpgradeBase
 
     public static Upgrade_GetMoney CreateDynamicUpgrade()
     {
-        int[] moneys = { 100, 200, 500 };
-        int bonus = moneys[Random.Range(0, moneys.Length)];
-        int cost = Mathf.RoundToInt(bonus/10);
+        int[] times = { 10, 20, 30 };
+        int bonus = times[Random.Range(0, times.Length)] * (UpgradeManager.Instance.FreshCost.Value+1);
+        int cost = (UpgradeManager.Instance.FreshCost.Value + 1);
         return new Upgrade_GetMoney(bonus, cost);
     }
 

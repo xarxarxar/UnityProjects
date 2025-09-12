@@ -28,15 +28,15 @@ public class Upgrade_ChangeBulletKind : UpgradeBase
         Cost = cost;
         if (kind == BulletKind.Ice)
         {
-            Description = $"特殊子弹：{TowerManager.Instance.BulletKindCount}颗干冰子弹，对敌人造成减速";
+            Description = $"元素:{TowerManager.Instance.BulletKindCount}颗干冰子弹，对敌人造成减速";
         }
         else if (kind == BulletKind.Fire)
         {
-            Description = $"特殊子弹：{TowerManager.Instance.BulletKindCount}颗火焰子弹，对敌人造成持续伤害";
+            Description = $"元素:{TowerManager.Instance.BulletKindCount}颗火焰子弹，对敌人造成持续伤害";
         }
         else if (kind == BulletKind.Electric)
         {
-            Description = $"特殊子弹：{TowerManager.Instance.BulletKindCount}颗电击子弹，对敌人造成短暂眩晕";
+            Description = $"元素:{TowerManager.Instance.BulletKindCount}颗电击子弹，对敌人造成短暂眩晕";
         }
 
     }
@@ -50,7 +50,7 @@ public class Upgrade_ChangeBulletKind : UpgradeBase
                 .ToArray();
 
         BulletKind randomType = types[UnityEngine.Random.Range(0, types.Length)];
-        int cost = Mathf.RoundToInt(80+ UpgradeManager.Instance.RefreshCount.Value * 5);
+        int cost = Mathf.RoundToInt(60+ UpgradeManager.Instance.RefreshCount.Value * 5);
         return new Upgrade_ChangeBulletKind(randomType,cost);
     }
 

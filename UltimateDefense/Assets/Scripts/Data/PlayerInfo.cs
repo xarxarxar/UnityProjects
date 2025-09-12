@@ -140,7 +140,7 @@ public class BindablePlayerInfo
         CurrentTowerType.Value = currentTowerType;
         TowerDatas = new Dictionary<TowerType, int> {
             { TowerType.Basic,1},{ TowerType.RapidFire,0 },{ TowerType.Ricochet,0 },
-            { TowerType.Spread,0 },{ TowerType.Sniper,0 },{ TowerType.Piercing,0 }};
+            { TowerType.Spread,0 },{ TowerType.Piercing,0 }};
     }
 
     /// <summary>
