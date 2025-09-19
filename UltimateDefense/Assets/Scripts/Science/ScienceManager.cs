@@ -7,11 +7,11 @@ public class ScienceManager : ManagerBase<ScienceManager>
     //private Bindable<int> _unlockIndex=new Bindable<int>();//玩家已解锁的科技index,0表示一个都未解锁
     private readonly ScienceNodeData[] baseSciences = new ScienceNodeData[]//基础科技
     {
-        new ScienceNodeData { description = "城墙初始最大血量+100", effectType = ScienceEffectType.CrystalMaxHP, value = 1,costType=RewardType.Diamond,cost=1 },
-        new ScienceNodeData { description = "每次刷新所需金币-1", effectType = ScienceEffectType.FreshCoinCount, value = 0.1f,costType=RewardType.Diamond,cost=1 },
-        new ScienceNodeData { description = "敌人初始掉落金币+1", effectType = ScienceEffectType.EnemyDieCount, value = 0.1f,costType=RewardType.Diamond,cost=1 },
-        new ScienceNodeData { description = "对局初始金币+100", effectType = ScienceEffectType.DefaultCoinCount, value = 0.1f,costType=RewardType.Diamond,cost=1 },
-        new ScienceNodeData { description = "刷新出的Buff相同时，固定折扣-10%", effectType = ScienceEffectType.Discount, value = 0.1f,costType=RewardType.Diamond,cost=1 },
+        new ScienceNodeData { description = "城墙初始最大血量+100", effectType = ScienceEffectType.CrystalMaxHP, value = 1,costType=RewardType.Diamond,cost=50 },
+        new ScienceNodeData { description = "每次刷新所需金币-1", effectType = ScienceEffectType.FreshCoinCount, value = 0.1f,costType=RewardType.Diamond,cost=50 },
+        new ScienceNodeData { description = "敌人初始掉落金币+1", effectType = ScienceEffectType.EnemyDieCount, value = 0.1f,costType=RewardType.Diamond,cost=50 },
+        new ScienceNodeData { description = "对局初始金币+100", effectType = ScienceEffectType.DefaultCoinCount, value = 0.1f,costType=RewardType.Diamond,cost=50 },
+        new ScienceNodeData { description = "刷新出的Buff相同时，固定折扣-10%", effectType = ScienceEffectType.Discount, value = 0.1f,costType=RewardType.Diamond,cost=50 },
         // 可以继续添加 6 个作为第 4~9 个
     };
 

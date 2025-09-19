@@ -399,6 +399,7 @@ public class Enemy : MonoBehaviour
         main.simulationSpeed = BattleManager.Instance.GameSpeed.Value;  // 修改副本
         particleSystem.transform.position = transform.position;
         particleSystem.Play();
+        AudioManager.Instance.PlaySFX("敌人爆炸");
         TimerUtility.Instance.Timer(0.5f, () => { EnemyManager.Instance.ExplosionEffectPool.Return(particleSystem); });
     }
 

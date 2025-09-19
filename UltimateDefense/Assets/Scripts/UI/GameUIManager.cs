@@ -2,34 +2,28 @@ using DG.Tweening;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 /// <summary>
 /// 管理游戏中的所有局内 UI 界面与显示逻辑
 /// </summary>
 public class GameUIManager : ManagerBase<GameUIManager>
 {
-    [SerializeField]private GameObject _enterPanel;//进入游戏Panel
     [SerializeField]private GameObject _startPanel;//游戏主界面
     [SerializeField]private GameObject _guidePanel;//导览界面
-    [SerializeField]private GameObject _playerInfoPanel;//玩家信息面板
     [SerializeField]private GameObject _chooseDebuffPanel;//通关之后选择debuff的面板
                                                           
-    [SerializeField] private BasePanel _onlineRewardPanel;//在线奖励界面
-    [SerializeField] private BasePanel _signInPanel;      //签到界面
-    [SerializeField] private BasePanel _dailyMissionPanel;//每日任务界面
-    [SerializeField] private BasePanel _achievementPanel; //成就界面
     [SerializeField] private BasePanel _settingPanel;     //设置界面
-    [SerializeField] private BasePanel _rankPanel;        //排行榜界面
-    [SerializeField] private BasePanel _sharePanel;       //邀请有礼界面
-
 
     [SerializeField] private GetRewardPanel _getRewardPanel;//获得奖励界面
     [SerializeField] private QuickTipPanel _quickTipPanel;//快速提示
 
     //流光相关
     public RectTransform canvasTransform; // UI Canvas
-    public GameObject flyLightPrefab; // 一个流光粒子图标预制体（UI Image）
-    public GameObject flyCoinPrefab; // 一个飞翔的计比图标预制体（UI Image）
+    private ObjectPool<Image> flyingLightPool;//流光粒子对象池
+    public Image flyLightPrefab; // 一个流光粒子图标预制体（UI Image）
+    private ObjectPool<Image> flyingCoinPool;//金币图标对象池
+    public Image flyCoinPrefab; // 一个飞翔的金币图标预制体（UI Image）
     
 
 
@@ -45,7 +39,15 @@ public class GameUIManager : ManagerBase<GameUIManager>
     /// </summary>
     public override void Init()
     {
+        if (flyingLightPool == null)
+        {
+            flyingLightPool = new ObjectPool<Image>(flyLightPrefab, 5, canvasTransform);
+        }
 
+        if (flyingCoinPool == null)
+        {
+            flyingCoinPool = new ObjectPool<Image>(flyCoinPrefab,10, canvasTransform);
+        }
     }
 
     /// <summary>
@@ -95,60 +97,11 @@ public class GameUIManager : ManagerBase<GameUIManager>
     }
 
     /// <summary>
-    /// 显示进入面板
-    /// </summary>
-    public void ShowEnterPanel()
-    {
-        _enterPanel.SetActive(true);
-    }
-
-    /// <summary>
-    /// 进入战斗，显示战斗面板
-    /// </summary>
-    public void ShowBattlePanel()
-    {
-
-    }
-
-    /// <summary>
-    /// 显示玩家信息面板，总的信息，局外信息
-    /// </summary>
-    public void ShowPlayerInfoPanel()
-    {
-        _playerInfoPanel.SetActive(true);
-    }
-
-    /// <summary>
-    /// 隐藏玩家信息面板，总的信息，局外信息
-    /// </summary>
-    public void HidePlayerInfoPanel()
-    {
-        _playerInfoPanel.SetActive(false);
-    }
-
-    /// <summary>
-    /// 显示面板，该面板是非全屏的面板
-    /// </summary>
-    /// <param name="basePanel"></param>
-    public void ShowPanel(BasePanel basePanel)
-    {
-
-    }
-
-    /// <summary>
     /// 打开设置面板
     /// </summary>
     public void ShowSettingPanel()
     {
         _settingPanel.gameObject.SetActive(true);
-    }
-
-    /// <summary>
-    /// 隐藏设置面板
-    /// </summary>
-    public void HideSettingPanel()
-    {
-        _settingPanel.gameObject.SetActive(false);
     }
 
     /// <summary>
@@ -165,7 +118,7 @@ public class GameUIManager : ManagerBase<GameUIManager>
 
         for (int i = 0; i < count; i++)
         {
-            GameObject flyCoin = Instantiate(flyLightPrefab, canvasTransform);
+            Image flyCoin = flyingLightPool.Get();
             flyCoin.transform.position = screenStart;
 
             Vector3 midPoint = (screenStart + screenEnd) / 2f;
@@ -180,7 +133,7 @@ public class GameUIManager : ManagerBase<GameUIManager>
                 .SetEase(Ease.InOutQuad)
                 .OnComplete(() =>
                 {
-                    Destroy(flyCoin);
+                    flyingLightPool.Return(flyCoin);
                     finishedCount++;
                 });
         }
@@ -201,7 +154,7 @@ public class GameUIManager : ManagerBase<GameUIManager>
         int finishedCount = 0; // 记录已完成的金币数量
         for (int i = 0; i < count; i++)
         {
-            GameObject flyCoin = Instantiate(flyCoinPrefab, canvasTransform);
+            Image flyCoin = flyingCoinPool.Get();
 
             // 初始生成位置：在 screenStart 附近随机偏移
             Vector3 startOffset = Vector3.zero;
@@ -250,7 +203,7 @@ public class GameUIManager : ManagerBase<GameUIManager>
                 // 解绑订阅
                 BattleManager.Instance.GameSpeed.OnValueChanged -= OnSpeedChanged;
 
-                Destroy(flyCoin);
+                flyingCoinPool.Return(flyCoin);
                 signleCallback?.Invoke();
                 finishedCount++;
                 if (finishedCount >= count) // 所有金币完成

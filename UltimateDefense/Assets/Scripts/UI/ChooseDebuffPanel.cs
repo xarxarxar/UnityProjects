@@ -52,7 +52,6 @@ public class ChooseDebuffPanel : MonoBehaviour
 
 
         startChooseButton.onClick.AddListener(StartChooseButton);
-        Debug.LogWarning("为startChallengeButton添加点击事件");
         startChallengeButton.onClick.AddListener(StartChallenge);
         _giveupChallengeButton.onClick.AddListener(() =>
         {
@@ -60,7 +59,6 @@ public class ChooseDebuffPanel : MonoBehaviour
             GameUIManager.Instance.ShowMainMenu();
         });
 
-        //DebuffStruct.OnChangeDebuffStruct += OnChangeDebuffStruct;
     }
 
     private void OnDisable()
@@ -72,7 +70,6 @@ public class ChooseDebuffPanel : MonoBehaviour
         }
 
         startChooseButton.onClick.RemoveAllListeners();
-        Debug.LogWarning("为startChallengeButton移除点击事件");
         startChallengeButton.onClick.RemoveAllListeners();
         _giveupChallengeButton.onClick.RemoveAllListeners();
         startChooseButton.gameObject.SetActive(true);
@@ -81,7 +78,6 @@ public class ChooseDebuffPanel : MonoBehaviour
 
     private void StartChallenge()
     {
-        Debug.Log("debuff选择完毕开始挑战");
         OnDebuffChooseEnd?.Invoke(_debuff);
         gameObject.SetActive(false);
     }
@@ -278,7 +274,8 @@ public class ChooseDebuffPanel : MonoBehaviour
             Vector3 screenEnd = RectTransformUtility.WorldToScreenPoint(null, flyEffectEndPos);
 
             // 等待飞行特效完成
-            yield return StartCoroutine(GameUIManager.Instance.PlayFlyEffectAsync(screenStart, screenEnd, 3,1.0f/ DataManager.Instance.PlayerInfo.PassCount.Value));
+            yield return StartCoroutine(GameUIManager.Instance.PlayFlyEffectAsync(screenStart, screenEnd, 3,0.3f));
+            AudioManager.Instance.PlaySFX("获得金币");
 
             chosenCount[selected]++;
         }

@@ -1348,6 +1348,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioClip: {fileID: 0}
+  playSound: 1
 --- !u!1 &36488813
 GameObject:
   m_ObjectHideFlags: 0
@@ -3981,7 +3982,7 @@ RectTransform:
   m_Father: {fileID: 529259969}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -7643,7 +7644,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5618971399a95e843b6c90358ca22b1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioClip: {fileID: 8300000, guid: 014a422c4dd180d4e9b998363a86d27c, type: 3}
+  audioClip: {fileID: 0}
+  playSound: 1
 --- !u!1 &206295177
 GameObject:
   m_ObjectHideFlags: 0
@@ -10379,6 +10381,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioClip: {fileID: 0}
+  playSound: 1
 --- !u!1 &283967685
 GameObject:
   m_ObjectHideFlags: 0
@@ -11525,7 +11528,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5618971399a95e843b6c90358ca22b1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioClip: {fileID: 8300000, guid: 014a422c4dd180d4e9b998363a86d27c, type: 3}
+  audioClip: {fileID: 0}
+  playSound: 1
 --- !u!1 &306478394
 GameObject:
   m_ObjectHideFlags: 0
@@ -13001,6 +13005,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioClip: {fileID: 0}
+  playSound: 1
 --- !u!1 &346255780
 GameObject:
   m_ObjectHideFlags: 0
@@ -14197,7 +14202,7 @@ RectTransform:
   m_Father: {fileID: 1661039571}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -17164,23 +17169,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Index: 0
   _stage: 0
-  _enterPanel: {fileID: 0}
   _startPanel: {fileID: 1121695359}
   _guidePanel: {fileID: 1541209918}
-  _playerInfoPanel: {fileID: 0}
   _chooseDebuffPanel: {fileID: 164934253}
-  _onlineRewardPanel: {fileID: 0}
-  _signInPanel: {fileID: 0}
-  _dailyMissionPanel: {fileID: 0}
-  _achievementPanel: {fileID: 0}
   _settingPanel: {fileID: 1336248351}
-  _rankPanel: {fileID: 0}
-  _sharePanel: {fileID: 0}
   _getRewardPanel: {fileID: 227602847}
   _quickTipPanel: {fileID: 340514463}
   canvasTransform: {fileID: 1856448728}
-  flyLightPrefab: {fileID: 2191221144802952277, guid: c346281b58723484dadfeec7c197d9b9, type: 3}
-  flyCoinPrefab: {fileID: 2191221144802952277, guid: f7f1ff843188572419793f33cf271e3f, type: 3}
+  flyLightPrefab: {fileID: 4349859304749701157, guid: c346281b58723484dadfeec7c197d9b9, type: 3}
+  flyCoinPrefab: {fileID: 4349859304749701157, guid: f7f1ff843188572419793f33cf271e3f, type: 3}
 --- !u!4 &451780984
 Transform:
   m_ObjectHideFlags: 0
@@ -17319,7 +17316,7 @@ RectTransform:
   m_Father: {fileID: 1148021395}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -17702,6 +17699,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioClip: {fileID: 0}
+  playSound: 1
 --- !u!114 &460928276
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18692,6 +18690,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioClip: {fileID: 0}
+  playSound: 1
 --- !u!1 &486128832
 GameObject:
   m_ObjectHideFlags: 0
@@ -22981,7 +22980,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &604407239
 RectTransform:
   m_ObjectHideFlags: 0
@@ -32621,7 +32620,7 @@ RectTransform:
   m_Father: {fileID: 1231825584}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -33674,6 +33673,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioClip: {fileID: 0}
+  playSound: 1
 --- !u!1 &886555498
 GameObject:
   m_ObjectHideFlags: 0
@@ -35949,6 +35949,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioClip: {fileID: 0}
+  playSound: 1
 --- !u!1 &969024975
 GameObject:
   m_ObjectHideFlags: 0
@@ -37820,6 +37821,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioClip: {fileID: 0}
+  playSound: 1
 --- !u!1 &1024703132
 GameObject:
   m_ObjectHideFlags: 0
@@ -39281,7 +39283,7 @@ RectTransform:
   m_Father: {fileID: 1865382642}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -41288,6 +41290,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioClip: {fileID: 0}
+  playSound: 1
 --- !u!95 &1116277695
 Animator:
   serializedVersion: 5
@@ -44089,6 +44092,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioClip: {fileID: 0}
+  playSound: 1
 --- !u!1 &1167632388
 GameObject:
   m_ObjectHideFlags: 0
@@ -46436,6 +46440,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioClip: {fileID: 0}
+  playSound: 1
 --- !u!1 &1240640882
 GameObject:
   m_ObjectHideFlags: 0
@@ -47000,6 +47005,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioClip: {fileID: 0}
+  playSound: 1
 --- !u!1 &1250084942
 GameObject:
   m_ObjectHideFlags: 0
@@ -51838,6 +51844,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioClip: {fileID: 0}
+  playSound: 1
 --- !u!114 &1381703819
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -52415,6 +52422,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioClip: {fileID: 0}
+  playSound: 1
 --- !u!1 &1397425520
 GameObject:
   m_ObjectHideFlags: 0
@@ -61157,6 +61165,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioClip: {fileID: 0}
+  playSound: 1
 --- !u!1 &1605369680
 GameObject:
   m_ObjectHideFlags: 0
@@ -63416,6 +63425,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioClip: {fileID: 0}
+  playSound: 1
 --- !u!95 &1652958794
 Animator:
   serializedVersion: 5
@@ -80980,6 +80990,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioClip: {fileID: 0}
+  playSound: 1
 --- !u!1 &2104867018
 GameObject:
   m_ObjectHideFlags: 0
@@ -81448,7 +81459,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5618971399a95e843b6c90358ca22b1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioClip: {fileID: 8300000, guid: 014a422c4dd180d4e9b998363a86d27c, type: 3}
+  audioClip: {fileID: 0}
+  playSound: 1
 --- !u!1 &2116530627
 GameObject:
   m_ObjectHideFlags: 0
@@ -82485,7 +82497,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5618971399a95e843b6c90358ca22b1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioClip: {fileID: 8300000, guid: 014a422c4dd180d4e9b998363a86d27c, type: 3}
+  audioClip: {fileID: 0}
+  playSound: 1
 --- !u!1 &2146205457
 GameObject:
   m_ObjectHideFlags: 0
@@ -85982,6 +85995,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioClip: {fileID: 0}
+  playSound: 1
 --- !u!222 &7361033404642198391
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -86253,6 +86267,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioClip: {fileID: 0}
+  playSound: 1
 --- !u!114 &7765938206621979233
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -86331,6 +86346,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioClip: {fileID: 0}
+  playSound: 1
 --- !u!114 &7793945850145120973
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -86417,7 +86433,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5618971399a95e843b6c90358ca22b1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioClip: {fileID: 8300000, guid: 014a422c4dd180d4e9b998363a86d27c, type: 3}
+  audioClip: {fileID: 0}
+  playSound: 1
 --- !u!114 &7805630548606985093
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -86737,6 +86754,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioClip: {fileID: 0}
+  playSound: 1
 --- !u!114 &8423118569394677313
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -86865,6 +86883,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioClip: {fileID: 0}
+  playSound: 1
 --- !u!114 &8613293911618000733
 MonoBehaviour:
   m_ObjectHideFlags: 0

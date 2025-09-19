@@ -124,11 +124,13 @@ public class UpgradeUI : MonoBehaviour
 
         if (isInCoolDown)//正在冷却
         {
+            AudioManager.Instance.PlaySFX("刷新福利");
             return;
         }
 
         if (!CurrencyManager.Instance.SpendCoin(UpgradeManager.Instance.FreshCost.Value))//刷新需要金币
         {
+            AudioManager.Instance.PlaySFX("错误");
             return;
         }
         isInCoolDown = true;
@@ -138,6 +140,7 @@ public class UpgradeUI : MonoBehaviour
         coolDownSlider.StartCountDown(5.0f);
        
         RefreshUpgradeButtons();
+        AudioManager.Instance.PlaySFX("刷新福利");
         UpgradeManager.Instance.RefreshCount.Value++;
 
         SetTextColor(_updatePriceText, gold >= UpgradeManager.Instance.FreshCost.Value);
@@ -306,6 +309,7 @@ public class UpgradeUI : MonoBehaviour
     /// <param name="side">-1表示左侧，1表示右侧</param>
     private void BuyUpgradeButton(int side)
     {
+        AudioManager.Instance.PlaySFX("购买福利");
         if (side == -1)//左边的按钮
         {
             if (_leftUpgrade==null) return;

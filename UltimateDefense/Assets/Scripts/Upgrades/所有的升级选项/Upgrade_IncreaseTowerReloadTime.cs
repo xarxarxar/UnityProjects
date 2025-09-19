@@ -50,7 +50,7 @@ public class Upgrade_IncreaseTowerReloadTime : UpgradeBase
     #region 公共方法
     public override bool IsAvailable()
     {
-        return TowerManager.Instance.BonusReload.Value <0.8f;
+        return TowerManager.Instance.BonusReload.Value <0.7f;
     }
 
     /// <summary>
@@ -60,7 +60,7 @@ public class Upgrade_IncreaseTowerReloadTime : UpgradeBase
     {
         // 通知 Manager 保存全局加成
         TowerManager.Instance.BonusReload.Value += _bonus;
-        if (TowerManager.Instance.BonusReload.Value >= 0.8f)
+        if (TowerManager.Instance.BonusReload.Value >= 0.7f)
         {
             TowerManager.Instance.BonusReload.Value = 0.8f;
         }

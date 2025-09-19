@@ -175,7 +175,7 @@ public class CurrencyManager : ManagerBase<CurrencyManager>
         if (dropCoin && enemyCoin > 0)
         {
             // 3. 增加金币
-           int effectCount = (enemy.enemyType == EnemyType.Coin) ? 5 : 1; // 金币怪播放更多特效
+           int effectCount = (enemy.enemyType == EnemyType.Coin) ? 3 : 1; // 金币怪播放更多特效
            // 播放金币粒子特效
            Vector3 screenStart = Camera.main.WorldToScreenPoint(enemy.transform.position);
            Vector3 screenEnd = RectTransformUtility.WorldToScreenPoint(null, coinText.transform.position);

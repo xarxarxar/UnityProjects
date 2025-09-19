@@ -1,10 +1,11 @@
+using DG.Tweening;
 using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
     [Header("Audio Sources")]
-    public AudioSource bgmSourcePrefab;
-    public AudioSource sfxSourcePrefab;
+    public AudioSource bgmSource;
+    public AudioSource sfxSource;
 
     [Header("Volume Settings")]
     [Range(0f, 1f)] public float bgmVolume = 1f;
@@ -13,7 +14,8 @@ public class AudioManager : MonoBehaviour
     [Header("Audio Library")]
     public AudioLibrary audioLibrary;
 
-    private AudioSource currentBgm;
+    private ObjectPool<AudioSource> sfxPool;
+
     private static AudioManager _instance;//单例
     /// <summary>
     /// GameManger单例
@@ -39,6 +41,11 @@ public class AudioManager : MonoBehaviour
     {
         if (audioLibrary != null)
             audioLibrary.Init();
+
+        if (sfxPool == null)
+        {
+            sfxPool = new ObjectPool<AudioSource>(sfxSource,10,transform);
+        }
     }
 
     // 播放背景音乐（通过 key）
@@ -54,23 +61,17 @@ public class AudioManager : MonoBehaviour
     // 播放背景音乐（直接播放 clip）
     public void PlayBGM(AudioClip clip, bool loop = true)
     {
-        if (currentBgm != null)
-        {
-            Destroy(currentBgm);
-        }
-
-        currentBgm = Instantiate(bgmSourcePrefab, transform);
-        currentBgm.clip = clip;
-        currentBgm.loop = loop;
-        currentBgm.volume = bgmVolume;
-        currentBgm.Play();
+        bgmSource.clip = clip;
+        bgmSource.loop = loop;
+        bgmSource.volume = bgmVolume;
+        bgmSource.Play();
     }
 
     public void StopBGM()
     {
-        if (currentBgm != null)
+        if (bgmSource != null)
         {
-            currentBgm.Stop();
+            bgmSource.Stop();
         }
     }
 
@@ -95,18 +96,24 @@ public class AudioManager : MonoBehaviour
     // 播放音效（可指定 Pitch）
     public void PlaySFX(AudioClip clip, float pitch = 1f)
     {
-        AudioSource sfx = Instantiate(sfxSourcePrefab, transform);
+        AudioSource sfx = sfxPool.Get();
         sfx.clip = clip;
         sfx.volume = sfxVolume;
         sfx.pitch = pitch;
         sfx.Play();
-        Destroy(sfx.gameObject, clip.length / pitch); // 考虑 pitch 对播放时长的影响
+        DOVirtual.DelayedCall(clip.length / pitch, () =>
+        {
+            sfx.Stop();
+            sfx.clip = null;
+            sfx.gameObject.SetActive(false);
+            sfxPool.Return(sfx);
+        }); // 考虑 pitch 对播放时长的影响
     }
 
     public void SetBGMVolume(float volume)
     {
         bgmVolume = volume;
-        if (currentBgm != null) currentBgm.volume = volume;
+        if (bgmSource != null) bgmSource.volume = volume;
     }
 
     public void SetSFXVolume(float volume)

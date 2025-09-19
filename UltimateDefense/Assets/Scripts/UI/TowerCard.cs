@@ -6,8 +6,6 @@ using UnityEngine.UI;
 /// </summary>
 public class TowerCard : MonoBehaviour
 {
-    //[SerializeField] private Text _upgradeDescription;//升级描述的Text
-    //[SerializeField] private Text _maxlevelText;//已满级的Text
     [SerializeField] private Text _levelText;//等级Text
     [SerializeField] private Text _descriptionText;//描述Text
     [SerializeField] private GameObject _unlockMask;//未解锁的遮罩
@@ -15,7 +13,6 @@ public class TowerCard : MonoBehaviour
     [SerializeField] private RewardStruct _upgradeCost;//升级花费
     [SerializeField] private TowerType _type;//此卡片对应的炮塔类型
     [SerializeField] private Slider _levelSlider;//此卡片对应的炮塔类型
-    //[SerializeField] private CanvasGroup _canvasGroup;
 
 
     /// <summary>
@@ -31,7 +28,6 @@ public class TowerCard : MonoBehaviour
         if (TowerDataManager.Instance.GetTowerData(_type).Level>0)//已解锁
         {
             _unlockMask.SetActive(false);
-            //_canvasGroup.alpha = 1;
             _upgradeCost.Init(RewardType.Crown, 1);
             _levelText.gameObject.SetActive(true);
             _levelText.text = $"Lv {TowerDataManager.Instance.GetTowerData(_type).Level}";
@@ -40,7 +36,6 @@ public class TowerCard : MonoBehaviour
         else
         {
             _unlockMask.SetActive(true);
-            //_canvasGroup.alpha = 0.3f;
             _levelText.gameObject.SetActive(false);
         }
         _descriptionText.text = TowerDataManager.Instance.TowerDiscription[_type];
@@ -50,19 +45,14 @@ public class TowerCard : MonoBehaviour
 
     }
 
-    /// <summary>
-    /// 卡片没被选中，失活
-    /// </summary>
-    public void DeactivateCard()
-    {
-        
-    }
 
     //升级该塔
     private void UpGradeTower()
     {
         if (TowerDataManager.Instance.GetTowerData(_type).Level >= TowerData.MaxLevel)
         {
+            AudioManager.Instance.PlaySFX("错误");
+            GameUIManager.Instance.ShowQuickTip("已满级");
             return;
         }
 
@@ -70,29 +60,37 @@ public class TowerCard : MonoBehaviour
         {
             TowerDataManager.Instance.UpgradeTower(_type);
             MetaCurrencyManager.Instance.SpendMetaCoin(_upgradeCost.type, _upgradeCost.count);
+            AudioManager.Instance.PlaySFX("炮塔升级");
+
+            _levelText.text = $"Lv {TowerDataManager.Instance.GetTowerData(_type).Level}";
+            _levelSlider.value = TowerDataManager.Instance.GetTowerData(_type).Level;
+            _descriptionText.text = TowerDataManager.Instance.TowerDiscription[_type];
+            UpdateUpgradeButton();
         }
-        _levelText.text = $"Lv {TowerDataManager.Instance.GetTowerData(_type).Level}";
-        _levelSlider.value = TowerDataManager.Instance.GetTowerData(_type).Level;
-        _descriptionText.text = TowerDataManager.Instance.TowerDiscription[_type];
-        UpdateUpgradeButton();
+        else
+        {
+            GameUIManager.Instance.ShowQuickTip("王冠不足");
+            AudioManager.Instance.PlaySFX("错误");
+        }
+       
     }
+
     //更新升级按钮的状态
     private void UpdateUpgradeButton()
     {
         _upgradeButton.RemoveAllListeners();
+        _upgradeButton.playSound = false;
         //未达到满级
         if (TowerDataManager.Instance.GetTowerData(_type).Level< TowerData.MaxLevel)
         {
             //是否有足够的金币
             _upgradeCost.countText.color = MetaCurrencyManager.Instance.HasEnoughMoney(_upgradeCost.type, _upgradeCost.count)
                 ? new Color32(239, 241, 245, 255) : new Color32(228, 73, 98, 255);
-            //_maxlevelText.gameObject.SetActive(false);
             _upgradeButton.AddListener(UpGradeTower);
         }
         else//达到满级
         {
             _upgradeButton.gameObject.SetActive(false);
-            //_maxlevelText.gameObject.SetActive(true);
         }
     }
 }

@@ -93,7 +93,7 @@ public class GamePlayingPanel : MonoBehaviour
         _mySlider.StartCountDown(3);
     }
 
-    Sequence GoldAnimSeq = DOTween.Sequence();
+    Sequence GoldAnimSeq;
     public void PlayGoldAnim()
     {
         GoldAnimSeq.Kill();

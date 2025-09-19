@@ -97,10 +97,10 @@ public class TowerDataManager : ManagerBase<TowerDataManager>
     {
         return towerType switch
         {
-            TowerType.Basic => 10 + (level-1) * 4,//max为46
-            TowerType.RapidFire => 6 + (level-1) * 3,//max为33
-            TowerType.Ricochet => 7 + (level - 1) * 2,//max为27，衰减为25%
-            TowerType.Spread => 5 + (level-1) * 2,//max为23
+            TowerType.Basic => 10 + (level-1) * 5,//max为55
+            TowerType.RapidFire => 5 + (level-1) * 3,//max为32
+            TowerType.Ricochet => 7 + (level - 1) * 2,//max为25，衰减为30%
+            TowerType.Spread => 4 + (level-1) * 2,//max为22
             TowerType.Sniper => 20 + (level - 1) * 6,//max为69
             TowerType.Piercing => 8 + (level-1) * 3,//max为35
             _ => 0

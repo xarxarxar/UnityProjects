@@ -12,6 +12,8 @@ public class BindableButton : MonoBehaviour
     [Header("点击音效 (可选)")]
     public AudioClip audioClip; // 点击音效
 
+    public bool playSound=true;//是否播放默认点击音效
+
     //默认点击音效 (不修改则使用这个)
     private AudioClip defaultAudioClip=>AudioManager.Instance.GetAudioClip("按钮点击");
 
@@ -24,7 +26,7 @@ public class BindableButton : MonoBehaviour
     private void OnButtonClicked()
     {
         // 使用外部指定的音效，否则用默认音效
-        AudioClip clipToPlay = audioClip != null ? audioClip : defaultAudioClip;
+        AudioClip clipToPlay = audioClip != null && playSound ? audioClip : defaultAudioClip;
 
         if (clipToPlay != null)
         {

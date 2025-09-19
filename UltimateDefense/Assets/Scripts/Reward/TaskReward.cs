@@ -14,7 +14,6 @@ public class TaskReward : MonoBehaviour
     [SerializeField] private GameObject _finishMask;//已完成遮罩
     private string _taskTag=string.Empty;//这个任务的标签
     public bool _isFinished=false;//是否完成这个任务
-    //public bool _isClaimed=false;//是否已领取这个任务的奖励
     private int _needValue;//该任务需要的值
     private int _currentValue;//当前值
 
@@ -92,6 +91,7 @@ public class TaskReward : MonoBehaviour
         if (!_isFinished)
         {
             GameUIManager.Instance.ShowQuickTip("未达到领取要求");
+            AudioManager.Instance.PlaySFX("错误");
             return;
         } 
         MetaCurrencyManager.Instance.AddMetaCoin(_rewardStruct.type, _rewardStruct.count,true);

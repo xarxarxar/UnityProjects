@@ -117,8 +117,6 @@ public class UpgradeTowerPanel : MonoBehaviour
         
         _currentTower = _simpleScrollSnap.Content.GetChild(index).GetComponent<TowerCard>();
         _currentTower.ActivateCard();
-        TowerCard preTower = _simpleScrollSnap.Content.GetChild(preIndex).GetComponent<TowerCard>();
-        preTower.DeactivateCard();
 
         UpdateButtonState();//更新下方解锁按钮的逻辑
     }
