@@ -400,6 +400,7 @@ public class Enemy : MonoBehaviour
         particleSystem.transform.position = transform.position;
         particleSystem.Play();
         AudioManager.Instance.PlaySFX("µÐÈË±¬Õ¨");
+        
         TimerUtility.Instance.Timer(0.5f, () => { EnemyManager.Instance.ExplosionEffectPool.Return(particleSystem); });
     }
 

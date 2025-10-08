@@ -1,6 +1,9 @@
 using DG.Tweening;
 using UnityEngine;
 
+/// <summary>
+/// 声音和震动的管理
+/// </summary>
 public class AudioManager : MonoBehaviour
 {
     [Header("Audio Sources")]
@@ -134,6 +137,14 @@ public class AudioManager : MonoBehaviour
             return clip;
         }
         return null;
+    }
+
+    /// <summary>
+    /// 短震动
+    /// </summary>
+    public void Vibrate()
+    {
+        WeChatManager.Instance.Vibrate();//震动
     }
 }
 
