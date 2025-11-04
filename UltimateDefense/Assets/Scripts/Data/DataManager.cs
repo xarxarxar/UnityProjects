@@ -1,61 +1,281 @@
+using Newtonsoft.Json;
 using System.IO;
+using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.Events;
-using Newtonsoft.Json;
-using System.Collections;
-using System;
-using System.Linq;
+using UnityEngine.UI;
+using WeChatWASM;
 
-public class DataManager : ManagerBase<DataManager>
+
+public class DataManager : MonoBehaviour
 {
+    // 单例
+    public static DataManager Instance;
+    public Image startButton;
+    WXUserInfoButton wxUserInfoButton;
     [SerializeField] private BindablePlayerInfo _playerInfo=new BindablePlayerInfo();//全局的玩家信息
+    private string userID=string.Empty;
+    private string userFrom=string.Empty;
 
     public static event UnityAction<int> OnPassCountChanged;//通关次数变化
     public static event UnityAction OnDataLoaded;//数据加载完毕
 
-    private static string SaveFolder => Path.Combine(Application.dataPath, "../Saves");
-    private static string SaveFilePath => Path.Combine(SaveFolder, "player_info.json");
     /// <summary>
     /// 玩家全局信息
     /// </summary>
     public BindablePlayerInfo PlayerInfo { get => _playerInfo;}
+    /// <summary>
+    /// 玩家的来源
+    /// </summary>
+    public string UserFrom { get => userFrom; set => userFrom = value; }
+    /// <summary>
+    /// 玩家的UserID
+    /// </summary>
+    public string UserID { get => userID; set => userID = value; }
 
-
-    protected override void Awake()
+    private void Awake()
     {
-        base.Awake();
-        _stage=InitStage.OutBattle;//局外Manager
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     #region 公共方法
     /// <summary>
     /// 初始化
     /// </summary>
-    public override void Init()
+    public void Start()
     {
         BattleManager.OnEndBattle += OnEndBattle;
+
     }
 
     /// <summary>
-    /// 保存 PlayerInfo 到本地 json 文件（使用 Newtonsoft）
+    /// 获取用户数据
+    /// 先获取用户的openid，然后去数据库中拉取数据：
+    ///1.若有数据，则表明不是新玩家，则直接拉取数据，并直接进入游戏
+    ///2.若无数据，则表明是新玩家。则显示授权窗口->获取用户授权->创建用户数据->进入游戏
+    /// </summary>
+    public void InitOrLoadPlayerData()
+    {
+        WeChatManager.Instance.InitSDK(() =>
+        {
+            userFrom = "weixin";
+            LoginToWeChat();
+        });
+    }
+
+    //登录微信，拿到用户的临时code
+    private void LoginToWeChat()
+    {
+        WX.Login(new LoginOption
+        {
+            success = (res) =>
+            {
+                WeChatManager.UserCode = res.code;
+                GetOpenID();
+            },
+            fail = (_) => TipManager.Instance.ShowConfirmTip("登录失败，请检查网络后重试。")
+        });
+    }
+
+    //获取用户的openid
+    private void GetOpenID()
+    {
+        APIAccess.Instance.Code2Session(
+            onSuccess: (res) =>
+            {
+                UserID = res.data["openid"].ToObject<string>();
+                LoadOrCreatePlayerData(UserID);
+            },
+            onFail: (_) => TipManager.Instance.ShowConfirmTip("获取用户信息失败，请稍候重试。"),//这个一般是接口代码有误
+            onError: (_) => TipManager.Instance.ShowConfirmTip("网络异常，请稍候重试。") // 网络层错误：弹出提示
+        );
+    }
+
+    //最终加载或者创建玩家数据
+    private void LoadOrCreatePlayerData(string userId)
+    {
+        APIAccess.Instance.GetData(userId,
+            onSuccess: (res) =>//拿到玩家的数据,说明不是新玩家
+            {
+                //拿到玩家的数据,说明不是新玩家
+                PlayerInfo parsed = res.data.ToObject<PlayerInfo>();
+                //将数据转到_playerInfo变量中去
+                _playerInfo.CopyFromPlayerInfo(parsed);
+                //更新在线时间为当前时间
+                APIAccess.Instance.UpdateLastOnline(userId);
+
+                //判断用户是否给予过昵称和头像的授权
+                WX.GetSetting(new GetSettingOption()
+                {
+                    success = (res) =>
+                    {
+                        Debug.Log($"获取用户权限: {JsonConvert.SerializeObject(res.authSetting, Formatting.Indented)}");
+                        //已经授权过,未授权过的话不需要做任何操作，所以没有else
+                        if (res.authSetting.TryGetValue("scope.userInfo", out bool authorized) && authorized)
+                        {
+                            //获取用户的头像和昵称等信息
+                            WX.GetUserInfo(new GetUserInfoOption()
+                            {
+                                success = (res) =>//成功获取用户信息，数据库中的昵称和头像不再使用默认值
+                                {
+                                    //若昵称或者头像发生了变化，则同步用户的昵称和头像
+                                    if (PlayerInfo.UserName.Value != res.userInfo.nickName ||
+                                    PlayerInfo.AavtarUrl.Value != res.userInfo.avatarUrl)
+                                    {
+                                        PlayerInfo.UserName.Value = res.userInfo.nickName;
+                                        PlayerInfo.AavtarUrl.Value = res.userInfo.avatarUrl;
+                                        //最终都要保存用户的数据
+                                        APIAccess.Instance.SaveData(onComplete: () =>
+                                        {
+                                            //进入游戏
+                                            OnDataLoaded?.Invoke();
+                                        });
+                                    }
+                                    else//如果没有变化，那么直接进入游戏
+                                    {
+                                        OnDataLoaded?.Invoke();
+                                    }
+                                },
+                                fail = (res) =>//用户拒绝授权，就使用默认的昵称和头像，并且直接进入游戏
+                                {
+                                    Debug.LogError("获取用户信息失败：" + res.errMsg);
+                                    OnDataLoaded?.Invoke();
+                                },
+                            });
+                        }
+                        else//未获取到用户权限，直接进入游戏
+                        {
+                            OnDataLoaded?.Invoke();
+                        }
+                        
+                    },
+                    //获取失败的话直接进入游戏
+                    fail = (res)=>{
+                        OnDataLoaded?.Invoke();
+                    }
+                });
+                
+            },
+            onFail: (res) =>
+            {
+                if (res.code == 1002)
+                    RequestUserInfoThenCreatePlayer();
+            },
+            onError: (_) => TipManager.Instance.ShowConfirmTip("玩家信息获取失败，请稍候重试。"));
+    }
+
+    //请求用户数据然后创建玩家
+    private void RequestUserInfoThenCreatePlayer()
+    {
+
+        Rect rect = GetStartButtonRect();//获取开始按钮的位置和大小
+        //创建按钮让用户点击以获取用户信息
+        wxUserInfoButton = WX.CreateUserInfoButton((int)rect.x, Screen.height - (int)rect.y - (int)rect.height, (int)rect.width, (int)rect.height, "", true);
+        //该按钮的点击事件
+        wxUserInfoButton.OnTap((res) =>
+        {
+            Debug.Log($"res.errCode为{res.errCode}");//0代表允许授权，1代表拒绝授权
+            wxUserInfoButton.Destroy();//无论有没有给予授权，都将按钮销毁
+            startButton.gameObject.SetActive(false);//无论有没有给予授权，都将按钮隐藏
+
+            if (res.errCode == 0)//用户允许授权
+            {
+                //获取用户的头像和昵称等信息
+                WX.GetUserInfo(new GetUserInfoOption()
+                {
+                    success = (res) =>//成功获取用户信息，数据库中的昵称和头像不再使用默认值
+                    {
+                        //若昵称或者头像发生了变化，则同步用户的昵称和头像
+                        if (PlayerInfo.UserName.Value != res.userInfo.nickName ||
+                        PlayerInfo.AavtarUrl.Value != res.userInfo.avatarUrl)
+                        {
+                            PlayerInfo.UserName.Value = res.userInfo.nickName;
+                            PlayerInfo.AavtarUrl.Value = res.userInfo.avatarUrl;
+                        }
+                    },
+                    fail = (res) =>//用户拒绝授权，就使用默认的昵称和头像
+                    {
+                        Debug.LogError("获取用户信息失败：" + res.errMsg);
+                        //TipManager.Instance.ShowTip("用户信息获取失败");
+                    },
+                    complete = (res) =>
+                    {
+                        Debug.Log("获取用户信息操作完成");
+                        //最终都要保存用户的数据
+                        APIAccess.Instance.SaveData(onComplete: () =>
+                        {
+                            APIAccess.Instance.UpdateLastOnline(UserID);//更新在线时间为当前时间
+                                                                        //进入游戏
+                            OnDataLoaded?.Invoke();
+                        });
+
+                    }
+                });
+            }
+            else//用户拒绝授权也要保存用户的数据
+            {
+                //最终都要保存用户的数据
+                APIAccess.Instance.SaveData(onComplete: () =>
+                {
+                    APIAccess.Instance.UpdateLastOnline(UserID);//更新在线时间为当前时间
+                                                                //进入游戏
+                    OnDataLoaded?.Invoke();
+                });
+            }
+
+        });
+        
+    }
+
+    /// <summary>
+    /// 保存 PlayerInfo
     /// </summary>
     public void SavePlayerInfo()
     {
-        SavePlayerInfoLocal();//本地的测试
+        APIAccess.Instance.SaveData();
     }
 
     /// <summary>
     /// 加载 PlayerInfo（使用 Newtonsoft）
     /// </summary>
-    public void LoadPlayerInfo()
+    public void LoadPlayerInfo(UnityAction onSuccess=null)
     {
-        StartCoroutine(LoadPlayerInfoLocal(() =>
-        {
-            OnDataLoaded?.Invoke();
-        })) ;//用于测试
-    }
+        //这里要首先微信获取玩家的ID，玩家的来源，先假设一个ID
+        APIAccess.Instance.GetData(UserID, 
+            onSuccess:(res)=>{
+                //直接用 JObject 内置方法转成 PlayerInfo
+                PlayerInfo parsed = res.data.ToObject<PlayerInfo>();
+                _playerInfo.CopyFromPlayerInfo(parsed);//从PlayerInfo转为BindablePlayerInfo
+                APIAccess.Instance.UpdateLastOnline(UserID);
+                onSuccess?.Invoke();
+                OnDataLoaded?.Invoke();
+            },
+            onFail: (res) =>
+            {
+                if (res.code == 1002)//没有该UserID，是新玩家，注册一个
+                {
+                    APIAccess.Instance.SaveData(
+                        onSuccess: (res) =>
+                        {
+                            APIAccess.Instance.UpdateLastOnline(UserID);
+                            OnDataLoaded?.Invoke();
+                        });
+                }
+            },
+            onError: (res) =>
+            {
 
-    
+            });
+
+    }
     #endregion
 
     #region 私有方法
@@ -69,78 +289,22 @@ public class DataManager : ManagerBase<DataManager>
         }
     }
 
-    //保存本地，用于测试
-    private void SavePlayerInfoLocal()
+    private Rect GetStartButtonRect()
     {
-        var jsonSettings = new JsonSerializerSettings
-        {
-            Formatting = Formatting.Indented,
-            // NullValueHandling = NullValueHandling.Ignore, // 可选
-        };
+        var rectTransform = startButton.GetComponent<RectTransform>();
+        // 获取 RectTransform 的四个角的世界坐标
+        Vector3[] worldCorners = new Vector3[4];
+        rectTransform.GetWorldCorners(worldCorners);
 
-        PlayerInfo tmpPlayerInfo = _playerInfo.ConvertToPlayerInfo();//保存的是PlayerInfo格式
-        string json = JsonConvert.SerializeObject(tmpPlayerInfo, jsonSettings);
+        // 创建屏幕矩形
+        var screenRect = new Rect(
+                        worldCorners[0].x,
+                        worldCorners[0].y,
+                        worldCorners[2].x - worldCorners[0].x,
+                        worldCorners[2].y - worldCorners[0].y);
 
-        // 确保保存路径目录存在
-        string directory = Path.GetDirectoryName(SaveFilePath);
-        if (!Directory.Exists(directory))
-        {
-            Directory.CreateDirectory(directory);
-        }
-
-        File.WriteAllText(SaveFilePath, json);
-        Debug.Log($"[保存成功] PlayerInfo 保存到：{SaveFilePath}\n{json}");
-    }
-
-    //加载本地，用于测试
-    private IEnumerator LoadPlayerInfoLocal(UnityAction callback)
-    {
-        // 模拟耗时加载（比如显示 loading 动画）
-        yield return new WaitForSeconds(1.0f);
-
-        if (File.Exists(SaveFilePath))
-        {
-            string json = File.ReadAllText(SaveFilePath);
-            PlayerInfo tmpPlayerInfo= JsonConvert.DeserializeObject<PlayerInfo>(json);
-            _playerInfo.CopyFromPlayerInfo(tmpPlayerInfo);//从PlayerInfo转为BindablePlayerInfo
-            JudgeTheSameDay();//判断是否是同一天
-        }
-        else
-        {
-            SavePlayerInfoLocal();//保存一个
-        }
-        callback?.Invoke();
-    }
-
-    //判断是否是同一天
-    private void JudgeTheSameDay()
-    {
-        DateTime now = DateTime.Now;
-        if (now.Date != _playerInfo.LastLoginDate.Value.Date)
-        {
-            // 不同一天
-            RefreshDailyPlayerInfo();
-        }
-    }
-
-    /// <summary>
-    /// 刷新日结玩家数据，登录时检刷新，或者是过了凌晨自动刷新
-    /// </summary>
-    public void RefreshDailyPlayerInfo()
-    {
-        _playerInfo.LastLoginDate.Value = DateTime.Now;
-        _playerInfo.TodayOnlineMinutes.Value = 0;
-        _playerInfo.TodayEnemyDieCount.Value = 0;
-        _playerInfo.TodayWaveCount.Value = 0;
-        _playerInfo.TodayFreshCount.Value = 0;
-        _playerInfo.TodayPassCount.Value = 0;
-        _playerInfo.TodayShareCount.Value = 0;
-
-        foreach (var key in _playerInfo.DailyRewardReceived.Keys.ToList())
-        {
-            _playerInfo.DailyRewardReceived[key] = false;
-        }
-        SavePlayerInfo();
+        Debug.Log($"Screen Rect: {screenRect}");
+        return screenRect;
     }
     #endregion
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 [System.Serializable]
 public class PlayerInfo
@@ -10,7 +11,8 @@ public class PlayerInfo
     public int CrownCount;          //局外王冠数量
     public int PassCount;           //通过的次数
     public int UnlockCount;         //解锁的科技index
-    public DateTime LastLoginDate;// 上一次登录的日期，准确的说是上一次在线的时间，只用记录到天就可以
+    [JsonIgnore]
+    public DateTime LastOnlineTime;// 上一次在线的时间，精确到分钟
     public int TodayOnlineMinutes;   // 今天在线时长（分钟）
     public int TodayEnemyDieCount;   // 今天消灭敌人数量
     public int TodayWaveCount;   // 今天过了多少波次
@@ -26,7 +28,7 @@ public class PlayerInfo
     // 构造函数
     public PlayerInfo(string userName = null, string avatarUrl = null, 
         int passCount = 0,int diamondCount=0, int crownCount=0,
-        int unlockCount=-1, DateTime? lastLoginDate = null, int todayOnlineMinutes = 0, 
+        int unlockCount=0, DateTime? lastOnlineTime = null, int todayOnlineMinutes = 0, 
         Dictionary<TowerType, int> towerDatas = null, TowerType currentTowerType =TowerType.Basic,
         Dictionary<string, bool> dailyRewardReceived =null, int todayEnemyDieCount=0,
         int todayWaveCount = 0, int todayFreshCount = 0,int todayPassCount=0,int todayShareCount = 0,
@@ -38,7 +40,7 @@ public class PlayerInfo
         CrownCount = crownCount;//局外王冠的数量
         PassCount = passCount; // 假设 0 是你的默认通关次数,这个是总的通关次数
         UnlockCount = unlockCount;
-        LastLoginDate = lastLoginDate ?? DateTime.Now;
+        LastOnlineTime = lastOnlineTime ?? DateTime.Now;
         TodayOnlineMinutes = todayOnlineMinutes;
         TodayEnemyDieCount= todayEnemyDieCount;
         TodayWaveCount = todayWaveCount;
@@ -109,7 +111,7 @@ public class BindablePlayerInfo
     public Bindable<int> TodayFreshCount = new Bindable<int>();   // 今天刷新了多少次刷新按钮
     public Bindable<int> TodayPassCount = new Bindable<int>();   // 今天通关次数
     public Bindable<int> TodayShareCount = new Bindable<int>();   // 今天分享次数
-    public Bindable<DateTime> LastLoginDate = new Bindable<DateTime>();// 上一次登录的日期，准确的说是上一次在线的时间，只用记录到天就可以
+    public Bindable<DateTime> LastOnlineTime = new Bindable<DateTime>();// 上一次在线的时间，精确到分钟
     public Bindable<TowerType> CurrentTowerType=new Bindable<TowerType>();//当前使用的炮塔
     public Dictionary<TowerType, int> TowerDatas;//防御塔的等级数据
     // 在线奖励，每日任务，邀请有利这种每日刷新的奖励的领取情况,
@@ -119,7 +121,7 @@ public class BindablePlayerInfo
     // 构造函数
     public BindablePlayerInfo(string userName = null, string avatarUrl = null,
         int passCount = 0, int diamondCount = 0, int crownCount = 0,
-        int unlockCount = -1, DateTime? lastLoginDate = null, int todayOnlineMinutes = 0,
+        int unlockCount = 0, DateTime? lastOnlineTime = null, int todayOnlineMinutes = 0,
         TowerType currentTowerType = TowerType.Basic, int todayEnemyDieCount = 0,
         int todayWaveCount = 0, int todayFreshCount = 0, int todayPassCount = 0,int todayShareCount=0)
     {
@@ -129,7 +131,7 @@ public class BindablePlayerInfo
         CrownCount.Value = crownCount;//局外王冠的数量
         PassCount.Value = passCount; // 假设 0 是你的默认通关次数
         UnlockCount.Value = unlockCount;
-        LastLoginDate.Value = lastLoginDate ?? DateTime.Now;
+        LastOnlineTime.Value = lastOnlineTime ?? DateTime.Now;
         TodayOnlineMinutes.Value = todayOnlineMinutes;
         TodayEnemyDieCount.Value = todayEnemyDieCount;
         TodayFreshCount.Value = todayFreshCount;
@@ -160,7 +162,7 @@ public class BindablePlayerInfo
         CrownCount.Value = playerInfo.CrownCount;
         PassCount.Value = playerInfo.PassCount;
         UnlockCount.Value = playerInfo.UnlockCount;
-        LastLoginDate.Value = playerInfo.LastLoginDate;
+        LastOnlineTime.Value = playerInfo.LastOnlineTime;
         CurrentTowerType.Value =playerInfo.CurrentTowerType;
         TodayOnlineMinutes.Value = playerInfo.TodayOnlineMinutes;
         TodayEnemyDieCount.Value = playerInfo.TodayEnemyDieCount;
@@ -199,7 +201,7 @@ public class BindablePlayerInfo
             diamondCount: DiamondCount.Value,
             crownCount: CrownCount.Value,
             unlockCount: UnlockCount.Value,
-            lastLoginDate: LastLoginDate.Value,
+            lastOnlineTime: LastOnlineTime.Value,
             todayOnlineMinutes: TodayOnlineMinutes.Value,
             currentTowerType:CurrentTowerType.Value,
             towerDatas: TowerDatas,

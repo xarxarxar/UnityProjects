@@ -1,15 +1,15 @@
 using System.Collections.Generic;
-
+using System.Diagnostics;
+using UnityEngine;
 public class OnlineRewardPanel : BasePanel
 {
     public List<TaskReward> taskRewards=new List<TaskReward>();//所有任务
-    int[] _needMinutes = new int[]{1,5,10,30,60 };
+    int[] _needMinutes = new int[]{5,10,20,35,60 };
 
-    private int _todayOnlineMinutes = 0;
 
     public override void Init()
     {
-        _todayOnlineMinutes = 0;
+        UnityEngine.Debug.Log("OnlineRewardPanel初始化");
         DataManager.Instance.PlayerInfo.TodayOnlineMinutes.OnValueChanged += (minutes) =>
         {
             for (int i = 0; i < taskRewards.Count; i++)

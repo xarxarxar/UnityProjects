@@ -7,7 +7,8 @@ public class GameEntrence : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
+        DataManager.Instance.InitOrLoadPlayerData();
     }
 
     // Update is called once per frame

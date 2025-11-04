@@ -25,8 +25,7 @@ public class EnterPanel : MonoBehaviour
     /// </summary>
     private void EnterGameButton()
     {
-        Debug.Log("点击进入游戏按钮");
-        DataManager.Instance.LoadPlayerInfo();
+        
     }
 
 
