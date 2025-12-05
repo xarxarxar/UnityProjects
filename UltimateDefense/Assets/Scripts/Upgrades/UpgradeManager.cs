@@ -13,8 +13,6 @@ public class UpgradeManager : ManagerBase<UpgradeManager>
     private Bindable<int> _refreshCount =new Bindable<int>();//刷新升级面板的次数
     private Bindable<int> _buyUpgradeCount =new Bindable<int>();//购买升级的次数
     private Bindable<int> _freshCost =new Bindable<int>();//购买升级的花费
-    [SerializeField]
-    private int _upgradeIncreaseCoin = 1;//每次刷新增加的钱数
     #endregion
 
     #region 公开属性
@@ -31,10 +29,6 @@ public class UpgradeManager : ManagerBase<UpgradeManager>
     /// 购买升级的次数
     /// </summary>
     public Bindable<int> BuyUpgradeCount { get => _buyUpgradeCount;}
-    /// <summary>
-    /// 每次刷新增加的钱数
-    /// </summary>
-    public int UpgradeIncreaseCoin { get => _upgradeIncreaseCoin; set => _upgradeIncreaseCoin = value; }
 
     /// <summary>
     /// 刷新的花费
@@ -79,11 +73,7 @@ public class UpgradeManager : ManagerBase<UpgradeManager>
         _buyUpgradeCount.Value = 0;
         _freshCost.Value = 0;
 
-        if (!DataManager.Instance.PlayerInfo.Config.ContainsKey("SameDiscount"))
-        {
-            DataManager.Instance.PlayerInfo.Config["SameDiscount"] = 0.5f;
-        }
-        SameDiscount.Value = DataManager.Instance.PlayerInfo.Config["SameDiscount"];
+        SameDiscount.Value = (0.5f-(ScienceManager.Instance.GetUpgradeCountByType(ScienceEffectType.Discount)*0.05f));
     }
     /// <summary>
     /// 尝试购买指定升级：返回是否成功
@@ -93,7 +83,7 @@ public class UpgradeManager : ManagerBase<UpgradeManager>
         // 检查金币是否足够
         if (!CurrencyManager.Instance.SpendCoin(upgrade.Cost))
         {
-            GameUIManager.Instance.ShowQuickTip("金币不足");
+            TipManager.Instance.ShowTip("金币不足");
             return false;
         }
 

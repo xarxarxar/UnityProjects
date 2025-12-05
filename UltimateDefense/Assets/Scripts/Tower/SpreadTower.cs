@@ -6,11 +6,8 @@ using UnityEngine;
 /// <summary>
 /// 散射形态的炮塔,初始暴击概率翻倍
 /// </summary>
-public class SpreadTower : BaseTower
+public class SpreadTower : Tower
 {
-    public override TowerType TowerType { get => TowerType.Spread; }
-
-
     //实现父类的DoAttack方法
     protected override IEnumerator DoAttack()
     {
@@ -38,15 +35,15 @@ public class SpreadTower : BaseTower
 
             Bullet bullet = TowerManager.Instance.BulletPool.Get();
 
-            bool isCrit = Random.value < CriticalProb.Value;
+            bool isCrit = Random.value < CriticalProb;
             //暴击恢复城墙血量
             if (isCrit)
             {
                 Crystal.Instance.Recover(1);
             }
-            int damage = isCrit ? Mathf.RoundToInt(BulletDamage.Value * CriticalMult.Value) : BulletDamage.Value;
+            int damage = isCrit ? Mathf.RoundToInt(BaseDamage * CriticalMult) : BaseDamage;
 
-            bullet.Init(firePos, shootDir, isCrit, damage,type:BulletType.SinglePenetrate);
+            
         }
         JellySquash();
         // 消耗子弹

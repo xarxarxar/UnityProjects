@@ -28,7 +28,7 @@ public class Upgrade_RageMode : UpgradeBase
         this.times = times;
         UpgradeID = $"RageMode{Times}";
         Cost = cost;
-        int givedBulletCount = Mathf.RoundToInt(TowerManager.Instance.CurrentTower.BulletCapacity.Value * times);
+        //int givedBulletCount = Mathf.RoundToInt(TowerManager.Instance.CurrentTower.BulletCap* times);
         Description = $"临时赠送{times}倍弹夹容量，进入火力全开模式";
     }
 
@@ -47,7 +47,7 @@ public class Upgrade_RageMode : UpgradeBase
     /// </summary>
     public override void Apply()
     {
-        int givedBulletCount = Mathf.RoundToInt(TowerManager.Instance.CurrentTower.BulletCapacity.Value * times);
+        int givedBulletCount = Mathf.RoundToInt(TowerManager.Instance.CurrentTower.BulletCap * times);
         TowerManager.Instance.SetTmpAtkRate(2.5f);
         TowerManager.Instance.CurrentTower.GiveTmpBullet(givedBulletCount, () =>
         {

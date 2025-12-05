@@ -44,7 +44,34 @@ export default function anonymous(it) {
         const l1 = arr1.length - 1;
         while (index < l1) {
             item = arr1[(index += 1)];
-            out += ` <view class="listItem"> <image src="open-data/render/image/rankBg.png" class="rankBg"></image> <image class="rankAvatarBg" src="open-data/render/image/rankAvatar.png"></image> <image class="rankAvatar" src="${item.avatarUrl}"></image> <view class="rankNameView"> <image class="rankNameBg" src="open-data/render/image/nameBg.png"></image> <text class="rankName" value="${item.nickname}"></text> <text class="rankScoreTip" value="战力值:"></text> <text class="rankScoreVal" value="${item.score || 0}"></text> </view> <view class="shareToBtn" data-isSelf="${!!item.isSelf}" data-id="${item.openid || ''}"> <image src="open-data/render/image/${item.isSelf ? 'button3' : 'button2'}.png" class="shareBtnBg"></image> <text class="shareText" value="${item.isSelf ? '你自己' : '分享'}"></text> </view> </view> `;
+
+            let bgImage;
+            let rankdisplay;
+
+            if (index < 3) {
+                //前三名显示对应的图片
+                bgImage = `rank${index + 1}bg.png`; // 模板字符串拼接
+                rankdisplay = `<image src="open-data/render/image/medal${index + 1}.png" class="rankIcon"></image><text class="rankNum" value="${index + 1}"></text>`;
+            }
+            else {
+                // 其他名次
+                if (item.isSelf) {
+                    bgImage = "rankMyself.png";
+                }
+                else {
+                    bgImage = "rankOther.png";
+                }
+                rankdisplay = `<text class="rankNum" value="${index + 1}"></text>`;
+            }
+
+            out += ` <view class="listItem">
+             <image src="open-data/render/image/${bgImage}" class="rankBg"></image>
+              <image class="rankAvatar" src="${item.avatarUrl}"></image>
+              ${rankdisplay} 
+              <view class="rankNameView">
+              <text class="rankName" value="${item.nickname}"></text>
+                <text class="rankScoreVal" value="${item.score || 0}次通关"></text>
+                 </view></view> `;
         }
     }
     out += ' </scrollview> </view></view>';

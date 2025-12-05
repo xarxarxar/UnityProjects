@@ -37,7 +37,7 @@ public class Upgrade_IncreaseEnemyDieCoinProb : UpgradeBase
 
     public static Upgrade_IncreaseEnemyDieCoinProb CreateDynamicUpgrade()
     {
-        float[] values = { 0.02f, 0.05f, 0.08f };
+        float[] values = { 0.01f, 0.03f, 0.05f };
         float bonus = values[Random.Range(0, values.Length)];
         int cost = Mathf.RoundToInt(bonus * (1100 + UpgradeManager.Instance.RefreshCount.Value * 180));
         return new Upgrade_IncreaseEnemyDieCoinProb(bonus, cost);
@@ -48,7 +48,7 @@ public class Upgrade_IncreaseEnemyDieCoinProb : UpgradeBase
     #region 公共方法
     public override bool IsAvailable()
     {
-        return EnemyManager.Instance.EnemyDieCoinProb.Value <0.8f;
+        return EnemyManager.Instance.EnemyDieCoinProb.Value <0.7f;
     }
 
     /// <summary>

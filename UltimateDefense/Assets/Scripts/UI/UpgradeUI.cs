@@ -144,7 +144,16 @@ public class UpgradeUI : MonoBehaviour
         UpgradeManager.Instance.RefreshCount.Value++;
 
         SetTextColor(_updatePriceText, gold >= UpgradeManager.Instance.FreshCost.Value);
-        UpgradeManager.Instance.FreshCost.Value += UpgradeManager.Instance.UpgradeIncreaseCoin;//更新刷新所需的金币
+        float rawValue = UpgradeManager.Instance.RefreshCount.Value *
+                 (1 - (ScienceManager.Instance.GetUpgradeCountByType(ScienceEffectType.FreshCoinCount)*0.05f));
+
+        // 四舍五入为整数
+        int roundedValue = Mathf.RoundToInt(rawValue);
+        // 确保至少为 1
+        roundedValue = Mathf.Max(1, roundedValue);
+
+        // 赋值
+        UpgradeManager.Instance.FreshCost.Value = roundedValue;
         _updatePriceText.text = $"{UpgradeManager.Instance.FreshCost.Value}";
         OnRefreshBuff?.Invoke();
     }
@@ -352,7 +361,7 @@ public class UpgradeUI : MonoBehaviour
     //设置文本颜色
     private void SetTextColor(Text priceText, bool isEnough)
     {
-        priceText.color = isEnough ? new Color32(239, 241, 245, 255) : new Color32(228,73,98,255);
+        priceText.color = isEnough ? new Color32(4, 90, 57, 255) : new Color32(228,73,98,255);
     }
 
     //播放打折的动画

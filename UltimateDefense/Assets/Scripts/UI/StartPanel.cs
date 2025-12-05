@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 /// <summary>
 /// UI
@@ -8,6 +9,8 @@ using UnityEngine.Events;
 public class StartPanel : MonoBehaviour
 {
     #region 私有变量
+    [SerializeField] private Image _towerImage;  //炮塔的image
+    [SerializeField] private Image _towerPlatformImage;  //炮塔底座的image
     [SerializeField] private BindableButton _startBattleButton;  //开始挑战按钮
     [SerializeField] private BindableButton _onlineRewardButton; //在线奖励按钮
     [SerializeField] private BindableButton _signInButton;       //签到按钮
@@ -73,6 +76,16 @@ public class StartPanel : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    
+    /// <summary>
+    /// 初始化开始界面
+    /// </summary>
+    public void Init()
+    {
+        gameObject.SetActive(true);
+        _towerImage.sprite = TowerDataManager.Instance.GetCurrentSkin(TowerDataManager.Instance.GetCurrentTowerData()).sprite;
+        _towerPlatformImage.sprite = TowerPlatformDataManager.Instance.GetCurrentSkin(TowerPlatformDataManager.Instance.GetCurrentTowerPlatformData()).sprite;
+    }
+
+
     #endregion
 }

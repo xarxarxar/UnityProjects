@@ -30,8 +30,6 @@ public class Enemy : MonoBehaviour
     public Bindable<int> maxHP = new Bindable<int>();
     //敌人的最大护盾值，默认无护盾
     public Bindable<int> maxShield = new Bindable<int>();
-    //敌人的速度
-    private float _enemySpeed = 0.5f;
     //敌人的体型大小
     private float _enemyScale = 1;
     #endregion
@@ -48,7 +46,7 @@ public class Enemy : MonoBehaviour
     public Color hitColor = new Color32(255, 102, 51, 255);
 
     private Coroutine _setSpeedCoro = null;//减速的协程
-    private float _speedRate = 1;//速度的比例
+    //private float _speedRate = 1;//速度的比例
 
     private Coroutine _bleedCoro = null;//流血的协程
 
@@ -74,7 +72,7 @@ public class Enemy : MonoBehaviour
             spriteRenderer.DOKill();
             spriteRenderer.color = originalColor;
         }
-        _speedRate = 1;
+        EnemyManager.Instance.SpeedRate = 1;
         transform.localScale = Vector3.one;
         StopAllCoroutines();
     }
@@ -82,7 +80,7 @@ public class Enemy : MonoBehaviour
     void Update()
     {
         // 每秒向下移动 speed 个单位
-        transform.Translate(Vector2.down * _enemySpeed * _speedRate * Time.deltaTime
+        transform.Translate(Vector2.down * EnemyManager.Instance.EnemyFinalSpeed * Time.deltaTime
             * BattleManager.Instance.GameSpeed.Value *(1+BattleManager.Instance.Debuff.AddSpeed*0.1f));
 
         if(transform.position.y < EnemyManager.Instance.AttackYValue  && !_isInRangeList)
@@ -133,8 +131,8 @@ public class Enemy : MonoBehaviour
         _isInRangeList = false;       // 重置范围触发标志
         this.enemyType = enemyType;   //敌人类型
 
-        // 根据等级动态计算最大生命值，一级就是一滴血,护盾默认为 0
-        maxHP.Value = Mathf.RoundToInt(level * (1 + BattleManager.Instance.Debuff.AddHP * 0.1f)*10);//算上debuff的，增加敌人10%HP
+        // 根据等级动态计算最大生命值，护盾默认为 0
+        maxHP.Value = Mathf.RoundToInt((Mathf.Pow(level * 0.6f,2))*10f * (1 + BattleManager.Instance.Debuff.AddHP * 0.1f));//算上debuff的，增加敌人10%HP
         
         _currentHP.Value = maxHP.Value;   //初始化血量
         maxShield.Value = 0;            //初始化护盾
@@ -180,7 +178,7 @@ public class Enemy : MonoBehaviour
             dmgText.Init(screenPos, false, "免疫");
             return;
         }
-
+        if(isCritical) AudioManager.Instance.Vibrate("light");//重震动
         OnEnemyDamaged?.Invoke(this, isCritical, damage); // 通知外部
 
         if (_currentShield.Value > 0 && !isRealDamage)            // 有护盾时先扣护盾
@@ -219,7 +217,7 @@ public class Enemy : MonoBehaviour
     public void SetSpeed(float rate, float duration = 0,UnityAction callback=null)//自己被设置速度
     {
         if(rate<0) return;
-        _speedRate = rate;
+        EnemyManager.Instance.SpeedRate = rate;
         if (duration > 0)
         {
             if (_setSpeedCoro != null)
@@ -340,15 +338,15 @@ public class Enemy : MonoBehaviour
         switch (enemyType)
         {
             case EnemyType.Normal:
-                originalColor = new Color32(80, 140, 255, 255);// 柔和蓝
+                originalColor = new Color32(128, 200, 245, 255); // 淡雾蓝（极柔）
                 break;
 
             case EnemyType.Coin:
-                originalColor = new Color32(212, 175, 55, 255);// 金色
+                originalColor = new Color32(245, 215, 140, 255); // 奶油金（温柔金黄）
                 break;
 
             case EnemyType.Elite:
-                originalColor = new Color32(170, 100, 220, 255); // 紫色
+                originalColor = new Color32(210, 170, 240, 255); // 薰衣草紫（治愈系）
                 break;
 
             case EnemyType.Boss:
@@ -365,7 +363,7 @@ public class Enemy : MonoBehaviour
     private IEnumerator SetSpeedCoro(float duration,UnityAction callback = null)
     {
         yield return TimerUtility.WaitForGameSeconds(duration);
-        _speedRate = 1;
+        EnemyManager.Instance.SpeedRate = 1;
         callback?.Invoke();
         yield break;
     }
@@ -414,7 +412,7 @@ public class Enemy : MonoBehaviour
             transform.localScale = Vector3.one;
             return;
         }
-        float level01 = (CurrentHP.Value - 1f) / 49f;
+        float level01 = (CurrentHP.Value - 10f)/ 49f;
         float t = Mathf.SmoothStep(0f, 1f, level01);
         _enemyScale = Mathf.Lerp(1.0f, 1.6f, t);
         transform.localScale = Vector3.one * _enemyScale;

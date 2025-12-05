@@ -78,11 +78,11 @@ public class BankPanel : BasePanel
     {
         if (!BankManager.Instance.AdvanceMoney(500))
         {
-            GameUIManager.Instance.ShowQuickTip("超出借款上限");
+            TipManager.Instance.ShowTip("超出借款上限");
         }
         else
         {
-            GameUIManager.Instance.ShowQuickTip("借款成功");
+            TipManager.Instance.ShowTip("借款成功");
         }
     }
 
@@ -92,11 +92,11 @@ public class BankPanel : BasePanel
         if (CurrencyManager.Instance.SpendCoin(500))
         {
             BankManager.Instance.SaveMoney(WaveManager.Instance.CurrentRound, 500);
-            GameUIManager.Instance.ShowQuickTip("存款成功");
+            TipManager.Instance.ShowTip("存款成功");
         }
         else
         {
-            GameUIManager.Instance.ShowQuickTip("金币不足");
+            TipManager.Instance.ShowTip("金币不足");
         }
         
     }

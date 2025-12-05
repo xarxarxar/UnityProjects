@@ -37,8 +37,6 @@ public static class UpgradeFactory
             Upgrade_RageMode.CreateDynamicUpgrade,
             //Upgrade_DecreaseAdvanceInterest.CreateDynamicUpgrade,
             //Upgrade_IncreaseMaxAdvance.CreateDynamicUpgrade,
-            Upgrade_ChangeBulletKind.CreateDynamicUpgrade,
-            Upgrade_BulletKindDuration.CreateDynamicUpgrade,
             Upgrade_SummonCoinEnemy.CreateDynamicUpgrade,
             // 可在此继续扩充其他类型升级的模板，例如减速、银行利息等
         };
@@ -159,14 +157,6 @@ public static class UpgradeFactory
         //{
         //    return new Upgrade_IncreaseMaxAdvance(uima.Bonus, uima.Cost);
         //}
-        if (template is Upgrade_ChangeBulletKind ucbk)
-        {
-            return new Upgrade_ChangeBulletKind(ucbk.BulletKind, ucbk.Cost);
-        }
-        if (template is Upgrade_BulletKindDuration ubkd)
-        {
-            return new Upgrade_BulletKindDuration(ubkd.Bonus, ubkd.Cost);
-        }
         if (template is Upgrade_SummonCoinEnemy usce)
         {
             return new Upgrade_SummonCoinEnemy(usce.Cost);

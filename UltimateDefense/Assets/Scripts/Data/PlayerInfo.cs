@@ -2,216 +2,216 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-[System.Serializable]
+public class SkinInfo
+{
+    public int currentIndex;      // 当前使用的皮肤 index
+    public List<int> unlockedSkinIds; // 已解锁皮肤 index 列表
+}
+
+[Serializable]
 public class PlayerInfo
 {
-    public string UserName;        //用户的昵称
-    public string AavtarUrl;       //用户的头像
-    public int DiamondCount;          //局外钻石数量
-    public int CrownCount;          //局外王冠数量
-    public int PassCount;           //通过的次数
-    public int UnlockCount;         //解锁的科技index
-    [JsonIgnore]
-    public DateTime LastOnlineTime;// 上一次在线的时间，精确到分钟
-    public int TodayOnlineMinutes;   // 今天在线时长（分钟）
-    public int TodayEnemyDieCount;   // 今天消灭敌人数量
-    public int TodayWaveCount;   // 今天过了多少波次
-    public int TodayFreshCount;   // 今天刷新了多少次刷新按钮
-    public int TodayPassCount;   // 今天通关次数
-    public int TodayShareCount;   // 今天分享次数
-    public Dictionary<TowerType,int> TowerDatas = new Dictionary<TowerType, int>();//炮塔的等级数据
-    public TowerType CurrentTowerType;//当前使用的炮塔
-    // 在线奖励，每日任务，邀请有利这种每日刷新的奖励的领取情况,
-    public Dictionary<string, bool> DailyRewardReceived = new Dictionary<string, bool>();
-    public Dictionary<string, float> Config = new Dictionary<string, float>();//配置文件
+    // ① 用户基本信息
+    public string UserName;
+    public string AvatarUrl;
 
+    // ② 资源
+    public int Diamond;
+    public int Crown;
+    public int Medal;
+
+    // ③ 对局统计（非每日，不清零）
+    public int TotalPassCount;
+    public int TotalBattleCount;
+
+    // ④ 每日任务
+    public DailyTaskProgress DailyTask = new DailyTaskProgress();
+
+    // ⑤ 每月收集
+    public Dictionary<int, int> MonthlyCollection = new Dictionary<int, int>();
+
+    // ⑥ 炮塔 / 皮肤状态（新方案）
+    public int CurrentTowerID;
+    public Dictionary<int, ItemState> TowerStateMap = new Dictionary<int, ItemState>();
+    public int CurrentTowerPlatformID;
+    public Dictionary<int, ItemState> TowerPlatformStateMap = new Dictionary<int, ItemState>();
+
+    // ⑦ 配置
+    public Dictionary<string, float> Config = new Dictionary<string, float>();
+
+    public int UnlockCount;
+    public int BattleCountNoCollect;
+
+
+    // -------------------------------------------------
     // 构造函数
-    public PlayerInfo(string userName = null, string avatarUrl = null, 
-        int passCount = 0,int diamondCount=0, int crownCount=0,
-        int unlockCount=0, DateTime? lastOnlineTime = null, int todayOnlineMinutes = 0, 
-        Dictionary<TowerType, int> towerDatas = null, TowerType currentTowerType =TowerType.Basic,
-        Dictionary<string, bool> dailyRewardReceived =null, int todayEnemyDieCount=0,
-        int todayWaveCount = 0, int todayFreshCount = 0,int todayPassCount=0,int todayShareCount = 0,
-        Dictionary<string, float> config=null)
+    // -------------------------------------------------
+    public PlayerInfo(
+        string userName = "游客", string avatarUrl = "",
+        int diamond = 0, int crown = 0, int medal = 0,
+        int totalPass = 0, int totalBattle = 0,
+        int unlockCount = 0, int battleCountNoCollect = 0,
+        Dictionary<int, int> monthlyCollection = null,
+        int currentTowerID = 0,int currentTowerPlatformID = 0,
+        Dictionary<int, ItemState> towerStateMap = null, Dictionary<int, ItemState> towerPlatformStateMap = null,
+        Dictionary<string, float> config = null
+    )
     {
-        UserName = string.IsNullOrEmpty(userName) ? "游客" : userName;
-        AavtarUrl = string.IsNullOrEmpty(avatarUrl) ? "" : avatarUrl;//头像默认为空
-        DiamondCount = diamondCount;//局外钻石的数量
-        CrownCount = crownCount;//局外王冠的数量
-        PassCount = passCount; // 假设 0 是你的默认通关次数,这个是总的通关次数
+        UserName = userName;
+        AvatarUrl = avatarUrl;
+
+        Diamond = diamond;
+        Crown = crown;
+        Medal = medal;
+
+        TotalPassCount = totalPass;
+        TotalBattleCount = totalBattle;
+
         UnlockCount = unlockCount;
-        LastOnlineTime = lastOnlineTime ?? DateTime.Now;
-        TodayOnlineMinutes = todayOnlineMinutes;
-        TodayEnemyDieCount= todayEnemyDieCount;
-        TodayWaveCount = todayWaveCount;
-        TodayFreshCount = todayFreshCount;
-        TodayPassCount = todayPassCount;
-        TodayShareCount = todayShareCount;
-        CurrentTowerType = currentTowerType;
+        BattleCountNoCollect = battleCountNoCollect;
 
+        MonthlyCollection = monthlyCollection ?? new Dictionary<int, int>();
 
-        if (towerDatas == null)
-        {
-            TowerDatas[TowerType.Basic] = 1;
-            TowerDatas[TowerType.RapidFire] = 0;
-            TowerDatas[TowerType.Ricochet] = 0;
-            TowerDatas[TowerType.Spread] = 0;
-            TowerDatas[TowerType.Sniper] = 0;
-            TowerDatas[TowerType.Piercing] = 0;
-        }
-        else
-        {
-            TowerDatas.Clear();
-            foreach (var kv in towerDatas)
-            {
-                TowerDatas[kv.Key] = kv.Value;
-            }
-        }
-        if (dailyRewardReceived == null)
-        {
-            DailyRewardReceived.Clear();
-        }
-        else
-        {
-            DailyRewardReceived.Clear();
-            foreach (var kv in dailyRewardReceived)
-            {
-                DailyRewardReceived[kv.Key] = kv.Value;
-            }
-        }
+        CurrentTowerID = currentTowerID;
+        TowerStateMap = towerStateMap ?? new Dictionary<int, ItemState>();
 
-        if (config == null)
-        {
-            Config.Clear();
-        }
-        else
-        {
-            Config.Clear();
-            foreach (var kv in config)
-            {
-                Config[kv.Key] = kv.Value;
-            }
-        }
+        CurrentTowerPlatformID=currentTowerPlatformID;
+        TowerPlatformStateMap= towerPlatformStateMap?? new Dictionary<int, ItemState>();
 
+        Config = config ?? new Dictionary<string, float>();
+
+        DailyTask = new DailyTaskProgress();
     }
 }
 
+[System.Serializable]
 public class BindablePlayerInfo
 {
-    public Bindable<string> UserName=new Bindable<string>();        //用户的昵称
-    public Bindable<string> AavtarUrl = new Bindable<string>();       //用户的头像
-    public Bindable<int> DiamondCount = new Bindable<int>();          //局外钻石数量
-    public Bindable<int> CrownCount = new Bindable<int>();          //局外王冠数量
-    public Bindable<int> PassCount = new Bindable<int>();           //通过的次数
-    public Bindable<int> UnlockCount = new Bindable<int>();         //解锁的科技index
+    // 1 基本信息
+    public Bindable<string> UserName;
+    public Bindable<string> AvatarUrl;
 
-    public Bindable<int> TodayOnlineMinutes = new Bindable<int>();   // 今天在线时长（分钟）
-    public Bindable<int> TodayEnemyDieCount = new Bindable<int>();   // 今天消灭敌人数量
-    public Bindable<int> TodayWaveCount = new Bindable<int>();   // 今天过了多少波次
-    public Bindable<int> TodayFreshCount = new Bindable<int>();   // 今天刷新了多少次刷新按钮
-    public Bindable<int> TodayPassCount = new Bindable<int>();   // 今天通关次数
-    public Bindable<int> TodayShareCount = new Bindable<int>();   // 今天分享次数
-    public Bindable<DateTime> LastOnlineTime = new Bindable<DateTime>();// 上一次在线的时间，精确到分钟
-    public Bindable<TowerType> CurrentTowerType=new Bindable<TowerType>();//当前使用的炮塔
-    public Dictionary<TowerType, int> TowerDatas;//防御塔的等级数据
-    // 在线奖励，每日任务，邀请有利这种每日刷新的奖励的领取情况,
-    public Dictionary<string,bool> DailyRewardReceived = new Dictionary<string, bool>();
-    public Dictionary<string, float> Config = new Dictionary<string, float>();//配置文件
+    // 2 资源
+    public Bindable<int> Diamond;
+    public Bindable<int> Crown;
+    public Bindable<int> Medal;
 
+    // 3 累计数据
+    public Bindable<int> TotalPassCount;
+    public Bindable<int> TotalBattleCount;
+
+    // 4 每日任务
+    public DailyTaskProgress DailyTask;
+
+    // 5 每月收集
+    public Dictionary<int, int> MonthlyCollection;
+
+    // 6 炮塔系统
+    public Bindable<int> CurrentTowerID;
+    public Dictionary<int, ItemState> TowerStateMap;
+
+    public Bindable<int> CurrentTowerPlatformID;
+    public Dictionary<int, ItemState> TowerPlatformStateMap;
+
+    // 7 配置
+    public Dictionary<string, float> Config;
+
+    public Bindable<int> UnlockCount;
+    public Bindable<int> BattleCountNoCollect;
+
+
+    // -------------------------------------------------
     // 构造函数
-    public BindablePlayerInfo(string userName = null, string avatarUrl = null,
-        int passCount = 0, int diamondCount = 0, int crownCount = 0,
-        int unlockCount = 0, DateTime? lastOnlineTime = null, int todayOnlineMinutes = 0,
-        TowerType currentTowerType = TowerType.Basic, int todayEnemyDieCount = 0,
-        int todayWaveCount = 0, int todayFreshCount = 0, int todayPassCount = 0,int todayShareCount=0)
+    // -------------------------------------------------
+    public BindablePlayerInfo()
     {
-        UserName.Value = string.IsNullOrEmpty(userName) ? "游客" : userName;
-        AavtarUrl.Value = string.IsNullOrEmpty(avatarUrl) ? "" : avatarUrl;//头像默认为空
-        DiamondCount.Value = diamondCount;//局外钻石的数量
-        CrownCount.Value = crownCount;//局外王冠的数量
-        PassCount.Value = passCount; // 假设 0 是你的默认通关次数
-        UnlockCount.Value = unlockCount;
-        LastOnlineTime.Value = lastOnlineTime ?? DateTime.Now;
-        TodayOnlineMinutes.Value = todayOnlineMinutes;
-        TodayEnemyDieCount.Value = todayEnemyDieCount;
-        TodayFreshCount.Value = todayFreshCount;
-        TodayWaveCount.Value = todayWaveCount;
-        TodayPassCount.Value = todayPassCount;
-        TodayShareCount.Value = todayShareCount;
+        UserName = new Bindable<string>("游客");
+        AvatarUrl = new Bindable<string>("");
 
-        CurrentTowerType.Value = currentTowerType;
-        TowerDatas = new Dictionary<TowerType, int> {
-            { TowerType.Basic,1},{ TowerType.RapidFire,0 },{ TowerType.Ricochet,0 },
-            { TowerType.Spread,0 },{ TowerType.Piercing,0 }};
+        Diamond = new Bindable<int>(0);
+        Crown = new Bindable<int>(0);
+        Medal = new Bindable<int>(0);
+
+        TotalPassCount = new Bindable<int>(0);
+        TotalBattleCount = new Bindable<int>(0);
+
+        UnlockCount = new Bindable<int>(0);
+        BattleCountNoCollect = new Bindable<int>(0);
+
+        DailyTask = new DailyTaskProgress();
+
+        MonthlyCollection = new Dictionary<int, int>();
+        TowerStateMap = new Dictionary<int, ItemState>();
+        TowerPlatformStateMap=new Dictionary<int, ItemState>();
+
+        CurrentTowerID = new Bindable<int>(0);
+        CurrentTowerPlatformID = new Bindable<int>(0);
+
+        Config = new Dictionary<string, float>();
     }
 
-    /// <summary>
-    /// 从PlayerInfo转到BindablePlayerInfo
-    /// </summary>
-    /// <param name="playerInfo"></param>
-    public void CopyFromPlayerInfo(PlayerInfo playerInfo)
-    {
-        if (playerInfo == null)
-        {
-            UnityEngine.Debug.LogError("传入的 PlayerInfo 为 null");
-            return;
-        }
-        UserName.Value = playerInfo.UserName;
-        AavtarUrl.Value = playerInfo.AavtarUrl;
-        DiamondCount.Value = playerInfo.DiamondCount;
-        CrownCount.Value = playerInfo.CrownCount;
-        PassCount.Value = playerInfo.PassCount;
-        UnlockCount.Value = playerInfo.UnlockCount;
-        LastOnlineTime.Value = playerInfo.LastOnlineTime;
-        CurrentTowerType.Value =playerInfo.CurrentTowerType;
-        TodayOnlineMinutes.Value = playerInfo.TodayOnlineMinutes;
-        TodayEnemyDieCount.Value = playerInfo.TodayEnemyDieCount;
-        TodayWaveCount.Value = playerInfo.TodayWaveCount;
-        TodayFreshCount.Value = playerInfo.TodayFreshCount;
-        TodayPassCount.Value = playerInfo.TodayPassCount;
-        TodayShareCount.Value = playerInfo.TodayShareCount;
 
-        TowerDatas.Clear();
-        foreach (var kv in playerInfo.TowerDatas)
-        {
-            TowerDatas[kv.Key] = kv.Value;
-        }
-        DailyRewardReceived.Clear();
-        foreach (var kv in playerInfo.DailyRewardReceived)
-        {
-            DailyRewardReceived[kv.Key] = kv.Value;
-        }
-        Config.Clear();
-        foreach (var kv in playerInfo.Config)
-        {
-            Config[kv.Key] = kv.Value;
-        }
+    // -------------------------------------------------
+    // 将 PlayerInfo 数据复制到 BindablePlayerInfo（不触发事件）
+    // -------------------------------------------------
+    public void CopyFromPlayerInfo(PlayerInfo p)
+    {
+        UserName.SetSilent(p.UserName);
+        AvatarUrl.SetSilent(p.AvatarUrl);
+
+        Diamond.SetSilent(p.Diamond);
+        Crown.SetSilent(p.Crown);
+        Medal.SetSilent(p.Medal);
+
+        TotalPassCount.SetSilent(p.TotalPassCount);
+        TotalBattleCount.SetSilent(p.TotalBattleCount);
+
+        UnlockCount.SetSilent(p.UnlockCount);
+        BattleCountNoCollect.SetSilent(p.BattleCountNoCollect);
+
+        DailyTask = p.DailyTask;
+
+        MonthlyCollection = new Dictionary<int, int>(p.MonthlyCollection);
+        TowerStateMap = new Dictionary<int, ItemState>(p.TowerStateMap);
+
+        CurrentTowerID.SetSilent(p.CurrentTowerID);
+        CurrentTowerPlatformID.SetSilent(p.CurrentTowerPlatformID);
+
+        Config = new Dictionary<string, float>(p.Config);
     }
 
-    /// <summary>
-    /// 将BindablePlayerInfo转为PlayerInfo
-    /// </summary>
-    /// <returns></returns>
+
+    // -------------------------------------------------
+    // 转换回 PlayerInfo（用于保存 JSON）
+    // -------------------------------------------------
     public PlayerInfo ConvertToPlayerInfo()
     {
-        return new PlayerInfo(
-            userName: UserName.Value,
-            avatarUrl: AavtarUrl.Value,
-            passCount: PassCount.Value,
-            diamondCount: DiamondCount.Value,
-            crownCount: CrownCount.Value,
-            unlockCount: UnlockCount.Value,
-            lastOnlineTime: LastOnlineTime.Value,
-            todayOnlineMinutes: TodayOnlineMinutes.Value,
-            currentTowerType:CurrentTowerType.Value,
-            towerDatas: TowerDatas,
-            dailyRewardReceived:DailyRewardReceived,
-            todayEnemyDieCount:TodayEnemyDieCount.Value,
-            todayWaveCount:TodayWaveCount.Value,
-            todayFreshCount:TodayFreshCount.Value,
-            todayPassCount:TodayPassCount.Value,
-            todayShareCount:TodayShareCount.Value,
-            config:Config
-        );
+        PlayerInfo p = new PlayerInfo();
+
+        p.UserName = UserName.Value;
+        p.AvatarUrl = AvatarUrl.Value;
+
+        p.Diamond = Diamond.Value;
+        p.Crown = Crown.Value;
+        p.Medal = Medal.Value;
+
+        p.TotalPassCount = TotalPassCount.Value;
+        p.TotalBattleCount = TotalBattleCount.Value;
+
+        p.UnlockCount = UnlockCount.Value;
+        p.BattleCountNoCollect = BattleCountNoCollect.Value;
+
+        p.DailyTask = DailyTask;
+
+        p.MonthlyCollection = new Dictionary<int, int>(MonthlyCollection);
+        p.TowerStateMap = new Dictionary<int, ItemState>(TowerStateMap);
+        p.TowerPlatformStateMap=new Dictionary<int, ItemState>(TowerPlatformStateMap);
+
+        p.CurrentTowerID = CurrentTowerID.Value;
+        p.CurrentTowerPlatformID = CurrentTowerPlatformID.Value;
+
+        p.Config = new Dictionary<string, float>(Config);
+
+        return p;
     }
 }

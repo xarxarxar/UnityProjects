@@ -9,11 +9,7 @@ public class WaveManager : ManagerBase<WaveManager>
 {
     #region 私有属性
     private int _currentRound=0;                         // 当前回合数（1–100）
-    [SerializeField]private int _maxRound = 100;        //最大回合数
-    private bool _isInKeyWave;                         // 标记本回合是否为关键波
-    private bool _isSpawning;                          // 标记当前是否正在生成本回合怪物
-    [SerializeField]private int _singleWaveEnemyCount = 20;             //每个回合生成怪物的数量
-    [SerializeField]private float _spawnEnemyInterval=3.0f;                 //每个敌人生成的间隔时间
+    [SerializeField]private int _maxRound = 50;        //最大回合数
     [SerializeField]private float _spawnWaveInterval=5.0f;                 //每波敌人生成的间隔时间
     #endregion
 
@@ -41,10 +37,6 @@ public class WaveManager : ManagerBase<WaveManager>
     }
 
     /// <summary>
-    /// 只读属性，暴露是否为关键波
-    /// </summary>
-    public bool IsInKeyWave { get { return _isInKeyWave; } }
-    /// <summary>
     /// 只读属性，每波敌人生成的间隔时间
     /// </summary>
     public float SpawnWaveInterval { get => _spawnWaveInterval; }
@@ -63,7 +55,6 @@ public class WaveManager : ManagerBase<WaveManager>
     {
         Debug.Log("wavemanager 初始化");
         _currentRound = 0;
-        _singleWaveEnemyCount = 20;
     }
     /// <summary>
     /// 启动下一回合怪物生成流程

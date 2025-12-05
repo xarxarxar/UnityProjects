@@ -7,13 +7,13 @@ public class GameEntrence : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
-        DataManager.Instance.InitOrLoadPlayerData();
+        StartCoroutine(delayDoing());
+        
     }
 
-    // Update is called once per frame
-    void Update()
+    IEnumerator delayDoing()
     {
-        
+        yield return new WaitForSeconds(1);
+        DataManager.Instance.InitOrLoadPlayerData();
     }
 }

@@ -14,14 +14,14 @@ public class WelfarePanel : BasePanel
 
     protected override void InitPanel()
     {
-        CoinCount = UpgradeManager.Instance.RefreshCount.Value * 90;
+        CoinCount = UpgradeManager.Instance.RefreshCount.Value * 120;//可以获得的金币是RefreshCount的100倍
         CoinCountText.text = $"×{CoinCount}";
 
         DiamonButton.onClick.RemoveAllListeners();
         AdButton.onClick.RemoveAllListeners();
 
         DiamonButton.onClick.AddListener(DiamonGetMoney);
-        AdButton.onClick.AddListener(GetMoney);
+        AdButton.onClick.AddListener(ShareForMoney);
 
         if(!MetaCurrencyManager.Instance.HasEnoughMoney(DiamonRewardStruct.type, DiamonRewardStruct.count))
         {
@@ -30,6 +30,15 @@ public class WelfarePanel : BasePanel
         else
         {
             DiamonRewardStruct.countText.color = Color.white;
+        }
+
+        if (BattleManager.Instance.ShareForWelfareCount >= 2)
+        {
+            AdButton.gameObject.SetActive(false);
+        }
+        else
+        {
+            AdButton.gameObject.SetActive(true);
         }
     }
 
@@ -41,6 +50,27 @@ public class WelfarePanel : BasePanel
             GetMoney();
             OnCloseButton();
         }
+        else
+        {
+            TipManager.Instance.ShowTip("钻石不足");
+        }
+    }
+
+    private void ShareForMoney()
+    {
+        if(BattleManager.Instance.ShareForWelfareCount >= 2)
+        {
+            TipManager.Instance.ShowTip("本此战斗分享次数已用尽");
+            return;
+        }
+        WeChatManager.ShareApp(() =>
+        {
+            DataManager.Instance.PlayerInfo.DailyTask.ShareCount.Value += 1;
+            BattleManager.Instance.ShareForWelfareCount++;
+            GetMoney();
+            OnCloseButton();
+        }, title: "求求你送我点金币吧!");
+        DataManager.Instance.SavePlayerInfo();
     }
 
     //得到这些金币
@@ -51,7 +81,7 @@ public class WelfarePanel : BasePanel
         Vector3 screenEnd = RectTransformUtility.WorldToScreenPoint(null, GlobalCoinText.transform.position);
         GameUIManager.Instance.PlayFlyCoinEffect(screenStart, screenEnd, 5, totalCallback: () =>
         {
-            CurrencyManager.Instance.AddCoin(CoinCount,5);
+            CurrencyManager.Instance.AddCoin(CoinCount, 5);
         });
     }
 }

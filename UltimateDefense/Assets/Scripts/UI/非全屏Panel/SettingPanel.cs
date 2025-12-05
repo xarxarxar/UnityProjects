@@ -4,15 +4,13 @@ using UnityEngine.UI;
 public class SettingPanel : BasePanel
 {
     [SerializeField] private Toggle _isTurnOnDamageTextToggle;//是否打开伤害文字
-    [SerializeField] private Toggle _isTurnOnMusicToggle;//是否打开音乐
-    [SerializeField] private Toggle _isTurnOnSoundToggle;//是否打开音效
+    [SerializeField] private Toggle _isTurnOnVibrate;//是否打开震动
 
     [SerializeField] private GameObject _activeDamageText;//伤害文字的active的物体
-    [SerializeField] private GameObject _activeTurnOnMusic;//打开音乐的active的物体
-    [SerializeField] private GameObject _activeTurnOnSound;//打开音效的active的物体
+    [SerializeField] private GameObject _inactiveDamageText;//伤害文字的inactive的物体
+    [SerializeField] private GameObject _activeTurnOnVibrate;//打开震动的active的物体
+    [SerializeField] private GameObject _inactiveTurnOnVibrate;//打开震动的inactive的物体
 
-    //[SerializeField] private GameObject _musicSlider;//控制音乐大小的slider
-    //[SerializeField] private GameObject _soundSlider;//控制音乐大小的slider
 
     [SerializeField] private Text _musicVolumText;//音乐大小文字
     [SerializeField] private Text _soundVolumText;//音效大小文字
@@ -39,6 +37,7 @@ public class SettingPanel : BasePanel
         }
         _isTurnOnDamageTextToggle.isOn = DataManager.Instance.PlayerInfo.Config["DamageText"] == 1;
         _activeDamageText.SetActive(DataManager.Instance.PlayerInfo.Config["DamageText"]==1);
+        _inactiveDamageText.SetActive(DataManager.Instance.PlayerInfo.Config["DamageText"]!=1);
 
         //是否打开震动
         if (!DataManager.Instance.PlayerInfo.Config.ContainsKey("Vibrate"))
@@ -46,7 +45,9 @@ public class SettingPanel : BasePanel
             DataManager.Instance.PlayerInfo.Config["Vibrate"] = 1;//1表示true
             DataManager.Instance.SavePlayerInfo();
         }
-
+        _isTurnOnVibrate.isOn = DataManager.Instance.PlayerInfo.Config["Vibrate"] == 1;
+        _activeTurnOnVibrate.SetActive(DataManager.Instance.PlayerInfo.Config["Vibrate"] == 1);
+        _inactiveTurnOnVibrate.SetActive(DataManager.Instance.PlayerInfo.Config["Vibrate"] != 1);
 
         //是否打开音乐
         //音乐的音量
@@ -55,8 +56,6 @@ public class SettingPanel : BasePanel
             DataManager.Instance.PlayerInfo.Config["MusicVolum"] = 50;
             DataManager.Instance.SavePlayerInfo();
         }
-        _isTurnOnMusicToggle.isOn = DataManager.Instance.PlayerInfo.Config["MusicVolum"] > 0;
-        _activeTurnOnMusic.SetActive(DataManager.Instance.PlayerInfo.Config["MusicVolum"] >0);
         //_musicVolumText.text = DataManager.Instance.PlayerInfo.Config["MusicVolum"].ToString();
         _musicVolumSlider.value = DataManager.Instance.PlayerInfo.Config["MusicVolum"];
 
@@ -68,8 +67,7 @@ public class SettingPanel : BasePanel
             DataManager.Instance.PlayerInfo.Config["SoundVolum"] = 50;
             DataManager.Instance.SavePlayerInfo();
         }
-        _isTurnOnSoundToggle.isOn = DataManager.Instance.PlayerInfo.Config["SoundVolum"] > 0;
-        _activeTurnOnSound.SetActive(DataManager.Instance.PlayerInfo.Config["SoundVolum"] >0);
+       
         //_soundVolumText.text = DataManager.Instance.PlayerInfo.Config["SoundVolum"].ToString();
         _soundVolumSlider.value = DataManager.Instance.PlayerInfo.Config["SoundVolum"];
 
@@ -81,31 +79,24 @@ public class SettingPanel : BasePanel
         _isTurnOnDamageTextToggle.onValueChanged.AddListener(isOn =>
         {
             _activeDamageText.SetActive(isOn);
+            _inactiveDamageText.SetActive(!isOn);
             DataManager.Instance.PlayerInfo.Config["DamageText"] = isOn ? 1 : 0;
             DataManager.Instance.SavePlayerInfo();
         });
 
-        _isTurnOnMusicToggle.onValueChanged.AddListener(isOn =>
+        _isTurnOnVibrate.onValueChanged.AddListener(isOn =>
         {
-            DataManager.Instance.PlayerInfo.Config["MusicVolum"] =isOn ? 50 : 0;
-            _musicVolumSlider.value = DataManager.Instance.PlayerInfo.Config["MusicVolum"];
-            _activeTurnOnMusic.SetActive(isOn);
+            _activeTurnOnVibrate.SetActive(isOn);
+            _inactiveTurnOnVibrate.SetActive(!isOn);
+            DataManager.Instance.PlayerInfo.Config["Vibrate"] = isOn ? 1 : 0;
             DataManager.Instance.SavePlayerInfo();
-        });
-
-        _isTurnOnSoundToggle.onValueChanged.AddListener(isOn =>
-        {
-            DataManager.Instance.PlayerInfo.Config["SoundVolum"] = isOn ? 50 : 0;
-            _soundVolumSlider.value = DataManager.Instance.PlayerInfo.Config["SoundVolum"];
-            _activeTurnOnSound.SetActive(isOn);
-            DataManager.Instance.SavePlayerInfo();
-
         });
 
         _musicVolumSlider.onValueChanged.AddListener(value =>
         {
             _musicVolumText.text = value.ToString();
             DataManager.Instance.PlayerInfo.Config["MusicVolum"] = value;
+            AudioManager.Instance.SetBGMVolume(DataManager.Instance.PlayerInfo.Config["MusicVolum"] * 0.6f / 100);
             DataManager.Instance.SavePlayerInfo();
         });
 
@@ -113,6 +104,7 @@ public class SettingPanel : BasePanel
         {
             _soundVolumText.text = value.ToString();
             DataManager.Instance.PlayerInfo.Config["SoundVolum"]=value;
+            AudioManager.Instance.SetSFXVolume(DataManager.Instance.PlayerInfo.Config["SoundVolum"] / 100);
             DataManager.Instance.SavePlayerInfo();
         });
     }
@@ -121,8 +113,6 @@ public class SettingPanel : BasePanel
     private void OnDisable()
     {
         _isTurnOnDamageTextToggle.onValueChanged.RemoveAllListeners();
-        _isTurnOnMusicToggle.onValueChanged.RemoveAllListeners();
-        _isTurnOnSoundToggle.onValueChanged.RemoveAllListeners();
 
         _musicVolumSlider.onValueChanged.RemoveAllListeners();
         _soundVolumSlider.onValueChanged.RemoveAllListeners();

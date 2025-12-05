@@ -295,14 +295,25 @@ public class BattleUIManager : ManagerBase<BattleUIManager>
         // 世界坐标 → 屏幕坐标
         Vector3 worldPos = enemy.transform.position + Vector3.up * 1.2f;  // 头顶偏移
         Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
-        if (isCritical)
+        if (!DataManager.Instance.PlayerInfo.Config.ContainsKey("DamageText"))
         {
-            //dmgText.Init(screenPos, isCritical, (damage / 10.0f).ToString());
-            // 创建伤害Text（属于 screen-space canvas）
-            DamageText dmgText = _damageTextPool.Get();  // 用对象池
-            dmgText.Init(screenPos, isCritical, "暴击");
+            DataManager.Instance.PlayerInfo.Config["DamageText"] = 0;//0表示false
+            DataManager.Instance.SavePlayerInfo();
         }
-
+        
+        if (DataManager.Instance.PlayerInfo.Config["DamageText"] == 1)//伤害文字显示已打开
+        {
+            DamageText dmgText = _damageTextPool.Get();  // 用对象池
+            dmgText.Init(screenPos, isCritical, (damage / 10.0f).ToString());
+        }
+        else
+        {
+            if (isCritical)
+            {
+                DamageText dmgText = _damageTextPool.Get();  // 用对象池
+                dmgText.Init(screenPos, isCritical, "暴击");
+            }
+        }
         
     }
 

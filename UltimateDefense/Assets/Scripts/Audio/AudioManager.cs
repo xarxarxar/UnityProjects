@@ -122,6 +122,7 @@ public class AudioManager : MonoBehaviour
     public void SetSFXVolume(float volume)
     {
         sfxVolume = volume;
+        if (sfxSource != null) sfxSource.volume = volume;
     }
 
     /// <summary>
@@ -142,9 +143,18 @@ public class AudioManager : MonoBehaviour
     /// <summary>
     /// 短震动
     /// </summary>
-    public void Vibrate()
+    public void Vibrate(string type)
     {
-        WeChatManager.Instance.Vibrate();//震动
+        if (!DataManager.Instance.PlayerInfo.Config.ContainsKey("Vibrate"))
+        {
+            DataManager.Instance.PlayerInfo.Config["Vibrate"] = 1;//1表示true
+            DataManager.Instance.SavePlayerInfo();
+        }
+        if (DataManager.Instance.PlayerInfo.Config["Vibrate"] != 1)
+        {
+            return;//没开震动
+        }
+        WeChatManager.Instance.Vibrate(type);//震动
     }
 }
 

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -10,9 +11,9 @@ public class TowerManager : ManagerBase<TowerManager>
     #region 私有属性
 
     //全局加成
-    private Bindable<float> _bonusAtk = new Bindable<float>();         // 全局攻击力加成值
+    private Bindable<float> _bonusAtk = new Bindable<float>();     // 全局攻击力加成值
     private Bindable<int> _bonusCap = new Bindable<int>();         //全局弹夹容量加成
-    private Bindable<float> _bonusAtkRate = new Bindable<float>();     // 全局射速加成倍率
+    private Bindable<float> _bonusAtkRate = new Bindable<float>(); // 全局射速加成倍率
     private Bindable<float> _bonusCritProb = new Bindable<float>();//全局暴击概率加成
     private Bindable<float> _bonusCritMult = new Bindable<float>();//全局暴击伤害倍数加成
     private Bindable<float> _bonusReload = new Bindable<float>();  //全局换弹时长
@@ -24,12 +25,12 @@ public class TowerManager : ManagerBase<TowerManager>
     //总的
     private Bindable<float> _totalAttackRate = new Bindable<float>();//总攻速
 
-    private TowerFactory _towerFactory;               // 引用 TowerFactory 单例，用于创建新塔
     [SerializeField] public Bullet _bulletPrefab;     //子弹预制体
     private ObjectPool<Bullet> _bulletPool;           //子弹对象池
-    private TowerType _towerType;//当前炮塔的形态
     [SerializeField] private GameObject _towerObject;//炮塔物体
-    [SerializeField] private BaseTower _currentTower;//当前的炮塔
+    [SerializeField] private Tower _currentTower;//当前的炮塔
+    [SerializeField] private Transform towerGunParent;//炮管的父物体
+    [SerializeField] private TowerPlatform towerPlatform;//炮塔底座
     #endregion
 
     #region 公开属性
@@ -77,21 +78,29 @@ public class TowerManager : ManagerBase<TowerManager>
     /// </summary>
     public ObjectPool<Bullet> BulletPool { get => _bulletPool; }
     /// <summary>
-    /// 当前炮塔的形态
-    /// </summary>
-    public TowerType TowerType { get => _towerType; set => _towerType = value; }
-    /// <summary>
     /// 当前的炮塔
     /// </summary>
-    public BaseTower CurrentTower { get => _currentTower; }
+    public Tower CurrentTower { get => _currentTower; }
 
-    /// <summary>
-    /// 当前子弹的形态
-    /// </summary>
-    public  BulletKind CurrentBulletKind;
-    public int BulletKindCount;//特殊子弹的个数
 
     #endregion
+
+
+    #region 私有成员方法
+    /// <summary>
+    /// 单例初始化：如果 Instance == null，则 Instance = this; DontDestroyOnLoad(gameObject); 否则 Destroy(gameObject).
+    /// 初始化 _allTowers 列表，并获取 TowerFactory 单例
+    /// </summary>
+    protected override void Awake()
+    {
+        base.Awake();
+        _stage = InitStage.InBattle;
+        Index = 2;
+    }
+
+
+    #endregion
+
 
     #region public 成员方法
     /// <summary>
@@ -110,28 +119,10 @@ public class TowerManager : ManagerBase<TowerManager>
         _bonusCritMult.Value = 0f;
         _bonusReload.Value = 0;
         _bonusCap.Value = 0;
-        BulletKindCount = 20;
-        CurrentBulletKind = BulletKind.Normal;
 
         if (_bulletPool == null) _bulletPool = new ObjectPool<Bullet>(_bulletPrefab, 10, transform);
 
-        //启用对应炮塔的脚本
-        TowerType currentType = DataManager.Instance.PlayerInfo.CurrentTowerType.Value;
-        // 获取所有继承自 BaseTower 的脚本（即便禁用了也能拿到）
-        BaseTower[] allTowerScripts = _towerObject.GetComponents<BaseTower>();
-        foreach (BaseTower script in allTowerScripts)
-        {
-            // 判断是否和当前选中的类型匹配
-            if (script.TowerType== currentType)
-            {
-                script.enabled = true;  // 启用对应脚本
-                _currentTower=script;
-            }
-            else
-            {
-                script.enabled = false; // 禁用其他
-            }
-        }
+        
     }
     /// <summary>
     /// 设置临时攻速，持续一段时间
@@ -168,98 +159,20 @@ public class TowerManager : ManagerBase<TowerManager>
         _bonusAtk.Value += bonus;
     }
 
+    
+
     /// <summary>
-    /// 临时改变子弹的形态
+    /// 加载整个炮塔
     /// </summary>
-    /// <param name="bulletKind">子弹的形态，干冰弹，火焰弹，麻痹弹</param>
-    /// <param name="duration">持续的子弹个数</param>
-    public void ChangeBullet(BulletKind bulletKind)
+    public void LoadCompleteTower()
     {
-        CurrentBulletKind=bulletKind;
-        int tmpCount = 0;
-        int lastBulletCount=CurrentTower.CurrentBulletCount;
-        BaseTower.OnCurrentBulletCountChanged -= OnCurrentBulletCountChanged;
-        BaseTower.OnCurrentBulletCountChanged += OnCurrentBulletCountChanged;
+        Debug.Log("加载炮塔");
+        Tower selectedTower = TowerDataManager.Instance.GetCurrentTowerData().TowerPrefab;
+        Instantiate(selectedTower, towerGunParent.transform);
 
 
-        switch (bulletKind)
-        {
-            case BulletKind.Normal:
-                _currentTower._bulletText.color = Color.white; break;
-            case BulletKind.Ice:
-                _currentTower._bulletText.color = new Color32(135, 206, 250, 255); // 浅蓝 #ADD8E6
-                break;
-            case BulletKind.Fire:
-                _currentTower._bulletText.color = new Color32(255, 99, 71, 255);  // 浅珊瑚红 #FFA07A
-                break;
-            case BulletKind.Electric:
-                _currentTower._bulletText.color = new Color32(0, 255, 255, 255); //
-                break;
-        }
-
-
-        void OnCurrentBulletCountChanged(int value)
-        {
-            if(value< lastBulletCount)//这才是子弹减少了
-            {
-                Debug.Log("子弹减少了");
-                tmpCount += (lastBulletCount - value);//子弹减少了这么多
-                if (tmpCount >= BulletKindCount)
-                {
-                    CurrentBulletKind = BulletKind.Normal;
-                    _currentTower._bulletText.color = Color.white;
-                    BaseTower.OnCurrentBulletCountChanged -= OnCurrentBulletCountChanged;
-                }
-            }
-            lastBulletCount = value;
-        }
     }
     #endregion
 
-    #region 私有成员方法
-    /// <summary>
-    /// 单例初始化：如果 Instance == null，则 Instance = this; DontDestroyOnLoad(gameObject); 否则 Destroy(gameObject).
-    /// 初始化 _allTowers 列表，并获取 TowerFactory 单例
-    /// </summary>
-    protected override void Awake()
-    {
-        base.Awake();
-        _stage=InitStage.InBattle;
-        Index = 2;
-    }
-
-
-
-    #endregion
-}
-
-/// <summary>
-/// 塔的形态类型
-/// </summary>
-public enum TowerType
-{
-    /// <summary>
-    /// 基础形态：普通单发塔
-    /// </summary>
-    Basic,    // 
-    /// <summary>
-    /// 连发形态：每次连续发射两颗子弹
-    /// </summary>
-    RapidFire,// 
-    /// <summary>
-    /// 弹射形态：子弹击中后弹射至另一个敌人
-    /// </summary>
-    Ricochet, // 
-    /// <summary>
-    /// 散射形态：每次扇形发射三颗子弹
-    /// </summary>
-    Spread,   // 
-    /// <summary>
-    /// 狙击形态：攻击间隔更长但伤害更高
-    /// </summary>
-    Sniper,   // 
-    /// <summary>
-    /// 穿透形态：子弹穿透敌人造成伤害
-    /// </summary>
-    Piercing  // 
+    
 }

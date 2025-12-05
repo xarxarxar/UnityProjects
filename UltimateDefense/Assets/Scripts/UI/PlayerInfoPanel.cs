@@ -7,6 +7,6 @@ public class PlayerInfoPanel : MonoBehaviour
 
     private void OnEnable()
     {
-        _passCountText.text=DataManager.Instance.PlayerInfo.PassCount.ToString();
+        //_passCountText.text=DataManager.Instance.PlayerInfo.PassCount.ToString();
     }
 }

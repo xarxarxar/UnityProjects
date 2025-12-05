@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -45,6 +46,7 @@ public class EnemyManager : ManagerBase<EnemyManager>
     private Bindable<Enemy> _currentClickedEnemy=new Bindable<Enemy>();//当前被点击的敌人
     // 存储暂停前所有敌人的速度
     private float _eliteEnemyProportion = 0.2f;//精英怪所占的比例
+    private float _speedRate = 1;//速度的比例
     #endregion
 
     #region 公开静态事件
@@ -132,7 +134,8 @@ public class EnemyManager : ManagerBase<EnemyManager>
     /// 进入攻击范围的y值
     /// </summary>
     public float AttackYValue { get => _attackYValue; set => _attackYValue = value; }
-
+    public float SpeedRate { get => _speedRate; set => _speedRate = value; }
+    public float EnemyFinalSpeed=> _speedRate* EnemySpeed.Value;
     #endregion
 
     #region 常量
@@ -161,13 +164,9 @@ public class EnemyManager : ManagerBase<EnemyManager>
         _enemyDieCoinProb.Value = 0.5f;
         _eliteEnemyProportion = 0.2f + BattleManager.Instance.Debuff.EliteEnemyCount * 0.1f;
 
-        if (!DataManager.Instance.PlayerInfo.Config.ContainsKey("EnemyDieCoin"))
-        {
-            DataManager.Instance.PlayerInfo.Config["EnemyDieCoin"] = 10;
-        }
-        _enemyDieCoin.Value = Mathf.RoundToInt(DataManager.Instance.PlayerInfo.Config["EnemyDieCoin"]);
+        _enemyDieCoin.Value = Mathf.RoundToInt(10+ScienceManager.Instance.GetUpgradeCountByType(ScienceEffectType.EnemyDieCount)*1);
         _enemyCurrentCount.Value = 0;
-        _enemySpeed.Value = 0.5f;
+        _enemySpeed.Value = 0.6f;
         _enemyDamageNullifiedCount.Value = 0 + BattleManager.Instance.Debuff.DamageNullified;
         SignleEnemyDieCount.Value = 0;
 
@@ -357,13 +356,13 @@ public class EnemyManager : ManagerBase<EnemyManager>
                 (enemyTyps[i], enemyTyps[rand]) = (enemyTyps[rand], enemyTyps[i]);
             }
 
-            int level = Mathf.RoundToInt(Mathf.Min(WaveManager.Instance.MaxRound, UnityEngine.Random.Range(currentRound, currentRound + 1))
-                * (1 + BattleManager.Instance.Debuff.AddHP * 0.1f));
+            //int level = Mathf.RoundToInt(Mathf.Min(WaveManager.Instance.MaxRound, UnityEngine.Random.Range(currentRound, currentRound + 1))
+            //    * (1 + BattleManager.Instance.Debuff.AddHP * 0.1f));
+            int level = currentRound;
 
-            //每10关召唤Boss
-            if (WaveManager.Instance.CurrentRound % 10 == 0)
+            if (currentRound == WaveManager.Instance.MaxRound)
             {
-                level *= 2;
+                level = (int)(currentRound * 1.1f);
             }
             int index = 0;
             for (int k = 0; k < enemyArraies.Count; k++) 
@@ -373,25 +372,25 @@ public class EnemyManager : ManagerBase<EnemyManager>
                 {
                     while (BattleManager.Instance.GameSpeed.Value<=0) yield return null;
 
+                    float diameter = EnemyScale(level) * 1.05f;
+                    int rowCount = enemyArray.GetLength(1);
+                    float rowWidth = rowCount * diameter;
+                    float startX = -rowWidth / 2f + diameter / 2f;
+
                     for (int j = enemyArray.GetLength(1) - 1; j >= 0; j--)
                     {
                         while (BattleManager.Instance.GameSpeed.Value <= 0) yield return null;
 
                         if (enemyArray[i, j] == 1)
                         {
-                            SpawnEnemy(enemyTyps[index], -5f + j * (10 / 6.0f), level);
+                            float x = startX + j * diameter;
+                            SpawnEnemy(enemyTyps[index], x, level);
                             index++;
                         }
-
-                       
-
-
                     }
-                    yield return TimerUtility.WaitForGameSeconds(EnemyScale(level) * 3.0f);
+                    yield return StartCoroutine(WaitForDistance(EnemyScale(level) * 1.05f));
                 }
-
-                
-                yield return TimerUtility.WaitForGameSeconds(EnemyScale(level) * 6.0f);
+                yield return StartCoroutine(WaitForDistance(EnemyScale(level) * 1.5f));
             }
             // 如果是最后一波 且是第一个生成的敌人（逆序的最后一个）
             if (WaveManager.Instance.CurrentRound == WaveManager.Instance.MaxRound)
@@ -442,10 +441,28 @@ public class EnemyManager : ManagerBase<EnemyManager>
 
     private float EnemyScale(int level)
     {
-        float level01 = (level - 1f) / 49f;
+        float maxHP = Mathf.RoundToInt((Mathf.Pow(level * 0.6f, 2)) * 10f * (1 + BattleManager.Instance.Debuff.AddHP * 0.1f));//算上debuff的，增加敌人10%HP
+        float level01 = (maxHP - 10f) / 49f;
         float t = Mathf.SmoothStep(0f, 1f, level01);
         return Mathf.Lerp(1.0f, 1.6f, t);
         
+    }
+
+    public IEnumerator WaitForDistance(float verticalSize)
+    {
+        float accumulatedDistance = 0f;
+
+        while (accumulatedDistance < verticalSize)
+        {
+            // EnemyFinalSpeed 可以随时变化
+            float currentSpeed = EnemyFinalSpeed*BattleManager.Instance.GameSpeed.Value;
+
+            // 如果速度 <=0，暂停累加
+            if (currentSpeed > 0f)
+                accumulatedDistance += currentSpeed * Time.deltaTime;
+
+            yield return null; // 每帧检查
+        }
     }
 
     #endregion

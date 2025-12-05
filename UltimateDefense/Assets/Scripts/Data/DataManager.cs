@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using System.Collections;
 using System.IO;
 using System.Security.Cryptography;
 using UnityEngine;
@@ -19,6 +20,8 @@ public class DataManager : MonoBehaviour
 
     public static event UnityAction<int> OnPassCountChanged;//通关次数变化
     public static event UnityAction OnDataLoaded;//数据加载完毕
+
+    [SerializeField] private LoadingProgressChannelSO _loadingReward;//进入游戏时的加载数据
 
     /// <summary>
     /// 玩家全局信息
@@ -53,7 +56,14 @@ public class DataManager : MonoBehaviour
     public void Start()
     {
         BattleManager.OnEndBattle += OnEndBattle;
+    }
 
+    private void Update()
+    {
+        if(Input.GetKeyUp(KeyCode.S))
+        {
+            MetaCurrencyManager.Instance.AddMetaCoin(RewardType.Diamond,500);
+        }
     }
 
     /// <summary>
@@ -64,16 +74,22 @@ public class DataManager : MonoBehaviour
     /// </summary>
     public void InitOrLoadPlayerData()
     {
+#if UNITY_EDITOR
+        OnDataLoaded?.Invoke();
+#else
         WeChatManager.Instance.InitSDK(() =>
         {
             userFrom = "weixin";
+            _loadingReward.Raise(10,"登录中……");
             LoginToWeChat();
         });
+#endif
     }
 
     //登录微信，拿到用户的临时code
     private void LoginToWeChat()
     {
+        _loadingReward.Raise(15, "登录中……");
         WX.Login(new LoginOption
         {
             success = (res) =>
@@ -88,6 +104,7 @@ public class DataManager : MonoBehaviour
     //获取用户的openid
     private void GetOpenID()
     {
+        _loadingReward.Raise(25, "获取玩家信息……");
         APIAccess.Instance.Code2Session(
             onSuccess: (res) =>
             {
@@ -100,8 +117,18 @@ public class DataManager : MonoBehaviour
     }
 
     //最终加载或者创建玩家数据
+    private int LoadOrCreatePlayerDataRetryCount = 0;//重试次数
     private void LoadOrCreatePlayerData(string userId)
     {
+        if (LoadOrCreatePlayerDataRetryCount < 3)
+        {
+            _loadingReward.Raise(5, "玩家信息加载中……", true);
+        }
+        else
+        {
+            _loadingReward.Raise(45, "玩家信息加载中……", true);
+        }
+        
         APIAccess.Instance.GetData(userId,
             onSuccess: (res) =>//拿到玩家的数据,说明不是新玩家
             {
@@ -117,6 +144,7 @@ public class DataManager : MonoBehaviour
                 {
                     success = (res) =>
                     {
+                        _loadingReward.Raise(60, "玩家信息加载中……");
                         Debug.Log($"获取用户权限: {JsonConvert.SerializeObject(res.authSetting, Formatting.Indented)}");
                         //已经授权过,未授权过的话不需要做任何操作，所以没有else
                         if (res.authSetting.TryGetValue("scope.userInfo", out bool authorized) && authorized)
@@ -126,56 +154,105 @@ public class DataManager : MonoBehaviour
                             {
                                 success = (res) =>//成功获取用户信息，数据库中的昵称和头像不再使用默认值
                                 {
+                                    _loadingReward.Raise(80, "正在加载游戏……");
                                     //若昵称或者头像发生了变化，则同步用户的昵称和头像
                                     if (PlayerInfo.UserName.Value != res.userInfo.nickName ||
-                                    PlayerInfo.AavtarUrl.Value != res.userInfo.avatarUrl)
+                                    PlayerInfo.AvatarUrl.Value != res.userInfo.avatarUrl)
                                     {
                                         PlayerInfo.UserName.Value = res.userInfo.nickName;
-                                        PlayerInfo.AavtarUrl.Value = res.userInfo.avatarUrl;
+                                        PlayerInfo.AvatarUrl.Value = res.userInfo.avatarUrl;
                                         //最终都要保存用户的数据
                                         APIAccess.Instance.SaveData(onComplete: () =>
                                         {
+                                            _loadingReward.Raise(95, "进入游戏……");
                                             //进入游戏
                                             OnDataLoaded?.Invoke();
                                         });
                                     }
                                     else//如果没有变化，那么直接进入游戏
                                     {
+                                        _loadingReward.Raise(95, "进入游戏……");
                                         OnDataLoaded?.Invoke();
                                     }
                                 },
                                 fail = (res) =>//用户拒绝授权，就使用默认的昵称和头像，并且直接进入游戏
                                 {
                                     Debug.LogError("获取用户信息失败：" + res.errMsg);
+                                    _loadingReward.Raise(95, "进入游戏……");
                                     OnDataLoaded?.Invoke();
                                 },
                             });
                         }
                         else//未获取到用户权限，直接进入游戏
                         {
+                            _loadingReward.Raise(95, "进入游戏……");
                             OnDataLoaded?.Invoke();
                         }
-                        
+
                     },
                     //获取失败的话直接进入游戏
-                    fail = (res)=>{
+                    fail = (res) =>
+                    {
+                        _loadingReward.Raise(95, "进入游戏……");
                         OnDataLoaded?.Invoke();
                     }
                 });
-                
+
             },
             onFail: (res) =>
             {
                 if (res.code == 1002)
+                {
+                    Debug.Log("GetData成功，但是需要创建新玩家");
+                    _loadingReward.SetInvisible();
                     RequestUserInfoThenCreatePlayer();
+                }
+                    
+                else
+                {
+                    Debug.Log("GetData失败" + res.message);
+                    LoadOrCreatePlayerDataRetryCount++;
+                    if (LoadOrCreatePlayerDataRetryCount < 3)//最多重试三次
+                    {
+                        //2秒钟后重试
+                        StartCoroutine(DelayDoing(3, () => {
+                            LoadOrCreatePlayerData(userId);
+                        }));
+                    }
+                    else
+                    {
+                        TipManager.Instance.ShowConfirmTip("玩家信息获取失败，请点击重试", "重试", () =>
+                        {
+                            LoadOrCreatePlayerData(userId);
+                        });
+                    }
+                }
             },
-            onError: (_) => TipManager.Instance.ShowConfirmTip("玩家信息获取失败，请稍候重试。"));
+            onError: (_) =>
+            {
+                LoadOrCreatePlayerDataRetryCount++;
+                if (LoadOrCreatePlayerDataRetryCount < 3)//最多重试三次
+                {
+                    //2秒钟后重试
+                    StartCoroutine(DelayDoing(3, () => {
+                        LoadOrCreatePlayerData(userId);
+                    }));
+                }
+                else
+                {
+                    TipManager.Instance.ShowConfirmTip("玩家信息获取失败，请点击重试", "重试", () =>
+                    {
+                        LoadOrCreatePlayerData(userId);
+                    });
+                }
+            },
+            onComplete:()=> { Debug.Log("GetData结束"); });
+        
     }
 
     //请求用户数据然后创建玩家
     private void RequestUserInfoThenCreatePlayer()
     {
-
         Rect rect = GetStartButtonRect();//获取开始按钮的位置和大小
         //创建按钮让用户点击以获取用户信息
         wxUserInfoButton = WX.CreateUserInfoButton((int)rect.x, Screen.height - (int)rect.y - (int)rect.height, (int)rect.width, (int)rect.height, "", true);
@@ -195,10 +272,10 @@ public class DataManager : MonoBehaviour
                     {
                         //若昵称或者头像发生了变化，则同步用户的昵称和头像
                         if (PlayerInfo.UserName.Value != res.userInfo.nickName ||
-                        PlayerInfo.AavtarUrl.Value != res.userInfo.avatarUrl)
+                        PlayerInfo.AvatarUrl.Value != res.userInfo.avatarUrl)
                         {
                             PlayerInfo.UserName.Value = res.userInfo.nickName;
-                            PlayerInfo.AavtarUrl.Value = res.userInfo.avatarUrl;
+                            PlayerInfo.AvatarUrl.Value = res.userInfo.avatarUrl;
                         }
                     },
                     fail = (res) =>//用户拒绝授权，就使用默认的昵称和头像
@@ -212,8 +289,10 @@ public class DataManager : MonoBehaviour
                         //最终都要保存用户的数据
                         APIAccess.Instance.SaveData(onComplete: () =>
                         {
+                            _loadingReward.Raise(60, "玩家信息加载中……", true);
                             APIAccess.Instance.UpdateLastOnline(UserID);//更新在线时间为当前时间
-                                                                        //进入游戏
+                            _loadingReward.Raise(95, "进入游戏……");
+                            //进入游戏
                             OnDataLoaded?.Invoke();
                         });
 
@@ -225,8 +304,10 @@ public class DataManager : MonoBehaviour
                 //最终都要保存用户的数据
                 APIAccess.Instance.SaveData(onComplete: () =>
                 {
+                    _loadingReward.Raise(60, "玩家信息加载中……", true);
                     APIAccess.Instance.UpdateLastOnline(UserID);//更新在线时间为当前时间
-                                                                //进入游戏
+                    _loadingReward.Raise(95, "进入游戏……");
+                    //进入游戏
                     OnDataLoaded?.Invoke();
                 });
             }
@@ -256,6 +337,7 @@ public class DataManager : MonoBehaviour
                 _playerInfo.CopyFromPlayerInfo(parsed);//从PlayerInfo转为BindablePlayerInfo
                 APIAccess.Instance.UpdateLastOnline(UserID);
                 onSuccess?.Invoke();
+                _loadingReward.Raise(95, "进入游戏……");
                 OnDataLoaded?.Invoke();
             },
             onFail: (res) =>
@@ -266,6 +348,7 @@ public class DataManager : MonoBehaviour
                         onSuccess: (res) =>
                         {
                             APIAccess.Instance.UpdateLastOnline(UserID);
+                            _loadingReward.Raise(95, "进入游戏……");
                             OnDataLoaded?.Invoke();
                         });
                 }
@@ -276,7 +359,7 @@ public class DataManager : MonoBehaviour
             });
 
     }
-    #endregion
+#endregion
 
     #region 私有方法
     //结束挑战
@@ -284,8 +367,9 @@ public class DataManager : MonoBehaviour
     {
         if(success)
         {
-            _playerInfo.PassCount.Value++;
-            OnPassCountChanged?.Invoke(_playerInfo.PassCount.Value);
+            _playerInfo.TotalPassCount.Value++;
+            OnPassCountChanged?.Invoke(_playerInfo.TotalPassCount.Value);
+            GameUIManager.UploadScore(_playerInfo.TotalPassCount.Value);//上传排行榜
         }
     }
 
@@ -305,6 +389,13 @@ public class DataManager : MonoBehaviour
 
         Debug.Log($"Screen Rect: {screenRect}");
         return screenRect;
+    }
+
+    // 协程实现延迟重试
+    private IEnumerator DelayDoing(float delayTime,UnityAction callback)
+    {
+        yield return new WaitForSecondsRealtime(delayTime);
+        callback?.Invoke();
     }
     #endregion
 }

@@ -31,7 +31,6 @@ public class BasePanel : MonoBehaviour
             .SetEase(Ease.InQuad)
             .OnComplete(
             () => {
-                gameObject.SetActive(false);
                 OnEnd();
             } );
     }
@@ -57,6 +56,6 @@ public class BasePanel : MonoBehaviour
     /// </summary>
     public virtual void OnEnd()
     {
-
+        gameObject.SetActive(false);
     }
 }

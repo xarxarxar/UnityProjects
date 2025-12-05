@@ -55,11 +55,11 @@ public class GameManager : MonoBehaviour
     {
         while (true)
         {
-            yield return new WaitForSecondsRealtime(18f); // 等待180秒
+            yield return new WaitForSecondsRealtime(180f); // 等待180秒
             APIAccess.Instance.UpdateTodayOnlineMinutes(DataManager.Instance.UserID, onSuccess: (res) =>
             {
-                DataManager.Instance.PlayerInfo.TodayOnlineMinutes.Value = (int)MathF.Min(res.data["TodayOnlineMinutes"].Value<int>(),60) ;
-                Debug.Log("在线时间 +3 分钟，总在线分钟：" + DataManager.Instance.PlayerInfo.TodayOnlineMinutes.Value);
+                DataManager.Instance.PlayerInfo.DailyTask.OnlineMinutes.Value = (int)MathF.Min(res.data["TodayOnlineMinutes"].Value<int>(),60) ;
+                Debug.Log("在线时间 +3 分钟，总在线分钟：" + DataManager.Instance.PlayerInfo.DailyTask.OnlineMinutes.Value);
             });
             
         }

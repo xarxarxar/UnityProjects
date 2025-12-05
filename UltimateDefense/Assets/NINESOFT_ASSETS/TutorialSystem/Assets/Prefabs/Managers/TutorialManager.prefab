@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2928358171858727040
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2928358171858727042}
+  - component: {fileID: 2928358171858727043}
+  m_Layer: 0
+  m_Name: TutorialManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2928358171858727042
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2928358171858727040}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2928358171858727043
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2928358171858727040}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d058feb21f87d4f429174a1e7ac006e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DebugMode: 1
+  DoNotShowAgainOnceTheTutorialsAreComplete: 1
+  SaveTutorialProgress: 0
+  SaveStageProgress: 0
+  SaveKey: 0
+  Tutorials: []
+  OnAllTutorialsCompleted:
+    m_PersistentCalls:
+      m_Calls: []
+  TutorialModulePrefabs:
+  - Name: Arrow
+    WorldType: 0
+    TutorialModule: {fileID: 2697824994744108465, guid: 5853b65a103a3c8498ffaba7ff5d9183, type: 3}
+  - Name: Dynamic Hand
+    WorldType: 0
+    TutorialModule: {fileID: 7140086356797241513, guid: ce1e05ec3f539a7438484f3934dd625d, type: 3}
+  - Name: 3D Text
+    WorldType: 0
+    TutorialModule: {fileID: 1849299116186299145, guid: 70a09dbe791f807429add6f84adf1e57, type: 3}
+  - Name: Dynamic Hand (UI)
+    WorldType: 1
+    TutorialModule: {fileID: 9196029197528344980, guid: 2039ad9e7f28542488154da745fce7f8, type: 3}
+  - Name: Cut Out Mask
+    WorldType: 1
+    TutorialModule: {fileID: 7574421197379876245, guid: f90ed05b9d5849e47b9a8c7743221db6, type: 3}
+  - Name: Pop Up
+    WorldType: 1
+    TutorialModule: {fileID: 2728217763481862957, guid: 186c7043595e872469897674917649bf, type: 3}
+  - Name: Quest Marker
+    WorldType: 1
+    TutorialModule: {fileID: 7009465150267109409, guid: d8c5fb96ff7393e40aed33d7da00ec31, type: 3}
+  - Name: Video Panel
+    WorldType: 1
+    TutorialModule: {fileID: 534880545209418300, guid: 3b8b461bd5d35464781d75f66c7c78a3, type: 3}

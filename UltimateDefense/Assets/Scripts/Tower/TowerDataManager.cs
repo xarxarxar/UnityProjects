@@ -1,4 +1,6 @@
 
+using SuperScrollView;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,220 +9,159 @@ using UnityEngine;
 /// </summary>
 public class TowerDataManager : ManagerBase<TowerDataManager>   
 {
-    [SerializeField] private TowerType _currentTowerData;
-    public Dictionary<TowerType,string> TowerDiscription=new Dictionary<TowerType, string>();
     /// <summary>
-    /// 当前对局使用的TowerType
+    /// 所有的炮塔数据
     /// </summary>
-    //DataManager.Instance.PlayerInfo.CurrentTowerType;
+    public List<TowerData> TowerDatas = new List<TowerData>();
 
     public override void Init()
     {
-        UpdateDescription();
+        EnsureTowerStates(TowerDatas);
     }
 
+    /// <summary>
+    /// 补齐玩家的TowerStateMap信息
+    /// </summary>
+    /// <param name="towerDatas"></param>
+    public void EnsureTowerStates(IList<TowerData> towerDatas)
+    {
+        foreach (var tower in towerDatas)
+        {
+            int id = tower.ID;  // 你塔的唯一ID（你如果没有ID字段，我可以帮你加）
 
+            // 玩家存档里没有这个塔 → 补一个默认状态
+            if (!DataManager.Instance.PlayerInfo.TowerStateMap.ContainsKey(id))
+            {
+                DataManager.Instance.PlayerInfo.TowerStateMap[id] = new ItemState
+                {
+                    IsUnlocked = id==0,
+                    CurrentSkinID = 0,
+                    OwnedSkins = new List<int>() { 0 } // 默认皮肤
+                };
+            }
+        }
+    }
 
     protected override void Awake()
     {
         base.Awake();
         _stage = InitStage.OutBattle;
-
     }
 
     /// <summary>
-    /// 获取塔的数据
+    /// 获取某个TowerData在TowerDatas中的index
     /// </summary>
-    /// <param name="type"></param>
     /// <returns></returns>
-    public TowerData GetTowerData(TowerType type)
+    public int GetTowerDataIndex(TowerData towerData)
     {
-        int towerLevel = DataManager.Instance.PlayerInfo.TowerDatas[type];
-        return new TowerData
-        {
-            Level = towerLevel,
-            BaseDamage = GetBaseDamage(type, towerLevel),
-            BaseCap=GetBaseCap(type, towerLevel),
-            BaseAtkRate=GetBaseAtkRate(type, towerLevel),
-            BaseReload=GetBaseReload(type, towerLevel),
-            BaseCritProb=GetBaseCritProb(type, towerLevel),
-            BaseCritMult=GetBaseCritMult(type, towerLevel)
-        };
-            
-
+        return TowerDatas.FindIndex(t => t == towerData);
     }
 
     /// <summary>
-    /// 解锁炮塔
+    /// 获取某个ID的TowerData在TowerDatas中的index
     /// </summary>
-    public void UnlockTower(TowerType type)
+    /// <returns></returns>
+    public int GetTowerDataIndex(int ID)
     {
-        if(!DataManager.Instance.PlayerInfo.TowerDatas.ContainsKey(type)) return;
-        if (DataManager.Instance.PlayerInfo.TowerDatas[type]!=0) return;
+        return TowerDatas.FindIndex(t => t.ID == ID);
+    }
 
-        DataManager.Instance.PlayerInfo.TowerDatas[type]++;
-        DataManager.Instance.SavePlayerInfo();
+
+    /// <summary>
+    /// 获取某个skin在某个TowerData中的SkinData的skins中的index
+    /// </summary>
+    /// <returns></returns>
+    public int GetSkinIndex(TowerData towerData, Skin skin)
+    {
+        return towerData.SkinData.skins.FindIndex(t => t == skin);
     }
 
     /// <summary>
-    /// 升级炮塔
+    /// 获取某个ID的skinData在某个TowerData中的SkinData的skins中的index
     /// </summary>
-    /// <param name="type"></param>
-    public void UpgradeTower(TowerType type)
+    /// <returns></returns>
+    public int GetSkinIndex(TowerData towerData,int ID)
     {
-        if (!DataManager.Instance.PlayerInfo.TowerDatas.ContainsKey(type)) return;
-        if (DataManager.Instance.PlayerInfo.TowerDatas[type] >=TowerData.MaxLevel) return;
-
-        DataManager.Instance.PlayerInfo.TowerDatas[type]++;
-        UpdateDescription();
-        DataManager.Instance.SavePlayerInfo();
+        return towerData.SkinData.skins.FindIndex(t => t.ID == ID);
     }
+
+    /// <summary>
+    /// 通过index获取某个towerdata的skin
+    /// </summary>
+    /// <returns></returns>
+    public Skin GetSkin(TowerData towerData,int index)
+    {
+        return towerData.SkinData.skins[index];
+    }
+
+    /// <summary>
+    /// 获取某个TowerData当前正在使用的skin
+    /// </summary>
+    /// <returns></returns>
+    public Skin GetCurrentSkin(TowerData towerData)
+    {
+        return towerData.SkinData.skins.Find(t => t.ID == DataManager.Instance.PlayerInfo.TowerStateMap[towerData.ID].CurrentSkinID);
+    }
+
+    /// <summary>
+    /// 获取某个ItemState当前正在使用的skin的Index
+    /// </summary>
+    /// <returns></returns>
+    public int GetCurrentSkinIndex(SkinData skinData, ItemState itemState)
+    {
+        return skinData.skins.FindIndex(t => t.ID == itemState.CurrentSkinID);
+    }
+
+    /// <summary>
+    /// 获取当前玩家使用的TowerData在TowerDatas中的index
+    /// </summary>
+    /// <returns></returns>
+    public int GetCurrentTowerDataIndex()
+    {
+        int index = TowerDatas.FindIndex(t => t.ID == DataManager.Instance.PlayerInfo.CurrentTowerID.Value);
+        return index;
+    }
+
+    /// <summary>
+    /// 获取当前玩家使用的TowerData
+    /// </summary>
+    /// <returns></returns>
+    public TowerData GetCurrentTowerData()
+    {
+        TowerData tower = TowerDatas.Find(t => t.ID == DataManager.Instance.PlayerInfo.CurrentTowerID.Value);
+        return tower;
+    }
+
+    /// <summary>
+    /// 修改某个TowerData的当前skinID
+    /// </summary>
+    public void ChangeTowerCurrentSkinID(TowerData towerData,int skinID)
+    {
+        DataManager.Instance.PlayerInfo.TowerStateMap[towerData.ID].CurrentSkinID = skinID; // 保存选择
+    }
+
+    /// <summary>
+    /// 判断某个ItemState是否有这个skin
+    /// </summary>
+    /// <returns></returns>
+    public bool HasSkin(ItemState itemState,int ID)
+    {
+        return itemState.OwnedSkins != null && itemState.OwnedSkins.Contains(ID);
+    }
+
+
 
     //更新炮塔描述
     private void UpdateDescription()
     {
-        TowerDiscription[TowerType.Basic] = $"每次发射单颗子弹,对敌人造成<color=#F4C760>{GetTowerData(TowerType.Basic).BaseDamage / 10f}</color>点伤害\r\n\r\n被动：每回合恢复城墙最大生命值2%的血量";
-        TowerDiscription[TowerType.Ricochet] = $"子弹对第一个敌人造成<color=#F4C760>{GetTowerData(TowerType.Ricochet).BaseDamage / 10f}</color>点伤害，额外弹射2个敌人,每次弹射伤害衰减30%\r\n\r\n被动：每消灭3个敌人为城墙恢复1点生命值";
-        TowerDiscription[TowerType.Spread] = $"每次并排发射三颗子弹，每颗子弹伤害为<color=#F4C760>{GetTowerData(TowerType.Spread).BaseDamage / 10f}</color>，初始暴击率翻倍,初始暴击伤害降低\r\n被动：每次暴击为城墙恢复1点血";
-        TowerDiscription[TowerType.Piercing] = $"子弹初始伤害为<color=#F4C760>{GetTowerData(TowerType.Piercing).BaseDamage / 10f}</color>，可以穿透敌人\r\n被动：每造成50点伤害恢复城墙1点生命";
-        TowerDiscription[TowerType.RapidFire] = $"每次射出两颗子弹，每颗子弹伤害为<color=#F4C760>{GetTowerData(TowerType.RapidFire).BaseDamage / 10f}</color>，初始换弹时间减少\r\n\r\n被动：每发射200颗子弹恢复城墙1点生命值";
+        //TowerDiscription[TowerType.Basic] = $"每次发射单颗子弹,对敌人造成<color=#F4C760>{GetTowerData(TowerType.Basic).BaseDamage / 10f}</color>点伤害\r\n\r\n被动：每回合恢复城墙最大生命值2%的血量";
+        //TowerDiscription[TowerType.Ricochet] = $"子弹对第一个敌人造成<color=#F4C760>{GetTowerData(TowerType.Ricochet).BaseDamage / 10f}</color>点伤害，额外弹射2个敌人,每次弹射伤害衰减30%\r\n\r\n被动：每消灭3个敌人为城墙恢复1点生命值";
+        //TowerDiscription[TowerType.Spread] = $"每次并排发射三颗子弹，每颗子弹伤害为<color=#F4C760>{GetTowerData(TowerType.Spread).BaseDamage / 10f}</color>，初始暴击率翻倍,初始暴击伤害降低\r\n被动：每次暴击为城墙恢复1点血";
+        //TowerDiscription[TowerType.Piercing] = $"子弹初始伤害为<color=#F4C760>{GetTowerData(TowerType.Piercing).BaseDamage / 10f}</color>，可以穿透敌人\r\n被动：每造成50点伤害恢复城墙1点生命";
+        //TowerDiscription[TowerType.RapidFire] = $"每次射出两颗子弹，每颗子弹伤害为<color=#F4C760>{GetTowerData(TowerType.RapidFire).BaseDamage / 10f}</color>，初始换弹时间减少\r\n\r\n被动：每发射200颗子弹恢复城墙1点生命值";
         //TowerDiscription[TowerType.Sniper] = $"初始射速降低，子弹初始伤害为<color=#F4C760>{GetTowerData(TowerType.Sniper).BaseDamage / 10f}</color>，炮塔范围变为全屏\r\n被动：每造成50点伤害恢复城墙1点生命";
     }
 
-    /// <summary>
-    /// 获取炮塔的基础伤害
-    /// </summary>
-    /// <param name="towerType"></param>
-    /// <param name="level"></param>
-    /// <returns></returns>
-    public static int GetBaseDamage(TowerType towerType,int level)
-    {
-        return towerType switch
-        {
-            TowerType.Basic => 10 + (level-1) * 5,//max为55
-            TowerType.RapidFire => 5 + (level-1) * 3,//max为32
-            TowerType.Ricochet => 7 + (level - 1) * 2,//max为25，衰减为30%
-            TowerType.Spread => 4 + (level-1) * 2,//max为22
-            TowerType.Sniper => 20 + (level - 1) * 6,//max为69
-            TowerType.Piercing => 8 + (level-1) * 3,//max为35
-            _ => 0
-        };
-    }
-
-    /// <summary>
-    /// 获取炮塔的基础弹夹容量
-    /// </summary>
-    /// <param name="towerType"></param>
-    /// <param name="level"></param>
-    /// <returns></returns>
-    public static int GetBaseCap(TowerType towerType, int level)
-    {
-        return towerType switch
-        {
-            TowerType.Basic => 20,// + (level - 1) * 1,
-            TowerType.RapidFire => 40,// + (level - 1) * 1,
-            TowerType.Ricochet => 20,// + (level - 1) * 4,
-            TowerType.Spread => 30,// + (level - 1) * 4,
-            TowerType.Sniper => 10,// + (level - 1) * 4,
-            TowerType.Piercing => 15,// + (level - 1) * 4,
-            _ => 0
-        };
-    }
-
-    /// <summary>
-    /// 获取炮塔的基础每秒攻击次数
-    /// </summary>
-    /// <param name="towerType"></param>
-    /// <param name="level"></param>
-    /// <returns></returns>
-    public static float GetBaseAtkRate(TowerType towerType, int level)
-    {
-        return towerType switch
-        {
-            TowerType.Basic => 1.2f,// + (level - 1) * 0.1f,
-            TowerType.RapidFire => 1.2f,// + (level - 1) * 0.1f,
-            TowerType.Ricochet => 1.2f,// + (level - 1) * 4,
-            TowerType.Spread => 1.2f,// + (level - 1) * 4,
-            TowerType.Sniper => 0.7f,// + (level - 1) * 4,
-            TowerType.Piercing => 1.2f,// + (level - 1) * 4,
-            _ => 0
-        };
-    }
-
-    /// <summary>
-    /// 获取炮塔的基础换弹时间
-    /// </summary>
-    /// <param name="towerType"></param>
-    /// <param name="level"></param>
-    /// <returns></returns>
-    public static float GetBaseReload(TowerType towerType, int level)
-    {
-        return towerType switch
-        {
-            TowerType.Basic => 3,// + (level - 1) * 0.1f,
-            TowerType.RapidFire => 2.5f,// + (level - 1) * 0.1f,
-            TowerType.Ricochet => 3,// + (level - 1) * 4,
-            TowerType.Spread => 3,// + (level - 1) * 4,
-            TowerType.Sniper => 3,// + (level - 1) * 4,
-            TowerType.Piercing => 3,// + (level - 1) * 4,
-            _ => 0
-        };
-    }
-
-    /// <summary>
-    /// 获取炮塔的基础暴击率
-    /// </summary>
-    /// <param name="towerType"></param>
-    /// <param name="level"></param>
-    /// <returns></returns>
-    public static float GetBaseCritProb(TowerType towerType, int level)
-    {
-        return towerType switch
-        {
-            TowerType.Basic => 0.1f,// + (level - 1) * 0.05f,
-            TowerType.RapidFire => 0.1f,// + (level - 1) * 0.05f,
-            TowerType.Ricochet => 0.1f,// + (level - 1) * 4,
-            TowerType.Spread => 0.3f,// + (level - 1) * 4,
-            TowerType.Sniper => 0.1f,// + (level - 1) * 4,
-            TowerType.Piercing => 0.1f,// + (level - 1) * 4,
-            _ => 0
-        };
-    }
-
-    /// <summary>
-    /// 获取炮塔的基础暴击伤害倍率
-    /// </summary>
-    /// <param name="towerType"></param>
-    /// <param name="level"></param>
-    /// <returns></returns>
-    public static float GetBaseCritMult(TowerType towerType, int level)
-    {
-        return towerType switch
-        {
-            TowerType.Basic => 1.5f,// + (level - 1) * 0.1f,
-            TowerType.RapidFire => 1.5f,// + (level - 1) * 0.1f,
-            TowerType.Ricochet => 1.5f,// + (level - 1) * 4,
-            TowerType.Spread => 1.2f,// + (level - 1) * 4,
-            TowerType.Sniper => 2.0f,// + (level - 1) * 4,
-            TowerType.Piercing => 1.5f,// + (level - 1) * 4,
-            _ => 0
-        };
-    }
-}
-
-[System.Serializable]
-public class TowerData
-{
-    public int Level;
-    public const int MaxLevel=10;
-
-    //子类需重写值的逻辑，炮塔基础值，也就是未加Buff时候的值
-    public int BaseDamage;    //子弹伤害
-    public int BaseCap;       //子弹容量
-    public float BaseAtkRate;  //每秒攻击次数
-    public float BaseReload;  //换弹时长
-    public float BaseCritProb; //暴击概率
-    public float BaseCritMult; //暴击伤害倍率
 }
 
 

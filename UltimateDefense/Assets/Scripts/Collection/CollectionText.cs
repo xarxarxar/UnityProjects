@@ -1,22 +1,34 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 /// <summary>
-/// 像伤害飘字一样的，进行宝箱飘字
+/// 收集的文字
 /// </summary>
 public class CollectionText : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public Text txt;//文字
+    public Color32 color;
+    public Text Count;//数量
+    public GameObject background;
 
-    // Update is called once per frame
-    void Update()
+    //设置该文字的文本和颜色
+    public void SetCollectionText(char c,Color32 color,int count)
     {
-        
+        txt.text=c.ToString();
+        txt.color= color;
+        Count.text = count.ToString();
+        if (count <= 0)
+        {
+            background.SetActive(true);
+            Count.gameObject.SetActive(false);
+        }
+        else 
+        {
+            background.SetActive(false);
+            Count.gameObject.SetActive(true);
+        }
     }
 }

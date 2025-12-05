@@ -10,6 +10,7 @@ public class RewardManager : ManagerBase<RewardManager>
     [SerializeField] private Sprite _coinSprite;    //金币图标
     [SerializeField] private Sprite _diamondSprite; //钻石图标
     [SerializeField] private Sprite _crownSprite;  //王冠图标
+    [SerializeField] private Sprite _medalSprite;  //奖牌图标
 
     public static Dictionary<RewardType, Sprite> IconMap;
 
@@ -25,7 +26,8 @@ public class RewardManager : ManagerBase<RewardManager>
         {
             { RewardType.Coin, _coinSprite },
             { RewardType.Diamond, _diamondSprite },
-            { RewardType.Crown, _crownSprite }
+            { RewardType.Crown, _crownSprite },
+            { RewardType.Medal, _medalSprite }
         };
     }
 }
@@ -46,5 +48,9 @@ public enum RewardType
     /// <summary>
     /// 局外王冠
     /// </summary>
-    Crown
+    Crown,
+    /// <summary>
+    /// 局外奖牌
+    /// </summary>
+    Medal
 }

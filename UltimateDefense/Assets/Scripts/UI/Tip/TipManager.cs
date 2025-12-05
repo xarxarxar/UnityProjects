@@ -32,6 +32,14 @@ public class TipManager : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if(Input.GetKeyUp(KeyCode.S))
+        {
+            ShowConfirmTip("这是一条测试这是一条测试");
+        }
+    }
+
     /// <summary>
     /// QuickTip（轻提示），出现之后几秒钟之后自动消失，字数限制在15个字
     /// </summary>
@@ -47,10 +55,10 @@ public class TipManager : MonoBehaviour
     /// </summary>
     /// <param name="message">要显示的文本提示，限制在51个字</param>
     /// <param name="confirmText">确认按钮上面的文本</param>
-    public void ShowConfirmTip(string message,string confirmText="确认")
+    public void ShowConfirmTip(string message,string confirmText="确认",UnityAction callback=null)
     {
         _confirmTipPanel.gameObject.SetActive(true);
-        _confirmTipPanel.ShowTip(message, confirmText);
+        _confirmTipPanel.ShowTip(message, confirmText, callback);
     }
 
     /// <summary>

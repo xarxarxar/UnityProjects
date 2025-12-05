@@ -11,8 +11,11 @@ public class ScienceNodeItem : MonoBehaviour
     [SerializeField]private RewardStruct _unlockCost;//解锁该科技节点所需的花费
     [SerializeField]private GameObject _unlockMask;//该节点的未解锁时候的蒙版
     [SerializeField]private GameObject _lockedMask;//该节点的已解锁之后的蒙版
+    [SerializeField]private GameObject _unlockButtonShow;//解锁按钮的显示
     public int _index;//该科技节点所对应的index
 
+    [SerializeField]private Image _image;//背景的光环
+    [SerializeField]private Image _imageBackground;//背景的image
     /// <summary>
     /// 初始化
     /// </summary>
@@ -44,11 +47,11 @@ public class ScienceNodeItem : MonoBehaviour
     {
         Debug.Log($"解锁的序号为{_index},记录下来的序号为{DataManager.Instance.PlayerInfo.UnlockCount.Value}");
         //该科技已解锁
-        if (DataManager.Instance.PlayerInfo.UnlockCount.Value >= _index) return;
+        if (DataManager.Instance.PlayerInfo.UnlockCount.Value != _index) return;
 
-        if(DataManager.Instance.PlayerInfo.UnlockCount.Value + 1 < _index)
+        if(DataManager.Instance.PlayerInfo.UnlockCount.Value < _index)
         {
-            GameUIManager.Instance.ShowQuickTip("前先解锁前一个科技");
+            TipManager.Instance.ShowTip("前先解锁前一个科技");
             return;
         }
 
@@ -62,11 +65,11 @@ public class ScienceNodeItem : MonoBehaviour
         {
             if (_unlockCost.type == RewardType.Diamond)
             {
-                GameUIManager.Instance.ShowQuickTip("钻石不足");
+                TipManager.Instance.ShowTip("钻石不足");
             }
             if (_unlockCost.type == RewardType.Crown)
             {
-                GameUIManager.Instance.ShowQuickTip("王冠不足");
+                TipManager.Instance.ShowTip("王冠不足");
             }
         }
         
@@ -79,8 +82,29 @@ public class ScienceNodeItem : MonoBehaviour
     {
         //Debug.Log($"解锁的序号为{_index},记录下来的序号为{DataManager.Instance.PlayerInfo.UnlockCount.Value},可见性为{_index < DataManager.Instance.PlayerInfo.UnlockCount.Value}");
 
-        _lockedMask.gameObject.SetActive(_index <= DataManager.Instance.PlayerInfo.UnlockCount.Value);
-        _unlockMask.SetActive(_index > DataManager.Instance.PlayerInfo.UnlockCount.Value + 1);
-        //_unlockButton.interactable = _index == ScienceManager.Instance.UnlockIndex.Value + 1;
+        _lockedMask.gameObject.SetActive(_index < DataManager.Instance.PlayerInfo.UnlockCount.Value);
+        _unlockButtonShow.gameObject.SetActive(_index == DataManager.Instance.PlayerInfo.UnlockCount.Value);
+        _unlockMask.SetActive(_index > DataManager.Instance.PlayerInfo.UnlockCount.Value);
+
+        //已解锁
+        if(_index < DataManager.Instance.PlayerInfo.UnlockCount.Value)
+        {
+            _image.color = new Color32(238,220,121,0);
+            _imageBackground.color = new Color32(61,49,65,255);
+            _descriptionText.color = new Color32(119,119,119,255);
+        }
+        else if(_index == DataManager.Instance.PlayerInfo.UnlockCount.Value)
+        {
+            _image.color = new Color32(238, 220, 121, 255);
+            _imageBackground.color = new Color32(37, 29, 39, 255);
+            _descriptionText.color = new Color32(255, 255, 255, 255);
+        }
+        else
+        {
+            _image.color = new Color32(238, 220, 121, 0);
+            _imageBackground.color = new Color32(61, 49, 65, 255);
+            _descriptionText.color = new Color32(119, 119, 119, 255);
+        }
+        
     }
 }

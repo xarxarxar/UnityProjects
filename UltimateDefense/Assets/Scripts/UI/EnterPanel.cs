@@ -5,13 +5,50 @@ using UnityEngine.UI;
 
 public class EnterPanel : MonoBehaviour
 {
-    public Button EnterButton;//进入游戏按钮
+    [SerializeField] private Button EnterButton;//进入游戏按钮
+    [SerializeField] private Slider _progressSlider;//进度条
+    [SerializeField] private Text _progressSliderText;//slider的value文本
+    [SerializeField] private Text _progressText;//进入游戏时，显示的文本
+
+    [SerializeField] private LoadingProgressChannelSO _loadingReward;//进入游戏时的加载数据
+
+    //剪影无限轮播
+    public RectTransform imageA;
+    public RectTransform imageB;
+    public float speed = 100f; // 每秒移动多少像素
+    private float imageWidth;
 
     private void Start()
     {
+        // 获取图片宽度（假设两张图相同）
+        imageWidth = imageA.rect.width;
+        // 初始化位置（B 紧接在 A 的右边）
+        imageA.anchoredPosition = Vector2.zero;
+        imageB.anchoredPosition = new Vector2(imageWidth, 0);
+
         AudioManager.Instance.PlayBGM("登陆界面BGM");
+        EnterButton.gameObject.SetActive(false);
         EnterButton.onClick.AddListener(EnterGameButton);
         DataManager.OnDataLoaded+= OnDataLoaded;
+        _loadingReward.OnProgressChanged += OnProgressChanged;
+        _loadingReward.OnVisibilityChanged += OnVisibilityChanged;
+        _loadingReward.Raise(0,"");
+    }
+
+    void Update()
+    {
+        float move = speed * Time.deltaTime;
+
+        // 左移两张图
+        imageA.anchoredPosition -= new Vector2(move, 0);
+        imageB.anchoredPosition -= new Vector2(move, 0);
+
+        // 如果某张图完全移出屏幕左边，就把它移到右侧
+        if (imageA.anchoredPosition.x <= -imageWidth)
+            imageA.anchoredPosition += new Vector2(imageWidth * 2, 0);
+
+        if (imageB.anchoredPosition.x <= -imageWidth)
+            imageB.anchoredPosition += new Vector2(imageWidth * 2, 0);
     }
 
     private void OnDisable()
@@ -63,5 +100,18 @@ public class EnterPanel : MonoBehaviour
     {
         StartCoroutine(LoadNewSceneAsyncIE("GameScene"));  // 把场景名字改成你要加载的
         AudioManager.Instance.PlayBGM("主界面BGM");
+    }
+
+    private void OnProgressChanged(float progress,string message)
+    {
+        _progressSlider.value= progress;
+        _progressSliderText.text = $"{progress}%";
+        _progressText.text = message;
+    }
+
+    private void OnVisibilityChanged(bool isShown)
+    {
+        _progressSlider.gameObject.SetActive(isShown);
+        EnterButton.gameObject.SetActive(!isShown);
     }
 }

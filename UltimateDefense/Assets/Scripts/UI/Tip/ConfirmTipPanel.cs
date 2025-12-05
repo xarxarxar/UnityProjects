@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class ConfirmTipPanel : BasePanel
@@ -15,10 +16,11 @@ public class ConfirmTipPanel : BasePanel
     /// </summary>
     /// <param name="message">要显示的文本提示，限制在15个字</param>
     /// <param name="confirmText">确认按钮上面的文本</param>
-    public void ShowTip(string message,string confirmText="确认")
+    public void ShowTip(string message,string confirmText="确认",UnityAction callback=null)
     {
         _tipObject.SetActive(true);
         _tiptext.text = message;
         _confirmtext.text = confirmText;
+        callback?.Invoke();
     }
 }

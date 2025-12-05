@@ -5,13 +5,12 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// 生成福利，每隔2分钟生成一次福利，每次福利持续10秒钟
+/// 生成福利，每隔几回合生成一次福利，每次福利持续10秒钟，每局游戏限制生成福利的次数，每局游戏限制生成2次福利
 /// </summary>
 public class CreateWelfare : MonoBehaviour
 {
     public Button _button;
     public Text timerText;
-    public float interval = 120f;    // 每隔 2 分钟生成一次
     public float duration = 10f;     // 持续 10 秒
     private int lastRefresh=0;//上一次出现时候的刷新次数
 
@@ -36,7 +35,7 @@ public class CreateWelfare : MonoBehaviour
     //开始阶段性生成福利
     private void SpawnWelfare(int value)
     {
-        if(value-lastRefresh>=7 && CurrencyManager.Instance.Gold<= value * 10)
+        if(value-lastRefresh>=7 && CurrencyManager.Instance.Gold<= value * 15)
         {
             lastRefresh = 999;
             StartCoroutine(SpawnWelfareLoop());

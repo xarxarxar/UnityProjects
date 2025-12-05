@@ -4,17 +4,14 @@ using UnityEngine;
 /// <summary>
 /// 狙击形态的炮塔，狙击炮塔每五次必定暴击一次，暴击伤害也更高，但射击间隔明显变长
 /// </summary>
-public class SniperTower : BaseTower
+public class SniperTower : Tower
 {
-    public override TowerType TowerType { get => TowerType.Sniper; }
-
     private int _shotCount;//射击的次数，狙击炮塔每五次必定暴击一次，暴击伤害也更高
 
     protected override void Init()
     {
         base.Init();
         _shotCount = 0;
-        
     }
 
     //实现父类的DoAttack方法
@@ -24,24 +21,22 @@ public class SniperTower : BaseTower
         int dam = 0;
         if (_shotCount >= 5)//必定暴击
         {
-            dam = Mathf.RoundToInt(BulletDamage.Value * CriticalMult.Value);
-            bullet.Init(_bulletInitPos.position, currentTarget,
-                true, dam);
+            dam = Mathf.RoundToInt(BaseDamage * CriticalMult);
+            
             _shotCount = 0;
         }
         else//随机暴击
         {
             float value = Random.value;
-            if (value < CriticalProb.Value)
+            if (value < CriticalProb)
             {
-                dam = Mathf.RoundToInt(BulletDamage.Value * CriticalMult.Value);
-                bullet.Init(_bulletInitPos.position, currentTarget,
-                    true, dam);
+                dam = Mathf.RoundToInt(BaseDamage * CriticalMult);
+                
             }
             else
             {
-                dam = BulletDamage.Value;
-                bullet.Init(_bulletInitPos.position, currentTarget, false, dam);
+                dam = BaseDamage;
+                
             }
         }
 

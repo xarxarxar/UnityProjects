@@ -1,7 +1,4 @@
 using Newtonsoft.Json;
-using System.Collections;
-using System.Collections.Generic;
-using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -13,6 +10,8 @@ public class WeChatManager : MonoBehaviour
     public static WeChatManager Instance;
     public static string UserCode=string.Empty;//微信用户的code，用于在Code2Session接口获取用户的UserID
     public static event UnityAction OnGetPlayerWechatInfo;//拿到玩家微信授权
+
+    
 
     private void Awake()
     {
@@ -73,15 +72,48 @@ public class WeChatManager : MonoBehaviour
 
 
     //短震动
-    public void Vibrate()
+    public void Vibrate(string type="light")
     {
         WX.VibrateShort(new VibrateShortOption()
         {
-            type = "heavy",
+            type = type,
             complete = (res) =>
             {
                 Debug.Log("震动结束："+res.errMsg);
             }
         });
     }
+
+    public static void ShareApp(UnityAction callback, string title = null, string imageUrl = null, string imageUrlId = null)
+    {
+        // 主动拉起分享给通讯录的方法
+        WX.ShareAppMessage(new ShareAppMessageOption()
+        {
+            title = title,
+            imageUrl = imageUrl,
+            imageUrlId = imageUrlId
+        });
+        System.Action<OnShowListenerResult> res = null;
+        res = (result) =>
+        {
+            // 先执行传入的回调
+            callback();
+
+            // 再取消 OnShow 监听
+            WX.OffShow(res);
+        };
+
+        // 设置 OnShow 监听
+        WX.OnShow(res);
+    }
+
+
+    
+
+}
+
+public class MyOpendataMessage
+{
+    public string type;
+    public int score;
 }

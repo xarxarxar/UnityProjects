@@ -11,12 +11,21 @@ public class RewardStruct : MonoBehaviour
 
     public void Init(int count)
     {
+        if(count < 0)
+        {
+            return;
+        }
         countText.text= count.ToString();
         this.count = count;
     }
 
     public void Init(RewardType type,int count)
     {
+        if (count < 0)
+        {
+            return;
+        }
+
         countText.text = count.ToString();
         this.type = type;
         iconImage.sprite = RewardManager.IconMap[type];

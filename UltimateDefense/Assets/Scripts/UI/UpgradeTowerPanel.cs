@@ -29,9 +29,8 @@ public class UpgradeTowerPanel : MonoBehaviour
     {
         _unlockCost.Init(RewardType.Crown, 1);
 
-        Debug.Log($"初始为{DataManager.Instance.PlayerInfo.CurrentTowerType.Value}");
-        _simpleScrollSnap.StartingPanel = (int)DataManager.Instance.PlayerInfo.CurrentTowerType.Value;//起始位置
-        _simpleScrollSnap.GoToPanel((int)DataManager.Instance.PlayerInfo.CurrentTowerType.Value);//起始位置
+        //_simpleScrollSnap.StartingPanel = (int)DataManager.Instance.PlayerInfo.CurrentTowerType.Value;//起始位置
+        //_simpleScrollSnap.GoToPanel((int)DataManager.Instance.PlayerInfo.CurrentTowerType.Value);//起始位置
         _currentTower = _simpleScrollSnap.Content.GetChild(_simpleScrollSnap.StartingPanel).GetComponent<TowerCard>();
         
         for (int i=0;i< _simpleScrollSnap.NumberOfPanels; i++)
@@ -50,32 +49,7 @@ public class UpgradeTowerPanel : MonoBehaviour
     {
         _unlockButton.RemoveAllListeners(); // 先移除旧监听器
 
-        if (TowerDataManager.Instance.GetTowerData(_currentTower.Type).Level == 0)//未解锁
-        {
-            _unlockCost.gameObject.SetActive(true);
-            _chooseThisTower.gameObject.SetActive(false);
-            //是否有足够的金币
-            _unlockCost.countText.color= MetaCurrencyManager.Instance.HasEnoughMoney(_unlockCost.type, _unlockCost.count)
-                ? new Color32(239, 241, 245, 255) : new Color32(228, 73, 98, 255);
-            _unlockButton.AddListener(() => UnlockTower(_currentTower));
-        }
-        else//已解锁
-        {
-            _unlockCost.gameObject.SetActive(false);
-            _chooseThisTower.gameObject.SetActive(true);
-            _unlockButton.AddListener(() => ChooseThisTower(_currentTower));
-            //当前选择的不是对局中使用的炮塔
-            if (DataManager.Instance.PlayerInfo.CurrentTowerType.Value != _currentTower.Type)
-            {
-                _chooseThisTower.text = "选择";
-                _chooseThisTower.color = new Color32(239, 241, 245, 255);
-            }
-            else//当前选择的就是对局中使用的炮塔
-            {
-                _chooseThisTower.text = "已选择";
-                _chooseThisTower.color = new Color32(76, 175, 80, 255);
-            }
-        }
+        
 
 
     }
@@ -87,7 +61,7 @@ public class UpgradeTowerPanel : MonoBehaviour
         if (MetaCurrencyManager.Instance.HasEnoughMoney(_unlockCost.type, _unlockCost.count))
         {
             MetaCurrencyManager.Instance.SpendMetaCoin(_unlockCost.type, _unlockCost.count);
-            TowerDataManager.Instance.UnlockTower(towerCard.Type);
+            
         }
         
         towerCard.ActivateCard();
@@ -98,14 +72,9 @@ public class UpgradeTowerPanel : MonoBehaviour
     private void ChooseThisTower(TowerCard towerCard)
     {
         Debug.Log("选择炮塔");
-        //当前选择的已经是对局中使用的炮塔
-        if (DataManager.Instance.PlayerInfo.CurrentTowerType.Value == _currentTower.Type)
-        {
-            return;
-        }
+        
 
         _unlockCost.gameObject.SetActive(false);
-        DataManager.Instance.PlayerInfo.CurrentTowerType.Value = _currentTower.Type;
         DataManager.Instance.SavePlayerInfo();
         UpdateButtonState();
     }

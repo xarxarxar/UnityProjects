@@ -53,11 +53,7 @@ public class CurrencyManager : ManagerBase<CurrencyManager>
     public override void Init()
     {
         _gold = 0;
-        if (!DataManager.Instance.PlayerInfo.Config.ContainsKey("InitialCoin"))
-        {
-            DataManager.Instance.PlayerInfo.Config["InitialCoin"] = 1000;
-        }
-        AddCoin(Mathf.RoundToInt(DataManager.Instance.PlayerInfo.Config["InitialCoin"] * (1 - BattleManager.Instance.Debuff.InitialMoneyDecrease * 0.1f)) );
+        AddCoin(Mathf.RoundToInt((1000+ScienceManager.Instance.GetUpgradeCountByType(ScienceEffectType.DefaultCoinCount)*100) * (1 - BattleManager.Instance.Debuff.InitialMoneyDecrease * 0.1f)) );
         
         Enemy.OnEnemyDie += OnEnemyDie;//¶©ÔÄµĞÈËËÀÍöÊÂ¼ş
     }

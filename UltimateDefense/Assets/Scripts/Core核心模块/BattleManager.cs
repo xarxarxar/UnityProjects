@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
@@ -52,26 +53,22 @@ public class BattleManager : MonoBehaviour
     /// <summary>
     /// 单次挑战获取的局外王冠数量
     /// </summary>
-    public int DiamondCount { get => _diamondCount; }
+    public int DiamondCount { get => _diamondCount; set => _diamondCount=value; }
     /// <summary>
     /// 单次挑战获取的局外王冠数量
     /// </summary>
-    public int CrownCount { get => _crownCount;}
+    public int CrownCount { get => _crownCount; set => _crownCount = value; }
 
+    /// <summary>
+    /// 单次获取的福利次数
+    /// </summary>
+    public int ShareForWelfareCount { get; set; } = 0;
+
+    /// <summary>
+    /// 单局战斗中获得的收藏
+    /// </summary>
+    public Dictionary<int, int> CollectionSignleBattle { get; set; } = new Dictionary<int, int>();
     #endregion
-
-    private void Update()
-    {
-        if (Input.GetKeyUp(KeyCode.T))
-        {
-            Debug.Log("按了3");
-            SetGameSpeed(3);
-        }
-        if (Input.GetKeyUp(KeyCode.O))
-        {
-            SetGameSpeed(1);
-        }
-    }
 
     #region public成员方法
     /// <summary>
@@ -88,12 +85,15 @@ public class BattleManager : MonoBehaviour
         lastNonZeroSpeed = 1;
         _diamondCount = 0;
         IsBatting = true;
-
+        ShareForWelfareCount = 0;
+        CollectionSignleBattle.Clear();
 
         BattleUIManager.Instance.ShowBattleScene();//显示战斗场景
         EnemyManager.OnLastEnemySpawned += OnLastEnemySpawned;
         Crystal.OnCrystalDestroyed += OnCrystalDestroyed;
         ManagerRegistry.InitManagers(InitStage.InBattle);
+        TowerManager.Instance.LoadCompleteTower();//加载炮塔
+
         OnStartBattle?.Invoke();
     }
 
@@ -113,6 +113,8 @@ public class BattleManager : MonoBehaviour
         EnemyManager.Instance.EnemyCurrentCount.OnValueChanged -= OnEnemyCountChanged;
         Crystal.OnCrystalDestroyed -= OnCrystalDestroyed;
         Debug.Log($"挑战结束了{success}");
+        DataManager.Instance.PlayerInfo.BattleCountNoCollect.Value += 1;
+        DataManager.Instance.SavePlayerInfo();
         OnEndBattle?.Invoke(success);
     }
 
@@ -193,14 +195,15 @@ public class BattleManager : MonoBehaviour
     //单次挑战获取的局外金币数量
     private void SignleMetaCoinCount()
     {
+        _diamondCount = 0;
         int rounds = WaveManager.Instance.CurrentRound;//当前回合
-        int tens = rounds / 3; // 闯过了多少个10关卡
+        int tens = rounds / 5; // 闯过了多少个5关卡
         int bonus = 0;
         for (int i = 1; i <= tens; i++)
         {
             bonus += i;
         }
-        _diamondCount = bonus;
+        _diamondCount = bonus*2;
     }
 
     //水晶被破坏了

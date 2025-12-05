@@ -1,12 +1,12 @@
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
+using System;
 
-//可绑定数据，方便监听
 [System.Serializable]
 public class Bindable<T>
 {
     private T _value;
+
     [JsonIgnore]
     public Action<T> OnValueChanged;
 
@@ -23,12 +23,22 @@ public class Bindable<T>
         }
     }
 
-    //新增构造函数
     public Bindable(T initialValue)
     {
         _value = initialValue;
     }
 
-    //可选：无参构造函数（保留原始行为）
     public Bindable() { }
+
+    //不触发事件的赋值（用于初始化或加载存档）
+    public void SetSilent(T v)
+    {
+        _value = v;
+    }
+
+    //初始化 UI 时可立即触发一次
+    public void ForceNotify()
+    {
+        OnValueChanged?.Invoke(_value);
+    }
 }

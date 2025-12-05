@@ -80,11 +80,8 @@ public class Crystal : MonoBehaviour
 
     private void OnEnable()
     {
-        if (!DataManager.Instance.PlayerInfo.Config.ContainsKey("CrystalMaxHp"))
-        {
-            DataManager.Instance.PlayerInfo.Config["CrystalMaxHp"] = 1000;
-        }
-        MaxHP.Value = Mathf.RoundToInt(DataManager.Instance.PlayerInfo.Config["CrystalMaxHp"] * (1 - BattleManager.Instance.Debuff.CrystalMaxHpDecrease * 0.1f)) ;//初始值应该从配置文件中读取
+        
+        MaxHP.Value = Mathf.RoundToInt((1000+ScienceManager.Instance.GetUpgradeCountByType(ScienceEffectType.CrystalMaxHP)*100) * (1 - BattleManager.Instance.Debuff.CrystalMaxHpDecrease * 0.1f)) ;//初始值应该从配置文件中读取
         Init(MaxHP.Value,0);
     }
 
@@ -150,7 +147,7 @@ public class Crystal : MonoBehaviour
 
         //FlashRed();
         JellySquash();
-
+        AudioManager.Instance.Vibrate("medium");//重震动
         if (_currentShield.Value > 0)
         {
             _currentShield.Value = Mathf.Max(_currentShield.Value - damage, 0);

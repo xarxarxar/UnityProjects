@@ -12,12 +12,12 @@ public class MetaCurrencyManager : ManagerBase<MetaCurrencyManager>
     /// <summary>
     /// 只读属性，钻石数量
     /// </summary>
-    public Bindable<int> DiamondCount { get => DataManager.Instance.PlayerInfo.DiamondCount; }
+    public Bindable<int> DiamondCount { get => DataManager.Instance.PlayerInfo.Diamond; }
 
     /// <summary>
     /// 只读属性，王冠数量
     /// </summary>
-    public Bindable<int> CrownCount { get => DataManager.Instance.PlayerInfo.CrownCount; }
+    public Bindable<int> CrownCount { get => DataManager.Instance.PlayerInfo.Crown; }
 
     #region 私有方法
     protected override void Awake()
@@ -50,7 +50,7 @@ public class MetaCurrencyManager : ManagerBase<MetaCurrencyManager>
         {
             DiamondCount.Value += amount;
         }
-        if(rewardType == RewardType.Crown)
+        if (rewardType == RewardType.Crown)
         {
             CrownCount.Value += amount;
         }
@@ -58,7 +58,7 @@ public class MetaCurrencyManager : ManagerBase<MetaCurrencyManager>
         {
             GameUIManager.Instance.ShowGetRewardPanel((rewardType, amount));
         }
-        
+        DataManager.Instance.SavePlayerInfo();//保存一下
     }
 
     /// <summary>

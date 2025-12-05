@@ -88,12 +88,13 @@ public class TaskReward : MonoBehaviour
     //获取奖励按钮
     private void ReceiveReward()
     {
+        
         if (!_isFinished)
         {
-            GameUIManager.Instance.ShowQuickTip("未达到领取要求");
+            TipManager.Instance.ShowTip("未达到领取要求");
             AudioManager.Instance.PlaySFX("错误");
             return;
-        } 
+        }
         MetaCurrencyManager.Instance.AddMetaCoin(_rewardStruct.type, _rewardStruct.count,true);
         _taskSlider.transform.Find("Fill Area/Fill").GetComponent<Image>().color= _finishColor;
         _taskSlider.transform.Find("SliderText").GetComponent<Text>().text= "完成";

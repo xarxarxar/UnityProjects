@@ -31,16 +31,17 @@ public class ChooseDebuffPanel : MonoBehaviour
 
     private void OnEnable()
     {
-        if (DataManager.Instance.PlayerInfo.PassCount.Value == 0)//如果通关次数为0，则直接跳过这一步
+        Debug.Log("显示抽取debuff界面1");
+        if (DataManager.Instance.PlayerInfo.TotalPassCount.Value == 0)//如果通关次数为0，则直接跳过这一步
         {
+            Debug.Log("显示抽取debuff界面2");
             OnDebuffChooseEnd?.Invoke(new Debuff(_debuff));
             gameObject.SetActive(false);
             return;
         }
         _debuff = new Debuff();
         _chooseCount = 0;
-        _titleText.text = $"您已通关了{DataManager.Instance.PlayerInfo.PassCount.Value}次\r\n需抽取{DataManager.Instance.PlayerInfo.PassCount.Value}个Debuff再进行挑战";
-
+        _titleText.text = $"您已通关了{DataManager.Instance.PlayerInfo.TotalPassCount.Value}次\r\n需抽取{DataManager.Instance.PlayerInfo.TotalPassCount.Value}个Debuff再进行挑战";
         _debuffStructParent.GetComponent<GridLayoutGroup>().cellSize = new Vector2(430, 100);
         Canvas.ForceUpdateCanvases();
         startChooseButton.gameObject.SetActive(true);
@@ -209,7 +210,7 @@ public class ChooseDebuffPanel : MonoBehaviour
         Dictionary<DebuffStruct, int> chosenCount = new Dictionary<DebuffStruct, int>();
         Vector3 flyEffectEndPos = Vector3.zero;
 
-        for (int i = 0; i < DataManager.Instance.PlayerInfo.PassCount.Value; i++)
+        for (int i = 0; i < DataManager.Instance.PlayerInfo.TotalPassCount.Value; i++)
         {
             List<DebuffStruct> available = debuffStructs.FindAll(d =>
             {

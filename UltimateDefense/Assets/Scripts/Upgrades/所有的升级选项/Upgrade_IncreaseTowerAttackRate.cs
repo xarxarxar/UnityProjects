@@ -50,7 +50,7 @@ public class Upgrade_IncreaseTowerAttackRate : UpgradeBase
     #region 公共方法
     public override bool IsAvailable()
     {
-        return TowerManager.Instance.BonusAttackRate.Value < 3.0f;
+        return TowerManager.Instance.BonusAttackRate.Value < 2.5f;
     }
 
     /// <summary>
@@ -59,7 +59,7 @@ public class Upgrade_IncreaseTowerAttackRate : UpgradeBase
     public override void Apply()
     {
         // 通知 Manager 保存全局加成
-        TowerManager.Instance.BonusAttackRate.Value += _attackRateBonus;
+        TowerManager.Instance.BonusAttackRate.Value += _attackRateBonus/1.5f;
     }
 
     #endregion

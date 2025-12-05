@@ -12,13 +12,6 @@ public class GamePlayingPanel : MonoBehaviour
     [SerializeField] private BindableButton _openPauseButton;  //打开暂停面板的按钮
     [SerializeField] private MySlider _mySlider;//下一波倒计时的slider
 
-    private void Update()
-    {
-        if (Input.GetKeyUp(KeyCode.Escape))
-        {
-            BattleUIManager.Instance.ShowPausePanel();
-        }
-    }
 
     private void OnEnable()
     {
@@ -32,8 +25,16 @@ public class GamePlayingPanel : MonoBehaviour
         _openDoubleSpeedButton.AddListener(() =>
         {
             int speed = BattleManager.Instance.GameSpeed.Value == 1 ? 2 : 1;
+            _openDoubleSpeedButton.transform.Find("按钮显示").GetComponent<Outline>().enabled = speed == 2;
+            _openDoubleSpeedButton.transform.Find("按钮显示").GetComponentInChildren<Text>(false).text = $"×{speed}";
             BattleManager.Instance.SetGameSpeed(speed);
         });
+
+        //刷新倍速按钮的显示
+        _openDoubleSpeedButton.transform.Find("按钮显示").GetComponent<Outline>().enabled = false;
+        _openDoubleSpeedButton.transform.Find("按钮显示").GetComponentInChildren<Text>(false).text = $"×1";
+
+
         WaveManager.OnWaveChanged += OnWaveChanged;
         EnemyManager.Instance.EnemyCurrentCount.OnValueChanged += OnEnemyCountChanged;
         EnemyManager.OnAlmostNextWave += OnAlmostNextWave;

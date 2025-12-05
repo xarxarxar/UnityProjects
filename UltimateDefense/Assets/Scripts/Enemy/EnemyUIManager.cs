@@ -167,7 +167,7 @@ public class EnemyUIManager : MonoBehaviour
             if (data.hpText != null)
             {
                 int hp = enemy.CurrentHP.Value;
-                int display = (hp == 0) ? 0 : ((hp - 1) / 10 + 1);
+                int display = hp/10 +1;
                 data.hpText.text = display.ToString();
             }
 
