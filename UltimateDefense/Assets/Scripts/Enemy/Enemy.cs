@@ -49,7 +49,7 @@ public class Enemy : MonoBehaviour
     //private float _speedRate = 1;//速度的比例
 
     private Coroutine _bleedCoro = null;//流血的协程
-
+    public int UniqueID;//该敌人的唯一编号
 
     /// <summary>
     /// 敌人当前血量
@@ -124,12 +124,13 @@ public class Enemy : MonoBehaviour
     /// <param name="position">生成位置</param>
     /// <param name="level">敌人等级，用于计算生命值</param>
     /// <param name="layer">UI 渲染层级</param>
-    public void Init(EnemyType enemyType, Vector3 position, int level)
+    public void Init(EnemyType enemyType, Vector3 position, int level,int uniqueID)
     {
         transform.position = position;// 设置初始位置
         _isDead = false;              // 重置死亡状态
         _isInRangeList = false;       // 重置范围触发标志
         this.enemyType = enemyType;   //敌人类型
+        UniqueID = uniqueID;//敌人编号
 
         // 根据等级动态计算最大生命值，护盾默认为 0
         maxHP.Value = Mathf.RoundToInt((Mathf.Pow(level * 0.6f,2))*10f * (1 + BattleManager.Instance.Debuff.AddHP * 0.1f));//算上debuff的，增加敌人10%HP

@@ -40,7 +40,7 @@ public class PlayerTutorial : MonoBehaviour
 
     private void Start()
     {
-        BattleManager.OnStartBattle += OnStartBattle;
+        //BattleManager.OnStartBattle += OnStartBattle;
         //Enemy.OnMoveInRange += OnMoveInRange;
     }
 

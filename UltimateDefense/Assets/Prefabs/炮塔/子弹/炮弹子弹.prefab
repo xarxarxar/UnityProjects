@@ -10,12 +10,12 @@ GameObject:
   m_Component:
   - component: {fileID: 6990274571819367854}
   - component: {fileID: 4433714833831629224}
-  - component: {fileID: 9078429081394095807}
   - component: {fileID: -744373440687285243}
   - component: {fileID: 6812491818413725990}
   - component: {fileID: 674668638835041254}
+  - component: {fileID: 3144928458991379677}
   m_Layer: 0
-  m_Name: "\u5BD2\u51B0\u5B50\u5F39"
+  m_Name: "\u70AE\u5F39\u5B50\u5F39"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -88,20 +88,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &9078429081394095807
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 733258502283669465}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f58bd16da5ec6a4889641cb668359e7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _moveSpeed: 50
-  _trailRenderer: {fileID: 0}
 --- !u!96 &-744373440687285243
 TrailRenderer:
   serializedVersion: 3
@@ -277,3 +263,20 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.5
+--- !u!114 &3144928458991379677
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 733258502283669465}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23bcdbc2199f7414781152812833c5a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _trailRenderer: {fileID: -744373440687285243}
+  _lifeTime: 5
+  targetPosition: {x: 0, y: 0, z: 0}
+  minScale: 1
+  maxScale: 1.2
