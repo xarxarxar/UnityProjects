@@ -1,0 +1,130 @@
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
+
+/// <summary>
+/// 任务奖励
+/// </summary>
+public class TaskReward : MonoBehaviour
+{
+    [SerializeField] private Button _receiveButton;//领取按钮
+    [SerializeField] private Slider _taskSlider;//任务slider
+    [SerializeField] private RewardStruct _rewardStruct;//奖励
+    [SerializeField] private Text _desText;//描述Text
+    [SerializeField] private GameObject _finishMask;//已完成遮罩
+    private string _taskTag=string.Empty;//这个任务的标签
+    public bool _isFinished=false;//是否完成这个任务
+    private int _needValue;//该任务需要的值
+    private int _currentValue;//当前值
+
+    private Color32 _normalColor = new Color32(0, 153, 249, 255);
+    private Color32 _finishColor = new Color32(85, 241, 133, 255);
+
+    private UnityAction<string> OnReceiveReward;//领取奖励事件
+
+    /// <summary>
+    /// 该任务需要的值
+    /// </summary>
+    public int NeedValue { get => _needValue; }
+    /// <summary>
+    /// 当前值
+    /// </summary>
+    public int CurrentValue { get => _currentValue; }
+
+    private void OnEnable()
+    {
+
+    }
+
+    /// <summary>
+    /// 初始化任务
+    /// </summary>
+    /// <param name="rewardType">奖励的类型</param>
+    /// <param name="count">奖励的数量</param>
+    /// <param name="value">任务需要的数量</param>
+    /// <param name="description">任务的描述</param>
+    public void Init(RewardType rewardType,int count,string description,
+        int needValue,int currentValue,bool isClaimed,UnityAction<string> OnReceive)
+    {
+        _rewardStruct.Init(rewardType, count);
+        _desText.text = description;
+        _taskSlider.interactable = false;
+
+        if (isClaimed)//代表已领取该任务奖励
+        {
+            Debug.Log("已经领取该奖励");
+            _taskSlider.value = _taskSlider.maxValue;
+            _taskSlider.transform.Find("Fill Area/Fill").GetComponent<Image>().color = _finishColor;
+            _taskSlider.transform.Find("SliderText").GetComponent<Text>().text = $"完成";
+            _isFinished = true;
+            _finishMask.SetActive(true);
+            return;
+        }
+        _needValue= needValue;
+        _currentValue = currentValue;
+        _taskTag= description;
+        
+        //_taskSlider.maxValue = _needValue;
+        //_taskSlider.minValue = 0;
+        //_taskSlider.wholeNumbers = true;
+        _taskSlider.transform.Find("Fill Area/Fill").GetComponent<Image>().color = _normalColor;
+        _taskSlider.transform.Find("SliderText").GetComponent<Text>().text = $"{_currentValue}/{_needValue}";
+        _finishMask.SetActive(false);
+        _isFinished = false;
+        UpdateStatus(_currentValue);
+
+        //Debug.Log($"taskslider is {_taskSlider.name}, _taskSlider.maxValue is {_taskSlider.maxValue},_taskSlider.minValue is {_taskSlider.minValue},current is {_taskSlider.value}");
+
+        _receiveButton.onClick.RemoveAllListeners(); // 先清理
+        _receiveButton.onClick.AddListener(ReceiveReward);
+
+        OnReceiveReward = OnReceive;
+    }
+
+    private void OnDisable()
+    {
+        //_receiveButton.onClick.RemoveAllListeners();
+    }
+
+    //获取奖励按钮
+    private void ReceiveReward()
+    {
+        
+        if (!_isFinished)
+        {
+            TipManager.Instance.ShowTip("未达到领取要求");
+            AudioManager.Instance.PlaySFX("错误");
+            return;
+        }
+        MetaCurrencyManager.Instance.AddMetaCoin(_rewardStruct.type, _rewardStruct.count,true);
+        _taskSlider.transform.Find("Fill Area/Fill").GetComponent<Image>().color= _finishColor;
+        _taskSlider.transform.Find("SliderText").GetComponent<Text>().text= "完成";
+        _finishMask.SetActive(true);
+        AudioManager.Instance.PlaySFX("领取奖励");
+        OnReceiveReward?.Invoke(_taskTag);
+    }
+
+    /// <summary>
+    /// 更新状态
+    /// </summary>
+    /// <param name="value"></param>
+    public void UpdateStatus(int value)
+    {
+        if (_isFinished)
+        {
+            return;
+        }
+
+        _currentValue = value;
+        
+        if (_currentValue >= _needValue)
+        {
+            _currentValue = _needValue;
+            _isFinished=true;
+        }
+
+        _taskSlider.value = (float)_currentValue/ _needValue;
+        Debug.Log($"_currentValue is {_currentValue},_needValue is {_needValue},_taskSlider.value is {_taskSlider.value}");
+        _taskSlider.transform.Find("SliderText").GetComponent<Text>().text = $"{_currentValue}/{_needValue}";
+    }
+}
