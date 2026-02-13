@@ -2,16 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Events;
+
+[System.Serializable]
+public class AnimalData 
+{
+    public string Race;//种族
+    public int Patience;//耐心。决定消消乐的步骤
+    public Sprite sprite;//显示
+}
+
 
 public class Animal : MonoBehaviour
 {
     //可遗传的属性
-    public AnimalBaseData BaseData;
-    public float Strength;//体力
-    public float Hp;//血量
-    public float Speed;//速度
-    public string Race;//种族是什么
+    public AnimalData animalData;
 
     //不可遗传的属性
     [HideInInspector]public Animal Father;
@@ -55,7 +59,6 @@ public class Animal : MonoBehaviour
     {
         Gender = gender == -1 ? Random.Range(0, 2) : gender;
         Age = Random.Range(1,30);
-        Debug.Log($"年龄为{Age}");
         DieProbDict["年龄"] = 0f;
         MinBreedAge = 24;
         BreedInterval = 5;
@@ -63,8 +66,8 @@ public class Animal : MonoBehaviour
         {
             Render = transform.Find("显示/本体").GetComponent<SpriteRenderer>();
         }
-        BaseData = baseData;
-        Render.sprite = Gender == 0 ? BaseData.FemaleSprite : BaseData.MaleSprite;
+        animalData.sprite= Gender == 0 ? baseData.FemaleSprite : baseData.MaleSprite;
+        Render.sprite = animalData.sprite;
         AnimalManager.Instance.AllAnimals.Add(this);
     }
     /// <summary>
@@ -84,8 +87,8 @@ public class Animal : MonoBehaviour
         {
             Render = transform.Find("显示/本体").GetComponent<SpriteRenderer>();
         }
-        BaseData=father.BaseData;
-        Render.sprite=Gender==0? father.BaseData.FemaleSprite: father.BaseData.MaleSprite;
+        animalData.sprite = Gender == 0 ? father.animalData.sprite : mother.animalData.sprite;
+        Render.sprite= animalData.sprite;
         AnimalManager.Instance. AllAnimals.Add(this);
     }
 
@@ -185,6 +188,7 @@ public class Animal : MonoBehaviour
     /// <returns></returns>
     public Vector3 GetRandomPointInPolygon(List<Vector3> poly)
     {
+        Debug.Log($"poly count is {poly.Count}");
         float minX = poly[0].x, maxX = poly[0].x;
         float minY = poly[0].y, maxY = poly[0].y;
 

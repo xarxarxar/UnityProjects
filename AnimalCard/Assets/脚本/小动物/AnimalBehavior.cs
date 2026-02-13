@@ -45,7 +45,7 @@ public class AnimalBehavior : MonoBehaviour
         }
 
         points.Clear();
-        
+        Debug.Log($"RoomManager.instance.GetRoom(_animal.RoomID).Bounds.Count is {RoomManager.instance.GetRoom(_animal.RoomID).Bounds.Count}");
         for (int i = 0; i < RoomManager.instance.GetRoom(_animal.RoomID).Bounds.Count; i++)
         {
             points.Add(RoomManager.instance.GetRoom(_animal.RoomID).Bounds[i]);
@@ -110,6 +110,7 @@ public class AnimalBehavior : MonoBehaviour
         {
             return;
         }
+        Debug.Log($"points count is {points.Count}");
         Vector3 target =_animal.GetRandomPointInPolygon(points);
         MoveTo(target);
     }

@@ -16,6 +16,7 @@ public class AnimalManager : MonoBehaviour
     public List<Animal> AllAnimals = new List<Animal>();
     public List<Transform> pointsTransform=new List<Transform>(); 
     public SerializableDictionary<int, List<Transform>> pointsTransformDict=new SerializableDictionary<int, List<Transform>>();//Î§À¸
+    public List<AnimalData> AllAnimalDatas=new List<AnimalData>();
 
     private float BreedChance = 0.5f;//·±Ö³³É¹¦ÂÊ
 
@@ -193,7 +194,7 @@ public class AnimalManager : MonoBehaviour
     /// <param name="mother">Ä¸Ç×</param>
     public Animal BreedAnimal(Animal father,Animal mother)
     {
-        if(father==null || mother==null || father.Race!=mother.Race) return null;
+        if(father==null || mother==null || father.animalData.Race!=mother.animalData.Race) return null;
         Animal son = PoolManager.Instance.AnimalPool.Get();
         son.Init(father,mother);
         return son;

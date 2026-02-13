@@ -10,49 +10,29 @@ public enum RoleEnum
     Npc
 }
 
-public class RoleData 
-{
-    public int maxHp;
-    public float maxStrength;
-    public float Speed;
-}
-
 
 public class Role : MonoBehaviour
 {
     public int currentHp;
     public int maxHp;
-    public float currentStrength;//体力值，在战斗中可以加
-    public float maxStrength;//最大体力值
-    public float Speed;//生成金币的速度
+    public int maxPatience;//最大耐心值
     public int ShieldCount;//护盾次数
     public int coinCount;//金币数量
+    
     /// <summary>
     /// 金币数量变化事件，前一个参数为变化前，后一个参数为变化后
     /// </summary>
     public event UnityAction<int, int> OnCoinChange;
 
-    private Coroutine SpawnCoinCoro = null;
 
-    public void Init(RoleData roleData, UnityAction callback=null)
+    public void Init(AnimalData animalData, UnityAction callback=null)
     {
-        //转为值类型
-        (int maxHp, float maxStrength, float Speed) paras = (roleData.maxHp, roleData.maxStrength, roleData.Speed);
-        maxHp = paras.maxHp;
-        maxStrength = paras.maxStrength;
-        Speed = paras.Speed;
-
+        maxPatience = animalData.Patience;
+        maxHp = 100;
         //填充数值
         currentHp =maxHp;
-        currentStrength=maxStrength;
         ShieldCount = 0;
-        if (SpawnCoinCoro != null)
-        {
-            StopCoroutine(SpawnCoinCoro);
-            SpawnCoinCoro=null;
-        }
         coinCount = 0;
-        SpawnCoinCoro = StartCoroutine(SpawnCoinIE());
 
         RoleDataUIManager.Instance.RegisterRoleUI(this,Vector3.zero);
         callback?.Invoke();
@@ -62,18 +42,11 @@ public class Role : MonoBehaviour
     {
         //转为值类型
         maxHp = 0;
-        maxStrength = 0;
-        Speed = 0;
+        maxPatience = 1;
 
         //填充数值
         currentHp = maxHp;
-        currentStrength = maxStrength;
         ShieldCount = 0;
-        if (SpawnCoinCoro != null)
-        {
-            StopCoroutine(SpawnCoinCoro);
-            SpawnCoinCoro = null;
-        }
         coinCount = 0;
     }
 
@@ -100,22 +73,6 @@ public class Role : MonoBehaviour
     {
         currentHp = Mathf.Min(currentHp + hp, maxHp);
         RoleDataUIManager.Instance.UpdateRoleHealth(this);
-    }
-    /// <summary>
-    /// 恢复体力
-    /// </summary>
-    /// <param name="strength"></param>
-    public void RecoverStrength(float strength)
-    {
-        currentStrength = Mathf.Min(currentStrength + strength, maxStrength);
-    }
-    /// <summary>
-    /// 减少体力
-    /// </summary>
-    /// <param name="strength"></param>
-    public void ReduceStrength(float strength)
-    {
-        currentStrength = Mathf.Max(currentStrength - strength, 0);
     }
     /// <summary>
     /// 添加护盾次数
@@ -179,19 +136,5 @@ public class Role : MonoBehaviour
             return true;
         }
         return false;
-    }
-
-
-    private IEnumerator SpawnCoinIE()
-    {
-        if(Speed==0)
-        {
-            yield break;
-        }
-        while(true)
-        {
-            yield return new WaitForSecondsRealtime(1/Speed);//Speed越快，生成的金币越快
-            AddCoin(1);
-        }
     }
 }

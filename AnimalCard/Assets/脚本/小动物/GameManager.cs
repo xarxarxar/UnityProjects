@@ -21,6 +21,8 @@ public class GameManager : MonoBehaviour
     public Button StartButton;
     public Button RestartButton;
 
+    public AnimalData CurrentAnimal;
+
     public static event Action<int,int> OnMonthChanged;//月份增加的时候
 
     public int CurrentMonth
@@ -44,11 +46,14 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         //StartCoroutine(DayIe());
+        CurrentAnimal = AnimalManager.Instance.AllAnimalDatas[2];
+
+
         StartButton.onClick.RemoveAllListeners();
         StartButton.onClick.AddListener(() =>
         {
             StartPanel.SetActive(false);
-            BattleManager.instance.Init(null,null,120);
+            BattleManager.instance.Init(CurrentAnimal, null,120);
         });
         RestartButton.onClick.RemoveAllListeners();
         RestartButton.onClick.AddListener(() =>

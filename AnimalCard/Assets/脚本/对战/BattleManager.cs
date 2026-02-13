@@ -13,11 +13,12 @@ public class BattleManager : MonoBehaviour
     public static event UnityAction<bool> OnBattleEnd;//游戏结束，是否成功抓到宠物
 
     public GameObject CountDownSliderPanel;
-    public RoleControl PlayerRoleControl;//自己
+    public PlayerControl PlayerRoleControl;//自己
     public NpcControl NpcControl;
 
     public Role PlayerRole;
     public Role NpcRole;
+
 
     private float maxDuration = 1;
     private float currentTime = 0;
@@ -26,10 +27,6 @@ public class BattleManager : MonoBehaviour
         instance = this;
     }
 
-    private void Start()
-    {
-        
-    }
 
     /// <summary>
     /// 初始化对战管理器
@@ -37,7 +34,7 @@ public class BattleManager : MonoBehaviour
     /// <param name="player">玩家的动物数据</param>
     /// <param name="npc">npc的动物数据</param>
     /// <param name="duration">本局时长</param>
-    public void Init(AnimalBaseData player,AnimalBaseData npc,float duration)
+    public void Init(AnimalData player, AnimalData npc,float duration)
     {
         isEnd=false;
         currentTime =duration;
@@ -45,7 +42,7 @@ public class BattleManager : MonoBehaviour
         transform.GetChild(0).gameObject.SetActive(true);
         CountDownSliderPanel.SetActive(true);
         StartCoroutine(CountDownIe());
-        PlayerRoleControl.Init();
+        PlayerRoleControl.Init(player);
         NpcControl.Init();
     }
 

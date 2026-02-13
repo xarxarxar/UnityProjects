@@ -68,6 +68,6 @@ public class AddCoinEffect : IEffect
         moveTween?.Kill();
 
         //统一回收入口
-        PoolManager.Instance.TreatPool.Return(showImage);
+        PoolManager.Instance.LittleCoinPool.Return(showImage);
     }
 }

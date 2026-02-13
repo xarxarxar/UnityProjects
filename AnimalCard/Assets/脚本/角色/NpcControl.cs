@@ -40,13 +40,7 @@ public class NpcControl : MonoBehaviour
             cardManager.NpcCards[i].OnCardDisappear += OnCardDisappear;
         }
 
-        RoleData data = new RoleData
-        {
-            maxHp = 200,
-            maxStrength = 20,
-            Speed = 2
-        };
-        MyRole.Init(data);
+        MyRole.Init(AnimalManager.Instance.AllAnimalDatas[1]);
 
         if (SummonCardCoro != null)
         {
