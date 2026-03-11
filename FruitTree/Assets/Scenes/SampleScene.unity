@@ -388,7 +388,7 @@ MonoBehaviour:
     buyPrice: 50
     defaultSoldPrice: 5
   currentLevelFruits: []
-  truckSpawnInterval: 5
+  truckSpawnInterval: 20
   targetGold: 1000
   totalSeconds: 120
   currentGold: 100
@@ -402,6 +402,8 @@ MonoBehaviour:
   - {fileID: 593159437}
   truckPrefab: {fileID: 8586860866538131460, guid: 0113e409e2bc78c4aaa351c6879330eb, type: 3}
   FruitTreePrefab: {fileID: 6410759355743488982, guid: 2b88190930cd38c4382965637b91e51a, type: 3}
+  testBee: {fileID: 678434869}
+  AllMissions: []
   uiText: {fileID: 412531057}
 --- !u!4 &113176067
 Transform:
@@ -2562,6 +2564,7 @@ GameObject:
   m_Component:
   - component: {fileID: 678434868}
   - component: {fileID: 678434867}
+  - component: {fileID: 678434869}
   m_Layer: 0
   m_Name: "\u5C0F\u871C\u8702"
   m_TagString: Untagged
@@ -2630,12 +2633,37 @@ Transform:
   m_GameObject: {fileID: 678434866}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 1.64, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &678434869
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 678434866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef8941e059a421f4eab2cc1bfdef0c60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultSpeed: 2
+  state: 0
+  mission:
+    needTruck: {fileID: 0}
+    fruitType:
+      name: 
+      defaultGrowTime: 5
+      defaultMaxFruits: 3
+      buyPrice: 50
+      defaultSoldPrice: 5
+    employBee: {fileID: 0}
+  trashPoint: {fileID: 0}
+  missionInterval: 0.5
 --- !u!1 &743538109
 GameObject:
   m_ObjectHideFlags: 0
@@ -5581,7 +5609,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &1776744873
 SpriteRenderer:
   m_ObjectHideFlags: 0

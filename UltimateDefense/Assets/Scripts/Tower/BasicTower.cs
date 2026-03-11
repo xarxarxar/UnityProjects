@@ -6,81 +6,26 @@ using UnityEngine;
 /// </summary>
 public class BasicTower : Tower
 {
+
     //实现父类的DoAttack方法
     protected override IEnumerator DoAttack()
     {
-        //ShootTrackBullet();
-        //ShootPierceBullet();
-        //ShootBounceBullet();
-        ShootShellBullet();
+        Bullet bullet = TowerManager.Instance.BulletPool.Get();
+
+        bullet.transform.position = _bulletInitPos.position;
+        float value = Random.value;
+        if (value < CriticalProb)
+        {
+            bullet.Init(Mathf.RoundToInt(BaseDamage * CriticalMult), 
+                true);
+        }
+        else
+        {
+            bullet.Init(BaseDamage,false);
+        }
         JellySquash();
         CurrentBulletCount--;
         yield return null;
     }
 
-
-    private void ShootTrackBullet()
-    {
-        TrackBullet bullet = TowerManager.Instance.GetBullet<TrackBullet>();
-
-        float value = Random.value;
-        if (value < CriticalProb)
-        {
-            bullet.Init(Mathf.RoundToInt(BaseDamage * CriticalMult),
-                true, _bulletInitPos.position, currentTarget);
-        }
-        else
-        {
-            bullet.Init(BaseDamage, false, _bulletInitPos.position, currentTarget);
-        }
-    }
-
-    private void ShootPierceBullet()
-    {
-        PierceBullet bullet = TowerManager.Instance.GetBullet<PierceBullet>();
-
-        Vector3 direction = currentTarget.transform.position - _bulletInitPos.position;
-        float value = Random.value;
-        if (value < CriticalProb)
-        {
-            bullet.Init(Mathf.RoundToInt(BaseDamage * CriticalMult),
-                true, _bulletInitPos.position, direction);
-        }
-        else
-        {
-            bullet.Init(BaseDamage, false, _bulletInitPos.position, direction);
-        }
-    }
-
-    private void ShootBounceBullet()
-    {
-        BounceBullet bullet = TowerManager.Instance.GetBullet<BounceBullet>();
-
-        float value = Random.value;
-        if (value < CriticalProb)
-        {
-            bullet.Init(Mathf.RoundToInt(BaseDamage * CriticalMult),
-                true, _bulletInitPos.position, currentTarget);
-        }
-        else
-        {
-            bullet.Init(BaseDamage, false, _bulletInitPos.position, currentTarget);
-        }
-    }
-
-    private void ShootShellBullet()
-    {
-        ShellBullet bullet = TowerManager.Instance.GetBullet<ShellBullet>();
-
-        float value = Random.value;
-        if (value < CriticalProb)
-        {
-            bullet.Init(Mathf.RoundToInt(BaseDamage * CriticalMult),
-                true, _bulletInitPos.position, currentTarget.transform.position);
-        }
-        else
-        {
-            bullet.Init(BaseDamage, false, _bulletInitPos.position, currentTarget.transform.position);
-        }
-    }
 }

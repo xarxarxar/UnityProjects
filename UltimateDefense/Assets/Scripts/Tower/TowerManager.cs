@@ -25,16 +25,12 @@ public class TowerManager : ManagerBase<TowerManager>
     //总的
     private Bindable<float> _totalAttackRate = new Bindable<float>();//总攻速
 
+    [SerializeField] public Bullet _bulletPrefab;     //子弹预制体
     private ObjectPool<Bullet> _bulletPool;           //子弹对象池
     [SerializeField] private GameObject _towerObject;//炮塔物体
     [SerializeField] private Tower _currentTower;//当前的炮塔
     [SerializeField] private Transform towerGunParent;//炮管的父物体
     [SerializeField] private TowerPlatform towerPlatform;//炮塔底座
-
-    [SerializeField]
-    private List<Bullet> bulletPrefabs;
-    private Dictionary<System.Type, ObjectPool<Bullet>> bulletPools =
-    new Dictionary<System.Type, ObjectPool<Bullet>>();
     #endregion
 
     #region 公开属性
@@ -124,8 +120,9 @@ public class TowerManager : ManagerBase<TowerManager>
         _bonusReload.Value = 0;
         _bonusCap.Value = 0;
 
-        //if (_bulletPool == null) _bulletPool = new ObjectPool<Bullet>(_bulletPrefab, 10, transform);
+        if (_bulletPool == null) _bulletPool = new ObjectPool<Bullet>(_bulletPrefab, 10, transform);
 
+        
     }
     /// <summary>
     /// 设置临时攻速，持续一段时间
@@ -161,78 +158,8 @@ public class TowerManager : ManagerBase<TowerManager>
     {
         _bonusAtk.Value += bonus;
     }
-    /// <summary>
-    /// 从对象池得到一个Bullet
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    public T GetBullet<T>() where T : Bullet
-    {
-        System.Type type = typeof(T);
 
-        // 如果已经有对象池，直接取
-        if (bulletPools.TryGetValue(type, out var pool))
-        {
-            var b = pool.Get();
-            return b as T; ;
-        }
-
-        // 没对象池 → 在列表中查找对应类型的 prefab
-        Bullet prefab = null;
-
-        if (bulletPrefabs.Count <= 0) return null;
-
-        foreach (var p in bulletPrefabs)
-        {
-            if (p.GetType() == type)
-            {
-                prefab = p;
-                break;
-            }
-        }
-
-        if (prefab == null)
-        {
-            Debug.LogError($"未在 bulletPrefabs 列表中找到类型 {type} 的 Bullet 预制体！");
-            return null;
-        }
-
-        // 找到 prefab → 创建对象池
-        pool = new ObjectPool<Bullet>(prefab, 20, transform);
-        bulletPools.Add(type, pool);
-
-        // 返回对象
-        var bullet = pool.Get();
-
-        return bullet as T;
-    }
-
-    /// <summary>
-    /// 将bullet返回对象池
-    /// </summary>
-    /// <param name="bullet"></param>
-    public void ReturnBullet(Bullet bullet)
-    {
-        if (bullet == null)
-        {
-            Debug.LogWarning("ReturnBullet 失败：bullet 为 null");
-            return;
-        }
-
-        // 获取真实类型
-        System.Type type = bullet.GetType();
-
-        // 如果对象池存在 → 正常回收
-        if (bulletPools.TryGetValue(type, out var pool))
-        {
-            pool.Return(bullet);
-            return;
-        }
-
-        // 找不到对象池 → 说明这个 bullet 并非通过 GetBullet() 创建
-        Debug.LogWarning($"回收 Bullet 失败：找不到 {type} 的对象池，直接销毁该对象");
-        Destroy(bullet.gameObject);
-    }
+    
 
     /// <summary>
     /// 加载整个炮塔

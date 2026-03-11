@@ -22,6 +22,11 @@ public class Truck : MonoBehaviour
 
         missions.Clear();          // 清空当前列表
         missions.AddRange(_missions); // 复制元素
+        truckInfoText.text = string.Empty;
+        foreach (var m in missions)
+        {
+            truckInfoText.text += $"{m.fruitType.name}\n";
+        }
     }
 
     void Update()

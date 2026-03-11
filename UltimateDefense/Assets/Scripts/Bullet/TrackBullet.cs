@@ -7,37 +7,28 @@ using UnityEngine;
 /// </summary>
 public class TrackBullet : Bullet
 {
-    [HideInInspector]public Enemy Target;//目标
-    private int _targetID;//敌人的ID
+    public Transform Target;//目标
 
-    public void Init(int damage, bool isCritical,Vector3 startPos,Enemy target)
+    public void Init(int damage, bool isCritical,Transform target)
     {
-        base.Init(damage, isCritical,startPos);
+        base.Init(damage, isCritical);
         Target=target;
-        _targetID = Target.UniqueID;
     }
 
-    protected override void OnUpdate()
+    private void Update()
     {
         MoveToTarget();
-    }  
-
+    }
 
     private void MoveToTarget() 
-    {
-        if (Target == null || Target.UniqueID != _targetID)
-        {
+    { 
+        if (Target == null)
+        { 
             ReturnToPool();
-            return;
-        }
-
-        //if (!Target.gameObject.activeInHierarchy)
-        //{
-        //    ReturnToPool();
-        //    return;
-        //}
+            return; 
+        } 
         transform.position = Vector3.MoveTowards( transform.position, Target.transform.position, 
-            Speed * BattleManager.Instance.GameSpeed.Value * Time.deltaTime );
+            _speed * BattleManager.Instance.GameSpeed.Value * Time.deltaTime );
         if (Vector3.Distance(transform.position, Target.transform.position) < 0.1f) 
         { 
             ReachTarget(); 
@@ -46,12 +37,23 @@ public class TrackBullet : Bullet
 
     private void ReachTarget()
     {
-        if (Target != null) 
+        if (Target != null && Target.GetComponent<Enemy>()!=null) 
         { 
-            Target.TakeDamage(IsCritical, Damage);
-            _hitEnemies.Add(Target); 
+            Enemy enemy= Target.GetComponent<Enemy>();
+            OnHitEnemy(enemy, IsCritical, Damage);
+            _hitEnemies.Add(enemy); 
         }
         ReturnToPool(); 
+    }
+
+    public void OnHitEnemy(Enemy enemy, bool isCritical, int damage)
+    {
+        if (!enemy.gameObject.activeInHierarchy) return; 
+        // 1. 所有子弹都有的基础伤害
+        enemy.TakeDamage(isCritical,damage);
+        if (!enemy.gameObject.activeInHierarchy) return;
+        // 2. 如果敌人有护盾，跳过特殊效果
+        if (enemy.CurrentShield.Value>0) return; 
     }
 
 }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//[System.Serializable]
 /// <summary>
 /// 分配给蜜蜂的任务：货车（需要果实）-果实（从果树或者储存箱）-货车（送出果实）
 /// </summary>
@@ -20,6 +21,7 @@ public class Mission
     {
         needTruck = truck;
         fruitType = type;
+        employBee = null;
     }
 
     /// <summary>
@@ -29,19 +31,5 @@ public class Mission
     public void StartMission(Bee bee)
     {
         employBee = bee;
-    }
-    /// <summary>
-    /// 完成任务，可能是玩家通过道具完成的，也可能是蜜蜂完成的这个任务
-    /// </summary>
-    public void FinishMission()
-    {
-
-    }
-    /// <summary>
-    /// 中止任务，蜜蜂送到一半，货车开走了
-    /// </summary>
-    public void AbandonMisiion()
-    {
-
     }
 }

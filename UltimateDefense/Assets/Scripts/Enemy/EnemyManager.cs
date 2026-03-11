@@ -47,8 +47,6 @@ public class EnemyManager : ManagerBase<EnemyManager>
     // 存储暂停前所有敌人的速度
     private float _eliteEnemyProportion = 0.2f;//精英怪所占的比例
     private float _speedRate = 1;//速度的比例
-    //敌人的编号
-    private int enemyID = 0;
     #endregion
 
     #region 公开静态事件
@@ -171,7 +169,6 @@ public class EnemyManager : ManagerBase<EnemyManager>
         _enemySpeed.Value = 0.6f;
         _enemyDamageNullifiedCount.Value = 0 + BattleManager.Instance.Debuff.DamageNullified;
         SignleEnemyDieCount.Value = 0;
-        enemyID = 0;
 
         Enemy.OnMoveInRange += OnMoveInRange;
         Enemy.OnMoveOutRange += OnMoveOutRange;
@@ -196,10 +193,8 @@ public class EnemyManager : ManagerBase<EnemyManager>
     public void SpawnEnemy(EnemyType enemyType,float xPos, int level,float yPos=13)
     {
         Enemy enemy = _enemyPool.Get();
-        enemyID++;
         // 给 enemy 设置一个唯一名字
-        enemy.Init(enemyType, new Vector3(xPos, yPos, 0), level,enemyID);
-
+        enemy.Init(enemyType, new Vector3(xPos, yPos, 0), level);
         EnemyUIManager.Instance.RegisterEnemyUI(enemy, new Vector3(0, 0.0f, 0));
         _allEnemies.Add(enemy);
         _enemyCurrentCount.Value = _allEnemies.Count;

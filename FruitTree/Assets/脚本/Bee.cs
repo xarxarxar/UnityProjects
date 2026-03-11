@@ -2,25 +2,46 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
-
-public enum BeeState 
-{ 
-    Idle,//没有成熟的果实，或者没有货车的时候，处于这个状态
-    GetFruit,//在拿取果实的路上
-    SendFruit,//在将果实送到货车的路上
-}
+using System;
 
 /// <summary>
-/// 果实来源接口
-/// 树 和 储物箱 都实现这个接口
+/// 蜜蜂当前状态
 /// </summary>
-public interface IFruitSource
+public enum BeeState
 {
+    Idle,       // 空闲
+    GetFruit,   // 前往水果来源
+    SendFruit,  // 前往货车送水果
+    ToTrash     // 前往垃圾桶丢水果
+}
+[System.Serializable]
+/// <summary>
+/// 果实来源接口
+/// 果树 和 储物箱 都需要实现这个接口
+/// </summary>
+public abstract class FruitSource : MonoBehaviour
+{
+    public virtual FruitType FruitType { get; }//它的水果类型
+
+    public virtual int RipedCount { get; }//成熟的果实数量
+
+    //预定的蜜蜂，如果数量大于等于RipedCount，那么就表示这里无法获取成熟的果实，按理说数量不应该会大于RipedCount
+    public virtual List<Bee> ReserveBees { get; }
+
+    public static event Action<FruitSource>  OnRipedCountChanged;//果实变化事件，对应蜜蜂的OnFruitSourceRestock方法
+
+    public abstract void RemoveBee(Bee bee);
+
+    // 静态方法触发事件
+    protected static void TriggerRipedCountChanged(FruitSource source)
+    {
+        OnRipedCountChanged?.Invoke(source);
+    }
     // 尝试预定水果
-    FruitType TryReserveFruit(Bee bee);
+    public abstract bool TryReserveFruit(Bee bee);
 
     // 拿走预定的水果
-    void TakeReservedFruit(FruitType fruit);
+    public abstract void  TakeReservedFruit(FruitType fruit);
 }
 
 /// <summary>
@@ -28,98 +49,250 @@ public interface IFruitSource
 /// </summary>
 public class Bee : MonoBehaviour
 {
-    public float defaultSpeed = 1;//蜜蜂默认移动速度
-    public float missionInterval = 0.5f;//蜜蜂每0.5秒遍历一次有没有需要做的事情
-    public BeeState state=BeeState.Idle;
+    /// <summary>
+    /// 蜜蜂移动速度
+    /// </summary>
+    public float defaultSpeed = 2f;
 
-    private Mission mission = null;
-    private IFruitSource fruitSource;
-    // 当前手里拿的水果
-    private FruitType carryFruitType= null;
+    /// <summary>
+    /// 当前状态
+    /// </summary>
+    public BeeState state = BeeState.Idle;
 
+    /// <summary>
+    /// 当前任务
+    /// </summary>
+    public Mission mission = null;
+
+    /// <summary>
+    /// 当前水果来源（树 或 储物箱）
+    /// </summary>
+    private FruitSource fruitSource;
+
+    /// <summary>
+    /// 蜜蜂手里拿的水果
+    /// </summary>
+    private FruitType carryFruitType = null;
+
+    /// <summary>
+    /// 当前移动目标点
+    /// </summary>
+    private Vector3 currentTargetPos;
+
+    /// <summary>
+    /// 垃圾桶位置
+    /// </summary>
+    public Transform trashPoint;
+
+    /// <summary>
+    /// 任务检测间隔
+    /// </summary>
+    public float missionInterval = 0.5f;
+
+    /// <summary>
+    /// 任务检测计时器
+    /// </summary>
+    private float missionTimer = 0f;
 
     /// <summary>
     /// 初始化蜜蜂
     /// </summary>
     public void InitBee()
     {
-        state= BeeState.Idle;
+        state = BeeState.Idle;
         mission = null;
+        fruitSource = null;
+        carryFruitType = null;
+
+        FruitSource.OnRipedCountChanged -= OnFruitSourceCountChanged;
+        FruitSource.OnRipedCountChanged += OnFruitSourceCountChanged;
     }
+
     /// <summary>
-    /// 给蜜蜂一个新订单
+    /// 给蜜蜂分配任务
     /// </summary>
-    /// <param name="_mission"></param>
     public void SetMission(Mission _mission)
     {
+        Debug.Log("给蜜蜂分配任务");
         mission = _mission;
+
+        missionTimer = 0f;
+
+        StartMission();
     }
 
     /// <summary>
-    /// 移动去拿水果
+    /// 每帧更新移动逻辑
     /// </summary>
-    void MoveToFruit()
+    void Update()
     {
-        // 移动逻辑省略
+        switch (state)
+        {
+            case BeeState.Idle:
 
-        // 假设到达目标
-        bool arrived = true;
+                TryGetMission();
+                break;
+            // 前往水果来源
+            case BeeState.GetFruit:
+                
+                if (fruitSource == null)
+                    return;
+                Debug.Log($"fruitSource不为null");
+                currentTargetPos = fruitSource.transform.position;
 
-        if (!arrived) return;
+                if (MoveToTarget(currentTargetPos))
+                {
+                    OnArriveFruit();
+                }
+
+                break;
+
+            // 前往货车
+            case BeeState.SendFruit:
+
+                if (mission == null || mission.needTruck == null)
+                    return;
+
+                currentTargetPos = mission.needTruck.transform.position;
+
+                if (MoveToTarget(currentTargetPos))
+                {
+                    OnArriveTruck();
+                }
+
+                break;
+
+            // 前往垃圾桶
+            case BeeState.ToTrash:
+
+                if (trashPoint == null)
+                    return;
+
+                if (MoveToTarget(trashPoint.position))
+                {
+                    OnArriveTrash();
+                }
+
+                break;
+        }
+    }
+
+    /// <summary>
+    /// 尝试获取任务
+    /// Idle状态下每隔一定时间执行一次
+    /// </summary>
+    void TryGetMission()
+    {
+        
+        missionTimer += Time.deltaTime;
+
+        // 没到时间
+        if (missionTimer < missionInterval)
+            return;
+        // 重置计时
+        missionTimer = 0f;
+
+        // 从游戏管理器获取任务
+        Mission newMission = FruitGameManager.Instance.GetMission(this);
+
+        // 如果没有任务
+        if (newMission == null)
+            return;
+        // 接任务
+        SetMission(newMission);
+    }
+
+    /// <summary>
+    /// 移动到目标点
+    /// </summary>
+    bool MoveToTarget(Vector3 target)
+    {
+        // 向目标移动
+        transform.position = Vector3.MoveTowards(
+            transform.position,
+            target,
+            defaultSpeed * Time.deltaTime
+        );
+
+        // 判断是否到达
+        float distance = Vector3.Distance(transform.position, target);
+
+        return distance < 0.05f;
+    }
+
+    /// <summary>
+    /// 到达水果来源
+    /// </summary>
+    void OnArriveFruit()
+    {
+        if (fruitSource == null || mission == null)
+            return;
 
         // 从来源取走水果
         fruitSource.TakeReservedFruit(mission.fruitType);
 
+        carryFruitType = mission.fruitType;
+
+        // 开始送货
         state = BeeState.SendFruit;
     }
 
-    //查找果实的来源
-    void FindFruitSource()
+    /// <summary>
+    /// 到达货车
+    /// </summary>
+    void OnArriveTruck()
     {
-        // 1. 找树
-        //fruitSource = TreeManager.Instance.FindTree(mission.fruitType);
-
-        if (fruitSource != null)
-        {
-            fruitSource.TryReserveFruit(this);
+        if (mission == null)
             return;
-        }
 
-        // 2. 找储物箱
-        //fruitSource = StorageManager.Instance.FindStorage(mission.fruitType);
-
-        if (fruitSource != null)
-        {
-            fruitSource.TryReserveFruit(this);
-            return;
-        }
-
-        // 没找到
-        fruitSource = null;
-    }
-    void MoveToTruck()
-    {
-        bool arrived = true;
-
-        if (!arrived) return;
-
+        // 货车接收水果
         mission.needTruck.ReceiveFruit(carryFruitType);
 
         carryFruitType = null;
 
-        mission.FinishMission();
+        FruitGameManager.Instance.OnMissionOver(mission,true);
 
         state = BeeState.Idle;
     }
-    //当前正在进行的任务结束了或者终止了
-    public void OnMissionOver()
+
+    /// <summary>
+    /// 到达垃圾桶
+    /// </summary>
+    void OnArriveTrash()
     {
+        carryFruitType = null;
+
+        state = BeeState.Idle;
+    }
+
+    /// <summary>
+    /// 查找水果来源（树优先，储物箱其次）
+    /// </summary>
+    void FindFruitSource()
+    {
+        // 找树
+        fruitSource = FruitGameManager.Instance.FindFruitSource(mission.fruitType,this);
+
+        if (fruitSource != null)
+        {
+            fruitSource.TryReserveFruit(this);
+            return;
+        }
+        fruitSource = null;
+    }
+
+    /// <summary>
+    /// 当前任务结束或被取消
+    /// </summary>
+    public void OnMissionOver(Mission _mission)
+    {
+        if (mission != _mission) return;
+
         mission = null;
 
-        // 如果手里有水果
         if (carryFruitType != null)
         {
-            StartCoroutine(MoveToTrash());
+            state = BeeState.ToTrash;
         }
         else
         {
@@ -127,73 +300,99 @@ public class Bee : MonoBehaviour
         }
     }
 
-    //主要是如果蜜蜂上一个订单没有完成，
-    //但是货车就开走了，所以蜜蜂手里还有果实，此时接到一个新的订单该怎么办
-    private IEnumerator StartMissionIe()
+    /// <summary>
+    /// 任务开始逻辑
+    /// </summary>
+    private void StartMission()
     {
         switch (state)
         {
-            //接到订单时，就是空闲状态，那么就直接开始完整流程，这是正常情况
+            // 接到订单时是空闲
             case BeeState.Idle:
                 FindFruitSource();
-                if (fruitSource != null)
-                {
-                    state = BeeState.GetFruit;
-                }
-
+                state = BeeState.GetFruit;
                 break;
-            //接到订单时，正在去拿水果的路上，此时修改目的水果源头，这个应该和Idle合并，
+
+
+            // 正在去拿水果
             case BeeState.GetFruit:
-                // 如果新任务和旧任务水果一样
+
                 if (carryFruitType == mission.fruitType)
                 {
-                    // 继续当前流程
+                    // 已经拿的是需要的水果
+                    // 不需要改变
                 }
                 else
                 {
-                    // 丢弃水果
-                    
-
-                    // 重新寻找水果
+                    // 重新寻找水果来源
                     FindFruitSource();
 
                     state = BeeState.GetFruit;
                 }
+
                 break;
-            //接到订单时，手里有未送完的水果，
-            //先判断订单的水果和手里的水果是不是同一种类，
-            //如果是同一种类，那么修改目的Truck即可，
-            //如果不是同一种类，那么移动到垃圾桶将其丢弃
+
+
+            // 手里已经拿着水果
             case BeeState.SendFruit:
-                // 如果水果类型一样
+
                 if (carryFruitType == mission.fruitType)
                 {
-                    // 直接修改送货目标
-                    // 不需要丢弃水果
+                    // 直接修改目标货车
                 }
                 else
                 {
                     // 去垃圾桶丢掉水果
-                    yield return MoveToTrash();
-
-                    carryFruitType = null;
-
-                    FindFruitSource();
-
-                    state = BeeState.GetFruit;
+                    state = BeeState.ToTrash;
                 }
+
                 break;
         }
     }
 
-    IEnumerator MoveToTrash()
+    /// <summary>
+    /// 如果当前导航去的IFruitSource数量发生变化
+    /// </summary>
+    public void OnFruitSourceCountChanged(FruitSource changedSource)
     {
-        // 移动到垃圾桶
+        if (fruitSource != null && fruitSource != changedSource)
+            return; //变化与自己无关
 
-        yield return new WaitForSeconds(1f);
+        // 当前有目标
+        if (fruitSource != null)
+        {
+            // 当前source没有可用果子
+            if (changedSource.ReserveBees.Count >= changedSource.RipedCount)
+            {
+                // 取消旧预约
+                changedSource.ReserveBees.Remove(this);
 
-        carryFruitType = null;
+                // 重新寻找
+                var newSource = FruitGameManager.Instance.FindFruitSource(mission.fruitType, this);
 
-        state = BeeState.Idle;
+                if (newSource != null)
+                {
+                    fruitSource = newSource;
+                    newSource.ReserveBees.Add(this);
+                }
+                else
+                {
+                    fruitSource = null;
+                }
+            }
+        }
+        else
+        {
+            Debug.Log($"当前没有目标，如果这个source出现可用果子，" +
+                $"changedSource.ReserveBees.Count为{changedSource.ReserveBees.Count}，" +
+                $"changedSource.RipedCount为{changedSource.RipedCount}");
+            // 当前没有目标，如果这个source出现可用果子
+            if (changedSource.ReserveBees.Count < changedSource.RipedCount)
+            {
+                
+                fruitSource = changedSource;
+                changedSource.ReserveBees.Add(this);
+            }
+        }
     }
 }

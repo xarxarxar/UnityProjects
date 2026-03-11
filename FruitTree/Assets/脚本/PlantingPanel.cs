@@ -44,6 +44,7 @@ public class PlantingPanel : MonoBehaviour
             FruitGameManager.Instance.currentGold -= data.buyPrice;
             currentSelectedSlot.PlantTree(data);
             panelObj.SetActive(false);
+
         }
         else
         {

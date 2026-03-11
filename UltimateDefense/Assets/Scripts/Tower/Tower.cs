@@ -251,6 +251,7 @@ public abstract class Tower : MonoBehaviour
     //¹¥»÷Ð­³Ì
     private IEnumerator AttackIE()
     {
+        
         yield return null;
         CurrentBulletCount = BulletCap;
         while (true)
