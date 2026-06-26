@@ -1,0 +1,190 @@
+﻿diff --git a/Codex/修改记录.md b/Codex/修改记录.md
+index 4eafd8d..f3ffa29 100644
+--- a/Codex/修改记录.md
++++ b/Codex/修改记录.md
+@@ -52,6 +52,7 @@
+ | 2026-06-16 | 阶段 7 第四批 | `Assets/Scripts/BaseRole.cs`、`Codex/阶段7-第四批-BaseRole状态图标逻辑整理.md`、`Codex/阶段7-第四批-diff.patch`、`Codex/安全重构计划.md`、`Codex/修改记录.md` | BaseRole 状态图标逻辑整理/文档/diff | 否 | 中低 | 提取 `SetCanGetWeapon` / `SetCanUseBig` 重复的状态图标准备、创建和恢复逻辑 | 编译项目；验证维斯缴械、KO 压制、状态图标显示和持续时间结束恢复 | 按 `Codex/阶段7-第四批-diff.patch` 回滚 `BaseRole.cs`，并恢复本批 Markdown 改动 |
+ | 2026-06-16 | 阶段 7 第五批 | `Codex/阶段7-第五批-BaseRole组件化拆分决策.md`、`Codex/阶段7-第五批-diff.patch`、`Codex/安全重构计划.md`、`Codex/修改记录.md` | 文档/BaseRole 组件化拆分决策/diff | 否 | 低 | 基于当前 public 字段、英雄继承、大招入口、运动和死亡链路，确认短期不直接拆 `RoleMovement`、`RoleHealth`、`RoleUltimate` | 本批未改游戏代码，无需运行；后续如继续阶段 7，只建议做 public API 使用规范文档 | 删除或恢复本批 Markdown 改动 |
+ | 2026-06-17 | 阶段 8 第一批 | `Assets/Scripts/VideoGameManager.cs`、`Codex/阶段8-第一批-flyLight对象池试点.md`、`Codex/阶段8-第一批-diff.patch`、`Codex/安全重构计划.md`、`Codex/修改记录.md` | UI 流光对象池/性能优化/文档/diff | 否 | 中低 | 将 `flyLightPrefab` 从动画结束销毁改为回收复用，减少长时间录制中的 UI 对象创建销毁 | 编译项目；验证吃球后的大招点 UI 飞行动画、连续吃球、满 3 点释放大招和流光对象数量不再无限增长 | 按 `Codex/阶段8-第一批-diff.patch` 回滚 `VideoGameManager.cs`，并恢复本批 Markdown 改动 |
++| 2026-06-17 | 阶段 8 第二批 | `Codex/阶段8-第二批-复杂英雄性能结构审查.md`、`Codex/阶段8-第二批-diff.patch`、`Codex/安全重构计划.md`、`Codex/修改记录.md` | 文档/复杂英雄审查/风险分层/diff | 否 | 低 | 对火墙火男、钢索、绊线保安、迪迦进行性能与结构审查，决定下一批优先整理火墙火男 | 本批未改游戏代码，无需运行；后续如修改火墙火男，重点验证火墙持续时间、伤害频率、回血和火焰动画 | 删除或恢复本批 Markdown 改动 |
+ 
+ ## 后续记录模板
+ 
+diff --git a/Codex/安全重构计划.md b/Codex/安全重构计划.md
+index 18da39e..09f0235 100644
+--- a/Codex/安全重构计划.md
++++ b/Codex/安全重构计划.md
+@@ -220,7 +220,7 @@
+ 
+ ## 阶段 8：录制稳定性与对象生命周期优化
+ 
+-状态：第一批完成（2026-06-17，已完成 `flyLightPrefab` 对象池试点）
++状态：第二批完成（2026-06-17，已完成复杂英雄性能与结构审查，建议下一批优先整理 `FireWallFireManRole`）
+ 
+ 目标：
+ - 降低长时间录制时的对象创建销毁压力。
+@@ -229,4 +229,5 @@
+ 当前建议：
+ - 阶段 8 第一批已完成 `flyLightPrefab` 对象池试点，只改 `VideoGameManager.PlayFlyEffect()` 内部对象生命周期。
+ - `bigBallPrefab` 继续暂缓池化，因为它仍直接参与 `BaseRole.OnTriggerEnter2D()` 的大招点触发链路。
+-- 阶段 8 第二批建议进入单个复杂英雄的性能/结构审查，先文档后代码。
++- 阶段 8 第二批已完成复杂英雄性能与结构审查，建议下一批优先处理 `FireWallFireManRole.cs`。
++- 阶段 8 第三批如进入代码修改，只做 `FireWallFireManRole.cs` 的低风险结构整理和配置保护，不改伤害、时间、射线规则和战报频率。
+diff --git b/Codex/阶段8-第二批-复杂英雄性能结构审查.md b/Codex/阶段8-第二批-复杂英雄性能结构审查.md
+new file mode 100644
+index 0000000..30db134
+--- /dev/null
++++ b/Codex/阶段8-第二批-复杂英雄性能结构审查.md
+@@ -0,0 +1,152 @@
++# 阶段 8 第二批：复杂英雄性能与结构审查
++
++日期：2026-06-17  
++目标：从复杂英雄中选出下一批最适合做局部优化试点的对象，并明确哪些能改、哪些暂缓。  
++主场景：`Assets/Scenes/VideoScene.unity`
++
++## 本批结论
++
++本批只做审查和决策，不修改游戏代码。
++
++结论：
++
++- 阶段 8 第三批建议优先处理 `FireWallFireManRole.cs`。
++- `GangsuoRole.cs` 暂不作为第一轮代码试点，因为它直接移动目标角色、禁用碰撞体、改 `canUseBig`，玩法风险更高。
++- `BanXianBaoAnRole.cs` 也有持续 `RaycastAll`，但激光发射器和接收器状态更依赖场景对象，建议排在火墙之后。
++- `DiJiaRole.cs` 结构较短，性能问题相对集中，后续可以单独小批次整理。
++
++## 候选指标
++
++| 脚本 | 行数 | 协程数 | Update | Raycast | RaycastAll | GetComponent | StopCoroutine | 结论 |
++|---|---:|---:|---:|---:|---:|---:|---:|---|
++| `Assets/人物信息/火墙火男/FireWallFireManRole.cs` | 191 | 3 | 1 | 1 | 1 | 1 | 5 | 下一批优先 |
++| `Assets/人物信息/钢索/GangsuoRole.cs` | 215 | 5 | 1 | 0 | 0 | 5 | 4 | 暂缓，风险高 |
++| `Assets/人物信息/绊线保安/BanXianBaoAnRole.cs` | 190 | 2 | 0 | 3 | 1 | 1 | 3 | 后续候选 |
++| `Assets/人物信息/迪迦/DiJiaRole.cs` | 125 | 2 | 0 | 1 | 0 | 1 | 2 | 后续候选 |
++
++## 为什么优先火墙火男
++
++`FireWallFireManRole` 有明确性能优化价值，但玩法耦合没有钢索那么危险。
++
++代码证据：
++
++| 位置 | 说明 | 判断 |
++|---|---|---|
++| `FireWallFireManRole.cs:29` | 存在开发调试 `Update()`，按 `O` 键释放大招并回血 | 可整理，但需保持调试行为 |
++| `FireWallFireManRole.cs:38` | `DrawFireWall()` 控制完整大招流程 | 函数较长，适合拆私有方法 |
++| `FireWallFireManRole.cs:58` | 启动 `PlayFlameLoop()` 火焰帧动画协程 | 可加边界保护，避免空数组或非法帧率 |
++| `FireWallFireManRole.cs:89` | 5 秒内每帧 `Physics2D.RaycastAll(...)` | 性能热点，但不能直接改 `NonAlloc`，命中顺序风险未知 |
++| `FireWallFireManRole.cs:120` | 命中同一目标后按 `0.15f` 间隔造成 3 点伤害 | 玩法数值和节奏不可改 |
++| `FireWallFireManRole.cs:121` | 每次伤害都播报一次战报 | 可能造成大量 UI 文本，但改播报频率会改变观感，暂缓 |
++| `FireWallFireManRole.cs:152` | 协程内 `StopCoroutine(fireCoro)` 后再置空 | 可审查是否改为直接置空，但需谨慎 |
++| `FireWallFireManRole.cs:158` | `PlayFlameLoop()` 使用 `WaitForSeconds(waitTime)` | 可缓存 `waitTime` 相关逻辑，但不改帧率 |
++| `FireWallFireManRole.cs:171` | `RecoverHealth()` 只允许触发一次 | `isRecovered` 行为不能改 |
++
++## 火墙火男当前流程
++
++```text
++Big()
++-> 开启 lineRenderer 对象，重置 isRecovered
++-> 停止旧 fireCoro
++-> StartCoroutine(DrawFireWall())
++
++DrawFireWall()
++-> 等待 1 秒
++-> 取自身位置和随机目标方向
++-> 0.5 秒延伸火墙
++-> 启动 PlayFlameLoop()
++-> 5 秒内每帧 RaycastAll 检测命中
++   -> 命中自己：尝试 RecoverHealth()
++   -> 命中其它角色：同一目标每 0.15 秒扣 3 点血并播报
++-> 关闭 lineRenderer 和火焰帧循环
++```
++
++## 下一批允许的安全优化
++
++阶段 8 第三批如果处理 `FireWallFireManRole.cs`，建议只做以下低风险内容：
++
++| 允许项 | 原因 | 风险 |
++|---|---|---|
++| 添加中文 region 和重要方法 XML 注释 | 提升可读性，不改逻辑 | 低 |
++| 抽出 `StopFireCoroutine()`、`StopFlameLoop()`、`StartFlameLoop()` 这类私有方法 | 减少重复 `StopCoroutine + null` | 低 |
++| 抽出 `ResetFireWallState()`、`CloseFireWall()` | 收口 `lineRenderer` 和 `isRecovered` 状态 | 中低 |
++| 抽出 `TryStartRecoverHealth()` | 保持原来命中自己时启动回血协程的顺序 | 中低 |
++| 缓存 `LayerMask.GetMask("YeLu")` 结果 | 避免每次大招重复计算，不改变命中规则 | 低 |
++| 给 `frameRate <= 0`、`flameFrames` 空数组增加保护 | 防止配置错误导致除零或取模异常 | 中低 |
++| 删除或标注调试 `Update()` | 如果保留行为，只加注释；若删除需要单独确认 | 低到中 |
++
++## 下一批暂时不要做
++
++| 暂缓项 | 原因 |
++|---|---|
++| 不把 `RaycastAll` 改成 `RaycastNonAlloc` | `RaycastAll` 命中顺序和数组分配语义会影响“第一个角色”判断 |
++| 不改变 `damageInterval = 0.15f` | 直接影响伤害频率和战报节奏 |
++| 不改变 `maxDuration = 5.0f` | 直接影响大招持续时间 |
++| 不减少每次伤害战报 | 会改变视频观感和信息密度 |
++| 不改变 `RecoverHealth()` 的回血次数、间隔、数值 | 直接影响生存能力 |
++| 不调整火墙长度 `20`、延伸时间 `0.5f`、等待时间 `1.0f` | 都是玩法表现参数 |
++| 不同时处理钢索、绊线保安、迪迦 | 避免跨英雄批量改动导致问题难定位 |
++
++## 其它候选暂缓原因
++
++### 钢索
++
++`GangsuoRole.cs` 暂缓作为第一轮代码试点。
++
++原因：
++
++- `GangsuoRole.cs:47` 直接写 `canUseBig = false`。
++- `GangsuoRole.cs:80` 让目标 `SetSpeed(0)`。
++- `GangsuoRole.cs:81` 禁用目标 `Collider2D`。
++- `GangsuoRole.cs:170` 每帧直接改目标 `transform.position`。
++- `GangsuoRole.cs:155` 结束时造成 50 点伤害。
++
++这些都是玩法核心链路，不适合作为阶段 8 第三批的第一刀。
++
++### 绊线保安
++
++`BanXianBaoAnRole.cs` 有持续 `RaycastAll`，但发射器、接收器、激光线和命中后折线表现绑得很紧。
++
++下一步可以审查，但建议排在火墙之后。
++
++### 迪迦
++
++`DiJiaRole.cs` 逻辑较短，主要问题集中在激光协程、每帧射线和 `LayerMask.GetMask()`。
++
++它适合后续做小批次清理，不需要抢在火墙前面。
++
++## 建议第三批方案
++
++阶段 8 第三批建议：
++
++| 批次 | 内容 | 是否改游戏代码 | 风险 |
++|---|---|---|---|
++| 阶段 8 第三批 | `FireWallFireManRole.cs` 低风险结构整理和配置保护 | 是 | 中低 |
++
++第三批验收重点：
++
++- 火男按原时机释放火墙。
++- 火墙仍延伸 0.5 秒。
++- 火墙仍持续 5 秒。
++- 命中敌人仍每 0.15 秒造成 3 点伤害。
++- 命中自己仍只触发一次 6 次回血，每次 2 点。
++- 火焰贴图动画仍按 `frameRate` 播放。
++
++## 本批验证
++
++本批未修改游戏代码，不需要编译。
++
++已完成检查：
++
++- 搜索复杂英雄中的 `Update`、协程、射线、`GetComponent`、`StopCoroutine` 调用。
++- 读取 `FireWallFireManRole.cs`、`GangsuoRole.cs`、`BanXianBaoAnRole.cs`、`DiJiaRole.cs`。
++- 记录下一批允许和暂缓的改动边界。
++
++## 回滚建议
++
++本批只新增和修改 Markdown 文档。
++
++如需回滚：
++
++- 删除 `Codex/阶段8-第二批-复杂英雄性能结构审查.md`。
++- 恢复 `Codex/安全重构计划.md` 和 `Codex/修改记录.md` 中本批新增内容。

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -8,6 +6,7 @@ public class Hat : MonoBehaviour
     private float speed = 0;
     private Vector3 direction;
     public Rigidbody2D rb;
+    private Transform hatVisual;
     private float zRotation = 0f;
 
     /// <summary>
@@ -19,6 +18,11 @@ public class Hat : MonoBehaviour
     /// 碰到墙
     /// </summary>
     public UnityAction<GameObject> OnHitWall;
+
+    private void Awake()
+    {
+        hatVisual = transform.GetChild(0);
+    }
 
     public void Init(Vector3 dir,float spe)
     {
@@ -35,7 +39,7 @@ public class Hat : MonoBehaviour
         }
 
         zRotation += 180f * Time.deltaTime; // 每秒旋转10度
-        transform.GetChild(0).eulerAngles = new Vector3(0, 0, zRotation);
+        hatVisual.eulerAngles = new Vector3(0, 0, zRotation);
     }
 
     void FixedUpdate()

@@ -1,6 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
-using DG.Tweening;
 using System.Collections;
 
 /// <summary>
@@ -83,6 +81,8 @@ public class LieXiaoRole : BaseRole
         lineRenderer.enabled = false;
     }
 
+    #region 开发调试入口
+
     private void Update()
     {
         if(Input.GetMouseButtonDown(0))
@@ -90,5 +90,7 @@ public class LieXiaoRole : BaseRole
             UseBig();
         }
     }
+
+    #endregion
 
 }

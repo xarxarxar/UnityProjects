@@ -10,8 +10,8 @@ public class DamageText : MonoBehaviour
     [SerializeField] private float _upDuration = 0.8f;//文字向上飘的时长
     [SerializeField] private float _fadeDuration = 0.8f;//文字变透明的时长
 
-    private float totalUpDuration => _upDuration / BattleManager.Instance.GameSpeed.Value;
-    private float totalFadeDuration => _fadeDuration / BattleManager.Instance.GameSpeed.Value;
+    private float totalUpDuration => _upDuration;
+    private float totalFadeDuration => _fadeDuration;
 
     public void Init(Vector3 screenPos, bool isCrit, int damage)
     {
@@ -43,7 +43,6 @@ public class DamageText : MonoBehaviour
         // 动画结束后回收
         seq.OnComplete(() =>
         {
-            BattleUIManager.Instance.DamageTextPool.Return(this);
         });
     }
 

@@ -1,7 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class YeLuRole : BaseRole
 {
@@ -30,6 +28,8 @@ public class YeLuRole : BaseRole
         yield break;
     }
 
+    #region 开发调试入口
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.M))
@@ -38,5 +38,7 @@ public class YeLuRole : BaseRole
             Big();
         }
     }
+
+    #endregion
 
 }

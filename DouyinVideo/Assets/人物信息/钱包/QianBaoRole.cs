@@ -1,10 +1,10 @@
 using System.Collections;
-using System.Collections.Generic;
-using System.Data;
 using UnityEngine;
 
 public class QianBaoRole : BaseRole
 {
+    private static readonly Color32 BulletLineColor = new Color32(255, 210, 0, 255);
+
     public GameObject DaJu;//大狙
     public VideoGameBulletBase bullet;//大狙的子弹
     public Transform shootPos;//射击点
@@ -39,9 +39,8 @@ public class QianBaoRole : BaseRole
             yield return new WaitForSeconds(2.0f);
             BaseRole targetRole = otherBaseRole;
             lineRenderer.enabled = true;
-            Color32 baseColor = new Color32(255, 210, 0, 255); // 根据你原来的颜色设置
-            lineRenderer.startColor = baseColor;
-            lineRenderer.endColor = baseColor;
+            lineRenderer.startColor = BulletLineColor;
+            lineRenderer.endColor = BulletLineColor;
 
 
             Vector3 gunDirction = (targetRole.transform.position - transform.position).normalized;
@@ -71,12 +70,9 @@ public class QianBaoRole : BaseRole
 
             bullet.OnBulletHitRole = (targetRole) =>
             {
-                Broadcast.instance.BroadCastNews($"{RoleName}的大狙对{targetRole.RoleName}造成了20点伤害并减速", roleColor);
-                targetRole.TakeDamage(20);
-                targetRole.SetSpeed(0.7f,1.0f);
+                VideoGameCombatUtility.BroadcastThenDamageAndSetSpeed(targetRole, 20, 0.7f, 1.0f, $"{RoleName}的大狙对{targetRole.RoleName}造成了20点伤害并减速", roleColor);
                 bullet.Recycle();
                 lineRenderer.positionCount = 2;
-                Debug.Log($"startpos is {startPos},target is{bullet.transform.position}");
                 lineRenderer.SetPosition(0, startPos);
                 lineRenderer.SetPosition(1, bullet.transform.position);
                 lineCoro=StartCoroutine(FadeOutLaser(0.5f));
@@ -86,7 +82,6 @@ public class QianBaoRole : BaseRole
             bullet.OnBulletHitWall = () =>
             {
                 lineRenderer.positionCount = 2;
-                Debug.Log($"startpos is {startPos},target is{bullet.transform.position}");
                 lineRenderer.SetPosition(0, startPos);
                 lineRenderer.SetPosition(1, bullet.transform.position);
                 lineCoro=StartCoroutine(FadeOutLaser(0.5f));

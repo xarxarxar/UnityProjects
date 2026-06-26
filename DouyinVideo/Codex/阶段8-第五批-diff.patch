@@ -1,0 +1,607 @@
+﻿diff --git a/Assets/人物信息/绊线保安/BanXianBaoAnRole.cs b/Assets/人物信息/绊线保安/BanXianBaoAnRole.cs
+index 93b4d48..4e029ce 100644
+--- a/Assets/人物信息/绊线保安/BanXianBaoAnRole.cs
++++ b/Assets/人物信息/绊线保安/BanXianBaoAnRole.cs
+@@ -1,65 +1,98 @@
+ using System.Collections;
+-using System.Collections.Generic;
+-using Unity.Burst.CompilerServices;
+-using Unity.VisualScripting;
+ using UnityEngine;
+ 
+ /// <summary>
+-/// 会放绊线的保安
++/// 绊线保安英雄，负责发射墙面绊线并在命中角色后造成减速和伤害。
+ /// </summary>
+ public class BanXianBaoAnRole : BaseRole
+ {
+-    public GameObject laserEmitter;//激光发射器
+-    public GameObject laserReceiver;//激光接收器
+-    public LineRenderer laserLineRenderer;//激光
++    #region 常量
+ 
+-    public AudioClip bandaorenAudio;//绊线绊倒人的音效
++    private const string WallLayerName = "Wall";
++    private const string IgnoreLayerYeLu = "YeLu";
++    private const string RoleTag = "Role";
++    private const float EmitterRayDistance = 100f;
++    private const float LaserRayDistance = 100f;
++    private const float LaserWallOffset = 0.01f;
++    private const float EmitterMoveSpeed = 70.0f;
++    private const float LaserDrawDuration = 0.1f;
++    private const float HitFollowDuration = 1.5f;
++    private const float TripSpeedMultiplier = 0.3f;
++    private const float TripSlowDuration = 3f;
++    private const int TripDamage = 10;
+ 
+-    private Color32 normalLaser = new Color32(0,237,255,255);
+-    private Color32 hitLaser = new Color32(190,74,63,255);
+-    private bool laserEmitterAttached=false;
++    #endregion
+ 
++    #region Inspector 字段
++
++    [Tooltip("绊线激光发射器")]
++    public GameObject laserEmitter;
++
++    [Tooltip("绊线激光接收器")]
++    public GameObject laserReceiver;
++
++    [Tooltip("绊线激光线段渲染器")]
++    public LineRenderer laserLineRenderer;
++
++    [Tooltip("绊线绊倒角色时播放的音效")]
++    public AudioClip bandaorenAudio;
++
++    #endregion
++
++    #region 运行时状态
++
++    private Color32 normalLaser = new Color32(0, 237, 255, 255);
++    private Color32 hitLaser = new Color32(190, 74, 63, 255);
++    private bool laserEmitterAttached = false;
+ 
+     private Coroutine bigCoro = null;
+     private Coroutine drawLaserOverTimeCoro = null;
+ 
++    #endregion
++
++    #region 大招入口
++
++    /// <summary>
++    /// 释放绊线保安大招。
++    /// </summary>
+     public override void Big()
+     {
+         ShootLaserEmitter();
+     }
+ 
++    #endregion
+ 
+-    
++    #region 发射器流程
+ 
+-    //发射一个激光发射器
++    /// <summary>
++    /// 向目标方向发射激光发射器，命中墙体后开始布置绊线。
++    /// </summary>
+     private void ShootLaserEmitter()
+     {
+-        Vector3 direction=(otherBaseRole.transform.position- transform.position).normalized;
+-        LayerMask wallLayerMask = LayerMask.GetMask("Wall");
+-        RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, 100, wallLayerMask);
++        Vector3 direction = (otherBaseRole.transform.position - transform.position).normalized;
++        LayerMask wallLayerMask = LayerMask.GetMask(WallLayerName);
++        RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, EmitterRayDistance, wallLayerMask);
++
+         if (hit.collider != null)
+         {
+-            // 命中墙壁
+-            //laserEmitter.transform.position = hit.point;
+-            //laserEmitter.transform.rotation = Quaternion.FromToRotation(Vector3.right, hit.normal); // 让发射器“朝向”墙面法线
+-            laserEmitter.SetActive(true);
+-            laserReceiver.SetActive(true);
++            ActivateLaserDevices();
+             laserEmitterAttached = true;
+-            laserEmitter.transform.SetParent(null);
+-            laserReceiver.transform.SetParent(null);
+-            //laserEmitter.transform.rotation = Quaternion.FromToRotation(Vector3.right, hit.normal); // 让发射器“朝向”墙面法线
+-
+-            if (bigCoro != null)
+-            {
+-                StopCoroutine(bigCoro);
+-                bigCoro = null;
+-            }
++            DetachLaserDevices();
++            StopBigCoroutine();
+ 
+-            bigCoro = StartCoroutine(MoveLaserEmitter(transform.position, hit.point, 70.0f, hit));
++            bigCoro = StartCoroutine(MoveLaserEmitter(transform.position, hit.point, EmitterMoveSpeed, hit));
+         }
+     }
+ 
+-    IEnumerator MoveLaserEmitter(Vector3 startPos, Vector3 targetPos, float speed, RaycastHit2D hit)
++    /// <summary>
++    /// 将激光发射器移动到墙体命中点。
++    /// </summary>
++    /// <param name="startPos">发射器起点。</param>
++    /// <param name="targetPos">发射器目标点。</param>
++    /// <param name="speed">发射器移动速度。</param>
++    /// <param name="hit">最初命中的墙体射线结果。</param>
++    /// <returns>Unity 协程迭代器。</returns>
++    private IEnumerator MoveLaserEmitter(Vector3 startPos, Vector3 targetPos, float speed, RaycastHit2D hit)
+     {
+         float distance = Vector3.Distance(startPos, targetPos);
+         float moved = 0f;
+@@ -78,45 +111,39 @@ public class BanXianBaoAnRole : BaseRole
+         laserEmitter.transform.position = targetPos;
+         laserReceiver.transform.position = targetPos;
+ 
+-
+         if (laserEmitterAttached)
+         {
+-            LayerMask wallLayerMask = LayerMask.GetMask("Wall");
++            LayerMask wallLayerMask = LayerMask.GetMask(WallLayerName);
+ 
+             Vector3 laserDirection = hit.normal; // 关键：使用命中的法线作为激光方向
+-            RaycastHit2D laserHit = Physics2D.Raycast(laserEmitter.transform.position + laserDirection * 0.01f, laserDirection, 100, wallLayerMask);
++            RaycastHit2D laserHit = Physics2D.Raycast(laserEmitter.transform.position + laserDirection * LaserWallOffset, laserDirection, LaserRayDistance, wallLayerMask);
++
+             if (laserHit.collider != null)
+             {
+-                if (drawLaserOverTimeCoro != null)
+-                {
+-                    StopCoroutine(drawLaserOverTimeCoro);
+-                    drawLaserOverTimeCoro = null;
+-                }
+-
+-                drawLaserOverTimeCoro = StartCoroutine(DrawLaserOverTime(laserEmitter.transform.position, laserHit.point, 0.1f));
++                StartDrawLaserOverTime(laserEmitter.transform.position, laserHit.point);
+             }
+             else
+             {
+-                if (drawLaserOverTimeCoro != null)
+-                {
+-                    StopCoroutine(drawLaserOverTimeCoro);
+-                    drawLaserOverTimeCoro = null;
+-                }
+-
+-                drawLaserOverTimeCoro = StartCoroutine(DrawLaserOverTime(laserEmitter.transform.position, laserEmitter.transform.position + laserDirection * 100, 0.1f));
++                StartDrawLaserOverTime(laserEmitter.transform.position, laserEmitter.transform.position + laserDirection * LaserRayDistance);
+             }
+         }
+     }
+ 
+-    IEnumerator DrawLaserOverTime(Vector3 start, Vector3 end, float duration)
++    #endregion
++
++    #region 绊线检测
++
++    /// <summary>
++    /// 按原逻辑延伸绊线，并持续检测第一个命中的角色。
++    /// </summary>
++    /// <param name="start">绊线起点。</param>
++    /// <param name="end">绊线终点。</param>
++    /// <param name="duration">绊线延伸时间。</param>
++    /// <returns>Unity 协程迭代器。</returns>
++    private IEnumerator DrawLaserOverTime(Vector3 start, Vector3 end, float duration)
+     {
+         float time = 0f;
+-        laserLineRenderer.enabled = true;
+-        laserLineRenderer.positionCount = 2;
+-        laserLineRenderer.SetPosition(0, start);
+-        laserLineRenderer.SetPosition(1, start); // 初始长度为 0
+-        laserLineRenderer.startColor = normalLaser;
+-        laserLineRenderer.endColor = normalLaser;
++        InitializeLaserLine(start);
+ 
+         // 步骤 1：激光逐步延伸
+         while (time < duration)
+@@ -124,33 +151,18 @@ public class BanXianBaoAnRole : BaseRole
+             time += Time.deltaTime;
+             float t = time / duration;
+             Vector3 currentEnd = Vector3.Lerp(start, end, t);
+-            laserReceiver.transform.position=currentEnd;
++            laserReceiver.transform.position = currentEnd;
+             laserLineRenderer.SetPosition(1, currentEnd);
+             yield return null;
+         }
++
+         // 步骤 2：激光延伸完成，设置终点
+         laserLineRenderer.SetPosition(1, end); // 最终精确对齐
+ 
+         while (true)
+         {
+             // 步骤 3：开始检测是否击中了 Role
+-            // LayerMask 排除自己
+-            int ignoreLayer = LayerMask.GetMask("YeLu");
+-            int layerMask = ~ignoreLayer;
+-
+-            RaycastHit2D[] hits = Physics2D.RaycastAll(start, (end - start).normalized, Vector3.Distance(start, end), layerMask);
+-            GameObject hitRole = null;
+-
+-            foreach (RaycastHit2D h in hits)
+-            {
+-                if (h.collider != null && h.collider.CompareTag("Role") && h.collider.gameObject != gameObject)
+-                {
+-                    hitRole = h.collider.gameObject;
+-
+-                    Debug.Log($"击中了{hitRole.name}");
+-                    break;
+-                }
+-            }
++            GameObject hitRole = FindFirstHitRole(start, end);
+ 
+             // 步骤 4：如果击中了 Role，则形成折线
+             if (hitRole != null)
+@@ -160,31 +172,149 @@ public class BanXianBaoAnRole : BaseRole
+                 laserLineRenderer.endColor = hitLaser;
+ 
+                 BaseRole targetRole = hitRole.GetComponent<BaseRole>();
+-                VideoGameCombatUtility.SetSpeedThenBroadcast(targetRole, 0.3f, 3, $"{RoleName}的绊线对{targetRole.RoleName}造成了减速", roleColor);
++                VideoGameCombatUtility.SetSpeedThenBroadcast(targetRole, TripSpeedMultiplier, TripSlowDuration, $"{RoleName}的绊线对{targetRole.RoleName}造成了减速", roleColor);
+                 PlayAudio(bandaorenAudio);
+-                while (tmpTime<1.5f)
++
++                while (tmpTime < HitFollowDuration)
+                 {
+-                    laserLineRenderer.positionCount = 3;
+-                    laserLineRenderer.SetPosition(0, start);
+-                    laserLineRenderer.SetPosition(1, hitRole.transform.position);
+-                    laserLineRenderer.SetPosition(2, end);
++                    UpdateHitLaserLine(start, hitRole.transform.position, end);
+                     tmpTime += Time.deltaTime;
+                     yield return null;
+                 }
+ 
+-                VideoGameCombatUtility.DamageThenBroadcast(targetRole, 10, $"{RoleName}的绊线对{targetRole.RoleName}造成了10点伤害", roleColor);
+-
+-                laserLineRenderer.enabled = false;
+-                laserEmitter.transform.SetParent(transform);
+-                laserReceiver.transform.SetParent(transform);
+-                laserEmitter.SetActive(false);
+-                laserReceiver.SetActive(false);
++                VideoGameCombatUtility.DamageThenBroadcast(targetRole, TripDamage, $"{RoleName}的绊线对{targetRole.RoleName}造成了10点伤害", roleColor);
++                CloseLaserDevices();
+ 
+                 yield break;
+             }
++
+             yield return null;
+         }
++    }
+ 
+-        
++    /// <summary>
++    /// 初始化绊线的显示状态。
++    /// </summary>
++    /// <param name="start">绊线起点。</param>
++    private void InitializeLaserLine(Vector3 start)
++    {
++        laserLineRenderer.enabled = true;
++        laserLineRenderer.positionCount = 2;
++        laserLineRenderer.SetPosition(0, start);
++        laserLineRenderer.SetPosition(1, start); // 初始长度为 0
++        laserLineRenderer.startColor = normalLaser;
++        laserLineRenderer.endColor = normalLaser;
++    }
++
++    /// <summary>
++    /// 查找绊线当前命中的第一个非自己的角色。
++    /// </summary>
++    /// <param name="start">绊线起点。</param>
++    /// <param name="end">绊线终点。</param>
++    /// <returns>第一个被绊线命中的角色对象；未命中时返回 null。</returns>
++    private GameObject FindFirstHitRole(Vector3 start, Vector3 end)
++    {
++        // LayerMask 排除自己
++        int ignoreLayer = LayerMask.GetMask(IgnoreLayerYeLu);
++        int layerMask = ~ignoreLayer;
++
++        RaycastHit2D[] hits = Physics2D.RaycastAll(start, (end - start).normalized, Vector3.Distance(start, end), layerMask);
++
++        foreach (RaycastHit2D h in hits)
++        {
++            if (h.collider != null && h.collider.CompareTag(RoleTag) && h.collider.gameObject != gameObject)
++            {
++                GameObject hitRole = h.collider.gameObject;
++                Debug.Log($"击中了{hitRole.name}");
++                return hitRole;
++            }
++        }
++
++        return null;
+     }
+-}
++
++    /// <summary>
++    /// 刷新命中后的三点折线。
++    /// </summary>
++    /// <param name="start">绊线起点。</param>
++    /// <param name="middle">命中角色当前位置。</param>
++    /// <param name="end">绊线终点。</param>
++    private void UpdateHitLaserLine(Vector3 start, Vector3 middle, Vector3 end)
++    {
++        laserLineRenderer.positionCount = 3;
++        laserLineRenderer.SetPosition(0, start);
++        laserLineRenderer.SetPosition(1, middle);
++        laserLineRenderer.SetPosition(2, end);
++    }
++
++    #endregion
++
++    #region 设备与协程工具
++
++    /// <summary>
++    /// 启动绊线延伸协程。
++    /// </summary>
++    /// <param name="start">绊线起点。</param>
++    /// <param name="end">绊线终点。</param>
++    private void StartDrawLaserOverTime(Vector3 start, Vector3 end)
++    {
++        StopDrawLaserOverTimeCoroutine();
++        drawLaserOverTimeCoro = StartCoroutine(DrawLaserOverTime(start, end, LaserDrawDuration));
++    }
++
++    /// <summary>
++    /// 显示发射器和接收器。
++    /// </summary>
++    private void ActivateLaserDevices()
++    {
++        laserEmitter.SetActive(true);
++        laserReceiver.SetActive(true);
++    }
++
++    /// <summary>
++    /// 让发射器和接收器脱离角色父物体。
++    /// </summary>
++    private void DetachLaserDevices()
++    {
++        laserEmitter.transform.SetParent(null);
++        laserReceiver.transform.SetParent(null);
++    }
++
++    /// <summary>
++    /// 关闭绊线并把发射器和接收器挂回角色。
++    /// </summary>
++    private void CloseLaserDevices()
++    {
++        laserLineRenderer.enabled = false;
++        laserEmitter.transform.SetParent(transform);
++        laserReceiver.transform.SetParent(transform);
++        laserEmitter.SetActive(false);
++        laserReceiver.SetActive(false);
++    }
++
++    /// <summary>
++    /// 停止发射器移动协程。
++    /// </summary>
++    private void StopBigCoroutine()
++    {
++        if (bigCoro != null)
++        {
++            StopCoroutine(bigCoro);
++            bigCoro = null;
++        }
++    }
++
++    /// <summary>
++    /// 停止绊线延伸和检测协程。
++    /// </summary>
++    private void StopDrawLaserOverTimeCoroutine()
++    {
++        if (drawLaserOverTimeCoro != null)
++        {
++            StopCoroutine(drawLaserOverTimeCoro);
++            drawLaserOverTimeCoro = null;
++        }
++    }
++
++    #endregion
++}
+\ No newline at end of file
+diff --git a/Codex/修改记录.md b/Codex/修改记录.md
+index 145abb6..b3ac362 100644
+--- a/Codex/修改记录.md
++++ b/Codex/修改记录.md
+@@ -55,6 +55,7 @@
+ | 2026-06-17 | 阶段 8 第二批 | `Codex/阶段8-第二批-复杂英雄性能结构审查.md`、`Codex/阶段8-第二批-diff.patch`、`Codex/安全重构计划.md`、`Codex/修改记录.md` | 文档/复杂英雄审查/风险分层/diff | 否 | 低 | 对火墙火男、钢索、绊线保安、迪迦进行性能与结构审查，决定下一批优先整理火墙火男 | 本批未改游戏代码，无需运行；后续如修改火墙火男，重点验证火墙持续时间、伤害频率、回血和火焰动画 | 删除或恢复本批 Markdown 改动 |
+ | 2026-06-17 | 阶段 8 第三批 | `Assets/人物信息/火墙火男/FireWallFireManRole.cs`、`Codex/阶段8-第三批-火墙火男结构整理.md`、`Codex/阶段8-第三批-diff.patch`、`Codex/安全重构计划.md`、`Codex/修改记录.md` | 复杂英雄结构整理/配置保护/文档/diff | 否 | 中低 | 整理火墙火男大招脚本结构，提取协程辅助方法，并保护火焰帧配置异常 | 编译项目；验证火墙等待、延伸、持续、伤害频率、回血流程、火焰动画和 `O` 键调试入口 | 按 `Codex/阶段8-第三批-diff.patch` 回滚 `FireWallFireManRole.cs`，并恢复本批 Markdown 改动 |
+ | 2026-06-17 | 阶段 8 第四批 | `Assets/人物信息/迪迦/DiJiaRole.cs`、`Codex/阶段8-第四批-迪迦结构整理.md`、`Codex/阶段8-第四批-diff.patch`、`Codex/安全重构计划.md`、`Codex/修改记录.md` | 复杂英雄结构整理/常量提取/文档/diff | 否 | 中低 | 整理迪迦持续激光大招结构，提取常量、激光方向、命中判断、线段刷新、LayerMask 和协程停止工具方法 | 编译项目；验证迪迦大招等待、战报、激光抖动、命中扣血、墙体阻挡、持续时间和正常结束恢复移动 | 按 `Codex/阶段8-第四批-diff.patch` 回滚 `DiJiaRole.cs`，并恢复本批 Markdown 改动 |
++| 2026-06-17 | 阶段 8 第五批 | `Assets/人物信息/绊线保安/BanXianBaoAnRole.cs`、`Codex/阶段8-第五批-绊线保安结构整理.md`、`Codex/阶段8-第五批-diff.patch`、`Codex/安全重构计划.md`、`Codex/修改记录.md` | 复杂英雄结构整理/常量提取/文档/diff | 否 | 中低 | 整理绊线保安持续射线和折线流程，提取常量、设备收放、命中查找、折线刷新和协程停止工具方法 | 编译项目；验证绊线发射、墙体法线方向、延伸、命中日志、减速音效、折线跟随、10 点伤害和设备收回 | 按 `Codex/阶段8-第五批-diff.patch` 回滚 `BanXianBaoAnRole.cs`，并恢复本批 Markdown 改动 |
+ 
+ ## 后续记录模板
+ 
+diff --git a/Codex/安全重构计划.md b/Codex/安全重构计划.md
+index 6bbfe84..3135cb1 100644
+--- a/Codex/安全重构计划.md
++++ b/Codex/安全重构计划.md
+@@ -136,7 +136,7 @@
+ - 阶段 4 第三批已整理 `BoomSisterRole`、`WeiSiRole` 两个中低风险英雄。
+ - 阶段 4 第四批已小步整理调试入口和无用 using。
+ - 阶段 4 可以暂时收口；后续如继续英雄整理，应按单个英雄小批次推进。
+-- 暂不先整理 `GangsuoRole`、`FireWallFireManRole`、`BanXianBaoAnRole`、`JieFengRole` 等复杂英雄。
++- 阶段 4 不继续批量整理复杂英雄；其中 `FireWallFireManRole`、`BanXianBaoAnRole` 已在阶段 8 单独小批次处理，`GangsuoRole`、`JieFengRole` 仍暂缓。
+ 
+ ## 阶段 5：武器系统整理
+ 
+@@ -220,7 +220,7 @@
+ 
+ ## 阶段 8：录制稳定性与对象生命周期优化
+ 
+-状态：第四批完成（2026-06-17，已完成 `DiJiaRole` 低风险结构整理）
++状态：第五批完成（2026-06-17，已完成 `BanXianBaoAnRole` 低风险结构整理）
+ 
+ 目标：
+ - 降低长时间录制时的对象创建销毁压力。
+@@ -232,4 +232,5 @@
+ - 阶段 8 第二批已完成复杂英雄性能与结构审查，建议下一批优先处理 `FireWallFireManRole.cs`。
+ - 阶段 8 第三批已完成 `FireWallFireManRole.cs` 的低风险结构整理和配置保护，没有改伤害、时间、射线规则和战报频率。
+ - 阶段 8 第四批已完成 `DiJiaRole.cs` 的小步结构整理，提取激光方向、命中判断、线段刷新、LayerMask 和协程停止工具方法，没有改大招时序、数值、射线规则或 `otherBaseRole` 访问节奏。
+-- 下一批建议优先审查 `BanXianBaoAnRole.cs` 的持续射线风险，只做文档审查或极小范围整理。
++- 阶段 8 第五批已完成 `BanXianBaoAnRole.cs` 的小步结构整理，保留 `RaycastAll` 和命中顺序，只提取常量、设备收放、命中查找、折线刷新和协程停止工具方法。
++- 如继续阶段 8，建议只做 `GangsuoRole.cs` 文档级风险复查，暂不直接改钢索核心玩法链路；也可以进入下一阶段做新增英雄/机制前的规范收口。
+diff --git b/Codex/阶段8-第五批-绊线保安结构整理.md b/Codex/阶段8-第五批-绊线保安结构整理.md
+new file mode 100644
+index 0000000..4f27388
+--- /dev/null
++++ b/Codex/阶段8-第五批-绊线保安结构整理.md
+@@ -0,0 +1,158 @@
++# 阶段 8 第五批：绊线保安结构整理
++
++日期：2026-06-17
++
++## 本批目标
++
++在不改变绊线保安大招表现的前提下，整理 `BanXianBaoAnRole.cs` 的结构，让持续射线、绊线折线和设备收放流程更容易维护。
++
++本批不做以下事情：
++
++- 不把 `Physics2D.RaycastAll` 改成 `RaycastNonAlloc`。
++- 不改变射线命中顺序和第一个命中角色的判断方式。
++- 不改变发射器移动速度、射线距离、绊线延伸时间、折线跟随时间。
++- 不改变减速倍率、减速时长、伤害数值、音效和战报顺序。
++- 不修改 Prefab、Scene 或组件绑定。
++
++## 修改文件
++
++| 文件 | 类型 | 说明 |
++|---|---|---|
++| `Assets/人物信息/绊线保安/BanXianBaoAnRole.cs` | 结构整理 | 清理无用 using，提取常量、设备收放、协程停止、绊线初始化、命中查找和折线刷新方法 |
++| `Codex/阶段8-第五批-绊线保安结构整理.md` | 文档 | 记录本批修改范围、行为保持点和风险 |
++| `Codex/安全重构计划.md` | 文档 | 更新阶段 8 当前状态 |
++| `Codex/修改记录.md` | 文档 | 追加本批修改记录 |
++
++## 代码改动说明
++
++### 1. 清理无用引用
++
++移除未使用的引用：
++
++```csharp
++using System.Collections.Generic;
++using Unity.Burst.CompilerServices;
++using Unity.VisualScripting;
++```
++
++保留实际使用的：
++
++```csharp
++using System.Collections;
++using UnityEngine;
++```
++
++### 2. 提取常量
++
++将原本散落在大招流程中的字符串和数值提取为私有常量：
++
++| 常量 | 原值 | 用途 |
++|---|---:|---|
++| `WallLayerName` | `"Wall"` | 墙体射线检测层 |
++| `IgnoreLayerYeLu` | `"YeLu"` | 绊线检测排除层 |
++| `RoleTag` | `"Role"` | 角色命中判断 |
++| `EmitterRayDistance` | `100f` | 发射器寻找墙体的射线距离 |
++| `LaserRayDistance` | `100f` | 绊线向墙体法线方向延伸的射线距离 |
++| `LaserWallOffset` | `0.01f` | 避免从墙面内部直接射线的偏移 |
++| `EmitterMoveSpeed` | `70.0f` | 发射器飞向墙体的速度 |
++| `LaserDrawDuration` | `0.1f` | 绊线延伸时间 |
++| `HitFollowDuration` | `1.5f` | 命中后折线跟随角色时间 |
++| `TripSpeedMultiplier` | `0.3f` | 命中后减速倍率 |
++| `TripSlowDuration` | `3f` | 命中后减速持续时间 |
++| `TripDamage` | `10` | 命中后最终伤害 |
++
++这些常量只改变可读性，不改变实际数值。
++
++### 3. 提取私有工具方法
++
++新增私有方法：
++
++| 方法 | 作用 | 行为变化 |
++|---|---|---|
++| `InitializeLaserLine` | 初始化绊线 LineRenderer | 无 |
++| `FindFirstHitRole` | 保留原 `RaycastAll` 和 foreach 顺序，查找第一个命中角色 | 无 |
++| `UpdateHitLaserLine` | 刷新命中后的三点折线 | 无 |
++| `StartDrawLaserOverTime` | 停止旧检测协程并启动新绊线协程 | 无 |
++| `ActivateLaserDevices` | 显示发射器和接收器 | 无 |
++| `DetachLaserDevices` | 让发射器和接收器脱离角色父物体 | 无 |
++| `CloseLaserDevices` | 关闭绊线并把设备挂回角色 | 无 |
++| `StopBigCoroutine` | 停止发射器移动协程 | 无 |
++| `StopDrawLaserOverTimeCoroutine` | 停止绊线延伸和检测协程 | 无 |
++
++### 4. 保留持续射线分配
++
++`DrawLaserOverTime()` 里仍然每帧调用：
++
++```csharp
++Physics2D.RaycastAll(...)
++```
++
++本批没有改成 `RaycastNonAlloc`。原因是当前逻辑依赖 `RaycastAll` 返回结果的遍历顺序来决定“第一个被绊线命中的角色”，如果改成 NonAlloc，需要额外验证排序和缓冲区容量，否则会有玩法风险。
++
++### 5. 保留调试日志
++
++原逻辑命中角色时会执行：
++
++```csharp
++Debug.Log($"击中了{hitRole.name}");
++```
++
++本批保留该日志。它不是高频每帧刷屏日志，只在绊线找到命中角色时输出一次；直接删除可能影响你调试绊线命中。
++
++## 行为保持点
++
++| 行为 | 保持方式 |
++|---|---|
++| 大招入口 | `Big()` 仍只调用 `ShootLaserEmitter()` |
++| 目标方向 | 仍使用 `otherBaseRole.transform.position - transform.position` |
++| 发射器命中墙体 | 仍用 `Wall` 层、距离 `100` 的 `Physics2D.Raycast` |
++| 发射器设备显示 | 仍先显示发射器和接收器，再脱离父物体 |
++| 发射器移动 | 仍按 `70.0f` 速度移动到墙体命中点 |
++| 绊线方向 | 仍使用墙体命中法线 `hit.normal` |
++| 绊线延伸 | 仍用 `0.1f` 从起点延伸到终点 |
++| 持续检测 | 仍每帧 `RaycastAll`，排除 `YeLu` 层 |
++| 命中角色 | 仍排除自己，取第一个 Tag 为 `Role` 的对象 |
++| 命中效果 | 仍先减速播报，再播放音效，再折线跟随，最后伤害播报 |
++| 折线跟随 | 仍持续 `1.5f`，每帧刷新三点线 |
++| 结束收尾 | 仍关闭 LineRenderer、挂回发射器和接收器、再隐藏设备 |
++
++## 风险说明
++
++风险等级：中低。
++
++原因：
++
++- 修改了复杂英雄的大招脚本结构。
++- 没有改变数值、射线类型、命中筛选、协程启动顺序和设备绑定。
++- 主要风险来自方法提取过程中是否遗漏原有设备收放顺序。
++
++本批没有修复 `otherBaseRole` 为空时可能空引用的问题，因为这会把“异常”改成“静默不释放大招”，属于行为变化，需要后续单独确认。
++
++## 建议验证点
++
++1. 绊线保安释放大招后，发射器和接收器仍一起飞向墙体。
++2. 发射器命中墙体后，绊线仍沿墙体法线方向生成。
++3. 绊线仍会在约 `0.1f` 内延伸完成。
++4. 角色经过绊线时，仍输出原命中日志。
++5. 命中后绊线颜色仍变为命中颜色。
++6. 命中后仍先减速并播报，再播放音效。
++7. 绊线折线仍跟随命中角色约 `1.5f`。
++8. 折线结束后仍造成 `10` 点伤害并播报。
++9. 命中结束后发射器和接收器仍隐藏并挂回角色。
++10. 连续释放大招时旧移动协程和旧检测协程不会残留。
++
++## 回滚建议
++
++如发现绊线保安表现异常，优先只回滚：
++
++- `Assets/人物信息/绊线保安/BanXianBaoAnRole.cs`
++
++然后再按需回滚本批文档：
++
++- `Codex/阶段8-第五批-绊线保安结构整理.md`
++- `Codex/安全重构计划.md`
++- `Codex/修改记录.md`
++
++完整 diff 见：
++
++- `Codex/阶段8-第五批-diff.patch`

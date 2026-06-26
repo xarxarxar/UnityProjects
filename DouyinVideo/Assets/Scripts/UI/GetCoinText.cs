@@ -1,6 +1,4 @@
 using DG.Tweening;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,8 +12,8 @@ public class GetCoinText : MonoBehaviour
 
     private CanvasGroup _canvasGroup;
 
-    private float totalUpDuration => _upDuration / BattleManager.Instance.GameSpeed.Value;
-    private float totalFadeDuration => _fadeDuration / BattleManager.Instance.GameSpeed.Value;
+    private float totalUpDuration => _upDuration;
+    private float totalFadeDuration => _fadeDuration;
 
     private void Start()
     {
@@ -51,7 +49,6 @@ public class GetCoinText : MonoBehaviour
         // 动画结束后回收
         seq.OnComplete(() =>
         {
-            BattleUIManager.Instance.GetCoinTextPool.Return(this);
             _canvasGroup.alpha = 1f; // 重置 alpha（下次复用）
         });
     }

@@ -1,0 +1,365 @@
+diff --git a/Assets/Scripts/BaseRole.cs b/Assets/Scripts/BaseRole.cs
+index 8530198..803d9b3 100644
+--- a/Assets/Scripts/BaseRole.cs
++++ b/Assets/Scripts/BaseRole.cs
+@@ -97,13 +97,30 @@ public abstract class BaseRole : MonoBehaviour
+         }
+         if (VideoGameManager.instance.gameEnd)
+         {
+-            if (rb)
+-            {
+-                rb.velocity = Vector3.zero;
+-                Destroy(rb);
+-            }
++            StopMovementWhenGameEnded();
+             return;
+         }
++
++        UpdateMoveVelocity();
++    }
++
++    /// <summary>
++    /// 游戏结束时停止角色运动并移除刚体。
++    /// </summary>
++    private void StopMovementWhenGameEnded()
++    {
++        if (rb)
++        {
++            rb.velocity = Vector3.zero;
++            Destroy(rb);
++        }
++    }
++
++    /// <summary>
++    /// 按当前速度公式刷新角色移动速度。
++    /// </summary>
++    private void UpdateMoveVelocity()
++    {
+         if (rb.velocity.sqrMagnitude > 0.01f)
+         {
+             Vector2 dir = rb.velocity.normalized;
+@@ -263,39 +280,63 @@ public abstract class BaseRole : MonoBehaviour
+         roleUI.TakeDamage(HP);
+         if (HP <= 0)
+         {
+-            Debug.Log($"{RoleName}死了");
+-            HP = 0;
+-            Broadcast.instance.BroadCastNews($"{RoleName}淘汰", roleColor);
+-            Rigidbody2D currentRb = rb ? rb : GetComponent<Rigidbody2D>();
+-            if (currentRb)
+-            {
+-                currentRb.velocity = Vector3.zero;
+-                Destroy(currentRb);
+-            }
+-            Collider2D currentCollider = roleCollider ? roleCollider : GetComponent<Collider2D>();
+-            if (currentCollider)
+-            {
+-                Destroy(currentCollider);
+-            }
+-            // 停止正在进行的颜色动画
+-            roleImage.DOKill(); // 关键代码
+-            roleImage.color = new Color32(100, 100, 100, 255);
+-            Debug.Log($"{RoleName}的image颜色为{roleImage.color}");
+-            isDie = true;
+-            GetRoleCanvas().sortingOrder--;
+-            VideoGameManager.instance.RoleDie(this);
+-            //Destroy(gameObject); // 下一帧销毁
++            HandleDeath();
+         }
+         else
+         {
+-            Debug.Log($"{RoleName}受到了伤害,HP为{HP}");
+-            // 闪红效果
+-            roleImage.DOColor(Color.red, 0.1f)
+-                     .OnComplete(() => roleImage.DOColor(Color.white, 0.2f));
++            PlayHitFlash();
+         }
+         PlayAudio(getHurt);
+     }
+ 
++    /// <summary>
++    /// 执行角色死亡流程。
++    /// </summary>
++    private void HandleDeath()
++    {
++        Debug.Log($"{RoleName}死了");
++        HP = 0;
++        Broadcast.instance.BroadCastNews($"{RoleName}淘汰", roleColor);
++        DisablePhysicsOnDeath();
++        // 停止正在进行的颜色动画
++        roleImage.DOKill(); // 关键代码
++        roleImage.color = new Color32(100, 100, 100, 255);
++        Debug.Log($"{RoleName}的image颜色为{roleImage.color}");
++        isDie = true;
++        GetRoleCanvas().sortingOrder--;
++        VideoGameManager.instance.RoleDie(this);
++        //Destroy(gameObject); // 下一帧销毁
++    }
++
++    /// <summary>
++    /// 死亡时停止并移除物理组件。
++    /// </summary>
++    private void DisablePhysicsOnDeath()
++    {
++        Rigidbody2D currentRb = rb ? rb : GetComponent<Rigidbody2D>();
++        if (currentRb)
++        {
++            currentRb.velocity = Vector3.zero;
++            Destroy(currentRb);
++        }
++        Collider2D currentCollider = roleCollider ? roleCollider : GetComponent<Collider2D>();
++        if (currentCollider)
++        {
++            Destroy(currentCollider);
++        }
++    }
++
++    /// <summary>
++    /// 未死亡时播放受伤闪红表现。
++    /// </summary>
++    private void PlayHitFlash()
++    {
++        Debug.Log($"{RoleName}受到了伤害,HP为{HP}");
++        // 闪红效果
++        roleImage.DOColor(Color.red, 0.1f)
++                 .OnComplete(() => roleImage.DOColor(Color.white, 0.2f));
++    }
++
+     #endregion
+ 
+     #region 大招
+@@ -306,11 +347,27 @@ public abstract class BaseRole : MonoBehaviour
+     public void AddBig()
+     {
+         bigCount++;
++        ClampBigCountToMax();
++        roleUI.AttackOther(transform.position);
++        TryUseBigWhenReady();
++    }
++
++    /// <summary>
++    /// 将大招点数限制在最大值。
++    /// </summary>
++    private void ClampBigCountToMax()
++    {
+         if (bigCount >= 3)
+         {
+             bigCount = 3;
+         }
+-        roleUI.AttackOther(transform.position);
++    }
++
++    /// <summary>
++    /// 大招点满且允许使用时释放大招。
++    /// </summary>
++    private void TryUseBigWhenReady()
++    {
+         if (!canUseBig) return;
+         if (bigCount >= 3)
+         {
+@@ -433,15 +490,24 @@ public abstract class BaseRole : MonoBehaviour
+     {
+         if (collision.CompareTag("BigBall"))
+         {
+-            AddBig();
+-            //Broadcast.instance.BroadCastNews($"{RoleName}吃到了能量球", roleColor);
+-            AudioManager.Instance.PlaySFX("吃到球");
+-            Destroy(collision.gameObject);
+-            //VideoGameManager.instance.currentReward.SetActive(false);
+-            //VideoGameManager.instance.SpawnWeapons();
++            HandleBigBallTrigger(collision);
+         }
+     }
+ 
++    /// <summary>
++    /// 按原顺序处理大招能量球效果。
++    /// </summary>
++    /// <param name="collision">大招能量球碰撞体。</param>
++    private void HandleBigBallTrigger(Collider2D collision)
++    {
++        AddBig();
++        //Broadcast.instance.BroadCastNews($"{RoleName}吃到了能量球", roleColor);
++        AudioManager.Instance.PlaySFX("吃到球");
++        Destroy(collision.gameObject);
++        //VideoGameManager.instance.currentReward.SetActive(false);
++        //VideoGameManager.instance.SpawnWeapons();
++    }
++
+     /// <summary>
+     /// 处理角色碰撞音效。
+     /// </summary>
+@@ -452,4 +518,4 @@ public abstract class BaseRole : MonoBehaviour
+     }
+ 
+     #endregion
+-}
+\ No newline at end of file
++}
+diff --git a/Codex/修改记录.md b/Codex/修改记录.md
+index 5d5eaa4..2f6087b 100644
+--- a/Codex/修改记录.md
++++ b/Codex/修改记录.md
+@@ -48,6 +48,7 @@
+ | 2026-06-16 | 阶段 6 第五批 | `Codex/阶段6-第五批-flyLight与bigBall池化审查.md`、`Codex/阶段6-第五批-diff.patch`、`Codex/安全重构计划.md`、`Codex/修改记录.md` | 文档/池化审查/风险判断/diff | 否 | 低 | 审查 `flyLightPrefab` 与 `bigBallPrefab` 的生成销毁链路，判断后续是否适合池化 | 本批未改游戏代码，无需运行；后续如池化流光，再验证大招点 UI 飞行动画 | 删除或恢复本批 Markdown 改动 |
+ | 2026-06-16 | 阶段 7 第一批 | `Codex/阶段7-第一批-BaseRole职责审查与风险分层.md`、`Codex/阶段7-第一批-diff.patch`、`Codex/安全重构计划.md`、`Codex/修改记录.md` | 文档/BaseRole 职责审查/风险分层/diff | 否 | 低 | 梳理 `BaseRole` 当前职责、子类覆盖点、外部依赖和后续瘦身边界 | 本批未改游戏代码，无需运行；后续第二批如整理 `BaseRole`，重点验证所有英雄启动、移动、受伤、死亡、吃球和大招 | 删除或恢复本批 Markdown 改动 |
+ | 2026-06-16 | 阶段 7 第二批 | `Assets/Scripts/BaseRole.cs`、`Codex/阶段7-第二批-BaseRole注释与结构整理.md`、`Codex/阶段7-第二批-diff.patch`、`Codex/安全重构计划.md`、`Codex/修改记录.md` | BaseRole 注释/region/格式整理/diff | 否 | 低 | 让 `BaseRole` 结构更清楚，方便后续函数级瘦身，同时保持核心逻辑顺序不变 | 编译项目；验证所有英雄启动、移动、受伤、死亡、吃球和大招释放 | 按 `Codex/阶段7-第二批-diff.patch` 回滚 `BaseRole.cs`，并恢复本批 Markdown 改动 |
++| 2026-06-16 | 阶段 7 第三批 | `Assets/Scripts/BaseRole.cs`、`Codex/阶段7-第三批-BaseRole私有方法提取.md`、`Codex/阶段7-第三批-diff.patch`、`Codex/安全重构计划.md`、`Codex/修改记录.md` | BaseRole 私有方法提取/文档/diff | 否 | 中低 | 将 `FixedUpdate`、`TakeDamage`、`AddBig`、`OnTriggerEnter2D` 的局部逻辑提取为私有方法，降低后续维护难度 | 编译项目；验证所有英雄启动、移动、受伤、死亡、吃球和大招释放 | 按 `Codex/阶段7-第三批-diff.patch` 回滚 `BaseRole.cs`，并恢复本批 Markdown 改动 |
+ 
+ ## 后续记录模板
+ 
+diff --git a/Codex/安全重构计划.md b/Codex/安全重构计划.md
+index 8c48498..db73ea5 100644
+--- a/Codex/安全重构计划.md
++++ b/Codex/安全重构计划.md
+@@ -195,7 +195,7 @@
+ 
+ ## 阶段 7：BaseRole 瘦身
+ 
+-状态：第二批完成（2026-06-16，已完成 `BaseRole` 注释、region 和格式整理）
++状态：第三批完成（2026-06-16，已完成 `BaseRole` 私有方法局部提取）
+ 
+ 目标：
+ - 保留 `BaseRole` 作为所有英雄的共同父类。
+@@ -212,5 +212,6 @@
+ 当前建议：
+ - 阶段 7 第一批已确认：19 个英雄继承 `BaseRole`，全部覆盖 `Big()`，没有子类覆盖 `StartGame()` 或 `UseBig()`。
+ - 阶段 7 第二批已完成 `BaseRole` 注释、region、格式整理和旧字段标注，没有做逻辑拆分。
+-- 阶段 7 第三批建议再考虑私有方法提取，优先从 `TakeDamage`、`AddBig`、`OnTriggerEnter2D` 这类可保持顺序的局部开始。
++- 阶段 7 第三批已完成 `FixedUpdate`、`TakeDamage`、`AddBig`、`OnTriggerEnter2D` 的私有方法局部提取，核心顺序保持不变。
++- 阶段 7 第四批建议审查状态效果图标逻辑，判断是否可以整理 `SetCanGetWeapon` / `SetCanUseBig` 的重复结构。
+ - 暂不直接拆 `RoleMovement`、`RoleHealth`、`RoleUltimate` 等组件。
+diff --git a/Codex/阶段7-第三批-BaseRole私有方法提取.md b/Codex/阶段7-第三批-BaseRole私有方法提取.md
+index e69de29..c36179a 100644
+--- a/Codex/阶段7-第三批-BaseRole私有方法提取.md
++++ b/Codex/阶段7-第三批-BaseRole私有方法提取.md
+@@ -0,0 +1,130 @@
++# 阶段 7 第三批：BaseRole 私有方法提取
++
++日期：2026-06-16  
++目标：在不改变运行行为的前提下，把 `BaseRole` 中部分长逻辑提取为私有方法，降低后续维护难度。  
++主场景：`Assets/Scenes/VideoScene.unity`
++
++## 本批结论
++
++本批修改了 `BaseRole.cs`，只做函数级局部提取。
++
++没有改动：
++
++- 没有修改任何 public 字段。
++- 没有修改任何 public 方法签名。
++- 没有修改 `FixedUpdate` 的执行入口。
++- 没有修改任何数值、协程等待时间或判断条件。
++- 没有修改 `TakeDamage` 的扣血、UI、死亡、受伤音效顺序。
++- 没有修改 `AddBig` 的大招点增加、UI 飞光、禁用大招判断、满点释放顺序。
++- 没有修改吃大招球的 `AddBig -> PlaySFX -> Destroy` 顺序。
++- 没有修改 Scene、Prefab、Inspector 绑定。
++
++## 修改文件列表
++
++| 文件 | 修改内容 | 是否改变玩法 | 风险 |
++|---|---|---|---|
++| `Assets/Scripts/BaseRole.cs` | 提取运动、死亡、受伤、大招点、吃球私有方法 | 否 | 中低 |
++| `Codex/阶段7-第三批-diff.patch` | 保存本批完整 diff | 否 | 低 |
++
++## 提取内容
++
++### 运动逻辑
++
++原 `FixedUpdate()` 内部逻辑拆为：
++
++- `StopMovementWhenGameEnded()`
++- `UpdateMoveVelocity()`
++
++保留顺序：
++
++1. 如果 `isDie`，直接返回。
++2. 如果 `gameEnd`，停止刚体并返回。
++3. 否则按原公式更新移动速度。
++
++### 受伤与死亡逻辑
++
++原 `TakeDamage(int damage)` 内部逻辑拆为：
++
++- `HandleDeath()`
++- `DisablePhysicsOnDeath()`
++- `PlayHitFlash()`
++
++保留顺序：
++
++1. 死亡角色直接返回。
++2. 扣血。
++3. 刷新 `roleUI`。
++4. `HP <= 0` 时执行死亡流程。
++5. 否则播放受伤闪红。
++6. 最后播放 `getHurt` 音效。
++
++死亡流程内部顺序保持：
++
++1. 输出死亡日志。
++2. `HP = 0`。
++3. 播放淘汰战报。
++4. 停止并销毁刚体。
++5. 销毁碰撞体。
++6. 停止头像颜色动画。
++7. 头像变灰。
++8. 标记 `isDie = true`。
++9. 降低角色 Canvas 排序。
++10. 通知 `VideoGameManager.RoleDie(this)`。
++
++### 大招点逻辑
++
++原 `AddBig()` 内部逻辑拆为：
++
++- `ClampBigCountToMax()`
++- `TryUseBigWhenReady()`
++
++保留顺序：
++
++1. `bigCount++`。
++2. 限制最大值为 3。
++3. 调用 `roleUI.AttackOther(transform.position)`。
++4. 如果 `canUseBig == false`，直接返回。
++5. 如果 `bigCount >= 3`，调用 `UseBig()`。
++6. `bigCount = 0`。
++
++### 大招球触发逻辑
++
++原 `OnTriggerEnter2D(Collider2D collision)` 内部逻辑拆为：
++
++- `HandleBigBallTrigger(Collider2D collision)`
++
++保留顺序：
++
++1. 判断 `collision.CompareTag("BigBall")`。
++2. 调用 `AddBig()`。
++3. 播放 `"吃到球"` 音效。
++4. `Destroy(collision.gameObject)`。
++
++## 风险说明
++
++本批风险为中低。
++
++原因：
++
++- 这次动的是 `BaseRole` 核心脚本，影响所有英雄。
++- 但修改方式是局部私有方法提取，没有改公共接口和玩法规则。
++- 编译可以发现语法问题，但不能完全证明运行表现一致，所以仍建议人工验证一轮主场景。
++
++## 建议人工验证
++
++| 验证点 | 预期结果 |
++|---|---|
++| 运行 `VideoScene` | 所有角色正常启动并在 3 秒后开始运动 |
++| 游戏结束 | 胜利后角色停止运动表现不变 |
++| 角色受伤未死亡 | 血量 UI 更新，头像闪红，受伤音效播放 |
++| 角色死亡 | 淘汰战报、刚体/碰撞体移除、头像变灰、胜利判断表现不变 |
++| 角色吃大招球 | 大招点增加、吃球音效播放、球消失 |
++| 满 3 个大招点 | 继续调用对应英雄 `Big()`，并清空 UI 大招点 |
++
++## 回滚建议
++
++如本批出现问题，可按 `Codex/阶段7-第三批-diff.patch` 回滚：
++
++- `Assets/Scripts/BaseRole.cs`
++
++本批没有修改场景或 Prefab，回滚脚本即可恢复。

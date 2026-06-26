@@ -1,0 +1,563 @@
+﻿diff --git a/Assets/人物信息/火墙火男/FireWallFireManRole.cs b/Assets/人物信息/火墙火男/FireWallFireManRole.cs
+index 0fa419c..1ecb48b 100644
+--- a/Assets/人物信息/火墙火男/FireWallFireManRole.cs
++++ b/Assets/人物信息/火墙火男/FireWallFireManRole.cs
+@@ -1,33 +1,67 @@
+ using System.Collections;
+ using UnityEngine;
+ 
++/// <summary>
++/// ��ǽ����Ӣ�ۣ������ͷų����˺���ǽ�ʹ�����ǽ��Ѫ��
++/// </summary>
+ public class FireWallFireManRole : BaseRole
+ {
++    #region ����
++
++    private const string IgnoreLayerName = "YeLu";
++    private const float CastDelay = 1.0f;
++    private const float FireWallLength = 20f;
++    private const float ExtendDuration = 0.5f;
++    private const float DamageInterval = 0.15f;
++    private const float ActiveDuration = 5.0f;
++    private const int HitDamage = 3;
++    private const int HealTimes = 6;
++    private const float HealInterval = 0.5f;
++    private const int HealAmount = 2;
++
++    #endregion
++
++    #region Inspector �ֶ�
++
++    [Tooltip("��ǽ�߶���Ⱦ��")]
+     public LineRenderer lineRenderer;
+-    public Texture[] flameFrames; // ֡ͼ����
+-    public float frameRate = 15f; // ÿ�����֡
+ 
+-    private bool isRecovered=false;
+-    private Coroutine fireCoro=null;
++    [Tooltip("����֡ͼ����")]
++    public Texture[] flameFrames;
++
++    [Tooltip("����ÿ�벥��֡��")]
++    public float frameRate = 15f;
++
++    #endregion
++
++    #region ����ʱ״̬
++
++    private bool isRecovered = false;
++    private Coroutine fireCoro = null;
+     private Coroutine playFlameLoopCoro = null;
+     private Coroutine recoverHealthCoro = null;
+ 
++    #endregion
++
++    #region �������
++
++    /// <summary>
++    /// �ͷŻ�ǽ���С�
++    /// </summary>
+     public override void Big()
+     {
+-        
+-        lineRenderer.gameObject.SetActive(true);
+-        lineRenderer.enabled = false;
+-        isRecovered=false;
+-        if (fireCoro != null)
+-        {
+-            StopCoroutine(fireCoro);
+-            fireCoro=null;
+-        }
++        ResetFireWallBeforeCast();
++        StopFireCoroutine();
+         fireCoro = StartCoroutine(DrawFireWall());
+     }
+ 
++    #endregion
++
++    #region �����������
++
+     private void Update()
+     {
++        // ����������ڣ�����ԭ O ���������кͻ�Ѫ��
+         if (Input.GetKeyUp(KeyCode.O))
+         {
+             UseBig();
+@@ -35,33 +69,31 @@ public class FireWallFireManRole : BaseRole
+         }
+     }
+ 
+-    IEnumerator DrawFireWall()
++    #endregion
++
++    #region ��ǽ����
++
++    /// <summary>
++    /// ��ԭ˳����ƻ�ǽ��������в���������˺���
++    /// </summary>
++    /// <returns>Unity Э�̵�������</returns>
++    private IEnumerator DrawFireWall()
+     {
+-        yield return new WaitForSeconds(1.0f);
++        yield return new WaitForSeconds(CastDelay);
+ 
+         Vector3 startPos = transform.position;
+         Vector3 direction = (otherBaseRole.transform.position - startPos).normalized;
+-        Vector3 endPos = startPos + direction * 20;
+-        float duration = 0.5f;
++        Vector3 endPos = startPos + direction * FireWallLength;
+         float time = 0f;
+ 
+-        lineRenderer.enabled = true;
+-        lineRenderer.positionCount = 2;
+-        lineRenderer.SetPosition(0, startPos);
+-        lineRenderer.SetPosition(1, startPos); // ��ʼ����Ϊ 0
+-
+-        if (playFlameLoopCoro != null)
+-        {
+-            StopCoroutine(playFlameLoopCoro);
+-            playFlameLoopCoro = null;
+-        }
+-        playFlameLoopCoro = StartCoroutine(PlayFlameLoop());// ��������ӻ��Ӿ�Ч��
++        InitializeFireWallLine(startPos);
++        StartFlameLoop();
+ 
+         // ���� 1������������
+-        while (time < duration)
++        while (time < ExtendDuration)
+         {
+             time += Time.deltaTime;
+-            float t = time / duration;
++            float t = time / ExtendDuration;
+             Vector3 currentEnd = Vector3.Lerp(startPos, endPos, t);
+             lineRenderer.transform.position = currentEnd; // �����Ҫ��������λ�ã��������ɾ��
+             lineRenderer.SetPosition(1, currentEnd);
+@@ -75,14 +107,11 @@ public class FireWallFireManRole : BaseRole
+         GameObject currentTarget = null;
+         BaseRole currentTargetRole = null;
+         float damageTimer = 0f;
+-        float damageInterval = 0.15f;
+-        int ignoreLayer = LayerMask.GetMask("YeLu");
+-        int layerMask = ~ignoreLayer;
++        int layerMask = GetFireWallLayerMask();
+ 
+         float activeTime = 0f;
+-        float maxDuration = 5.0f;
+ 
+-        while (activeTime < maxDuration)
++        while (activeTime < ActiveDuration)
+         {
+             activeTime += Time.deltaTime;
+ 
+@@ -91,16 +120,11 @@ public class FireWallFireManRole : BaseRole
+ 
+             foreach (RaycastHit2D h in hits)
+             {
+-                if (h.collider != null && h.collider.CompareTag("Role") )
++                if (h.collider != null && h.collider.CompareTag("Role"))
+                 {
+                     if (h.collider.gameObject == gameObject)
+                     {
+-                        if (recoverHealthCoro != null)
+-                        {
+-                            StopCoroutine(recoverHealthCoro);
+-                            recoverHealthCoro = null;
+-                        }
+-                        recoverHealthCoro = StartCoroutine(RecoverHealth());
++                        TryStartRecoverHealth();
+                         continue; // �����Լ�������������Ŀ��
+                     }
+                     newTarget = h.collider.gameObject;
+@@ -114,10 +138,10 @@ public class FireWallFireManRole : BaseRole
+                 if (newTarget == currentTarget)
+                 {
+                     damageTimer += Time.deltaTime;
+-                    if (damageTimer >= damageInterval)
++                    if (damageTimer >= DamageInterval)
+                     {
+                         damageTimer = 0f;
+-                        currentTargetRole?.TakeDamage(3);
++                        currentTargetRole?.TakeDamage(HitDamage);
+                         Broadcast.instance.BroadCastNews($"{RoleName}�Ļ�ǽ�� {newTarget.name} �����3���˺�", roleColor);
+                     }
+                 }
+@@ -139,53 +163,171 @@ public class FireWallFireManRole : BaseRole
+         }
+ 
+         // ���� 4��ʱ��������رռ���
++        CloseFireWall();
++        StopFlameLoop();
++        StopFireCoroutine();
++        Debug.Log("��ǽ����");
++        yield break;
++    }
++
++    /// <summary>
++    /// ��ʼ����ǽ�ͷ�ǰ�Ŀɼ�״̬��
++    /// </summary>
++    private void ResetFireWallBeforeCast()
++    {
++        lineRenderer.gameObject.SetActive(true);
++        lineRenderer.enabled = false;
++        isRecovered = false;
++    }
++
++    /// <summary>
++    /// ��ʼ����ǽ�߶ε������յ㡣
++    /// </summary>
++    /// <param name="startPos">��ǽ��㡣</param>
++    private void InitializeFireWallLine(Vector3 startPos)
++    {
++        lineRenderer.enabled = true;
++        lineRenderer.positionCount = 2;
++        lineRenderer.SetPosition(0, startPos);
++        lineRenderer.SetPosition(1, startPos); // ��ʼ����Ϊ 0
++    }
++
++    /// <summary>
++    /// �رջ�ǽ��ʾ���ָ����λ�Ѫ��ǡ�
++    /// </summary>
++    private void CloseFireWall()
++    {
+         lineRenderer.enabled = false;
+         lineRenderer.gameObject.SetActive(false);
+         isRecovered = false;
++    }
++
++    /// <summary>
++    /// ��ȡ��ǽ����õ� LayerMask��
++    /// </summary>
++    /// <returns>�ų�ҹ¶�������߼�� LayerMask��</returns>
++    private int GetFireWallLayerMask()
++    {
++        int ignoreLayer = LayerMask.GetMask(IgnoreLayerName);
++        return ~ignoreLayer;
++    }
++
++    #endregion
++
++    #region ���涯��
+ 
++    /// <summary>
++    /// �������֡����Э�̡�
++    /// </summary>
++    private void StartFlameLoop()
++    {
++        StopFlameLoop();
++        if (!CanPlayFlameLoop())
++        {
++            return;
++        }
++
++        playFlameLoopCoro = StartCoroutine(PlayFlameLoop());// ��������ӻ��Ӿ�Ч��
++    }
++
++    /// <summary>
++    /// ֹͣ����֡����Э�̡�
++    /// </summary>
++    private void StopFlameLoop()
++    {
+         if (playFlameLoopCoro != null)
+         {
+             StopCoroutine(playFlameLoopCoro);
+             playFlameLoopCoro = null;
+         }
++    }
+ 
+-        StopCoroutine(fireCoro);
+-        fireCoro = null;
+-        Debug.Log("��ǽ����");
+-        yield break;
++    /// <summary>
++    /// �жϵ�ǰ����֡�����Ƿ���Բ��š�
++    /// </summary>
++    /// <returns>������Чʱ���� true��</returns>
++    private bool CanPlayFlameLoop()
++    {
++        return frameRate > 0f && flameFrames != null && flameFrames.Length > 0;
+     }
+ 
+-    IEnumerator PlayFlameLoop()
++    /// <summary>
++    /// ѭ�����Ż���֡ͼ��
++    /// </summary>
++    /// <returns>Unity Э�̵�������</returns>
++    private IEnumerator PlayFlameLoop()
+     {
++        if (!CanPlayFlameLoop())
++        {
++            yield break;
++        }
++
+         int frame = 0;
+         float waitTime = 1f / frameRate;
++        WaitForSeconds wait = new WaitForSeconds(waitTime);
+ 
+         while (true)
+         {
+             lineRenderer.material.mainTexture = flameFrames[frame];
+             frame = (frame + 1) % flameFrames.Length;
+-            yield return new WaitForSeconds(waitTime);
++            yield return wait;
+         }
+     }
+ 
+-    IEnumerator RecoverHealth()
++    #endregion
++
++    #region ��Ѫ
++
++    /// <summary>
++    /// ֹͣ�ɻ�ѪЭ�̣�������µĻ�Ѫ������̡�
++    /// </summary>
++    private void TryStartRecoverHealth()
++    {
++        if (recoverHealthCoro != null)
++        {
++            StopCoroutine(recoverHealthCoro);
++            recoverHealthCoro = null;
++        }
++
++        recoverHealthCoro = StartCoroutine(RecoverHealth());
++    }
++
++    /// <summary>
++    /// ���д�����ǽ��ԭ�����ͼ���Ѫ��
++    /// </summary>
++    /// <returns>Unity Э�̵�������</returns>
++    private IEnumerator RecoverHealth()
+     {
+         if (isRecovered) yield break;
+         Debug.Log("���л�Ѫ");
+         Broadcast.instance.BroadCastNews($"{RoleName}�����˻�ǽ����ʼ��Ѫ", roleColor);
+         isRecovered = true;
+ 
+-        int times = 6;
+-        float interval = 0.5f;
+-        int healAmount = 2;
+-
+-        for (int i = 0; i < times; i++)
++        for (int i = 0; i < HealTimes; i++)
+         {
+-            RecoverHp(healAmount);
+-            
+-            yield return new WaitForSeconds(interval);
++            RecoverHp(HealAmount);
++
++            yield return new WaitForSeconds(HealInterval);
+         }
+         yield break;
+-        
++
+     }
+-}
++
++    #endregion
++
++    #region Э�̹���
++
++    /// <summary>
++    /// ֹͣ��ǽ��Э�̡�
++    /// </summary>
++    private void StopFireCoroutine()
++    {
++        if (fireCoro != null)
++        {
++            StopCoroutine(fireCoro);
++            fireCoro = null;
++        }
++    }
++
++    #endregion
++}
+\ No newline at end of file
+diff --git a/Codex/修改记录.md b/Codex/修改记录.md
+index f3ffa29..38d72cd 100644
+--- a/Codex/修改记录.md
++++ b/Codex/修改记录.md
+@@ -53,6 +53,7 @@
+ | 2026-06-16 | 阶段 7 第五批 | `Codex/阶段7-第五批-BaseRole组件化拆分决策.md`、`Codex/阶段7-第五批-diff.patch`、`Codex/安全重构计划.md`、`Codex/修改记录.md` | 文档/BaseRole 组件化拆分决策/diff | 否 | 低 | 基于当前 public 字段、英雄继承、大招入口、运动和死亡链路，确认短期不直接拆 `RoleMovement`、`RoleHealth`、`RoleUltimate` | 本批未改游戏代码，无需运行；后续如继续阶段 7，只建议做 public API 使用规范文档 | 删除或恢复本批 Markdown 改动 |
+ | 2026-06-17 | 阶段 8 第一批 | `Assets/Scripts/VideoGameManager.cs`、`Codex/阶段8-第一批-flyLight对象池试点.md`、`Codex/阶段8-第一批-diff.patch`、`Codex/安全重构计划.md`、`Codex/修改记录.md` | UI 流光对象池/性能优化/文档/diff | 否 | 中低 | 将 `flyLightPrefab` 从动画结束销毁改为回收复用，减少长时间录制中的 UI 对象创建销毁 | 编译项目；验证吃球后的大招点 UI 飞行动画、连续吃球、满 3 点释放大招和流光对象数量不再无限增长 | 按 `Codex/阶段8-第一批-diff.patch` 回滚 `VideoGameManager.cs`，并恢复本批 Markdown 改动 |
+ | 2026-06-17 | 阶段 8 第二批 | `Codex/阶段8-第二批-复杂英雄性能结构审查.md`、`Codex/阶段8-第二批-diff.patch`、`Codex/安全重构计划.md`、`Codex/修改记录.md` | 文档/复杂英雄审查/风险分层/diff | 否 | 低 | 对火墙火男、钢索、绊线保安、迪迦进行性能与结构审查，决定下一批优先整理火墙火男 | 本批未改游戏代码，无需运行；后续如修改火墙火男，重点验证火墙持续时间、伤害频率、回血和火焰动画 | 删除或恢复本批 Markdown 改动 |
++| 2026-06-17 | 阶段 8 第三批 | `Assets/人物信息/火墙火男/FireWallFireManRole.cs`、`Codex/阶段8-第三批-火墙火男结构整理.md`、`Codex/阶段8-第三批-diff.patch`、`Codex/安全重构计划.md`、`Codex/修改记录.md` | 复杂英雄结构整理/配置保护/文档/diff | 否 | 中低 | 整理火墙火男大招脚本结构，提取协程辅助方法，并保护火焰帧配置异常 | 编译项目；验证火墙等待、延伸、持续、伤害频率、回血流程、火焰动画和 `O` 键调试入口 | 按 `Codex/阶段8-第三批-diff.patch` 回滚 `FireWallFireManRole.cs`，并恢复本批 Markdown 改动 |
+ 
+ ## 后续记录模板
+ 
+diff --git a/Codex/安全重构计划.md b/Codex/安全重构计划.md
+index 09f0235..867ea7a 100644
+--- a/Codex/安全重构计划.md
++++ b/Codex/安全重构计划.md
+@@ -220,7 +220,7 @@
+ 
+ ## 阶段 8：录制稳定性与对象生命周期优化
+ 
+-状态：第二批完成（2026-06-17，已完成复杂英雄性能与结构审查，建议下一批优先整理 `FireWallFireManRole`）
++状态：第三批完成（2026-06-17，已完成 `FireWallFireManRole` 低风险结构整理和配置保护）
+ 
+ 目标：
+ - 降低长时间录制时的对象创建销毁压力。
+@@ -230,4 +230,5 @@
+ - 阶段 8 第一批已完成 `flyLightPrefab` 对象池试点，只改 `VideoGameManager.PlayFlyEffect()` 内部对象生命周期。
+ - `bigBallPrefab` 继续暂缓池化，因为它仍直接参与 `BaseRole.OnTriggerEnter2D()` 的大招点触发链路。
+ - 阶段 8 第二批已完成复杂英雄性能与结构审查，建议下一批优先处理 `FireWallFireManRole.cs`。
+-- 阶段 8 第三批如进入代码修改，只做 `FireWallFireManRole.cs` 的低风险结构整理和配置保护，不改伤害、时间、射线规则和战报频率。
++- 阶段 8 第三批已完成 `FireWallFireManRole.cs` 的低风险结构整理和配置保护，没有改伤害、时间、射线规则和战报频率。
++- 阶段 8 第四批建议继续复杂英雄审查后的下一位候选，可选择 `DiJiaRole.cs` 做小步整理，或先审查 `BanXianBaoAnRole.cs` 的持续射线风险。
+diff --git b/Codex/阶段8-第三批-火墙火男结构整理.md b/Codex/阶段8-第三批-火墙火男结构整理.md
+new file mode 100644
+index 0000000..2a9a637
+--- /dev/null
++++ b/Codex/阶段8-第三批-火墙火男结构整理.md
+@@ -0,0 +1,152 @@
++# 阶段 8 第三批：火墙火男结构整理
++
++日期：2026-06-17  
++目标：在不改变火墙火男玩法表现的前提下，整理 `FireWallFireManRole.cs` 的结构、注释、协程辅助方法和配置保护。  
++主场景：`Assets/Scenes/VideoScene.unity`
++
++## 本批结论
++
++本批修改了 `FireWallFireManRole.cs`。
++
++没有改动：
++
++- 没有修改大招释放入口。
++- 没有修改开发调试 `O` 键行为。
++- 没有修改火墙等待时间，仍是 `1.0f`。
++- 没有修改火墙延伸时间，仍是 `0.5f`。
++- 没有修改火墙长度，仍是 `20f`。
++- 没有修改火墙持续时间，仍是 `5.0f`。
++- 没有修改伤害间隔，仍是 `0.15f`。
++- 没有修改伤害值，仍是 `3`。
++- 没有修改回血次数、间隔和数值，仍是 `6` 次、每 `0.5f` 秒、每次 `2` 点。
++- 没有把 `RaycastAll` 改成 `RaycastNonAlloc`。
++- 没有修改 Prefab、Scene 或 Inspector 绑定。
++
++## 修改文件列表
++
++| 文件 | 修改内容 | 是否改变玩法 | 风险 |
++|---|---|---|---|
++| `Assets/人物信息/火墙火男/FireWallFireManRole.cs` | 增加 region、Tooltip、XML 注释、常量、协程辅助方法和火焰配置保护 | 否 | 中低 |
++| `Codex/阶段8-第三批-diff.patch` | 保存本批完整 diff | 否 | 低 |
++
++## 主要修改
++
++### 结构整理
++
++新增分区：
++
++- `常量`
++- `Inspector 字段`
++- `运行时状态`
++- `大招入口`
++- `开发调试入口`
++- `火墙流程`
++- `火焰动画`
++- `回血`
++- `协程工具`
++
++### 常量提取
++
++| 常量 | 原值 | 说明 |
++|---|---:|---|
++| `CastDelay` | `1.0f` | 大招等待时间 |
++| `FireWallLength` | `20f` | 火墙长度 |
++| `ExtendDuration` | `0.5f` | 火墙延伸时间 |
++| `DamageInterval` | `0.15f` | 持续伤害间隔 |
++| `ActiveDuration` | `5.0f` | 火墙持续时间 |
++| `HitDamage` | `3` | 每次命中伤害 |
++| `HealTimes` | `6` | 回血次数 |
++| `HealInterval` | `0.5f` | 回血间隔 |
++| `HealAmount` | `2` | 每次回血量 |
++
++这些只是命名提取，数值没有变化。
++
++### 私有方法提取
++
++| 方法 | 作用 | 行为变化 |
++|---|---|---|
++| `ResetFireWallBeforeCast()` | 重置释放前状态 | 无 |
++| `InitializeFireWallLine(Vector3 startPos)` | 初始化火墙线段 | 无 |
++| `CloseFireWall()` | 关闭火墙显示并重置回血标记 | 无 |
++| `GetFireWallLayerMask()` | 计算排除夜露层后的检测 Mask | 无 |
++| `StartFlameLoop()` | 启动火焰帧动画 | 正常配置无变化 |
++| `StopFlameLoop()` | 停止火焰帧动画 | 无 |
++| `CanPlayFlameLoop()` | 判断火焰帧配置是否有效 | 只影响错误配置 |
++| `TryStartRecoverHealth()` | 保持原顺序停止旧回血协程并启动新协程 | 无 |
++| `StopFireCoroutine()` | 停止火墙主协程 | 无 |
++
++## 顺序保持说明
++
++`Big()` 原顺序：
++
++1. 开启 `lineRenderer.gameObject`。
++2. 设置 `lineRenderer.enabled = false`。
++3. 设置 `isRecovered = false`。
++4. 停止旧 `fireCoro`。
++5. 启动 `DrawFireWall()`。
++
++新顺序：
++
++1. `ResetFireWallBeforeCast()`。
++2. `StopFireCoroutine()`。
++3. 启动 `DrawFireWall()`。
++
++`ResetFireWallBeforeCast()` 内部仍然按原顺序执行前三步。
++
++`DrawFireWall()` 中保留：
++
++1. 等待 `1.0f`。
++2. 计算起点、方向和终点。
++3. 初始化线段。
++4. 启动火焰循环。
++5. `0.5f` 内延伸火墙。
++6. 设定最终终点。
++7. `5.0f` 内逐帧 `RaycastAll`。
++8. 命中自己时尝试回血。
++9. 命中同一敌人时每 `0.15f` 秒造成 `3` 点伤害并播报。
++10. 关闭火墙、停止火焰循环、停止主协程。
++
++## 配置保护
++
++新增 `CanPlayFlameLoop()`：
++
++```text
++frameRate > 0f && flameFrames != null && flameFrames.Length > 0
++```
++
++原因：
++
++- 原代码在 `frameRate <= 0` 时可能出现无效等待时间。
++- 原代码在 `flameFrames` 为空时会出现取模或索引异常。
++- 正常配置下行为不变。
++
++## 风险说明
++
++本批风险为中低。
++
++原因：
++
++- 修改的是具体英雄脚本，不是核心父类或全局系统。
++- 但火墙火男大招包含持续检测、持续伤害和回血，仍需要实机验证。
++- 本批没有改 `RaycastAll`、伤害频率、火墙持续时间或回血规则。
++
++## 建议人工验证点
++
++| 验证点 | 预期结果 |
++|---|---|
++| 火男释放大招 | 仍等待 1 秒后出现火墙 |
++| 火墙延伸 | 仍在 0.5 秒内延伸到终点 |
++| 火墙持续 | 仍持续 5 秒后关闭 |
++| 命中敌人 | 仍每 0.15 秒造成 3 点伤害并播报 |
++| 命中自己 | 仍只触发一次回血流程 |
++| 回血流程 | 仍回血 6 次，每次 2 点，间隔 0.5 秒 |
++| 火焰动画 | 正常配置下仍按 `frameRate` 切换贴图 |
++| 调试入口 | 按 `O` 键仍触发大招并恢复 2 点生命 |
++
++## 回滚建议
++
++如本批出现问题，可按 `Codex/阶段8-第三批-diff.patch` 回滚：
++
++- `Assets/人物信息/火墙火男/FireWallFireManRole.cs`
++
++本批没有修改场景或 Prefab，回滚脚本即可恢复。

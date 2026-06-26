@@ -1,0 +1,192 @@
+using System.Collections;
+using UnityEngine;
+
+/// <summary>
+/// 普通枪械武器模板：拾取后挂到角色身上，朝目标连射，结束后回收并刷新下一件武器。
+/// 复制到 Assets 后请替换类名、武器名、数值、播报文本和 Inspector 绑定。
+/// </summary>
+public class XxxGunWeapon : MonoBehaviour
+{
+    #region 常量配置
+
+    private const string WeaponLayerName = "Weapon";
+    private const string DefaultLayerName = "Default";
+    private const string RoleTag = "Role";
+    private const float ShootInterval = 1f;
+    private const float FinishWaitSeconds = 0.5f;
+    private const float WeaponScaleX = 1.8f;
+    private const float WeaponScaleY = 1.8f;
+    private const int BulletSpeed = 50;
+
+    #endregion
+
+    #region 字段配置
+
+    [Tooltip("开枪音源")]
+    public AudioSource audioSource;
+
+    [Tooltip("开枪音效")]
+    public AudioClip shootAudio;
+
+    [Tooltip("武器名称")]
+    public string weaponName = "新武器";
+
+    [Tooltip("本轮子弹数量")]
+    public int bulletCount = 4;
+
+    [Tooltip("子弹伤害")]
+    public int bulletDamage = 5;
+
+    [Tooltip("射击点")]
+    public Transform shootPos;
+
+    [Tooltip("子弹脚本")]
+    public VideoGameBulletBase bullet;
+
+    #endregion
+
+    #region 运行状态
+
+    private BaseRole ownerRole;
+    private BaseRole targetRole;
+    private int currentCount;
+    private Vector3 direction;
+    private bool isAttached;
+
+    #endregion
+
+    #region 武器流程
+
+    /// <summary>
+    /// 将武器挂载到拾取角色身上并开始射击。
+    /// </summary>
+    /// <param name="baseRole">拾取武器的角色。</param>
+    /// <param name="target">本轮射击目标。</param>
+    public void AttachToRole(BaseRole baseRole, BaseRole target)
+    {
+        MarkAsAttached(baseRole);
+        SetTargetAndAttachRoot(target);
+        StartCoroutine(Shoot());
+    }
+
+    /// <summary>
+    /// 执行武器射击流程。
+    /// </summary>
+    /// <returns>Unity 协程迭代器。</returns>
+    private IEnumerator Shoot()
+    {
+        while (currentCount > 0)
+        {
+            yield return new WaitForSeconds(ShootInterval);
+            transform.localScale = new Vector3(WeaponScaleX, WeaponScaleY, 1);
+            audioSource.PlayOneShot(shootAudio);
+            direction = GetCurrentShootDirection();
+
+            bullet.Init(direction, 0, BulletSpeed, shootPos.position, ownerRole);
+            bullet.OnBulletHitRole = HandleBulletHitRole;
+            currentCount--;
+        }
+
+        yield return new WaitForSeconds(FinishWaitSeconds);
+        SetDefault();
+        VideoGameManager.instance.SpawnWeapons();
+    }
+
+    /// <summary>
+    /// 复位武器状态。
+    /// </summary>
+    public void SetDefault()
+    {
+        gameObject.layer = LayerMask.NameToLayer(DefaultLayerName);
+        transform.localScale = new Vector3(WeaponScaleX, WeaponScaleY, 1);
+        VideoGameWeaponUtility.HideRootAndResetRotation(transform.parent);
+        currentCount = bulletCount;
+        VideoGameWeaponUtility.HideBulletRoot(bullet);
+        isAttached = false;
+    }
+
+    #endregion
+
+    #region 拾取入口
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (isAttached)
+        {
+            return;
+        }
+
+        if (!collision.CompareTag(RoleTag))
+        {
+            return;
+        }
+
+        BaseRole pickerRole = collision.GetComponent<BaseRole>();
+        if (!pickerRole.canGetWeapon)
+        {
+            return;
+        }
+
+        Broadcast.instance.BroadCastNews($"{pickerRole.RoleName}捡到了{weaponName}", pickerRole.roleColor);
+        AttachToRole(pickerRole, pickerRole.otherBaseRole);
+    }
+
+    #endregion
+
+    #region 工具方法
+
+    /// <summary>
+    /// 标记武器进入持有状态。
+    /// </summary>
+    /// <param name="baseRole">拾取武器的角色。</param>
+    private void MarkAsAttached(BaseRole baseRole)
+    {
+        gameObject.layer = LayerMask.NameToLayer(WeaponLayerName);
+        isAttached = true;
+        ownerRole = baseRole;
+    }
+
+    /// <summary>
+    /// 设置本轮目标，并把武器根物体挂到持有者身上。
+    /// </summary>
+    /// <param name="target">本轮射击目标。</param>
+    private void SetTargetAndAttachRoot(BaseRole target)
+    {
+        targetRole = target;
+        VideoGameWeaponUtility.AttachRootToRole(transform.parent, ownerRole.transform);
+        currentCount = bulletCount;
+    }
+
+    /// <summary>
+    /// 按当前角色和目标位置计算本发子弹方向。
+    /// </summary>
+    /// <returns>本发子弹的单位方向。</returns>
+    private Vector3 GetCurrentShootDirection()
+    {
+        return VideoGameWeaponUtility.AimAndGetShootDirection(
+            transform.parent,
+            transform,
+            shootPos,
+            ownerRole.transform.position,
+            targetRole.transform.position,
+            WeaponScaleX,
+            WeaponScaleY);
+    }
+
+    /// <summary>
+    /// 处理子弹命中角色后的播报、伤害和回收。
+    /// </summary>
+    /// <param name="hitRole">被子弹命中的角色。</param>
+    private void HandleBulletHitRole(BaseRole hitRole)
+    {
+        VideoGameCombatUtility.BroadcastThenDamage(
+            hitRole,
+            bulletDamage,
+            $"{ownerRole.RoleName}的{weaponName}击中了{hitRole.RoleName}造成了{bulletDamage}点伤害",
+            ownerRole.roleColor);
+
+        bullet.Recycle();
+    }
+
+    #endregion
+}

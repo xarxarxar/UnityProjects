@@ -1,0 +1,185 @@
+diff --git a/Assets/Scripts/LaserShooter.cs b/Assets/Scripts/LaserShooter.cs
+index 9530007..9479e71 100644
+--- a/Assets/Scripts/LaserShooter.cs
++++ b/Assets/Scripts/LaserShooter.cs
+@@ -1,18 +1,8 @@
+-using System.Collections;
+-using System.Collections.Generic;
+ using UnityEngine;
+ 
++/// <summary>
++/// 激光发射器占位脚本，当前没有运行逻辑。
++/// </summary>
+ public class LaserShooter : MonoBehaviour
+ {
+-    // Start is called before the first frame update
+-    void Start()
+-    {
+-        
+-    }
+-
+-    // Update is called once per frame
+-    void Update()
+-    {
+-        
+-    }
+ }
+diff --git a/Assets/人物信息/火墙火男/FireWallFireManRole.cs b/Assets/人物信息/火墙火男/FireWallFireManRole.cs
+index 4f9fc6c..eff5127 100644
+--- a/Assets/人物信息/火墙火男/FireWallFireManRole.cs
++++ b/Assets/人物信息/火墙火男/FireWallFireManRole.cs
+@@ -1,7 +1,5 @@
+ using System.Collections;
+-using Unity.VisualScripting;
+ using UnityEngine;
+-using UnityEngine.PlayerLoop;
+ 
+ public class FireWallFireManRole : BaseRole
+ {
+@@ -75,6 +73,7 @@ public class FireWallFireManRole : BaseRole
+ 
+         // 步骤 3：持续检测是否有角色被击中，5 秒内持续造成伤害
+         GameObject currentTarget = null;
++        BaseRole currentTargetRole = null;
+         float damageTimer = 0f;
+         float damageInterval = 0.15f;
+         int ignoreLayer = LayerMask.GetMask("YeLu");
+@@ -118,20 +117,21 @@ public class FireWallFireManRole : BaseRole
+                     if (damageTimer >= damageInterval)
+                     {
+                         damageTimer = 0f;
+-                        newTarget.GetComponent<BaseRole>()?.TakeDamage(3);
++                        currentTargetRole?.TakeDamage(3);
+                         Broadcast.instance.BroadCastNews($"{RoleName}的火墙对 {newTarget.name} 造成了3点伤害", roleColor);
+                     }
+                 }
+                 else
+                 {
+                     currentTarget = newTarget;
++                    currentTargetRole = currentTarget.GetComponent<BaseRole>();
+                     damageTimer = 0f;
+-                    Debug.Log($"锁定新目标：{currentTarget.name}");
+                 }
+             }
+             else
+             {
+                 currentTarget = null;
++                currentTargetRole = null;
+                 damageTimer = 0f;
+             }
+ 
+diff --git a/Assets/人物信息/维斯/WeiSiRole.cs b/Assets/人物信息/维斯/WeiSiRole.cs
+index 5fd09f8..998fbca 100644
+--- a/Assets/人物信息/维斯/WeiSiRole.cs
++++ b/Assets/人物信息/维斯/WeiSiRole.cs
+@@ -16,6 +16,7 @@ public class WeiSiRole : BaseRole
+     #region 协程引用
+ 
+     private Coroutine bigCoro;
++    private CircleCollider2D jingjiCollider;
+ 
+     #endregion
+ 
+@@ -47,14 +48,14 @@ public class WeiSiRole : BaseRole
+         yield return new WaitForSeconds(3);
+         // 获取圆形范围参数
+         Vector2 center = Jingji.transform.position;
+-        float radius = Jingji.GetComponent<CircleCollider2D>().radius * Jingji.transform.lossyScale.x;
++        CircleCollider2D rangeCollider = GetJingjiCollider();
++        float radius = rangeCollider.radius * Jingji.transform.lossyScale.x;
+ 
+         // 检测该范围内所有碰撞体
+         Collider2D[] hits = Physics2D.OverlapCircleAll(center, radius);
+ 
+         foreach (Collider2D col in hits)
+         {
+-            Debug.Log("在范围内的物体：" + col.name);
+             // 你可以根据tag或者组件筛选目标，比如
+             if (col.CompareTag("Role") && col.gameObject!=gameObject)
+             {
+@@ -87,5 +88,19 @@ public class WeiSiRole : BaseRole
+         bigCoro = null;
+     }
+ 
++    /// <summary>
++    /// 获取并缓存荆棘范围碰撞体。
++    /// </summary>
++    /// <returns>荆棘范围上的圆形碰撞体。</returns>
++    private CircleCollider2D GetJingjiCollider()
++    {
++        if (jingjiCollider == null)
++        {
++            jingjiCollider = Jingji.GetComponent<CircleCollider2D>();
++        }
++
++        return jingjiCollider;
++    }
++
+     #endregion
+-}
+\ No newline at end of file
++}
+diff --git a/Assets/人物信息/钱包/QianBaoRole.cs b/Assets/人物信息/钱包/QianBaoRole.cs
+index 0e3706d..d3182a6 100644
+--- a/Assets/人物信息/钱包/QianBaoRole.cs
++++ b/Assets/人物信息/钱包/QianBaoRole.cs
+@@ -1,10 +1,10 @@
+ using System.Collections;
+-using System.Collections.Generic;
+-using System.Data;
+ using UnityEngine;
+ 
+ public class QianBaoRole : BaseRole
+ {
++    private static readonly Color32 BulletLineColor = new Color32(255, 210, 0, 255);
++
+     public GameObject DaJu;//大狙
+     public VideoGameBulletBase bullet;//大狙的子弹
+     public Transform shootPos;//射击点
+@@ -39,9 +39,8 @@ public class QianBaoRole : BaseRole
+             yield return new WaitForSeconds(2.0f);
+             BaseRole targetRole = otherBaseRole;
+             lineRenderer.enabled = true;
+-            Color32 baseColor = new Color32(255, 210, 0, 255); // 根据你原来的颜色设置
+-            lineRenderer.startColor = baseColor;
+-            lineRenderer.endColor = baseColor;
++            lineRenderer.startColor = BulletLineColor;
++            lineRenderer.endColor = BulletLineColor;
+ 
+ 
+             Vector3 gunDirction = (targetRole.transform.position - transform.position).normalized;
+@@ -74,7 +73,6 @@ public class QianBaoRole : BaseRole
+                 VideoGameCombatUtility.BroadcastThenDamageAndSetSpeed(targetRole, 20, 0.7f, 1.0f, $"{RoleName}的大狙对{targetRole.RoleName}造成了20点伤害并减速", roleColor);
+                 bullet.Recycle();
+                 lineRenderer.positionCount = 2;
+-                Debug.Log($"startpos is {startPos},target is{bullet.transform.position}");
+                 lineRenderer.SetPosition(0, startPos);
+                 lineRenderer.SetPosition(1, bullet.transform.position);
+                 lineCoro=StartCoroutine(FadeOutLaser(0.5f));
+@@ -84,7 +82,6 @@ public class QianBaoRole : BaseRole
+             bullet.OnBulletHitWall = () =>
+             {
+                 lineRenderer.positionCount = 2;
+-                Debug.Log($"startpos is {startPos},target is{bullet.transform.position}");
+                 lineRenderer.SetPosition(0, startPos);
+                 lineRenderer.SetPosition(1, bullet.transform.position);
+                 lineCoro=StartCoroutine(FadeOutLaser(0.5f));
+diff --git a/Assets/人物信息/霓虹/NiHongRole.cs b/Assets/人物信息/霓虹/NiHongRole.cs
+index 01b31e3..01e54d0 100644
+--- a/Assets/人物信息/霓虹/NiHongRole.cs
++++ b/Assets/人物信息/霓虹/NiHongRole.cs
+@@ -1,5 +1,4 @@
+ using System.Collections;
+-using System.Collections.Generic;
+ using UnityEngine;
+ 
+ public class NiHongRole : BaseRole
+@@ -109,8 +108,6 @@ public class NiHongRole : BaseRole
+             {
+                 endPos = startPos + finalDirection * 100f;
+             }
+-            Debug.Log($"hit name is {hit.collider.name}");
+-
+             lineRenderer.SetPosition(0, startPos);
+             lineRenderer.SetPosition(1, endPos);
+ 

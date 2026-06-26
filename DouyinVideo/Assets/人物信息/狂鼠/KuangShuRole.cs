@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class KuangShuRole : BaseRole
@@ -18,6 +17,8 @@ public class KuangShuRole : BaseRole
         bigCoro = StartCoroutine(HitHat());
     }
 
+    #region 开发调试入口
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.M))
@@ -25,6 +26,8 @@ public class KuangShuRole : BaseRole
             UseBig();
         }
     }
+
+    #endregion
 
     private IEnumerator HitHat()
     {
@@ -41,8 +44,7 @@ public class KuangShuRole : BaseRole
         {
             if (hitRole != this)
             {
-                hitRole.TakeDamage(30);
-                Broadcast.instance.BroadCastNews($"{RoleName}的轮胎对{hitRole.RoleName}造成了30点伤害", roleColor);
+                VideoGameCombatUtility.DamageThenBroadcast(hitRole, 30, $"{RoleName}的轮胎对{hitRole.RoleName}造成了30点伤害", roleColor);
                 PlayAudio(luntaiBoom);
                 luntai.gameObject.SetActive(false);
                 luntai.transform.SetParent(transform);

@@ -1,0 +1,243 @@
+﻿diff --git a/Assets/Scripts/VideoGameManager.cs b/Assets/Scripts/VideoGameManager.cs
+index 135186c..fee4264 100644
+--- a/Assets/Scripts/VideoGameManager.cs
++++ b/Assets/Scripts/VideoGameManager.cs
+@@ -32,6 +32,7 @@ public class VideoGameManager : MonoBehaviour
+     //�������
+     public RectTransform canvasTransform; // UI Canvas
+     public GameObject flyLightPrefab; // һ����������ͼ��Ԥ���壨UI Image��
++    private readonly Queue<GameObject> flyLightPool = new Queue<GameObject>();
+ 
+     public float KniefHoldTime { 
+         get => kniefHoldTime;
+@@ -142,16 +143,17 @@ public class VideoGameManager : MonoBehaviour
+     }
+ 
+     /// <summary>
+-    /// ����������Ч
++    /// ����������Ч��
+     /// </summary>
+-    /// <param name="screenStartPos"></param>
+-    /// <param name="screenEndPos"></param>
++    /// <param name="screenStart">��Ļ������ꡣ</param>
++    /// <param name="screenEnd">��Ļ�յ����ꡣ</param>
++    /// <param name="count">���β��ŵ�����������</param>
+     public void PlayFlyEffect(Vector3 screenStart, Vector3 screenEnd, int count = 3)
+     {
+         for (int i = 0; i < count; i++)
+         {
+-            GameObject flyCoin = Instantiate(flyLightPrefab, canvasTransform);
+-            flyCoin.transform.position = screenStart;
++            GameObject flyCoin = GetFlyLight();
++            PrepareFlyLight(flyCoin, screenStart);
+ 
+             // �����м���Ƶ㣨���������㣩
+             Vector3 midPoint = (screenStart + screenEnd) / 2f;
+@@ -171,10 +173,55 @@ public class VideoGameManager : MonoBehaviour
+                 .SetEase(Ease.InOutQuad)
+                 .OnComplete(() =>
+                 {
+-                    Destroy(flyCoin);
++                    ReturnFlyLight(flyCoin);
+                     // �ɴ������ӡ���Ч��
+                 });
+         }
+     }
+ 
++    /// <summary>
++    /// ����������ȡ��һ�����ö��󣬳�Ϊ��ʱ�Ŵ����¶���
++    /// </summary>
++    /// <returns>�����ڲ��ŷ��ж������������</returns>
++    private GameObject GetFlyLight()
++    {
++        if (flyLightPool.Count > 0)
++        {
++            GameObject pooledFlyLight = flyLightPool.Dequeue();
++            pooledFlyLight.SetActive(true);
++            return pooledFlyLight;
++        }
++
++        return Instantiate(flyLightPrefab, canvasTransform);
++    }
++
++    /// <summary>
++    /// �����������ĸ��ڵ㡢λ�úͱ任״̬��
++    /// </summary>
++    /// <param name="flyCoin">��Ҫ���ŵ��������</param>
++    /// <param name="screenStart">��Ļ������ꡣ</param>
++    private void PrepareFlyLight(GameObject flyCoin, Vector3 screenStart)
++    {
++        flyCoin.transform.DOKill();
++        flyCoin.transform.SetParent(canvasTransform, false);
++        flyCoin.transform.localRotation = flyLightPrefab.transform.localRotation;
++        flyCoin.transform.localScale = flyLightPrefab.transform.localScale;
++        flyCoin.transform.position = screenStart;
++    }
++
++    /// <summary>
++    /// ֹͣ����� Tween�����Ѷ���Żس��еȴ����á�
++    /// </summary>
++    /// <param name="flyCoin">��Ҫ���յ��������</param>
++    private void ReturnFlyLight(GameObject flyCoin)
++    {
++        if (flyCoin == null)
++        {
++            return;
++        }
++
++        flyCoin.transform.DOKill();
++        flyCoin.SetActive(false);
++        flyLightPool.Enqueue(flyCoin);
++    }
+ }
+diff --git a/Codex/修改记录.md b/Codex/修改记录.md
+index 385caee..4eafd8d 100644
+--- a/Codex/修改记录.md
++++ b/Codex/修改记录.md
+@@ -51,6 +51,7 @@
+ | 2026-06-16 | 阶段 7 第三批 | `Assets/Scripts/BaseRole.cs`、`Codex/阶段7-第三批-BaseRole私有方法提取.md`、`Codex/阶段7-第三批-diff.patch`、`Codex/安全重构计划.md`、`Codex/修改记录.md` | BaseRole 私有方法提取/文档/diff | 否 | 中低 | 将 `FixedUpdate`、`TakeDamage`、`AddBig`、`OnTriggerEnter2D` 的局部逻辑提取为私有方法，降低后续维护难度 | 编译项目；验证所有英雄启动、移动、受伤、死亡、吃球和大招释放 | 按 `Codex/阶段7-第三批-diff.patch` 回滚 `BaseRole.cs`，并恢复本批 Markdown 改动 |
+ | 2026-06-16 | 阶段 7 第四批 | `Assets/Scripts/BaseRole.cs`、`Codex/阶段7-第四批-BaseRole状态图标逻辑整理.md`、`Codex/阶段7-第四批-diff.patch`、`Codex/安全重构计划.md`、`Codex/修改记录.md` | BaseRole 状态图标逻辑整理/文档/diff | 否 | 中低 | 提取 `SetCanGetWeapon` / `SetCanUseBig` 重复的状态图标准备、创建和恢复逻辑 | 编译项目；验证维斯缴械、KO 压制、状态图标显示和持续时间结束恢复 | 按 `Codex/阶段7-第四批-diff.patch` 回滚 `BaseRole.cs`，并恢复本批 Markdown 改动 |
+ | 2026-06-16 | 阶段 7 第五批 | `Codex/阶段7-第五批-BaseRole组件化拆分决策.md`、`Codex/阶段7-第五批-diff.patch`、`Codex/安全重构计划.md`、`Codex/修改记录.md` | 文档/BaseRole 组件化拆分决策/diff | 否 | 低 | 基于当前 public 字段、英雄继承、大招入口、运动和死亡链路，确认短期不直接拆 `RoleMovement`、`RoleHealth`、`RoleUltimate` | 本批未改游戏代码，无需运行；后续如继续阶段 7，只建议做 public API 使用规范文档 | 删除或恢复本批 Markdown 改动 |
++| 2026-06-17 | 阶段 8 第一批 | `Assets/Scripts/VideoGameManager.cs`、`Codex/阶段8-第一批-flyLight对象池试点.md`、`Codex/阶段8-第一批-diff.patch`、`Codex/安全重构计划.md`、`Codex/修改记录.md` | UI 流光对象池/性能优化/文档/diff | 否 | 中低 | 将 `flyLightPrefab` 从动画结束销毁改为回收复用，减少长时间录制中的 UI 对象创建销毁 | 编译项目；验证吃球后的大招点 UI 飞行动画、连续吃球、满 3 点释放大招和流光对象数量不再无限增长 | 按 `Codex/阶段8-第一批-diff.patch` 回滚 `VideoGameManager.cs`，并恢复本批 Markdown 改动 |
+ 
+ ## 后续记录模板
+ 
+diff --git a/Codex/安全重构计划.md b/Codex/安全重构计划.md
+index ab2f831..18da39e 100644
+--- a/Codex/安全重构计划.md
++++ b/Codex/安全重构计划.md
+@@ -217,3 +217,16 @@
+ - 阶段 7 第五批已完成组件化拆分决策文档，确认短期不直接拆 `RoleMovement`、`RoleHealth`、`RoleUltimate`。
+ - 阶段 7 可以暂时收口；如果继续，只建议做 `BaseRole` public API 使用规范文档，不继续拆核心逻辑。
+ - 暂不直接拆 `RoleMovement`、`RoleHealth`、`RoleUltimate` 等组件，也不移动 `BaseRole` public 字段。
++
++## 阶段 8：录制稳定性与对象生命周期优化
++
++状态：第一批完成（2026-06-17，已完成 `flyLightPrefab` 对象池试点）
++
++目标：
++- 降低长时间录制时的对象创建销毁压力。
++- 优先处理纯表现对象，不碰玩法触发链路。
++
++当前建议：
++- 阶段 8 第一批已完成 `flyLightPrefab` 对象池试点，只改 `VideoGameManager.PlayFlyEffect()` 内部对象生命周期。
++- `bigBallPrefab` 继续暂缓池化，因为它仍直接参与 `BaseRole.OnTriggerEnter2D()` 的大招点触发链路。
++- 阶段 8 第二批建议进入单个复杂英雄的性能/结构审查，先文档后代码。
+diff --git b/Codex/阶段8-第一批-flyLight对象池试点.md b/Codex/阶段8-第一批-flyLight对象池试点.md
+new file mode 100644
+index 0000000..acb6515
+--- /dev/null
++++ b/Codex/阶段8-第一批-flyLight对象池试点.md
+@@ -0,0 +1,112 @@
++# 阶段 8 第一批：flyLightPrefab 对象池试点
++
++日期：2026-06-17  
++目标：在不改变大招点 UI 表现和玩法逻辑的前提下，将 `flyLightPrefab` 从“每次创建销毁”改为“动画结束后回收复用”。  
++主场景：`Assets/Scenes/VideoScene.unity`
++
++## 本批结论
++
++本批修改了 `VideoGameManager.cs`，只处理 `PlayFlyEffect()` 内部的 UI 流光对象生命周期。
++
++没有改动：
++
++- 没有修改 `RoleUI.AttackOther()`。
++- 没有修改 `BaseRole.AddBig()`。
++- 没有修改 `bigBallPrefab`。
++- 没有修改大招点增加规则。
++- 没有修改流光数量，默认仍是 `count = 3`。
++- 没有修改飞行路径、随机偏移、动画时长或 Ease。
++- 没有修改 Prefab、Scene 或 Inspector 绑定。
++
++## 修改文件列表
++
++| 文件 | 修改内容 | 是否改变玩法 | 风险 |
++|---|---|---|---|
++| `Assets/Scripts/VideoGameManager.cs` | 新增 `flyLightPool`，将流光动画结束后的 `Destroy` 改为回收到池中 | 否 | 中低 |
++| `Codex/阶段8-第一批-diff.patch` | 保存本批完整 diff | 否 | 低 |
++
++## 原链路
++
++```text
++BaseRole.AddBig()
++-> RoleUI.AttackOther(transform.position)
++-> VideoGameManager.PlayFlyEffect(startPoint, endPoint)
++-> Instantiate(flyLightPrefab, canvasTransform)
++-> DOPath(..., 0.6f)
++-> Destroy(flyCoin)
++```
++
++## 新链路
++
++```text
++BaseRole.AddBig()
++-> RoleUI.AttackOther(transform.position)
++-> VideoGameManager.PlayFlyEffect(startPoint, endPoint)
++-> GetFlyLight()
++   -> 池里有对象：取出并 SetActive(true)
++   -> 池里无对象：Instantiate(flyLightPrefab, canvasTransform)
++-> PrepareFlyLight(flyCoin, screenStart)
++-> DOPath(..., 0.6f)
++-> ReturnFlyLight(flyCoin)
++   -> DOKill()
++   -> SetActive(false)
++   -> 放回池中
++```
++
++## 顺序保持说明
++
++`PlayFlyEffect()` 保持以下顺序不变：
++
++1. 每次循环先得到一个流光对象。
++2. 设置起点为 `screenStart`。
++3. 计算 `midPoint = (screenStart + screenEnd) / 2f`。
++4. 使用原来的 `Random.Range(-100f, 100f)` 和 `Random.Range(100f, 200f)`。
++5. 使用原来的三点路径 `{ screenStart, midPoint, screenEnd }`。
++6. 使用原来的 `DOPath(path, 0.6f, PathType.CatmullRom)`。
++7. 使用原来的 `SetEase(Ease.InOutQuad)`。
++8. 动画完成回调仍在 `OnComplete` 中执行。
++
++唯一变化是第 8 步中不再 `Destroy(flyCoin)`，而是 `ReturnFlyLight(flyCoin)`。
++
++## 新增私有方法
++
++| 方法 | 作用 |
++|---|---|
++| `GetFlyLight()` | 从池中取流光对象，池为空时才创建 |
++| `PrepareFlyLight(GameObject flyCoin, Vector3 screenStart)` | 清理旧 Tween，重设父节点、旋转、缩放和起点 |
++| `ReturnFlyLight(GameObject flyCoin)` | 停止旧 Tween，隐藏对象并放回池中 |
++
++## 风险说明
++
++本批风险为中低。
++
++原因：
++
++- `flyLightPrefab` 是 UI 表现对象，不参与碰撞、伤害、胜负和大招点计数。
++- 修改点集中在 `VideoGameManager.PlayFlyEffect()`。
++- `RoleUI.AttackOther()` 和 `BaseRole.AddBig()` 没有改。
++- `bigBallPrefab` 仍按原逻辑创建和销毁。
++
++需要关注：
++
++- 如果未来 `flyLightPrefab` 增加脚本、粒子、音效或复杂状态，需要重新评估池化重置逻辑。
++- 如果流光对象在动画未完成前被外部销毁，`ReturnFlyLight()` 会直接跳过空对象。
++
++## 建议人工验证点
++
++| 验证点 | 预期结果 |
++|---|---|
++| 角色吃到大招球 | 大招点 UI 仍增加 |
++| 单次获得大招点 | 仍出现 3 条流光飞行动画 |
++| 连续获得大招点 | 流光不会残留、卡住或瞬移到错误位置 |
++| 大招点满 3 格 | 仍能触发英雄大招并清空 UI |
++| 长时间录制 | `流光粒子(Clone)` 数量不再持续无限增长 |
++
++## 回滚建议
++
++如本批出现表现异常，可按 `Codex/阶段8-第一批-diff.patch` 回滚：
++
++- 恢复 `Assets/Scripts/VideoGameManager.cs` 中的 `PlayFlyEffect()`。
++- 删除本批新增的 `flyLightPool`、`GetFlyLight()`、`PrepareFlyLight()`、`ReturnFlyLight()`。
++
++本批没有修改场景或 Prefab，回滚脚本即可恢复。

@@ -1,0 +1,78 @@
+diff --git a/Assets/Scripts/Audio/AudioManager.cs b/Assets/Scripts/Audio/AudioManager.cs
+index e0cebb0..0843198 100644
+--- a/Assets/Scripts/Audio/AudioManager.cs
++++ b/Assets/Scripts/Audio/AudioManager.cs
+@@ -16,6 +16,7 @@ public class AudioManager : MonoBehaviour
+     public AudioLibrary audioLibrary;
+ 
+     private AudioSource currentBgm;
++    private readonly Queue<AudioSource> sfxPool = new Queue<AudioSource>();
+ 
+     public static AudioManager Instance;
+ 
+@@ -78,15 +79,55 @@ public class AudioManager : MonoBehaviour
+         }
+     }
+ 
+-    // 播放音效（可指定 Pitch）
++    /// <summary>
++    /// 播放一次音效。
++    /// </summary>
++    /// <param name="clip">要播放的音效片段。</param>
++    /// <param name="pitch">播放音高，会影响回收等待时间。</param>
+     public void PlaySFX(AudioClip clip, float pitch = 1f)
+     {
+-        AudioSource sfx = Instantiate(sfxSourcePrefab, transform);
++        AudioSource sfx = GetSfxSource();
+         sfx.clip = clip;
+         sfx.volume = sfxVolume;
+         sfx.pitch = pitch;
+         sfx.Play();
+-        Destroy(sfx.gameObject, clip.length / pitch); // 考虑 pitch 对播放时长的影响
++        StartCoroutine(ReturnSfxSourceAfterPlaying(sfx, clip.length / pitch)); // 保持原来的播放时长公式
++    }
++
++    /// <summary>
++    /// 获取一个可用的音效 AudioSource。
++    /// </summary>
++    /// <returns>可用于播放本次音效的 AudioSource。</returns>
++    private AudioSource GetSfxSource()
++    {
++        if (sfxPool.Count > 0)
++        {
++            AudioSource pooledSource = sfxPool.Dequeue();
++            pooledSource.gameObject.SetActive(true);
++            return pooledSource;
++        }
++
++        return Instantiate(sfxSourcePrefab, transform);
++    }
++
++    /// <summary>
++    /// 音效播放结束后回收到池中。
++    /// </summary>
++    /// <param name="sfx">需要回收的音效源。</param>
++    /// <param name="delay">等待回收的时间。</param>
++    private IEnumerator ReturnSfxSourceAfterPlaying(AudioSource sfx, float delay)
++    {
++        yield return new WaitForSeconds(delay);
++
++        if (sfx == null)
++        {
++            yield break;
++        }
++
++        sfx.Stop();
++        sfx.clip = null;
++        sfx.gameObject.SetActive(false);
++        sfxPool.Enqueue(sfx);
+     }
+ 
+     public void SetBGMVolume(float volume)
+@@ -106,4 +147,4 @@ public class AudioData
+ {
+     public string key;
+     public AudioClip clip;
+-}
+\ No newline at end of file
++}

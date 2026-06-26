@@ -1,0 +1,458 @@
+﻿diff --git a/Assets/人物信息/迪迦/DiJiaRole.cs b/Assets/人物信息/迪迦/DiJiaRole.cs
+index a79a212..52bd287 100644
+--- a/Assets/人物信息/迪迦/DiJiaRole.cs
++++ b/Assets/人物信息/迪迦/DiJiaRole.cs
+@@ -1,125 +1,228 @@
+ using System.Collections;
+-using System.Collections.Generic;
+ using UnityEngine;
+ 
+ /// <summary>
+-/// 迪迦的脚本
++/// 迪迦英雄，负责释放持续抖动激光并造成伤害。
+ /// </summary>
+ public class DiJiaRole : BaseRole
+ {
++    #region 常量
++
++    private const string WallTag = "wall";
++    private const string RoleTag = "Role";
++    private const string IgnoreLayerYeLu = "YeLu";
++    private const string IgnoreLayerWeapon = "Weapon";
++    private const float CastDelay = 1.0f;
++    private const float NoiseSpeed = 5.0f;
++    private const float NoiseAmplitude = 15f;
++    private const float LaserDuration = 5f;
++    private const float DamageInterval = 0.2f;
++    private const float LaserStartOffset = 2.5f;
++    private const float LaserDistance = 100f;
++    private const int HitDamage = 3;
++
++    #endregion
++
++    #region Inspector 字段
++
++    [Tooltip("迪迦激光线段渲染器")]
+     public LineRenderer lineRenderer;
++
++    #endregion
++
++    #region 运行时状态
++
+     private Coroutine bigCoro = null;
+     private Coroutine updateLaserCoro = null;
++
++    #endregion
++
++    #region 大招入口
++
++    /// <summary>
++    /// 释放迪迦大招。
++    /// </summary>
+     public override void Big()
+     {
+-        if (bigCoro != null)
+-        {
+-            StopCoroutine(bigCoro);
+-            bigCoro = null;
+-        }
+-        lineRenderer.enabled = false;
++        StopBigCoroutine();
++        CloseLaser();
+         bigCoro = StartCoroutine(BigCoro());
+     }
+ 
++    /// <summary>
++    /// 延迟后开始激光流程。
++    /// </summary>
++    /// <returns>Unity 协程迭代器。</returns>
+     private IEnumerator BigCoro()
+     {
+-        yield return new WaitForSeconds(1.0f);
++        yield return new WaitForSeconds(CastDelay);
+         Broadcast.instance.BroadCastNews($"{RoleName}使用大招", roleColor);
+         StartLaser();
+         yield break;
+     }
+ 
+-    void StartLaser()
++    #endregion
++
++    #region 激光流程
++
++    /// <summary>
++    /// 开启激光显示并启动逐帧更新。
++    /// </summary>
++    private void StartLaser()
+     {
+         lineRenderer.enabled = true;
+-
+-        if (updateLaserCoro != null)
+-        {
+-            StopCoroutine(updateLaserCoro);
+-            updateLaserCoro = null;
+-        }
++        StopUpdateLaserCoroutine();
+         updateLaserCoro = StartCoroutine(UpdateLaser());
+     }
+ 
+-    IEnumerator UpdateLaser()
++    /// <summary>
++    /// 按原规则持续更新激光方向、命中和伤害。
++    /// </summary>
++    /// <returns>Unity 协程迭代器。</returns>
++    private IEnumerator UpdateLaser()
+     {
+-        float noiseSpeed = 5.0f;       // 噪声变化速度
+-        float noiseAmplitude = 15f;     // 抖动角度最大偏移（度）
+-        float laserDuration = 5f;      // 激光总存在时间
+-        float damageInterval = 0.2f;   // 伤害间隔
+         float damageTimer = 0f;
+         float elapsedTime = 0f;
+ 
+         if (otherBaseRole == null)
+         {
+             // 激光结束，关闭LineRenderer
+-            lineRenderer.enabled = false;
++            CloseLaser();
+             yield break;
+         }
+ 
+         Transform target = otherBaseRole.transform;
+         SetSpeed(0);
++        int layerMask = GetLaserLayerMask();
+ 
+-        while (lineRenderer.enabled && elapsedTime < laserDuration)
++        while (lineRenderer.enabled && elapsedTime < LaserDuration)
+         {
+             if (otherBaseRole == null)
+             {
+                 // 激光结束，关闭LineRenderer
+-                lineRenderer.enabled = false;
++                CloseLaser();
+                 yield break;
+             }
+ 
+-
+             elapsedTime += Time.deltaTime;
+             damageTimer += Time.deltaTime;
+ 
+-            
+-
+             // 获取目标方向
+             Vector2 directionToTarget = (target.position - transform.position).normalized;
+-            Vector2 startPos = (Vector2)transform.position + directionToTarget * 2.5f;
+-            // 计算平滑抖动角度
+-            float time = Time.time * noiseSpeed;
+-            float smoothAngleOffset = Mathf.Sin(time) * noiseAmplitude;
+-            Quaternion rotationOffset = Quaternion.Euler(0, 0, smoothAngleOffset);
+-            Vector2 finalDirection = rotationOffset * directionToTarget;
+-
+-            // LayerMask 排除自己
+-            int ignoreLayer = LayerMask.GetMask( "YeLu","Weapon");
+-            int layerMask = ~ignoreLayer;
++            Vector2 startPos = (Vector2)transform.position + directionToTarget * LaserStartOffset;
++            Vector2 finalDirection = GetNoisyLaserDirection(directionToTarget);
+ 
+             // 发射射线
+-            RaycastHit2D hit = Physics2D.Raycast(startPos, finalDirection, 100f, layerMask);
+-
++            RaycastHit2D hit = Physics2D.Raycast(startPos, finalDirection, LaserDistance, layerMask);
+             Vector2 endPos;
+ 
+-            if (hit.collider != null &&
+-                (hit.collider.CompareTag("wall") || hit.collider.CompareTag("Role")))
++            if (IsLaserBlockingHit(hit))
+             {
+                 endPos = hit.point;
+ 
+                 // 如果命中Role并且时间到达伤害间隔，造成伤害
+-                if (hit.collider.CompareTag("Role") && damageTimer >= damageInterval)
++                if (hit.collider.CompareTag(RoleTag) && damageTimer >= DamageInterval)
+                 {
+                     damageTimer = 0f;
+-
+-                    // 假设Role有CircleRole组件和TakeDamage方法
+-                    hit.collider.GetComponent<BaseRole>().TakeDamage(3);
++                    hit.collider.GetComponent<BaseRole>().TakeDamage(HitDamage);
+                 }
+             }
+             else
+             {
+-                endPos = startPos + finalDirection * 100f;
++                endPos = startPos + finalDirection * LaserDistance;
+             }
+ 
+-            lineRenderer.SetPosition(0, startPos);
+-            lineRenderer.SetPosition(1, endPos);
++            UpdateLaserLine(startPos, endPos);
+ 
+             yield return null;
+         }
++
+         SetSpeed(1);
+         // 激光结束，关闭LineRenderer
+-        lineRenderer.enabled = false;
++        CloseLaser();
+         yield break;
+     }
+-}
++
++    /// <summary>
++    /// 计算带平滑抖动的激光方向。
++    /// </summary>
++    /// <param name="directionToTarget">朝向目标的基础方向。</param>
++    /// <returns>加入抖动后的激光方向。</returns>
++    private Vector2 GetNoisyLaserDirection(Vector2 directionToTarget)
++    {
++        float time = Time.time * NoiseSpeed;
++        float smoothAngleOffset = Mathf.Sin(time) * NoiseAmplitude;
++        Quaternion rotationOffset = Quaternion.Euler(0, 0, smoothAngleOffset);
++        return rotationOffset * directionToTarget;
++    }
++
++    /// <summary>
++    /// 判断射线是否命中墙体或角色。
++    /// </summary>
++    /// <param name="hit">射线命中结果。</param>
++    /// <returns>命中墙体或角色时返回 true。</returns>
++    private bool IsLaserBlockingHit(RaycastHit2D hit)
++    {
++        return hit.collider != null &&
++               (hit.collider.CompareTag(WallTag) || hit.collider.CompareTag(RoleTag));
++    }
++
++    /// <summary>
++    /// 刷新激光线段起点和终点。
++    /// </summary>
++    /// <param name="startPos">激光起点。</param>
++    /// <param name="endPos">激光终点。</param>
++    private void UpdateLaserLine(Vector2 startPos, Vector2 endPos)
++    {
++        lineRenderer.SetPosition(0, startPos);
++        lineRenderer.SetPosition(1, endPos);
++    }
++
++    /// <summary>
++    /// 关闭激光显示。
++    /// </summary>
++    private void CloseLaser()
++    {
++        lineRenderer.enabled = false;
++    }
++
++    /// <summary>
++    /// 获取激光检测用的 LayerMask。
++    /// </summary>
++    /// <returns>排除夜露层和武器层后的射线检测 LayerMask。</returns>
++    private int GetLaserLayerMask()
++    {
++        int ignoreLayer = LayerMask.GetMask(IgnoreLayerYeLu, IgnoreLayerWeapon);
++        return ~ignoreLayer;
++    }
++
++    #endregion
++
++    #region 协程工具
++
++    /// <summary>
++    /// 停止大招延迟协程。
++    /// </summary>
++    private void StopBigCoroutine()
++    {
++        if (bigCoro != null)
++        {
++            StopCoroutine(bigCoro);
++            bigCoro = null;
++        }
++    }
++
++    /// <summary>
++    /// 停止激光更新协程。
++    /// </summary>
++    private void StopUpdateLaserCoroutine()
++    {
++        if (updateLaserCoro != null)
++        {
++            StopCoroutine(updateLaserCoro);
++            updateLaserCoro = null;
++        }
++    }
++
++    #endregion
++}
+\ No newline at end of file
+diff --git a/Codex/修改记录.md b/Codex/修改记录.md
+index 38d72cd..145abb6 100644
+--- a/Codex/修改记录.md
++++ b/Codex/修改记录.md
+@@ -54,6 +54,7 @@
+ | 2026-06-17 | 阶段 8 第一批 | `Assets/Scripts/VideoGameManager.cs`、`Codex/阶段8-第一批-flyLight对象池试点.md`、`Codex/阶段8-第一批-diff.patch`、`Codex/安全重构计划.md`、`Codex/修改记录.md` | UI 流光对象池/性能优化/文档/diff | 否 | 中低 | 将 `flyLightPrefab` 从动画结束销毁改为回收复用，减少长时间录制中的 UI 对象创建销毁 | 编译项目；验证吃球后的大招点 UI 飞行动画、连续吃球、满 3 点释放大招和流光对象数量不再无限增长 | 按 `Codex/阶段8-第一批-diff.patch` 回滚 `VideoGameManager.cs`，并恢复本批 Markdown 改动 |
+ | 2026-06-17 | 阶段 8 第二批 | `Codex/阶段8-第二批-复杂英雄性能结构审查.md`、`Codex/阶段8-第二批-diff.patch`、`Codex/安全重构计划.md`、`Codex/修改记录.md` | 文档/复杂英雄审查/风险分层/diff | 否 | 低 | 对火墙火男、钢索、绊线保安、迪迦进行性能与结构审查，决定下一批优先整理火墙火男 | 本批未改游戏代码，无需运行；后续如修改火墙火男，重点验证火墙持续时间、伤害频率、回血和火焰动画 | 删除或恢复本批 Markdown 改动 |
+ | 2026-06-17 | 阶段 8 第三批 | `Assets/人物信息/火墙火男/FireWallFireManRole.cs`、`Codex/阶段8-第三批-火墙火男结构整理.md`、`Codex/阶段8-第三批-diff.patch`、`Codex/安全重构计划.md`、`Codex/修改记录.md` | 复杂英雄结构整理/配置保护/文档/diff | 否 | 中低 | 整理火墙火男大招脚本结构，提取协程辅助方法，并保护火焰帧配置异常 | 编译项目；验证火墙等待、延伸、持续、伤害频率、回血流程、火焰动画和 `O` 键调试入口 | 按 `Codex/阶段8-第三批-diff.patch` 回滚 `FireWallFireManRole.cs`，并恢复本批 Markdown 改动 |
++| 2026-06-17 | 阶段 8 第四批 | `Assets/人物信息/迪迦/DiJiaRole.cs`、`Codex/阶段8-第四批-迪迦结构整理.md`、`Codex/阶段8-第四批-diff.patch`、`Codex/安全重构计划.md`、`Codex/修改记录.md` | 复杂英雄结构整理/常量提取/文档/diff | 否 | 中低 | 整理迪迦持续激光大招结构，提取常量、激光方向、命中判断、线段刷新、LayerMask 和协程停止工具方法 | 编译项目；验证迪迦大招等待、战报、激光抖动、命中扣血、墙体阻挡、持续时间和正常结束恢复移动 | 按 `Codex/阶段8-第四批-diff.patch` 回滚 `DiJiaRole.cs`，并恢复本批 Markdown 改动 |
+ 
+ ## 后续记录模板
+ 
+diff --git a/Codex/安全重构计划.md b/Codex/安全重构计划.md
+index 867ea7a..6bbfe84 100644
+--- a/Codex/安全重构计划.md
++++ b/Codex/安全重构计划.md
+@@ -220,7 +220,7 @@
+ 
+ ## 阶段 8：录制稳定性与对象生命周期优化
+ 
+-状态：第三批完成（2026-06-17，已完成 `FireWallFireManRole` 低风险结构整理和配置保护）
++状态：第四批完成（2026-06-17，已完成 `DiJiaRole` 低风险结构整理）
+ 
+ 目标：
+ - 降低长时间录制时的对象创建销毁压力。
+@@ -231,4 +231,5 @@
+ - `bigBallPrefab` 继续暂缓池化，因为它仍直接参与 `BaseRole.OnTriggerEnter2D()` 的大招点触发链路。
+ - 阶段 8 第二批已完成复杂英雄性能与结构审查，建议下一批优先处理 `FireWallFireManRole.cs`。
+ - 阶段 8 第三批已完成 `FireWallFireManRole.cs` 的低风险结构整理和配置保护，没有改伤害、时间、射线规则和战报频率。
+-- 阶段 8 第四批建议继续复杂英雄审查后的下一位候选，可选择 `DiJiaRole.cs` 做小步整理，或先审查 `BanXianBaoAnRole.cs` 的持续射线风险。
++- 阶段 8 第四批已完成 `DiJiaRole.cs` 的小步结构整理，提取激光方向、命中判断、线段刷新、LayerMask 和协程停止工具方法，没有改大招时序、数值、射线规则或 `otherBaseRole` 访问节奏。
++- 下一批建议优先审查 `BanXianBaoAnRole.cs` 的持续射线风险，只做文档审查或极小范围整理。
+diff --git b/Codex/阶段8-第四批-迪迦结构整理.md b/Codex/阶段8-第四批-迪迦结构整理.md
+new file mode 100644
+index 0000000..0b7f903
+--- /dev/null
++++ b/Codex/阶段8-第四批-迪迦结构整理.md
+@@ -0,0 +1,136 @@
++# 阶段 8 第四批：迪迦结构整理
++
++日期：2026-06-17
++
++## 本批目标
++
++在不改变迪迦大招玩法表现的前提下，整理 `DiJiaRole.cs` 的结构和少量重复逻辑，让后续维护持续激光类英雄时更容易看清边界。
++
++本批不做以下事情：
++
++- 不修改激光伤害数值。
++- 不修改激光持续时间、伤害间隔、射线距离、抖动频率和抖动幅度。
++- 不修改大招协程启动顺序。
++- 不修改 `otherBaseRole` 的取值方式。
++- 不修改 Prefab、Scene 或组件绑定。
++
++## 修改文件
++
++| 文件 | 类型 | 说明 |
++|---|---|---|
++| `Assets/人物信息/迪迦/DiJiaRole.cs` | 结构整理 | 清理无用 using，提取常量、激光方向、命中判断、线段刷新、LayerMask 和协程停止工具方法 |
++| `Codex/阶段8-第四批-迪迦结构整理.md` | 文档 | 记录本批修改范围、行为保持点和风险 |
++| `Codex/安全重构计划.md` | 文档 | 更新阶段 8 当前状态 |
++| `Codex/修改记录.md` | 文档 | 追加本批修改记录 |
++
++## 代码改动说明
++
++### 1. 清理无用引用
++
++移除 `DiJiaRole.cs` 中未使用的：
++
++```csharp
++using System.Collections.Generic;
++```
++
++只保留当前脚本实际使用的 `System.Collections` 和 `UnityEngine`。
++
++### 2. 提取常量
++
++将原本散落在大招流程中的字符串和数值提取为私有常量：
++
++| 常量 | 原值 | 用途 |
++|---|---:|---|
++| `WallTag` | `"wall"` | 判断激光是否命中墙体 |
++| `RoleTag` | `"Role"` | 判断激光是否命中角色 |
++| `IgnoreLayerYeLu` | `"YeLu"` | 激光射线排除层 |
++| `IgnoreLayerWeapon` | `"Weapon"` | 激光射线排除层 |
++| `CastDelay` | `1.0f` | 大招释放前等待时间 |
++| `NoiseSpeed` | `5.0f` | 激光抖动速度 |
++| `NoiseAmplitude` | `15f` | 激光抖动幅度 |
++| `LaserDuration` | `5f` | 激光持续时间 |
++| `DamageInterval` | `0.2f` | 激光伤害间隔 |
++| `LaserStartOffset` | `2.5f` | 激光起点偏移 |
++| `LaserDistance` | `100f` | 激光射线距离 |
++| `HitDamage` | `3` | 每次命中伤害 |
++
++这些常量只改变可读性，不改变实际数值。
++
++### 3. 提取激光辅助方法
++
++新增私有方法：
++
++| 方法 | 作用 | 行为变化 |
++|---|---|---|
++| `GetNoisyLaserDirection` | 计算带正弦抖动的激光方向 | 无 |
++| `IsLaserBlockingHit` | 判断射线是否命中墙或角色 | 无 |
++| `UpdateLaserLine` | 刷新 `LineRenderer` 起点和终点 | 无 |
++| `CloseLaser` | 关闭激光显示 | 无 |
++| `GetLaserLayerMask` | 生成排除 `YeLu` 和 `Weapon` 的 LayerMask | 无 |
++| `StopBigCoroutine` | 停止大招延迟协程 | 无 |
++| `StopUpdateLaserCoroutine` | 停止激光更新协程 | 无 |
++
++### 4. 保持目标选择行为
++
++`BaseRole.otherBaseRole` 是一个属性，每次访问都会重新随机选择其他角色。本批没有把它改成统一缓存目标。
++
++保留了原有访问节奏：
++
++1. 进入 `UpdateLaser()` 时先访问一次 `otherBaseRole` 判断是否为空。
++2. 随后再次访问 `otherBaseRole.transform` 保存当前激光目标。
++3. 循环中继续按原逻辑访问 `otherBaseRole` 判断是否为空。
++
++这点看起来不够整洁，但如果强行缓存会改变随机目标选择行为，所以本批刻意不改。
++
++## 行为保持点
++
++| 行为 | 保持方式 |
++|---|---|
++| 大招开始时停止旧 `bigCoro` | `Big()` 仍先停止旧协程 |
++| 大招开始时关闭旧激光 | `Big()` 仍会关闭 `LineRenderer` |
++| 延迟后播报大招 | `BigCoro()` 仍等待 `1.0f` 后广播 |
++| 激光期间角色停速 | `UpdateLaser()` 仍在目标确认后调用 `SetSpeed(0)` |
++| 正常结束后恢复速度 | 激光循环正常结束后仍调用 `SetSpeed(1)` |
++| 中途目标为空时不恢复速度 | 保持原逻辑，只关闭激光并退出 |
++| 射线排除层 | 仍排除 `YeLu` 和 `Weapon` |
++| 命中伤害 | 仍对 `Role` 每 `0.2f` 造成 `3` 点伤害 |
++| 线段更新时机 | 仍在每帧射线计算后更新起点和终点 |
++
++## 风险说明
++
++风险等级：中低。
++
++原因：
++
++- 修改了一个复杂英雄的大招协程结构。
++- 没有改数值、规则、协程启动顺序、射线规则和组件绑定。
++- 主要风险来自方法提取过程中是否遗漏原有早退路径。
++
++本批特别保留了“目标为空早退时不调用 `SetSpeed(1)`”这个原有行为，因为直接修复可能改变玩法表现。
++
++## 建议验证点
++
++1. 迪迦释放大招前仍等待约 1 秒。
++2. 战报仍显示“某某使用大招”。
++3. 激光持续约 5 秒。
++4. 激光有原来的左右抖动效果。
++5. 命中角色时仍按间隔扣血。
++6. 命中墙体时激光终点停在墙体处。
++7. 激光正常结束后迪迦恢复移动。
++8. 连续触发大招时旧激光和旧协程不会残留。
++
++## 回滚建议
++
++如发现迪迦大招表现异常，优先只回滚：
++
++- `Assets/人物信息/迪迦/DiJiaRole.cs`
++
++然后再按需回滚本批文档：
++
++- `Codex/阶段8-第四批-迪迦结构整理.md`
++- `Codex/安全重构计划.md`
++- `Codex/修改记录.md`
++
++完整 diff 见：
++
++- `Codex/阶段8-第四批-diff.patch`

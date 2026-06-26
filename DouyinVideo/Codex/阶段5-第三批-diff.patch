@@ -1,0 +1,449 @@
+﻿# 阶段 5 第三批代码 Diff
+
+说明：BiaoPei/AoDing 已按 UTF-8 临时副本生成 diff，避免原 GBK 脚本中文注释在 diff 中乱码。
+
+## BiaoPei.cs
+diff --git "a/C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\DouyinVideoStage5Batch3\\BiaoPei.before.utf8.cs" "b/C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\DouyinVideoStage5Batch3\\BiaoPei.after.utf8.cs"
+index 38d88f9..d7f5f84 100644
+--- "a/C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\DouyinVideoStage5Batch3\\BiaoPei.before.utf8.cs"
++++ "b/C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\DouyinVideoStage5Batch3\\BiaoPei.after.utf8.cs"
+@@ -6,6 +6,20 @@ using UnityEngine;
+ /// </summary>
+ public class BiaoPei : MonoBehaviour
+ {
++    #region 常量配置
++
++    private const string WeaponLayerName = "Weapon";
++    private const string DefaultLayerName = "Default";
++    private const string RoleTag = "Role";
++    private const float ShootInterval = 1f;
++    private const float FinishWaitSeconds = 0.5f;
++    private const float WeaponScaleX = 1.8f;
++    private const float WeaponScaleY = 1.8f;
++    private const int BulletSpeed = 50;
++    private const int HitDamage = 5;
++
++    #endregion
++
+     #region 字段配置
+ 
+     [Tooltip("开枪音源")]
+@@ -55,14 +69,8 @@ public class BiaoPei : MonoBehaviour
+     public void AttachToRole(BaseRole baseRole,BaseRole target)
+     {
+         Debug.Log("执行了配枪");
+-        gameObject.layer = LayerMask.NameToLayer("Weapon");
+-        isAttached =true;
+-
+-        role =baseRole;
+-        targetRole=target;
+-        transform.parent.position= role.transform.position; 
+-        transform.parent.SetParent(role.transform);
+-        currentCount=bulletCount;
++        MarkAsAttached(baseRole);
++        SetTargetAndAttachRoot(target);
+         StartCoroutine(Shoot());
+     }
+ 
+@@ -74,24 +82,16 @@ public class BiaoPei : MonoBehaviour
+     {
+         while(currentCount > 0)
+         {
+-            yield return new WaitForSeconds(1);
+-            transform.localScale = new Vector3(1.8f, 1.8f, 1);
++            yield return new WaitForSeconds(ShootInterval);
++            transform.localScale = new Vector3(WeaponScaleX, WeaponScaleY, 1);
+             audioSource.PlayOneShot(kaiqiangAudio);
+-            Vector3 rolePosition = role.transform.position;
+-            Vector3 targetPosition = targetRole.transform.position;
+-            VideoGameAimUtility.AimZAxisAtTarget(transform.parent, rolePosition, targetPosition, VideoGameAimUtility.ReverseAngleOffset);
+-            transform.localScale = VideoGameAimUtility.GetVerticalFlipScale(transform.parent, 1.8f, 1.8f);
+-            direction = VideoGameAimUtility.GetDirection(shootPos.position, targetPosition);
++            direction = GetCurrentShootDirection();
+            
+-            bullet.Init(direction,0,50, shootPos.position, role);
+-            bullet.OnBulletHitRole = (targetRole) =>
+-            {
+-                VideoGameCombatUtility.BroadcastThenDamage(targetRole, 5, $"{role.RoleName}的标配击中了{targetRole.RoleName}造成了5点伤害", role.roleColor);
+-                bullet.Recycle();
+-            };
++            bullet.Init(direction,0,BulletSpeed, shootPos.position, role);
++            bullet.OnBulletHitRole = HandleBulletHitRole;
+             currentCount--;
+         }
+-        yield return new WaitForSeconds(0.5f);
++        yield return new WaitForSeconds(FinishWaitSeconds);
+         
+         SetDeafult();
+         VideoGameManager.instance.SpawnWeapons();
+@@ -103,12 +103,11 @@ public class BiaoPei : MonoBehaviour
+     /// </summary>
+     public void SetDeafult()
+     {
+-        gameObject.layer = LayerMask.NameToLayer("Default");
+-        transform.localScale = new Vector3(1.8f, 1.8f, 1);
+-        transform.parent.gameObject.SetActive(false);
+-        transform.parent.localEulerAngles = Vector3.zero;
++        gameObject.layer = LayerMask.NameToLayer(DefaultLayerName);
++        transform.localScale = new Vector3(WeaponScaleX, WeaponScaleY, 1);
++        VideoGameWeaponUtility.HideRootAndResetRotation(transform.parent);
+         currentCount = bulletCount;
+-        bullet.transform.parent.gameObject.SetActive(false);
++        VideoGameWeaponUtility.HideBulletRoot(bullet);
+         isAttached = false;
+     }
+ 
+@@ -120,7 +119,7 @@ public class BiaoPei : MonoBehaviour
+     {
+         if (!isAttached)
+         {
+-            if (collision.CompareTag("Role"))
++            if (collision.CompareTag(RoleTag))
+             {
+                 BaseRole pickerRole = collision.GetComponent<BaseRole>();
+                 if (pickerRole.canGetWeapon)
+@@ -133,4 +132,58 @@ public class BiaoPei : MonoBehaviour
+     }
+ 
+     #endregion
+-}
+\ No newline at end of file
++
++    #region 工具方法
++
++    /// <summary>
++    /// 标记标配进入持有状态。
++    /// </summary>
++    /// <param name="baseRole">拾取标配的角色。</param>
++    private void MarkAsAttached(BaseRole baseRole)
++    {
++        gameObject.layer = LayerMask.NameToLayer(WeaponLayerName);
++        isAttached =true;
++        role =baseRole;
++    }
++
++    /// <summary>
++    /// 设置本轮目标，并把武器根物体挂到持有者身上。
++    /// </summary>
++    /// <param name="target">本轮射击目标。</param>
++    private void SetTargetAndAttachRoot(BaseRole target)
++    {
++        targetRole=target;
++        VideoGameWeaponUtility.AttachRootToRole(transform.parent, role.transform);
++        currentCount=bulletCount;
++    }
++
++    /// <summary>
++    /// 按当前角色和目标位置计算本发子弹方向。
++    /// </summary>
++    /// <returns>本发子弹的单位方向。</returns>
++    private Vector3 GetCurrentShootDirection()
++    {
++        Vector3 rolePosition = role.transform.position;
++        Vector3 targetPosition = targetRole.transform.position;
++        return VideoGameWeaponUtility.AimAndGetShootDirection(
++            transform.parent,
++            transform,
++            shootPos,
++            rolePosition,
++            targetPosition,
++            WeaponScaleX,
++            WeaponScaleY);
++    }
++
++    /// <summary>
++    /// 处理标配子弹命中角色后的播报、伤害和回收。
++    /// </summary>
++    /// <param name="targetRole">被标配命中的角色。</param>
++    private void HandleBulletHitRole(BaseRole targetRole)
++    {
++        VideoGameCombatUtility.BroadcastThenDamage(targetRole, HitDamage, $"{role.RoleName}的标配击中了{targetRole.RoleName}造成了5点伤害", role.roleColor);
++        bullet.Recycle();
++    }
++
++    #endregion
++}
+
+## AoDing.cs
+diff --git "a/C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\DouyinVideoStage5Batch3\\AoDing.before.utf8.cs" "b/C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\DouyinVideoStage5Batch3\\AoDing.after.utf8.cs"
+index b54944b..5a41312 100644
+--- "a/C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\DouyinVideoStage5Batch3\\AoDing.before.utf8.cs"
++++ "b/C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\DouyinVideoStage5Batch3\\AoDing.after.utf8.cs"
+@@ -6,6 +6,22 @@ using UnityEngine;
+ /// </summary>
+ public class AoDing : MonoBehaviour
+ {
++    #region 常量配置
++
++    private const string WeaponLayerName = "Weapon";
++    private const string DefaultLayerName = "Default";
++    private const string RoleTag = "Role";
++    private const float ShootInterval = 0.17f;
++    private const float FinishWaitSeconds = 0.5f;
++    private const float WeaponScaleX = 1.4f;
++    private const float WeaponScaleY = 1.8f;
++    private const int BulletSpeed = 70;
++    private const int HitDamage = 5;
++    private const float HoldingSpeedPercent = 0.2f;
++    private const float NormalSpeedPercent = 1.0f;
++
++    #endregion
++
+     #region 字段配置
+ 
+     [Tooltip("开枪音源")]
+@@ -55,15 +71,9 @@ public class AoDing : MonoBehaviour
+     public void AttachToRole(BaseRole baseRole, BaseRole target)
+     {
+         
+-        gameObject.layer = LayerMask.NameToLayer("Weapon");
+-        isAttached = true;
+-
+-        role = baseRole;
+-        role.SetSpeed(0.2f);
+-        targetRole = target;
+-        transform.parent.position = role.transform.position;
+-        transform.parent.SetParent(role.transform);
+-        currentCount = bulletCount;
++        MarkAsAttached(baseRole);
++        role.SetSpeed(HoldingSpeedPercent);
++        SetTargetAndAttachRoot(target);
+         StartCoroutine(Shoot());
+     }
+ 
+@@ -75,24 +85,16 @@ public class AoDing : MonoBehaviour
+     {
+         while (currentCount > 0)
+         {
+-            yield return new WaitForSeconds(0.17f);
+-            transform.localScale = new Vector3(1.4f, 1.8f, 1);
++            yield return new WaitForSeconds(ShootInterval);
++            transform.localScale = new Vector3(WeaponScaleX, WeaponScaleY, 1);
+             audioSource.PlayOneShot(kaiqiangAudio);
+-            Vector3 rolePosition = role.transform.position;
+-            Vector3 targetPosition = targetRole.transform.position;
+-            VideoGameAimUtility.AimZAxisAtTarget(transform.parent, rolePosition, targetPosition, VideoGameAimUtility.ReverseAngleOffset);
+-            transform.localScale = VideoGameAimUtility.GetVerticalFlipScale(transform.parent, 1.4f, 1.8f);
+-            direction = VideoGameAimUtility.GetDirection(shootPos.position, targetPosition);
+-
+-            bullet.Init(direction, 0, 70, shootPos.position, role);
+-            bullet.OnBulletHitRole = (targetRole) =>
+-            {
+-                VideoGameCombatUtility.BroadcastThenDamage(targetRole, 5, $"{role.RoleName}的奥丁击中了{targetRole.RoleName}造成了5点伤害", role.roleColor);
+-                bullet.Recycle();
+-            };
++            direction = GetCurrentShootDirection();
++
++            bullet.Init(direction, 0, BulletSpeed, shootPos.position, role);
++            bullet.OnBulletHitRole = HandleBulletHitRole;
+             currentCount--;
+         }
+-        yield return new WaitForSeconds(0.5f);
++        yield return new WaitForSeconds(FinishWaitSeconds);
+ 
+         SetDeafult();
+         VideoGameManager.instance.SpawnWeapons();
+@@ -104,15 +106,14 @@ public class AoDing : MonoBehaviour
+     /// </summary>
+     public void SetDeafult()
+     {
+-        gameObject.layer = LayerMask.NameToLayer("Default");
+-        transform.localScale = new Vector3(1.4f, 1.8f, 1);
+-        transform.parent.gameObject.SetActive(false);
+-        transform.parent.localEulerAngles = Vector3.zero;
++        gameObject.layer = LayerMask.NameToLayer(DefaultLayerName);
++        transform.localScale = new Vector3(WeaponScaleX, WeaponScaleY, 1);
++        VideoGameWeaponUtility.HideRootAndResetRotation(transform.parent);
+         currentCount = bulletCount;
+-        bullet.transform.parent.gameObject.SetActive(false);
++        VideoGameWeaponUtility.HideBulletRoot(bullet);
+         isAttached = false;
+ 
+-        role.SetSpeed(1.0f);
++        role.SetSpeed(NormalSpeedPercent);
+     }
+ 
+     #endregion
+@@ -123,7 +124,7 @@ public class AoDing : MonoBehaviour
+     {
+         if (!isAttached)
+         {
+-            if (collision.CompareTag("Role"))
++            if (collision.CompareTag(RoleTag))
+             {
+                 BaseRole pickerRole = collision.GetComponent<BaseRole>();
+                 if (pickerRole.canGetWeapon)
+@@ -136,4 +137,58 @@ public class AoDing : MonoBehaviour
+     }
+ 
+     #endregion
+-}
+\ No newline at end of file
++
++    #region 工具方法
++
++    /// <summary>
++    /// 标记奥丁进入持有状态。
++    /// </summary>
++    /// <param name="baseRole">拾取奥丁的角色。</param>
++    private void MarkAsAttached(BaseRole baseRole)
++    {
++        gameObject.layer = LayerMask.NameToLayer(WeaponLayerName);
++        isAttached = true;
++        role = baseRole;
++    }
++
++    /// <summary>
++    /// 设置本轮目标，并把武器根物体挂到持有者身上。
++    /// </summary>
++    /// <param name="target">本轮射击目标。</param>
++    private void SetTargetAndAttachRoot(BaseRole target)
++    {
++        targetRole = target;
++        VideoGameWeaponUtility.AttachRootToRole(transform.parent, role.transform);
++        currentCount = bulletCount;
++    }
++
++    /// <summary>
++    /// 按当前角色和目标位置计算本发子弹方向。
++    /// </summary>
++    /// <returns>本发子弹的单位方向。</returns>
++    private Vector3 GetCurrentShootDirection()
++    {
++        Vector3 rolePosition = role.transform.position;
++        Vector3 targetPosition = targetRole.transform.position;
++        return VideoGameWeaponUtility.AimAndGetShootDirection(
++            transform.parent,
++            transform,
++            shootPos,
++            rolePosition,
++            targetPosition,
++            WeaponScaleX,
++            WeaponScaleY);
++    }
++
++    /// <summary>
++    /// 处理奥丁子弹命中角色后的播报、伤害和回收。
++    /// </summary>
++    /// <param name="targetRole">被奥丁命中的角色。</param>
++    private void HandleBulletHitRole(BaseRole targetRole)
++    {
++        VideoGameCombatUtility.BroadcastThenDamage(targetRole, HitDamage, $"{role.RoleName}的奥丁击中了{targetRole.RoleName}造成了5点伤害", role.roleColor);
++        bullet.Recycle();
++    }
++
++    #endregion
++}
+
+## VideoGameWeaponUtility.cs
+diff --git "a/C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\DouyinVideoStage5Batch3\\empty.before" b/Assets/Scripts/Utility/VideoGameWeaponUtility.cs
+index e69de29..887c3aa 100644
+--- "a/C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\DouyinVideoStage5Batch3\\empty.before"
++++ b/Assets/Scripts/Utility/VideoGameWeaponUtility.cs
+@@ -0,0 +1,74 @@
++using UnityEngine;
++
++/// <summary>
++/// 视频玩法武器通用 Transform 工具，只处理挂载、瞄准和隐藏根物体等机械动作。
++/// </summary>
++public static class VideoGameWeaponUtility
++{
++    /// <summary>
++    /// 将武器根物体移动到角色位置，并挂到角色下面。
++    /// </summary>
++    /// <param name="weaponRoot">武器根物体。</param>
++    /// <param name="roleTransform">持有武器的角色 Transform。</param>
++    public static void AttachRootToRole(Transform weaponRoot, Transform roleTransform)
++    {
++        weaponRoot.position = roleTransform.position;
++        weaponRoot.SetParent(roleTransform);
++    }
++
++    /// <summary>
++    /// 让武器朝向目标，并返回从射击点指向目标的方向。
++    /// </summary>
++    /// <param name="weaponRoot">需要旋转的武器根物体。</param>
++    /// <param name="weaponBody">需要根据朝向翻转缩放的武器表现物体。</param>
++    /// <param name="shootPos">射击点。</param>
++    /// <param name="rolePosition">持有者当前世界坐标。</param>
++    /// <param name="targetPosition">目标当前世界坐标。</param>
++    /// <param name="scaleX">武器原始 X 缩放。</param>
++    /// <param name="scaleY">武器原始 Y 缩放。</param>
++    /// <param name="scaleZ">武器原始 Z 缩放。</param>
++    /// <returns>从射击点指向目标的单位方向。</returns>
++    public static Vector3 AimAndGetShootDirection(
++        Transform weaponRoot,
++        Transform weaponBody,
++        Transform shootPos,
++        Vector3 rolePosition,
++        Vector3 targetPosition,
++        float scaleX,
++        float scaleY,
++        float scaleZ = 1f)
++    {
++        VideoGameAimUtility.AimZAxisAtTarget(
++            weaponRoot,
++            rolePosition,
++            targetPosition,
++            VideoGameAimUtility.ReverseAngleOffset);
++
++        weaponBody.localScale = VideoGameAimUtility.GetVerticalFlipScale(
++            weaponRoot,
++            scaleX,
++            scaleY,
++            scaleZ);
++
++        return VideoGameAimUtility.GetDirection(shootPos.position, targetPosition);
++    }
++
++    /// <summary>
++    /// 隐藏武器根物体，并重置根物体旋转。
++    /// </summary>
++    /// <param name="weaponRoot">武器根物体。</param>
++    public static void HideRootAndResetRotation(Transform weaponRoot)
++    {
++        weaponRoot.gameObject.SetActive(false);
++        weaponRoot.localEulerAngles = Vector3.zero;
++    }
++
++    /// <summary>
++    /// 隐藏通用子弹的根物体。
++    /// </summary>
++    /// <param name="bullet">需要隐藏根物体的子弹脚本。</param>
++    public static void HideBulletRoot(VideoGameBulletBase bullet)
++    {
++        bullet.transform.parent.gameObject.SetActive(false);
++    }
++}
+
+## VideoGameWeaponUtility.cs.meta
+diff --git "a/C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\DouyinVideoStage5Batch3\\empty.before" b/Assets/Scripts/Utility/VideoGameWeaponUtility.cs.meta
+index e69de29..8bc9b8c 100644
+--- "a/C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\DouyinVideoStage5Batch3\\empty.before"
++++ b/Assets/Scripts/Utility/VideoGameWeaponUtility.cs.meta
+@@ -0,0 +1,11 @@
++fileFormatVersion: 2
++guid: 6bf9fda6d0423b0458a45ad0b7a58a21
++MonoImporter:
++  externalObjects: {}
++  serializedVersion: 2
++  defaultReferences: []
++  executionOrder: 0
++  icon: {instanceID: 0}
++  userData: 
++  assetBundleName: 
++  assetBundleVariant: 
+
+## Assembly-CSharp.csproj
+diff --git "a/C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\DouyinVideoStage5Batch3\\Assembly-CSharp.before.csproj" b/Assembly-CSharp.csproj
+index 6db9cbc..0fb3856 100644
+--- "a/C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\DouyinVideoStage5Batch3\\Assembly-CSharp.before.csproj"
++++ b/Assembly-CSharp.csproj
+@@ -202,6 +202,7 @@
+     <Compile Include="Assets\SuperScrollView\Demo\Scripts\ViewDemo\ListViewAnimation\ListViewDeleteAnimationDemoScript.cs" />
+     <Compile Include="Assets\人物信息\维斯\WeiSiRole.cs" />
+     <Compile Include="Assets\Scripts\Utility\VideoGameCombatUtility.cs" />
++    <Compile Include="Assets\Scripts\Utility\VideoGameWeaponUtility.cs" />
+     <Compile Include="Assets\SuperScrollView\Demo\Scripts\Item\BaseHorizontalItemList.cs" />
+     <Compile Include="Assets\SuperScrollView\Demo\Scripts\Item\ImageItemList.cs" />
+     <Compile Include="Assets\SuperScrollView\Demo\Scripts\ViewDemo\NestedView\NestedGridViewTopToBottomDemoScript.cs" />

@@ -62,26 +62,17 @@
   <ItemGroup>
     <Compile Include="Assets\WX-WASM-SDK-V2\Runtime\WXSDKPerf\WXPerfEngine.cs" />
     <Compile Include="Assets\WX-WASM-SDK-V2\Runtime\WXProfileStatsScript.cs" />
-    <Compile Include="Assets\WX-WASM-SDK-V2\Runtime\HideLoadingPage.cs" />
     <Compile Include="Assets\WX-WASM-SDK-V2\Runtime\WebMD5.cs" />
     <Compile Include="Assets\WX-WASM-SDK-V2\Runtime\WebAES.cs" />
     <Compile Include="Assets\WX-WASM-SDK-V2\Runtime\WX.cs" />
     <Compile Include="Assets\WX-WASM-SDK-V2\Runtime\WXTouchInputOverride.cs" />
     <Compile Include="Assets\WX-WASM-SDK-V2\Runtime\WXBase.cs" />
     <Compile Include="Assets\WX-WASM-SDK-V2\Runtime\WXRuntimeExtDef.cs" />
-    <Compile Include="Assets\WX-WASM-SDK-V2\Runtime\DisableKeyboardInput.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\WX-WASM-SDK-V2\Runtime\Plugins\wx-runtime-editor.dll" />
-    <None Include="Assets\WX-WASM-SDK-V2\Runtime\Plugins\link.xml" />
-    <None Include="Assets\WX-WASM-SDK-V2\Runtime\Plugins\wx-perf.dll" />
-    <None Include="Assets\WX-WASM-SDK-V2\Runtime\Plugins\Unity.FontABTool.dll" />
     <None Include="Assets\WX-WASM-SDK-V2\Runtime\Plugins\wx-runtime.xml" />
-    <None Include="Assets\WX-WASM-SDK-V2\Runtime\Plugins\LitJson.dll" />
     <None Include="Assets\WX-WASM-SDK-V2\Runtime\Plugins\wx-runtime.dll" />
-    <None Include="Assets\WX-WASM-SDK-V2\Runtime\Plugins\wx-runtime-editor.xml" />
     <None Include="Assets\WX-WASM-SDK-V2\Runtime\WxWasmSDKRuntime.asmdef" />
-    <None Include="Assets\WX-WASM-SDK-V2\Runtime\Plugins\wx-perf.xml" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
@@ -416,32 +407,16 @@
       <HintPath>D:\UnityHub\UnityEditors\Install\2022.3.41f1\Editor\Data\PlaybackEngines\WindowsStandaloneSupport\UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="wx-runtime-editor">
-      <HintPath>Assets\WX-WASM-SDK-V2\Runtime\Plugins\wx-runtime-editor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Unity.VisualScripting.YamlDotNet">
       <HintPath>Library\PackageCache\com.unity.visualscripting@1.9.4\Editor\VisualScripting.Core\Dependencies\YamlDotNet\Unity.VisualScripting.YamlDotNet.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="wx-perf">
-      <HintPath>Assets\WX-WASM-SDK-V2\Runtime\Plugins\wx-perf.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.Collections.LowLevel.ILSupport">
       <HintPath>Library\PackageCache\com.unity.collections@1.2.4\Unity.Collections.LowLevel.ILSupport\Unity.Collections.LowLevel.ILSupport.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Unity.FontABTool">
-      <HintPath>Assets\WX-WASM-SDK-V2\Runtime\Plugins\Unity.FontABTool.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="unityplastic">
       <HintPath>Library\PackageCache\com.unity.collab-proxy@2.8.2\Lib\Editor\unityplastic.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="LitJson">
-      <HintPath>Assets\WX-WASM-SDK-V2\Runtime\Plugins\LitJson.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.Plastic.Antlr3.Runtime">
@@ -474,10 +449,6 @@
     </Reference>
     <Reference Include="Unity.VisualScripting.Antlr3.Runtime">
       <HintPath>Library\PackageCache\com.unity.visualscripting@1.9.4\Runtime\VisualScripting.Flow\Dependencies\NCalc\Unity.VisualScripting.Antlr3.Runtime.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="wx-editor">
-      <HintPath>Assets\WX-WASM-SDK-V2\Editor\wx-editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.VisualScripting.TextureAssets">

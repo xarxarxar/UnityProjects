@@ -1,0 +1,587 @@
+diff --git a/Assets/Scripts/BaseRole.cs b/Assets/Scripts/BaseRole.cs
+index ea91349..8530198 100644
+--- a/Assets/Scripts/BaseRole.cs
++++ b/Assets/Scripts/BaseRole.cs
+@@ -1,71 +1,97 @@
+ using DG.Tweening;
+ using System.Collections;
+-using System.Collections.Generic;
+ using UnityEngine;
+ using UnityEngine.UI;
+ 
++/// <summary>
++/// 所有英雄共同基础脚本，负责角色运动、生命、大招点、状态和通用碰撞入口。
++/// </summary>
+ [RequireComponent(typeof(AudioSource))]
+ public abstract class BaseRole : MonoBehaviour
+ {
++    #region 常量
++
+     private const string CanvasName = "Canvas";
+     private const string NegativeEffectName = "负面效果";
+     private const string CantGetWeaponIconName = "不能拾取武器(Clone)";
+     private const string CantUseBigIconName = "KO压制UI(Clone)";
+ 
++    #endregion
++
++    #region Inspector 字段
++
+     public string RoleName;
++
+     [Tooltip("血量")]
+     public int HP = 100;
++
+     [Tooltip("角色头像")]
+     public Image roleImage;
++
+     [Tooltip("角色上方信息")]
+-    [HideInInspector]public RoleUI roleUI;
++    [HideInInspector] public RoleUI roleUI;
++
+     [Tooltip("受伤音频")]
+     public AudioClip getHurt;
++
+     [Tooltip("大招音频")]
+     public AudioClip bigAudio;
+ 
+     public Color32 roleColor;
+ 
++    #endregion
++
++    #region 运行时状态
++
+     private Rigidbody2D rb;
+     private AudioSource audioSource;
+     private Collider2D roleCollider;
+     private Canvas roleCanvas;
+     private Transform negativeEffectParent;
+     private int bigCount;//大招点数
+-    private float speedPercent=1;//速度的百分比
++    private float speedPercent = 1;//速度的百分比
+ 
+-    private bool isDie=false;
++    private bool isDie = false;
+     public bool canGetWeapon = true;//是否能拾取武器
+     public bool canUseBig = true;//是否可以使用技能
+ 
+-    public BaseRole otherBaseRole=> GetRandomOther(this);
++    public BaseRole otherBaseRole => GetRandomOther(this);
+ 
+-    public bool CantSelected=false;
++    public bool CantSelected = false;
+ 
+-    //拉屎
+-    //这个值最大100，满100的时候会强制拉一坨屎并扣10滴血，
+-    //满80的时候如果没有进厕所拉屎会缓缓扣血，直到拉了屎，拉一次屎这个值会掉50
+-    //踩到了别人的屎这个值会瞬间增加10
+-    //这个值小于50的时候，哪怕进厕所也不拉屎，拉屎的时候速度为0
++    // 旧娱乐机制草稿字段：当前未接入正式逻辑，暂不删除，方便后续回溯。
+     private int lashiValue;
+ 
++    #endregion
++
++    #region Unity 生命周期
++
++    /// <summary>
++    /// 初始化角色运行时组件，并启动开局随机推动。
++    /// </summary>
+     public void Start()
+     {
+         rb = GetComponent<Rigidbody2D>();
+-        audioSource =GetComponent<AudioSource>();
++        audioSource = GetComponent<AudioSource>();
+         roleCollider = GetComponent<Collider2D>();
+         StartCoroutine(ApplyRandomForce());
+         StartGame();
+     }
+ 
++    /// <summary>
++    /// 英雄初始化扩展入口；当前没有子类覆盖。
++    /// </summary>
+     public virtual void StartGame()
+     {
+-        
++
+     }
+ 
+-    void FixedUpdate()
++    /// <summary>
++    /// 按当前全局球速和角色速度百分比持续修正移动速度。
++    /// </summary>
++    private void FixedUpdate()
+     {
+-        if(isDie)
++        if (isDie)
+         {
+             return;
+         }
+@@ -87,18 +113,22 @@ public abstract class BaseRole : MonoBehaviour
+             dir += randomOffset;
+             dir.Normalize();
+ 
+-            rb.velocity = dir * VideoGameManager.instance.ballSpeed* speedPercent;
++            rb.velocity = dir * VideoGameManager.instance.ballSpeed * speedPercent;
+         }
+     }
+ 
++    #endregion
++
++    #region 速度控制
++
+     /// <summary>
+-    /// 设置速度的百分比
++    /// 设置角色速度百分比，可选持续时间后恢复为正常速度。
+     /// </summary>
+-    /// <param name="percent"></param>
+-    /// <param name="duration">持续时长</param>
+-    public void SetSpeed(float percent,float duration=0)
++    /// <param name="percent">速度百分比，小于 0 时不处理。</param>
++    /// <param name="duration">持续时长，为 0 时不会自动恢复。</param>
++    public void SetSpeed(float percent, float duration = 0)
+     {
+-        if(percent<0)
++        if (percent < 0)
+         {
+             return;
+         }
+@@ -118,11 +148,11 @@ public abstract class BaseRole : MonoBehaviour
+     }
+ 
+     /// <summary>
+-    /// 当速度等于0了之后，得手动指示方向
++    /// 等待指定时长后恢复角色速度百分比。
+     /// </summary>
+-    /// <param name="duration"></param>
+-    /// <returns></returns>
+-    IEnumerator SetSpeedCoro(float duration)
++    /// <param name="duration">等待恢复的时长。</param>
++    /// <returns>Unity 协程迭代器。</returns>
++    private IEnumerator SetSpeedCoro(float duration)
+     {
+         yield return new WaitForSeconds(duration);
+         if (speedPercent == 0)
+@@ -134,17 +164,21 @@ public abstract class BaseRole : MonoBehaviour
+         yield break;
+     }
+ 
++    #endregion
++
++    #region 状态限制
++
+     /// <summary>
+-    /// 设置是否可以捡起武器
++    /// 设置角色是否可以拾取武器，可选持续时间后恢复。
+     /// </summary>
+-    /// <param name="percent"></param>
+-    /// <param name="duration">持续时长</param>
++    /// <param name="CanGetWeapon">是否可以拾取武器。</param>
++    /// <param name="duration">持续时长，为 0 时不会自动恢复。</param>
+     public void SetCanGetWeapon(bool CanGetWeapon, float duration = 0)
+     {
+         Transform effectParent = GetNegativeEffectParent();
+         RemoveEffectIcon(effectParent, CantGetWeaponIconName);
+         canGetWeapon = CanGetWeapon;
+-        Instantiate(VideoGameManager.instance.CantGetWeaponPrefab,effectParent);
++        Instantiate(VideoGameManager.instance.CantGetWeaponPrefab, effectParent);
+         if (duration != 0)
+         {
+             StartCoroutine(SetCanGetWeaponCoro(duration));
+@@ -152,11 +186,11 @@ public abstract class BaseRole : MonoBehaviour
+     }
+ 
+     /// <summary>
+-    /// 设置不能拾取武器
++    /// 等待指定时长后恢复武器拾取能力。
+     /// </summary>
+-    /// <param name="duration"></param>
+-    /// <returns></returns>
+-    IEnumerator SetCanGetWeaponCoro(float duration)
++    /// <param name="duration">等待恢复的时长。</param>
++    /// <returns>Unity 协程迭代器。</returns>
++    private IEnumerator SetCanGetWeaponCoro(float duration)
+     {
+         yield return new WaitForSeconds(duration);
+         canGetWeapon = true;
+@@ -165,12 +199,11 @@ public abstract class BaseRole : MonoBehaviour
+         yield break;
+     }
+ 
+-
+     /// <summary>
+-    /// 设置是否可以使用技能
++    /// 设置角色是否可以使用大招，可选持续时间后恢复。
+     /// </summary>
+-    /// <param name="percent"></param>
+-    /// <param name="duration">持续时长</param>
++    /// <param name="CanUseBig">是否可以使用大招。</param>
++    /// <param name="duration">持续时长，为 0 时不会自动恢复。</param>
+     public void SetCanUseBig(bool CanUseBig, float duration = 0)
+     {
+         Transform effectParent = GetNegativeEffectParent();
+@@ -184,11 +217,11 @@ public abstract class BaseRole : MonoBehaviour
+     }
+ 
+     /// <summary>
+-    /// 能否使用技能
++    /// 等待指定时长后恢复大招使用能力。
+     /// </summary>
+-    /// <param name="duration"></param>
+-    /// <returns></returns>
+-    IEnumerator SetCanUseBigCoro(float duration)
++    /// <param name="duration">等待恢复的时长。</param>
++    /// <returns>Unity 协程迭代器。</returns>
++    private IEnumerator SetCanUseBigCoro(float duration)
+     {
+         yield return new WaitForSeconds(duration);
+         canUseBig = true;
+@@ -197,7 +230,14 @@ public abstract class BaseRole : MonoBehaviour
+         yield break;
+     }
+ 
+-    ///恢复血量
++    #endregion
++
++    #region 生命值
++
++    /// <summary>
++    /// 恢复角色生命值，最高恢复到 100。
++    /// </summary>
++    /// <param name="value">恢复的生命值。</param>
+     public void RecoverHp(int value)
+     {
+         if (HP + value >= 100)
+@@ -212,11 +252,12 @@ public abstract class BaseRole : MonoBehaviour
+     }
+ 
+     /// <summary>
+-    /// 受到伤害
++    /// 让角色受到伤害，并在生命值归零时执行死亡流程。
+     /// </summary>
++    /// <param name="damage">受到的伤害值。</param>
+     public void TakeDamage(int damage)
+     {
+-        if(isDie) { return; }
++        if (isDie) { return; }
+         HP -= damage;
+ 
+         roleUI.TakeDamage(HP);
+@@ -255,9 +296,12 @@ public abstract class BaseRole : MonoBehaviour
+         PlayAudio(getHurt);
+     }
+ 
++    #endregion
++
++    #region 大招
+ 
+     /// <summary>
+-    /// 增加大招点数
++    /// 增加大招点数，满 3 点时尝试释放大招。
+     /// </summary>
+     public void AddBig()
+     {
+@@ -276,7 +320,7 @@ public abstract class BaseRole : MonoBehaviour
+     }
+ 
+     /// <summary>
+-    /// 使用大招
++    /// 播放大招音效并调用具体英雄的大招实现。
+     /// </summary>
+     public virtual void UseBig()
+     {
+@@ -287,29 +331,58 @@ public abstract class BaseRole : MonoBehaviour
+         roleUI.ClearBig();
+     }
+ 
++    /// <summary>
++    /// 具体英雄的大招实现入口。
++    /// </summary>
+     public abstract void Big();
+ 
++    #endregion
++
++    #region 音频
++
++    /// <summary>
++    /// 使用角色自身 AudioSource 播放一次音频。
++    /// </summary>
++    /// <param name="audioClip">需要播放的音频片段。</param>
+     public void PlayAudio(AudioClip audioClip)
+     {
+         //audioSource.clip = audioClip;
+         audioSource.PlayOneShot(audioClip);
+     }
+ 
++    #endregion
++
++    #region 目标选择
++
+     /// <summary>
+-    /// 给物体施加一个随机方向的力（2D）
++    /// 从当前存活角色中随机获取一个非自身目标。
+     /// </summary>
+-    private  IEnumerator ApplyRandomForce()
++    /// <param name="self">需要排除的自身角色。</param>
++    /// <returns>随机到的其它角色。</returns>
++    public BaseRole GetRandomOther(BaseRole self)
+     {
+-        yield return new WaitForSeconds(3);//暂时修改
+-        Vector2 randomDirection = Random.insideUnitCircle.normalized;
+-        rb.AddForce(randomDirection, ForceMode2D.Impulse);
++        return VideoGameTargetUtility.GetRandomOther(VideoGameManager.instance.circleRoles, self);
+     }
+ 
+-    public BaseRole GetRandomOther(BaseRole self)
++    #endregion
++
++    #region 工具方法
++
++    /// <summary>
++    /// 开局延迟后给角色施加随机方向冲量。
++    /// </summary>
++    /// <returns>Unity 协程迭代器。</returns>
++    private IEnumerator ApplyRandomForce()
+     {
+-        return VideoGameTargetUtility.GetRandomOther(VideoGameManager.instance.circleRoles, self);
++        yield return new WaitForSeconds(3);//暂时修改
++        Vector2 randomDirection = Random.insideUnitCircle.normalized;
++        rb.AddForce(randomDirection, ForceMode2D.Impulse);
+     }
+ 
++    /// <summary>
++    /// 获取并缓存角色 Canvas。
++    /// </summary>
++    /// <returns>角色身上的 Canvas。</returns>
+     private Canvas GetRoleCanvas()
+     {
+         if (roleCanvas == null)
+@@ -320,6 +393,10 @@ public abstract class BaseRole : MonoBehaviour
+         return roleCanvas;
+     }
+ 
++    /// <summary>
++    /// 获取并缓存负面效果图标父节点。
++    /// </summary>
++    /// <returns>负面效果图标父节点。</returns>
+     private Transform GetNegativeEffectParent()
+     {
+         if (negativeEffectParent == null)
+@@ -330,6 +407,11 @@ public abstract class BaseRole : MonoBehaviour
+         return negativeEffectParent;
+     }
+ 
++    /// <summary>
++    /// 移除指定名称的状态图标。
++    /// </summary>
++    /// <param name="effectParent">状态图标父节点。</param>
++    /// <param name="iconName">需要移除的图标名称。</param>
+     private void RemoveEffectIcon(Transform effectParent, string iconName)
+     {
+         Transform icon = effectParent.Find(iconName);
+@@ -339,6 +421,14 @@ public abstract class BaseRole : MonoBehaviour
+         }
+     }
+ 
++    #endregion
++
++    #region 碰撞触发
++
++    /// <summary>
++    /// 处理大招能量球拾取。
++    /// </summary>
++    /// <param name="collision">进入触发器的碰撞体。</param>
+     private void OnTriggerEnter2D(Collider2D collision)
+     {
+         if (collision.CompareTag("BigBall"))
+@@ -352,8 +442,14 @@ public abstract class BaseRole : MonoBehaviour
+         }
+     }
+ 
++    /// <summary>
++    /// 处理角色碰撞音效。
++    /// </summary>
++    /// <param name="collision">碰撞信息。</param>
+     private void OnCollisionEnter2D(Collision2D collision)
+     {
+         AudioManager.Instance.PlaySFX("撞击");
+     }
+-}
++
++    #endregion
++}
+\ No newline at end of file
+diff --git a/Codex/修改记录.md b/Codex/修改记录.md
+index 2fa70fd..5d5eaa4 100644
+--- a/Codex/修改记录.md
++++ b/Codex/修改记录.md
+@@ -47,6 +47,7 @@
+ | 2026-06-16 | 阶段 6 第四批 | `Assets/Scripts/Broadcast.cs`、`Codex/阶段6-第四批-Broadcast战报整理与对象池暂缓.md`、`Codex/阶段6-第四批-diff.patch`、`Codex/安全重构计划.md`、`Codex/修改记录.md` | 战报对象池审查/低风险代码整理/文档/diff | 否 | 低 | 审查战报对象池风险，因池化会改变战报历史保留规则而暂缓；同时清理无用字段并拆分战报创建和滚动刷新方法 | 编译项目；验证战报文本、颜色、生成顺序和自动滚到底部表现 | 按 `Codex/阶段6-第四批-diff.patch` 回滚 `Broadcast.cs`，并恢复本批 Markdown 改动 |
+ | 2026-06-16 | 阶段 6 第五批 | `Codex/阶段6-第五批-flyLight与bigBall池化审查.md`、`Codex/阶段6-第五批-diff.patch`、`Codex/安全重构计划.md`、`Codex/修改记录.md` | 文档/池化审查/风险判断/diff | 否 | 低 | 审查 `flyLightPrefab` 与 `bigBallPrefab` 的生成销毁链路，判断后续是否适合池化 | 本批未改游戏代码，无需运行；后续如池化流光，再验证大招点 UI 飞行动画 | 删除或恢复本批 Markdown 改动 |
+ | 2026-06-16 | 阶段 7 第一批 | `Codex/阶段7-第一批-BaseRole职责审查与风险分层.md`、`Codex/阶段7-第一批-diff.patch`、`Codex/安全重构计划.md`、`Codex/修改记录.md` | 文档/BaseRole 职责审查/风险分层/diff | 否 | 低 | 梳理 `BaseRole` 当前职责、子类覆盖点、外部依赖和后续瘦身边界 | 本批未改游戏代码，无需运行；后续第二批如整理 `BaseRole`，重点验证所有英雄启动、移动、受伤、死亡、吃球和大招 | 删除或恢复本批 Markdown 改动 |
++| 2026-06-16 | 阶段 7 第二批 | `Assets/Scripts/BaseRole.cs`、`Codex/阶段7-第二批-BaseRole注释与结构整理.md`、`Codex/阶段7-第二批-diff.patch`、`Codex/安全重构计划.md`、`Codex/修改记录.md` | BaseRole 注释/region/格式整理/diff | 否 | 低 | 让 `BaseRole` 结构更清楚，方便后续函数级瘦身，同时保持核心逻辑顺序不变 | 编译项目；验证所有英雄启动、移动、受伤、死亡、吃球和大招释放 | 按 `Codex/阶段7-第二批-diff.patch` 回滚 `BaseRole.cs`，并恢复本批 Markdown 改动 |
+ 
+ ## 后续记录模板
+ 
+diff --git a/Codex/安全重构计划.md b/Codex/安全重构计划.md
+index e2af6ba..8c48498 100644
+--- a/Codex/安全重构计划.md
++++ b/Codex/安全重构计划.md
+@@ -195,7 +195,7 @@
+ 
+ ## 阶段 7：BaseRole 瘦身
+ 
+-状态：第一批完成（2026-06-16，已完成 `BaseRole` 职责审查与风险分层，暂未修改游戏代码）
++状态：第二批完成（2026-06-16，已完成 `BaseRole` 注释、region 和格式整理）
+ 
+ 目标：
+ - 保留 `BaseRole` 作为所有英雄的共同父类。
+@@ -211,6 +211,6 @@
+ 
+ 当前建议：
+ - 阶段 7 第一批已确认：19 个英雄继承 `BaseRole`，全部覆盖 `Big()`，没有子类覆盖 `StartGame()` 或 `UseBig()`。
+-- 阶段 7 第二批建议只做注释、region、格式整理和旧字段标注，不做逻辑拆分。
+-- 阶段 7 第三批再考虑私有方法提取。
++- 阶段 7 第二批已完成 `BaseRole` 注释、region、格式整理和旧字段标注，没有做逻辑拆分。
++- 阶段 7 第三批建议再考虑私有方法提取，优先从 `TakeDamage`、`AddBig`、`OnTriggerEnter2D` 这类可保持顺序的局部开始。
+ - 暂不直接拆 `RoleMovement`、`RoleHealth`、`RoleUltimate` 等组件。
+diff --git a/Codex/阶段7-第二批-BaseRole注释与结构整理.md b/Codex/阶段7-第二批-BaseRole注释与结构整理.md
+index e69de29..2f6276e 100644
+--- a/Codex/阶段7-第二批-BaseRole注释与结构整理.md
++++ b/Codex/阶段7-第二批-BaseRole注释与结构整理.md
+@@ -0,0 +1,137 @@
++# 阶段 7 第二批：BaseRole 注释与结构整理
++
++日期：2026-06-16  
++目标：在不改变运行行为的前提下，让 `BaseRole` 更清楚、更适合后续小步瘦身。  
++主场景：`Assets/Scenes/VideoScene.unity`
++
++## 本批结论
++
++本批修改了 `BaseRole.cs`，但只做低风险结构整理：
++
++- 增加中文 XML 注释。
++- 增加 `#region` 分区。
++- 清理未使用的 `using System.Collections.Generic;`。
++- 显式标注私有 Unity 生命周期和协程方法。
++- 保留原有字段，不删除疑似遗留字段。
++- 保留关键逻辑顺序，不拆函数、不抽组件。
++
++没有改动：
++
++- 没有修改 `FixedUpdate` 的运动公式。
++- 没有修改 `ApplyRandomForce` 的 3 秒延迟。
++- 没有修改 `SetSpeed`、`SetCanGetWeapon`、`SetCanUseBig` 的协程顺序。
++- 没有修改 `TakeDamage` 的扣血、死亡、广播、移除刚体/碰撞体、灰图和胜利通知顺序。
++- 没有修改 `AddBig`、`UseBig`、`Big` 的调用顺序。
++- 没有修改 `OnTriggerEnter2D` 吃大招球的 `AddBig -> PlaySFX -> Destroy` 顺序。
++- 没有修改 Scene、Prefab、Inspector 绑定。
++
++## 修改文件列表
++
++| 文件 | 修改内容 | 是否改变玩法 | 风险 |
++|---|---|---|---|
++| `Assets/Scripts/BaseRole.cs` | 注释、region、格式和旧字段标注 | 否 | 低 |
++| `Codex/阶段7-第二批-diff.patch` | 保存本批完整 diff | 否 | 低 |
++
++## 主要整理内容
++
++### 分区结构
++
++新增分区：
++
++- `常量`
++- `Inspector 字段`
++- `运行时状态`
++- `Unity 生命周期`
++- `速度控制`
++- `状态限制`
++- `生命值`
++- `大招`
++- `音频`
++- `目标选择`
++- `工具方法`
++- `碰撞触发`
++
++目的：
++
++- 让后续第三批提取私有方法时更容易定位。
++- 避免 `BaseRole` 继续变成所有逻辑混在一起的大文件。
++
++### 注释整理
++
++补充或修正的公开方法注释：
++
++- `Start()`
++- `StartGame()`
++- `SetSpeed(float percent, float duration = 0)`
++- `SetCanGetWeapon(bool CanGetWeapon, float duration = 0)`
++- `SetCanUseBig(bool CanUseBig, float duration = 0)`
++- `RecoverHp(int value)`
++- `TakeDamage(int damage)`
++- `AddBig()`
++- `UseBig()`
++- `Big()`
++- `PlayAudio(AudioClip audioClip)`
++- `GetRandomOther(BaseRole self)`
++
++补充的重要私有方法注释：
++
++- `FixedUpdate()`
++- `SetSpeedCoro(float duration)`
++- `SetCanGetWeaponCoro(float duration)`
++- `SetCanUseBigCoro(float duration)`
++- `ApplyRandomForce()`
++- `GetRoleCanvas()`
++- `GetNegativeEffectParent()`
++- `RemoveEffectIcon(...)`
++- `OnTriggerEnter2D(...)`
++- `OnCollisionEnter2D(...)`
++
++### 旧字段处理
++
++本批没有删除以下字段：
++
++| 字段 | 处理 |
++|---|---|
++| `CantSelected` | 保留 public 字段，不删除，避免外部或 Inspector 潜在依赖 |
++| `lashiValue` | 保留私有字段，只标注为旧娱乐机制草稿字段 |
++
++原因：
++
++- `CantSelected` 是 public 字段，虽然当前代码搜索未发现引用，但不排除场景、Prefab、外部调试或未来机制使用。
++- `lashiValue` 当前未接入正式厕所机制，但直接删除不是本批目标。
++
++## 风险说明
++
++本批风险为低。
++
++原因：
++
++- 没有改变任何数值。
++- 没有改变任何协程等待时间。
++- 没有改变任何事件、触发器、生命周期方法的调用顺序。
++- 没有修改继承体系。
++- 没有拆组件。
++
++需要注意：
++
++- `BaseRole.cs` 的源码结构变化较大，diff 看起来会比较长；但核心语句顺序保持不变。
++- 本批只为后续第三批“函数级提取”做准备。
++
++## 建议人工验证
++
++| 验证点 | 预期结果 |
++|---|---|
++| 运行 `VideoScene` | 所有角色正常启动并在 3 秒后开始运动 |
++| 角色碰撞 | 角色继续播放碰撞音效 |
++| 角色吃大招球 | 大招点增加，吃球音效播放，球消失 |
++| 角色受伤 | 血量 UI 更新，未死亡时闪红 |
++| 角色死亡 | 战报、灰图、移除刚体/碰撞体、胜利判断表现不变 |
++| 大招释放 | 满 3 点后继续调用对应英雄 `Big()` |
++
++## 回滚建议
++
++如本批出现问题，可按 `Codex/阶段7-第二批-diff.patch` 回滚：
++
++- `Assets/Scripts/BaseRole.cs`
++
++本批没有修改场景或 Prefab，回滚脚本即可恢复旧结构。

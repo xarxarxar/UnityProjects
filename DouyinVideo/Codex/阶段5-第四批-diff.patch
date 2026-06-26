@@ -1,0 +1,168 @@
+﻿# 阶段 5 第四批代码 Diff
+
+说明：VideoGameBulletBase.cs 已按 UTF-8 临时副本生成 diff，避免原本地编码脚本中文注释在 diff 中乱码。
+
+## VideoGameBulletBase.cs
+diff --git "a/C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\DouyinVideoStage5Batch4\\VideoGameBulletBase.before.utf8.cs" "b/C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\DouyinVideoStage5Batch4\\VideoGameBulletBase.after.utf8.cs"
+index 53c70ab..f59167c 100644
+--- "a/C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\DouyinVideoStage5Batch4\\VideoGameBulletBase.before.utf8.cs"
++++ "b/C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\DouyinVideoStage5Batch4\\VideoGameBulletBase.after.utf8.cs"
+@@ -6,6 +6,14 @@ using UnityEngine.Events;
+ /// </summary>
+ public class VideoGameBulletBase : MonoBehaviour
+ {
++    #region 常量配置
++
++    private const string RoleTag = "Role";
++    private const string WallTag = "wall";
++    private const string MissingRigidbodyWarning = "父物体没有 Rigidbody2D 组件！";
++
++    #endregion
++
+     #region 运行状态
+ 
+     private Vector3 direction;
+@@ -45,23 +53,13 @@ public class VideoGameBulletBase : MonoBehaviour
+     {
+         direction = dir.normalized;
+         this.speed = speed;
+-        Transform bulletRoot = transform.parent;
++        Transform bulletRoot = GetBulletRoot();
+         bulletRoot.position = startPos;
+         _baseRole = baseRole;
+         this.tags = tags;
+ 
+-        bulletRoot.rotation = Quaternion.Euler(0, 0, angle);
+-        bulletRoot.gameObject.SetActive(true);
+-        // 设置父物体的速度
+-        Rigidbody2D rb = bulletRoot.GetComponent<Rigidbody2D>();
+-        if (rb != null)
+-        {
+-            rb.velocity = direction * this.speed;
+-        }
+-        else
+-        {
+-            Debug.LogWarning("父物体没有 Rigidbody2D 组件！");
+-        }
++        SetBulletRootRotationAndActive(bulletRoot, angle);
++        ApplyBulletVelocity(bulletRoot);
+     }
+ 
+ 
+@@ -73,19 +71,14 @@ public class VideoGameBulletBase : MonoBehaviour
+             return;
+         }
+ 
+-        if (collision.CompareTag("Role") && collision.gameObject!= _baseRole.gameObject)
++        if (TryHandleRoleHit(collision))
+         {
+-            var role = collision.GetComponent<BaseRole>();
+-            if (role != null)
+-            {
+-                OnBulletHitRole?.Invoke(role);
+-                //Recycle();
+-            }
++            return;
+         }
+-        else if (collision.CompareTag("wall"))
++
++        if (collision.CompareTag(WallTag))
+         {
+-            OnBulletHitWall?.Invoke();
+-            Recycle();
++            HandleWallHit();
+         }
+     }
+ 
+@@ -95,13 +88,83 @@ public class VideoGameBulletBase : MonoBehaviour
+     public void Recycle()
+     {
+         StopAllCoroutines();
+-        transform.parent.gameObject.SetActive(false);
++        GetBulletRoot().gameObject.SetActive(false);
+     }
+ 
+     #endregion
+ 
+     #region 工具方法
+ 
++    /// <summary>
++    /// 获取子弹根物体。
++    /// </summary>
++    /// <returns>当前子弹脚本的父物体。</returns>
++    private Transform GetBulletRoot()
++    {
++        return transform.parent;
++    }
++
++    /// <summary>
++    /// 设置子弹根物体旋转并激活。
++    /// </summary>
++    /// <param name="bulletRoot">子弹根物体。</param>
++    /// <param name="angle">子弹根物体 Z 轴角度。</param>
++    private void SetBulletRootRotationAndActive(Transform bulletRoot, float angle)
++    {
++        bulletRoot.rotation = Quaternion.Euler(0, 0, angle);
++        bulletRoot.gameObject.SetActive(true);
++    }
++
++    /// <summary>
++    /// 给子弹根物体施加移动速度。
++    /// </summary>
++    /// <param name="bulletRoot">子弹根物体。</param>
++    private void ApplyBulletVelocity(Transform bulletRoot)
++    {
++        // 设置父物体的速度
++        Rigidbody2D rb = bulletRoot.GetComponent<Rigidbody2D>();
++        if (rb != null)
++        {
++            rb.velocity = direction * this.speed;
++        }
++        else
++        {
++            Debug.LogWarning(MissingRigidbodyWarning);
++        }
++    }
++
++    /// <summary>
++    /// 尝试处理角色命中。
++    /// </summary>
++    /// <param name="collision">当前碰撞体。</param>
++    /// <returns>如果碰撞体是非发射者角色，返回 true。</returns>
++    private bool TryHandleRoleHit(Collider2D collision)
++    {
++        if (!collision.CompareTag(RoleTag) || collision.gameObject == _baseRole.gameObject)
++        {
++            return false;
++        }
++
++        BaseRole role = collision.GetComponent<BaseRole>();
++        if (role != null)
++        {
++            OnBulletHitRole?.Invoke(role);
++            // 命中角色后是否回收由外部回调决定，保留现有武器和英雄技能差异。
++            //Recycle();
++        }
++
++        return true;
++    }
++
++    /// <summary>
++    /// 处理墙体命中。
++    /// </summary>
++    private void HandleWallHit()
++    {
++        OnBulletHitWall?.Invoke();
++        Recycle();
++    }
++
+     /// <summary>
+     /// 判断当前碰撞体的 Tag 是否需要忽略。
+     /// </summary>
+@@ -126,4 +189,4 @@ public class VideoGameBulletBase : MonoBehaviour
+     }
+ 
+     #endregion
+-}
+\ No newline at end of file
++}

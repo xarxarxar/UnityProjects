@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class NiHongRole : BaseRole
@@ -109,8 +108,6 @@ public class NiHongRole : BaseRole
             {
                 endPos = startPos + finalDirection * 100f;
             }
-            Debug.Log($"hit name is {hit.collider.name}");
-
             lineRenderer.SetPosition(0, startPos);
             lineRenderer.SetPosition(1, endPos);
 

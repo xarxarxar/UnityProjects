@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -20,6 +19,8 @@ public class DropHatBaoAnRole : BaseRole
         bigCoro = StartCoroutine(HitHat());
     }
 
+    #region 开发调试入口
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.M))
@@ -27,6 +28,8 @@ public class DropHatBaoAnRole : BaseRole
             UseBig();
         }
     }
+
+    #endregion
 
     private IEnumerator HitHat()
     {
@@ -42,8 +45,7 @@ public class DropHatBaoAnRole : BaseRole
         {
             if (hitRole != this)
             {
-                hitRole.TakeDamage(10);
-                Broadcast.instance.BroadCastNews($"{RoleName}的帽子对{hitRole.RoleName}造成了10点伤害", roleColor);
+                VideoGameCombatUtility.DamageThenBroadcast(hitRole, 10, $"{RoleName}的帽子对{hitRole.RoleName}造成了10点伤害", roleColor);
             }
         };
 

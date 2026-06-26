@@ -20,19 +20,22 @@ public class YuanShiBigKnief : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Role") && collision.GetComponent<BaseRole>() != role && attackCount<3)
+        if (collision.CompareTag("Role"))
         {
-            collision.GetComponent<BaseRole>().TakeDamage(20);
-            Broadcast.instance.BroadCastNews($"{role.RoleName}的大刀对{collision.GetComponent<BaseRole>().RoleName}造成了20点伤害", role.roleColor);
-            rotateDire *= -1;//旋转方向逆行
-            transform.parent.localScale= new Vector3(1, rotateDire,1);
-            
-            attackCount++;
-            if (attackCount >= 3)
+            BaseRole targetRole = collision.GetComponent<BaseRole>();
+            if (targetRole != role && attackCount<3)
             {
-                BigKniefDisappear();
-            }
+                VideoGameCombatUtility.DamageThenBroadcast(targetRole, 20, $"{role.RoleName}的大刀对{targetRole.RoleName}造成了20点伤害", role.roleColor);
+                rotateDire *= -1;//旋转方向逆行
+                transform.parent.localScale= new Vector3(1, rotateDire,1);
+            
+                attackCount++;
+                if (attackCount >= 3)
+                {
+                    BigKniefDisappear();
+                }
 
+            }
         }
     }
 

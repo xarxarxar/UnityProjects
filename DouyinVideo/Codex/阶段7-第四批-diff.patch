@@ -1,0 +1,253 @@
+diff --git a/Assets/Scripts/BaseRole.cs b/Assets/Scripts/BaseRole.cs
+index 803d9b3..c867136 100644
+--- a/Assets/Scripts/BaseRole.cs
++++ b/Assets/Scripts/BaseRole.cs
+@@ -192,10 +192,9 @@ public abstract class BaseRole : MonoBehaviour
+     /// <param name="duration">持续时长，为 0 时不会自动恢复。</param>
+     public void SetCanGetWeapon(bool CanGetWeapon, float duration = 0)
+     {
+-        Transform effectParent = GetNegativeEffectParent();
+-        RemoveEffectIcon(effectParent, CantGetWeaponIconName);
++        Transform effectParent = PrepareAbilityIconParent(CantGetWeaponIconName);
+         canGetWeapon = CanGetWeapon;
+-        Instantiate(VideoGameManager.instance.CantGetWeaponPrefab, effectParent);
++        CreateAbilityIcon(VideoGameManager.instance.CantGetWeaponPrefab, effectParent);
+         if (duration != 0)
+         {
+             StartCoroutine(SetCanGetWeaponCoro(duration));
+@@ -210,9 +209,7 @@ public abstract class BaseRole : MonoBehaviour
+     private IEnumerator SetCanGetWeaponCoro(float duration)
+     {
+         yield return new WaitForSeconds(duration);
+-        canGetWeapon = true;
+-
+-        RemoveEffectIcon(GetNegativeEffectParent(), CantGetWeaponIconName);
++        RestoreAbilityState(ref canGetWeapon, CantGetWeaponIconName);
+         yield break;
+     }
+ 
+@@ -223,10 +220,9 @@ public abstract class BaseRole : MonoBehaviour
+     /// <param name="duration">持续时长，为 0 时不会自动恢复。</param>
+     public void SetCanUseBig(bool CanUseBig, float duration = 0)
+     {
+-        Transform effectParent = GetNegativeEffectParent();
+-        RemoveEffectIcon(effectParent, CantUseBigIconName);
++        Transform effectParent = PrepareAbilityIconParent(CantUseBigIconName);
+         canUseBig = CanUseBig;
+-        Instantiate(VideoGameManager.instance.CantUseBigPrefab, effectParent);
++        CreateAbilityIcon(VideoGameManager.instance.CantUseBigPrefab, effectParent);
+         if (duration != 0)
+         {
+             StartCoroutine(SetCanUseBigCoro(duration));
+@@ -241,12 +237,43 @@ public abstract class BaseRole : MonoBehaviour
+     private IEnumerator SetCanUseBigCoro(float duration)
+     {
+         yield return new WaitForSeconds(duration);
+-        canUseBig = true;
+-
+-        RemoveEffectIcon(GetNegativeEffectParent(), CantUseBigIconName);
++        RestoreAbilityState(ref canUseBig, CantUseBigIconName);
+         yield break;
+     }
+ 
++    /// <summary>
++    /// 移除旧状态图标并返回状态图标父节点。
++    /// </summary>
++    /// <param name="iconName">需要移除的旧状态图标名称。</param>
++    /// <returns>状态图标父节点。</returns>
++    private Transform PrepareAbilityIconParent(string iconName)
++    {
++        Transform effectParent = GetNegativeEffectParent();
++        RemoveEffectIcon(effectParent, iconName);
++        return effectParent;
++    }
++
++    /// <summary>
++    /// 创建新的状态图标。
++    /// </summary>
++    /// <param name="iconPrefab">需要创建的状态图标预制体。</param>
++    /// <param name="effectParent">状态图标父节点。</param>
++    private void CreateAbilityIcon(GameObject iconPrefab, Transform effectParent)
++    {
++        Instantiate(iconPrefab, effectParent);
++    }
++
++    /// <summary>
++    /// 恢复状态值并移除状态图标。
++    /// </summary>
++    /// <param name="state">需要恢复为 true 的状态字段。</param>
++    /// <param name="iconName">需要移除的状态图标名称。</param>
++    private void RestoreAbilityState(ref bool state, string iconName)
++    {
++        state = true;
++        RemoveEffectIcon(GetNegativeEffectParent(), iconName);
++    }
++
+     #endregion
+ 
+     #region 生命值
+diff --git a/Codex/修改记录.md b/Codex/修改记录.md
+index 2f6087b..3969b21 100644
+--- a/Codex/修改记录.md
++++ b/Codex/修改记录.md
+@@ -49,6 +49,7 @@
+ | 2026-06-16 | 阶段 7 第一批 | `Codex/阶段7-第一批-BaseRole职责审查与风险分层.md`、`Codex/阶段7-第一批-diff.patch`、`Codex/安全重构计划.md`、`Codex/修改记录.md` | 文档/BaseRole 职责审查/风险分层/diff | 否 | 低 | 梳理 `BaseRole` 当前职责、子类覆盖点、外部依赖和后续瘦身边界 | 本批未改游戏代码，无需运行；后续第二批如整理 `BaseRole`，重点验证所有英雄启动、移动、受伤、死亡、吃球和大招 | 删除或恢复本批 Markdown 改动 |
+ | 2026-06-16 | 阶段 7 第二批 | `Assets/Scripts/BaseRole.cs`、`Codex/阶段7-第二批-BaseRole注释与结构整理.md`、`Codex/阶段7-第二批-diff.patch`、`Codex/安全重构计划.md`、`Codex/修改记录.md` | BaseRole 注释/region/格式整理/diff | 否 | 低 | 让 `BaseRole` 结构更清楚，方便后续函数级瘦身，同时保持核心逻辑顺序不变 | 编译项目；验证所有英雄启动、移动、受伤、死亡、吃球和大招释放 | 按 `Codex/阶段7-第二批-diff.patch` 回滚 `BaseRole.cs`，并恢复本批 Markdown 改动 |
+ | 2026-06-16 | 阶段 7 第三批 | `Assets/Scripts/BaseRole.cs`、`Codex/阶段7-第三批-BaseRole私有方法提取.md`、`Codex/阶段7-第三批-diff.patch`、`Codex/安全重构计划.md`、`Codex/修改记录.md` | BaseRole 私有方法提取/文档/diff | 否 | 中低 | 将 `FixedUpdate`、`TakeDamage`、`AddBig`、`OnTriggerEnter2D` 的局部逻辑提取为私有方法，降低后续维护难度 | 编译项目；验证所有英雄启动、移动、受伤、死亡、吃球和大招释放 | 按 `Codex/阶段7-第三批-diff.patch` 回滚 `BaseRole.cs`，并恢复本批 Markdown 改动 |
++| 2026-06-16 | 阶段 7 第四批 | `Assets/Scripts/BaseRole.cs`、`Codex/阶段7-第四批-BaseRole状态图标逻辑整理.md`、`Codex/阶段7-第四批-diff.patch`、`Codex/安全重构计划.md`、`Codex/修改记录.md` | BaseRole 状态图标逻辑整理/文档/diff | 否 | 中低 | 提取 `SetCanGetWeapon` / `SetCanUseBig` 重复的状态图标准备、创建和恢复逻辑 | 编译项目；验证维斯缴械、KO 压制、状态图标显示和持续时间结束恢复 | 按 `Codex/阶段7-第四批-diff.patch` 回滚 `BaseRole.cs`，并恢复本批 Markdown 改动 |
+ 
+ ## 后续记录模板
+ 
+diff --git a/Codex/安全重构计划.md b/Codex/安全重构计划.md
+index db73ea5..544fded 100644
+--- a/Codex/安全重构计划.md
++++ b/Codex/安全重构计划.md
+@@ -195,7 +195,7 @@
+ 
+ ## 阶段 7：BaseRole 瘦身
+ 
+-状态：第三批完成（2026-06-16，已完成 `BaseRole` 私有方法局部提取）
++状态：第四批完成（2026-06-16，已完成 `BaseRole` 状态图标重复逻辑整理）
+ 
+ 目标：
+ - 保留 `BaseRole` 作为所有英雄的共同父类。
+@@ -213,5 +213,6 @@
+ - 阶段 7 第一批已确认：19 个英雄继承 `BaseRole`，全部覆盖 `Big()`，没有子类覆盖 `StartGame()` 或 `UseBig()`。
+ - 阶段 7 第二批已完成 `BaseRole` 注释、region、格式整理和旧字段标注，没有做逻辑拆分。
+ - 阶段 7 第三批已完成 `FixedUpdate`、`TakeDamage`、`AddBig`、`OnTriggerEnter2D` 的私有方法局部提取，核心顺序保持不变。
+-- 阶段 7 第四批建议审查状态效果图标逻辑，判断是否可以整理 `SetCanGetWeapon` / `SetCanUseBig` 的重复结构。
++- 阶段 7 第四批已完成 `SetCanGetWeapon` / `SetCanUseBig` 的状态图标重复逻辑整理，状态设置、图标创建和恢复顺序保持不变。
++- 阶段 7 第五批建议先做组件化拆分决策文档，不直接拆 `RoleMovement`、`RoleHealth`、`RoleUltimate`。
+ - 暂不直接拆 `RoleMovement`、`RoleHealth`、`RoleUltimate` 等组件。
+diff --git a/Codex/阶段7-第四批-BaseRole状态图标逻辑整理.md b/Codex/阶段7-第四批-BaseRole状态图标逻辑整理.md
+index e69de29..b2e6074 100644
+--- a/Codex/阶段7-第四批-BaseRole状态图标逻辑整理.md
++++ b/Codex/阶段7-第四批-BaseRole状态图标逻辑整理.md
+@@ -0,0 +1,127 @@
++# 阶段 7 第四批：BaseRole 状态图标逻辑整理
++
++日期：2026-06-16  
++目标：在不改变状态效果表现的前提下，整理 `BaseRole` 中拾取武器限制和大招限制的重复图标逻辑。  
++主场景：`Assets/Scenes/VideoScene.unity`
++
++## 本批结论
++
++本批修改了 `BaseRole.cs`，只整理 `SetCanGetWeapon` / `SetCanUseBig` 的重复结构。
++
++没有改动：
++
++- 没有修改 public 字段。
++- 没有修改 public 方法签名。
++- 没有修改状态持续时间。
++- 没有修改状态恢复时机。
++- 没有修改图标 Prefab。
++- 没有修改图标名称常量。
++- 没有修改 Scene、Prefab、Inspector 绑定。
++
++## 修改文件列表
++
++| 文件 | 修改内容 | 是否改变玩法 | 风险 |
++|---|---|---|---|
++| `Assets/Scripts/BaseRole.cs` | 提取状态图标准备、创建、恢复辅助方法 | 否 | 中低 |
++| `Codex/阶段7-第四批-diff.patch` | 保存本批完整 diff | 否 | 低 |
++
++## 提取内容
++
++新增私有方法：
++
++| 方法 | 作用 |
++|---|---|
++| `PrepareAbilityIconParent(string iconName)` | 获取负面效果父节点，并移除旧状态图标 |
++| `CreateAbilityIcon(GameObject iconPrefab, Transform effectParent)` | 创建新的状态图标 |
++| `RestoreAbilityState(ref bool state, string iconName)` | 将状态恢复为 `true`，并移除状态图标 |
++
++## 顺序保持说明
++
++### 设置不能拾取武器
++
++原顺序：
++
++1. 获取 `负面效果` 父节点。
++2. 移除旧的 `不能拾取武器(Clone)` 图标。
++3. 设置 `canGetWeapon = CanGetWeapon`。
++4. 实例化 `CantGetWeaponPrefab`。
++5. 如果 `duration != 0`，启动恢复协程。
++
++新顺序：
++
++1. `PrepareAbilityIconParent(CantGetWeaponIconName)`。
++2. 设置 `canGetWeapon = CanGetWeapon`。
++3. `CreateAbilityIcon(VideoGameManager.instance.CantGetWeaponPrefab, effectParent)`。
++4. 如果 `duration != 0`，启动恢复协程。
++
++### 恢复拾取武器能力
++
++原顺序：
++
++1. 等待 `duration`。
++2. 设置 `canGetWeapon = true`。
++3. 移除 `不能拾取武器(Clone)` 图标。
++
++新顺序：
++
++1. 等待 `duration`。
++2. `RestoreAbilityState(ref canGetWeapon, CantGetWeaponIconName)`。
++
++`RestoreAbilityState` 内部仍然先设置状态为 `true`，再移除图标。
++
++### 设置不能使用大招
++
++原顺序：
++
++1. 获取 `负面效果` 父节点。
++2. 移除旧的 `KO压制UI(Clone)` 图标。
++3. 设置 `canUseBig = CanUseBig`。
++4. 实例化 `CantUseBigPrefab`。
++5. 如果 `duration != 0`，启动恢复协程。
++
++新顺序：
++
++1. `PrepareAbilityIconParent(CantUseBigIconName)`。
++2. 设置 `canUseBig = CanUseBig`。
++3. `CreateAbilityIcon(VideoGameManager.instance.CantUseBigPrefab, effectParent)`。
++4. 如果 `duration != 0`，启动恢复协程。
++
++### 恢复大招使用能力
++
++原顺序：
++
++1. 等待 `duration`。
++2. 设置 `canUseBig = true`。
++3. 移除 `KO压制UI(Clone)` 图标。
++
++新顺序：
++
++1. 等待 `duration`。
++2. `RestoreAbilityState(ref canUseBig, CantUseBigIconName)`。
++
++`RestoreAbilityState` 内部仍然先设置状态为 `true`，再移除图标。
++
++## 风险说明
++
++本批风险为中低。
++
++原因：
++
++- 修改位置在 `BaseRole`，影响所有角色。
++- 但只提取重复状态图标逻辑，没有改变状态规则。
++- `canGetWeapon` 和 `canUseBig` 仍然是原 public 字段。
++- 调用方 `VideoGameCombatUtility`、武器脚本、小刀逻辑不需要改。
++
++重点验证：
++
++- 维斯缴械后，目标不能拾取武器，持续时间结束后恢复。
++- KO 压制后，目标不能使用大招，持续时间结束后恢复。
++- 状态图标不会重复堆叠，旧图标仍会先移除。
++
++## 回滚建议
++
++如本批出现问题，可按 `Codex/阶段7-第四批-diff.patch` 回滚：
++
++- `Assets/Scripts/BaseRole.cs`
++
++本批没有修改场景或 Prefab，回滚脚本即可恢复。
