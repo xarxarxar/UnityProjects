@@ -28,26 +28,11 @@ namespace EKStudio
         {
             if (!CanSpawnBaggage())
                 return;
-    
-            float randomValue = Random.Range(0, 100);
-    
-            //if (GameManager.Instance.data.levelCount == 1)
-            //    randomValue = 1;
-    
-            List<BaggageType> baggage = new List<BaggageType>();
-    
-            if (LevelManager.Instance.mainBaggageRatio > randomValue && LevelManager.Instance.baggageList.Count > 0)
-            {
-                baggage = LevelManager.Instance.baggageList;
-            }
-            else
-            {
-                baggage = LevelManager.Instance.otherBaggageList;
-            }
-    
-            BaggageFactory.SpawnBaggage(baggage[0], transform.position, Quaternion.Euler(90, 90, 0), out GameObject factoryProduct);
-    
-            baggage.RemoveAt(0);
+
+            BaggageType baggageType = LevelManager.Instance.baggageList[0];
+            LevelManager.Instance.baggageList.RemoveAt(0);
+
+            BaggageFactory.SpawnBaggage(baggageType, transform.position, Quaternion.Euler(90, 90, 0), out GameObject factoryProduct);
     
             factoryProduct.GetComponent<SplineFollower>().spline = rampSpline;
             factoryProduct.GetComponent<BaggageRay>().speed = Time.timeScale == 30 ? 10 : 2;
@@ -85,6 +70,8 @@ namespace EKStudio
     
         public bool CanSpawnBaggage()
         {
+            if (LevelManager.Instance.baggageList.Count <= 0) return false;
+
             if (allRampBaggage.Count == 1) return false;
     
             if (allConveyor[0].GetComponent<SplineFollower>().followSpeed == 0) return false;

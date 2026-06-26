@@ -4,6 +4,7 @@ namespace EKStudio
     using System.Collections.Generic;
     using TMPro;
     using UnityEngine;
+    using WeChatWASM;
     
     public class UIManager : InstanceManager<UIManager>
     {
@@ -36,7 +37,7 @@ namespace EKStudio
         public void UpdateText()
         {
             totalMoney.text = data.totalMoney.ToString("0");
-            levelCount.text = "Lvl." + data.levelCount.ToString("0");
+            levelCount.text = "¹Ø¿¨." + data.levelCount.ToString("0");
         }
     
     
@@ -69,6 +70,11 @@ namespace EKStudio
         {
             losePanel.SetActive(true);
             EventManager.Broadcast(GameEvent.OnPlaySound, "Lose");
+            ///¶ÌÕð¶¯
+#if UNITY_WECHAT_GAME
+            VibrateLongOption opt = new VibrateLongOption();
+            WX.VibrateLong(opt);
+#endif
         }
     }
     

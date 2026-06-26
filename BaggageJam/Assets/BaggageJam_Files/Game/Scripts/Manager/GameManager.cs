@@ -4,6 +4,7 @@ namespace EKStudio
     using System.Collections;
     using System.Collections.Generic;
     using UnityEngine;
+    using WeChatWASM;
     
     public class GameManager : InstanceManager<GameManager>
     {
@@ -19,6 +20,11 @@ namespace EKStudio
     
         void Start()
         {
+            WX.InitSDK((int code) =>
+            {
+                Debug.Log("微信SDK初始化完成 code:" + code);
+            });
+
             InvokeRepeating(nameof(SaveData), 1, .1f);
     
             EventManager.Broadcast(GameEvent.OnJoker);

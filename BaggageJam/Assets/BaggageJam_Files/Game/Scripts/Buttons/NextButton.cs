@@ -24,10 +24,6 @@ namespace EKStudio
     
             data.levelCount++;
     
-            if (data.levelCount >= GameManager.Instance.data.AllSo.LevelDataSO.Levels.Count)
-            {
-                data.levelCount = Random.Range(1, GameManager.Instance.data.AllSo.LevelDataSO.Levels.Count);
-            }
             SaveManager.SaveData(data);
     
             Button.interactable = false;
@@ -47,7 +43,9 @@ namespace EKStudio
     
         void OnWin()
         {
-            coinText.text = GameManager.Instance.data.AllSo.LevelDataSO.Levels[GameManager.Instance.data.levelCount - 1].winMoney.ToString();
+            coinText.text = GameManager.Instance.data.AllSo.LevelDataSO
+        .GetWinMoney(GameManager.Instance.data.levelCount)
+        .ToString();
         }
     }
     

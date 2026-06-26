@@ -23,11 +23,11 @@ namespace EKStudio
             //List<GameObject> allRowObj = GameObject.FindGameObjectsWithTag(TagHolder.AIRowController_Tag).ToList();
     
             int levelCount = GameManager.Instance.data.levelCount;
-    
-            int activeRowCount = levelCount < 5 ? 1 : levelCount < 15 ? 2 : 3;
+
+            int activeRowCount = GameManager.Instance.data.AllSo.LevelDataSO.GetActiveRowCount(levelCount);
             //int activeRowCount = 3;
-    
-    
+
+
             for (int i = 0; i < allRowObj.Count; i++)
             {
                 if (activeRowCount - 1 >= i)

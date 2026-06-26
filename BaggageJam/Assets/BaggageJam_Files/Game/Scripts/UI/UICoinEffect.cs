@@ -61,7 +61,7 @@ namespace EKStudio
                 delay += 0.1f;
     
             }
-            StartCoroutine(CountDollars(delay, GameManager.Instance.data.levelCount - 1));
+            StartCoroutine(CountDollars(delay, GameManager.Instance.data.levelCount));
         }
     
         IEnumerator CountDollars(float delay, int level)
@@ -78,9 +78,9 @@ namespace EKStudio
             yield return new WaitForSecondsRealtime(.5f);
     
             GameData data = GameManager.Instance.data;
-    
-            float money = data.totalMoney + data.AllSo.LevelDataSO.Levels[level].winMoney;
-    
+
+            float money = data.totalMoney + data.AllSo.LevelDataSO.GetWinMoney(level);
+
             DOTween.To(x => data.totalMoney = x, data.totalMoney, money, 1)
             .OnUpdate(() =>
             {

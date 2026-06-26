@@ -5,6 +5,7 @@ namespace EKStudio
     using DG.Tweening;
     using Dreamteck.Splines;
     using UnityEngine;
+    using WeChatWASM;
     
     public class Baggage : MonoBehaviour, ISelectable
     {
@@ -70,6 +71,13 @@ namespace EKStudio
             Rigidbody.isKinematic = true;
             Collider.isTrigger = true;
             EventManager.Broadcast(GameEvent.OnPlaySound, "Select");
+
+            ///¶ÌÕð¶¯
+            #if UNITY_WECHAT_GAME
+            VibrateShortOption opt = new VibrateShortOption();
+            opt.type = "light";
+            WX.VibrateShort(opt);
+            #endif
         }
 
         public void ISelected()

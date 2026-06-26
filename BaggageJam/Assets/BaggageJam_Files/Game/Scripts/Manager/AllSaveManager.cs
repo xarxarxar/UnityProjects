@@ -8,6 +8,8 @@ namespace EKStudio
     {
         public static void Save(GameData data)
         {
+
+
             SaveManager.SaveData(data);
     
             SaveManager.SaveData(data.AllJokerButtonSO.HintJokerDataSO, "HintJokerDataSO");
