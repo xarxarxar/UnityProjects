@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6797318364428337822
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6797318364428337899}
+  - component: {fileID: 6797318364428337823}
+  m_Layer: 0
+  m_Name: BulletMagmus3
+  m_TagString: Bullet
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6797318364428337899
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6797318364428337822}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6797318364428337823
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6797318364428337822}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a00d6ade49f7c744c9d269f2e6693467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bulletTeam: 0
+  effPref: {fileID: 0}
+  explosionEffPref: {fileID: 0}
+  startEffPref: {fileID: 0}
+  effAtStartPref: {fileID: 5496763476883454387, guid: 2eb77ccd2a3fd2f41b49030f55bd9ae2,
+    type: 3}
+  effAtMovePref: {fileID: 5105922539227519667, guid: 79d62ff2b7707cc4dbdf2c8f5f25bff9,
+    type: 3}
+  effAtEndPref: {fileID: 1633978012822725335, guid: b5eb6c5509ce7114fb2e0846c342ef72,
+    type: 3}

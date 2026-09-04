@@ -1,0 +1,31 @@
+
+public enum StatNames
+{
+    Atk,
+    Hp,
+    Def,
+    CritRate,
+    CriteDamage,//crit factor
+    AtkPerSec,
+    AtkRange,
+    MoveSpeed,
+    EffectResistance,
+    FrenzyChance,
+    DodgeRate,
+    StunChance,
+    StunTime,
+    AoERadius,
+    AoEDmg,
+    UltimateAtk,
+    KnightShieldHP,
+    BonusLoot,
+    FreezeChance,
+    FreezeTime,
+    FreezeExplotionDmg,
+    BurnChance,
+    BurnTime,
+    BurnDmg,
+    PoisonChance,
+    PoisonTime,
+    PoisonDmg,
+}

@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7622055962606187583
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7622055962606187954}
+  - component: {fileID: 7622055962606189174}
+  m_Layer: 0
+  m_Name: MechalValkenSkill03
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7622055962606187954
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7622055962606187583}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.273, y: 0.027999997, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7622055962606189174
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7622055962606187583}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3794a9a68130be14a88611c63cea2d0c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bulletPref: {fileID: 3136222612699309270, guid: 211910e90cd52ac45a11c794e3cad533,
+    type: 3}
+  effectHitPref: {fileID: 4825700788887981624, guid: dc83b7b71167c6f44a20292380e9e849,
+    type: 3}
+  effectHitSplashPref: {fileID: 0}
+  speed: 7
+  numHit: 4
+  distanceBetWeenHit: 2
+  distanceFromRightScreen: 0.5
+  hitOnFoot: 1

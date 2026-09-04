@@ -1,0 +1,205 @@
+using UnityEngine;
+using UnityEngine.UI;
+using System.Collections;
+using System;
+using System.Collections.Generic;
+using TMPro;
+
+namespace Watermelon
+{
+    public class UIComplete : UIPage
+    {
+        [SerializeField] RectTransform safeAreaTransform;
+
+        [Space]
+        [SerializeField] UIFadeAnimation backgroundFade;
+        [SerializeField] UIScaleAnimation levelCompleteLabel;
+
+        [Space]
+        [SerializeField] UIScaleAnimation rewardLabel;
+        [SerializeField] TextMeshProUGUI rewardAmountText;
+
+        [Header("Coins Label")]
+        [SerializeField] UIScaleAnimation coinsPanelScalable;
+        [SerializeField] CurrencyUIPanelSimple coinsPanelUI;
+
+        [Header("Buttons")]
+        [SerializeField] UIFadeAnimation multiplyRewardButtonFade;
+        [SerializeField] UIScaleAnimation homeButtonScaleAnimation;
+        [SerializeField] UIScaleAnimation nextLevelButtonScaleAnimation;
+        [SerializeField] Button multiplyRewardButton;
+        [SerializeField] Button homeButton;
+        [SerializeField] Button nextLevelButton;
+
+
+        private TweenCase noThanksAppearTween;
+
+        private int coinsHash = FloatingCloud.StringToHash("Coins");
+        private int currentReward;
+
+        public override void Initialise()
+        {
+            multiplyRewardButton.onClick.AddListener(MultiplyRewardButton);
+            homeButton.onClick.AddListener(HomeButton);
+            nextLevelButton.onClick.AddListener(NextLevelButton);
+
+            coinsPanelUI.Initialise();
+
+            NotchSaveArea.RegisterRectTransform(safeAreaTransform);
+        }
+
+        #region Show/Hide
+        public override void PlayShowAnimation()
+        {
+            if (isPageDisplayed)
+                return;
+
+            WXAdsManager.Instance.RandomPlayCustom();//随机展示格子广告或者横幅广告
+            //WXAdsManager.Instance.ShowBannerAd();//展示横幅广告
+            WXAdsManager.Instance.ShowInterstitialAd();//展示插屏广告
+
+            isPageDisplayed = true;
+            canvas.enabled = true;
+
+            rewardLabel.Hide(immediately: true);
+            multiplyRewardButtonFade.Hide(immediately: true);
+            multiplyRewardButton.interactable = false;
+            nextLevelButtonScaleAnimation.Hide(immediately: true);
+            nextLevelButton.interactable = false;
+            homeButtonScaleAnimation.Hide(immediately: true);
+            homeButton.interactable = false;
+            coinsPanelScalable.Hide(immediately: true);
+
+
+            backgroundFade.Show(duration: 0.3f);
+            levelCompleteLabel.Show();
+
+            coinsPanelScalable.Show();
+
+            currentReward = LevelController.CurrentReward;
+
+            ShowRewardLabel(currentReward, false, 0.3f, delegate
+            {
+                rewardLabel.RectTransform.DOPushScale(Vector3.one * 1.1f, Vector3.one, 0.2f, 0.2f).OnComplete(delegate
+                {
+                    FloatingCloud.SpawnCurrency(coinsHash, rewardLabel.RectTransform, coinsPanelScalable.RectTransform, 10, "", () =>
+                    {
+                        CurrenciesController.Add(CurrencyType.Coins, currentReward);
+
+                        multiplyRewardButtonFade.Show();
+                        multiplyRewardButton.interactable = true;
+
+                        homeButtonScaleAnimation.Show(1.05f, 0.25f, 1f);
+                        nextLevelButtonScaleAnimation.Show(1.05f, 0.25f, 1f);
+
+                        homeButton.interactable = true;
+                        nextLevelButton.interactable = true;
+                    });
+                });
+            });
+        }
+
+        public override void PlayHideAnimation()
+        {
+            if (!isPageDisplayed)
+                return;
+
+            WXAdsManager.Instance.CloseGridAds();//隐藏格子广告
+            WXAdsManager.Instance.CloseBannerAds();//隐藏横幅广告
+
+            backgroundFade.Hide(0.25f);
+            coinsPanelScalable.Hide();
+
+            Tween.DelayedCall(0.25f, delegate
+            {
+                canvas.enabled = false;
+                isPageDisplayed = false;
+
+                UIController.OnPageClosed(this);
+            });
+        }
+
+
+        #endregion
+
+        #region RewardLabel
+
+        public void ShowRewardLabel(float rewardAmounts, bool immediately = false, float duration = 0.3f, Action onComplted = null)
+        {
+            rewardLabel.Show(immediately: immediately);
+
+            if (immediately)
+            {
+                rewardAmountText.text = "+" + rewardAmounts;
+                onComplted?.Invoke();
+
+                return;
+            }
+
+            rewardAmountText.text = "+" + 0;
+
+            Tween.DoFloat(0, rewardAmounts, duration, (float value) =>
+            {
+
+                rewardAmountText.text = "+" + (int)value;
+            }).OnComplete(delegate
+            {
+
+                onComplted?.Invoke();
+            });
+        }
+
+        #endregion
+
+        #region Buttons
+
+        /// <summary>
+        /// 多倍金币按钮
+        /// </summary>
+        public void MultiplyRewardButton()
+        {
+            AudioController.PlaySound(AudioController.Sounds.buttonSound);
+
+            WXAdsManager.Instance.ShowAd((isEnd) =>
+            {
+                if (isEnd)
+                {
+                    FloatingCloud.SpawnCurrency(coinsHash, rewardLabel.RectTransform, coinsPanelScalable.RectTransform, 10, "", () =>
+                    {
+                        CurrenciesController.Add(CurrencyType.Coins, currentReward * 3);
+                    });
+                }
+                else
+                {
+                    Debug.Log("广告未观看完毕");
+                    FloatingMessage.ShowMessage("广告未观看完毕");
+                }
+            });
+
+        }
+
+        public void NextLevelButton()
+        {
+            AudioController.PlaySound(AudioController.Sounds.buttonSound);
+
+            UIController.HidePage<UIComplete>(() =>
+            {
+                GameController.ReplayLevel();
+            });
+        }
+
+        public void HomeButton()
+        {
+            AudioController.PlaySound(AudioController.Sounds.buttonSound);
+
+            UIController.HidePage<UIComplete>(() =>
+            {
+                GameController.ReturnToMenu();
+            });
+
+            LivesManager.AddLife();
+        }
+
+        #endregion
+    }
+}

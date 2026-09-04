@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1809574714109654
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4354448603960130}
+  - component: {fileID: 114414267624514526}
+  m_Layer: 0
+  m_Name: PoolManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4354448603960130
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1809574714109654}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -9.2, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114414267624514526
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1809574714109654}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef1a46be0927613409306432aaac5843, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _poolData:
+  - Name: FX Get Hit
+    Amount: 6
+    FxType: 1
+    Particles:
+    - {fileID: 198227799189599300, guid: ae14b44785a276b4ca60cab0d2cb2561, type: 3}
+    - {fileID: 198467553981171562, guid: 696d859b6f0b06345a0b34645dc6b05b, type: 3}
+    - {fileID: 198814088651953250, guid: fd6c6a7a0fbd04945871c7a511490b63, type: 3}
+    - {fileID: 198242301722834536, guid: 1136e183095a225479ac1b7c87e2ebfa, type: 3}
+    - {fileID: 198594602110324592, guid: 7a90172985daa8b4fa396955da2a709e, type: 3}
+    - {fileID: 198423008863891152, guid: 91acdbd2820f9ce418996a0a24d91079, type: 3}
+  - Name: FX Healing HP
+    Amount: 2
+    FxType: 0
+    Particles:
+    - {fileID: 198626440293912268, guid: 58ac65c2341d46e4ca758fe4689fd06b, type: 3}
+    - {fileID: 198942916748674614, guid: d81c730377f4a3347a0e9b78b63e7232, type: 3}
+    - {fileID: 198258680733461366, guid: 02de1e8b84e01094ba286dbec07cc987, type: 3}
+    - {fileID: 198510845639539670, guid: b044747ba241f804cbb887ff224f341b, type: 3}
+    - {fileID: 198410307320937514, guid: e0c64c3816375a6488182d90a3d873da, type: 3}
+    - {fileID: 198209446921443454, guid: f5e7fc7cd8ce8774889c86c927b64f29, type: 3}
+    - {fileID: 198770557236677614, guid: e4b624416f9e0de4fb813e6569d32821, type: 3}
+    - {fileID: 198134905934522710, guid: a60781ace6ae49347be6710ccaf6e9dd, type: 3}
+    - {fileID: 198961444804093628, guid: 49f3607343e22e84c8a64858028be7b1, type: 3}
+    - {fileID: 198338324460406854, guid: 828bdd7ee97687846ae3bd14c3abdec8, type: 3}
+    - {fileID: 198310397544070076, guid: 9d5288040bd507f40b5ac26c11f27540, type: 3}
+    - {fileID: 198366753267249508, guid: 1b11f3eacf0dce144ae701d97e87fad9, type: 3}
+  - Name: FX Enemy Dead
+    Amount: 3
+    FxType: 2
+    Particles:
+    - {fileID: 198279028075486306, guid: 7ae1d86c2db118940a3a5a8f8e59a43d, type: 3}
+  - Name: FX Merge Beast
+    Amount: 6
+    FxType: 3
+    Particles:
+    - {fileID: 198944182361543484, guid: 8320d22560bc7a74aa99e09a94027e26, type: 3}
+    - {fileID: 198479107822221428, guid: 14d95a72de3b52a43aa03e11402f35a9, type: 3}
+    - {fileID: 198803750139918218, guid: c5be4d9f501736c4e8d32553f4a316b6, type: 3}
+    - {fileID: 198368701946964184, guid: b6c058b4a5b723745b0113df4459d6a1, type: 3}
+    - {fileID: 198781220967432828, guid: 00f33c39964fa154b9b082dc73e7eca2, type: 3}
+    - {fileID: 198896921063854162, guid: 8fb9af5dc0b6bdd4a9b6a5051bff73d2, type: 3}

@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3136222612699309270
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3136222612699309219}
+  - component: {fileID: 3136222612699309211}
+  - component: {fileID: 1319425599085773552}
+  m_Layer: 0
+  m_Name: BulletMechaValken3
+  m_TagString: Bullet
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3136222612699309219
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3136222612699309270}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -5.86, y: 3.84, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3136222612699309211
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3136222612699309270}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5768fefef3515649883dbd850de54ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bulletTeam: 0
+  effPref: {fileID: 8075917597001732432, guid: 2031879a9a0148f44801240257c4aa22, type: 3}
+  explosionEffPref: {fileID: 6870774283861168867, guid: 4163104badf57fa48b84b0f478d1c8f6,
+    type: 3}
+  startEffPref: {fileID: 0}
+  explodeOnLane: 1
+--- !u!114 &1319425599085773552
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3136222612699309270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b52cee8d3b9e954a8aabcb64cb01679, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bulletTeam: 0
+  effPref: {fileID: 8075917597001732432, guid: 2031879a9a0148f44801240257c4aa22, type: 3}
+  explosionEffPref: {fileID: 6870774283861168867, guid: 4163104badf57fa48b84b0f478d1c8f6,
+    type: 3}
+  startEffPref: {fileID: 2211189613604255459, guid: d4308e88ba678bb4598e87d86dad2edd,
+    type: 3}

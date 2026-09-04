@@ -1,0 +1,40 @@
+﻿
+
+public enum EventID
+{
+	None = 0,
+	OnReadyAds,
+    OnUpDateMoney,
+    OnBoostDPS,
+    OnBeastBattleMove,
+    OnUpdateAutoMergeMedal,
+    OnUpdateLevelMerge,
+    OnCompleteTutorialStep2,
+    OnBoostDpsFree,
+    OnTimeJump,
+    OnAscend,
+    OnTutDoneMergeLv2,
+    OnTutDoneMergeLv3,
+    OnDeactiveHand,
+    OnDoneTutMap,
+    OnVipPointChange,
+    OnPurchaseSuccess,
+    OnUpdateTileTurn,
+    OnConfirmEditTeam,
+    EndGameCrush,
+    BackToMap,
+    GemChange,
+    SweepChange,
+    TileTicketChange,
+    PlayAmountChange,
+    SoulChange,
+    OnSkill03,
+    BeastEvolve,
+    BeastLvlUp,
+
+    OnClickBattleAtMain,
+    OnClickReceiveShopTut,
+    EndOnClickReceiveShopTut,
+    BackToMonsterList,
+    BackFromMap
+}
