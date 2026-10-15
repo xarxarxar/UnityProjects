@@ -275,23 +275,19 @@ public class CardGridLayout : MonoBehaviour
     }
 
     /// <summary>
-    /// 退出/结束当前局时清理现场：停止倒计时、清空待消除列表并取消选中效果、停止所有呼吸。
+    /// 退出/结束当前局时清理现场：整副棋盘回池（CardRoot 下不再有卡牌）、
+    /// 清空待消除列表、停止倒计时、停止所有呼吸、复位提示与结束状态。
     /// 供返回关卡选择等退出场景调用，避免残留状态影响下一局。
     /// </summary>
     public void CleanupLevel()
     {
         _levelActive = false;
-        foreach (SingleCard c in _pendingCards)
-        {
-            if (c != null)
-            {
-                c.ChangeChooseEffect(0);
-            }
-        }
-        _pendingCards.Clear();
-        StopCountdown();
+        // 棋盘全部回池（SetActive(false)、效果复位、不销毁，规避插件 OnDestroy 连坐材质问题）；
+        // 内部同时清空待消除列表并停止倒计时，旧卡效果由 ReleaseCardToPool → InitCard 复位
+        ClearGenerated();
         StopAllBreathEffects();
         _hintMode = false;
+        _gameOver = false; // 复位通关/失败结束状态（StartLevel 也会重置，双保险）
     }
 
     /// <summary>清空上一次生成结果，并按当前参数重新生成 m×n 棋盘。</summary>

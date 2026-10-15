@@ -368,6 +368,42 @@
 - 修复（`Assets/Scripts/GameManager.cs`）：`GetDefaultDifficulty` 改为从极难往下找第一个**该难度第 1 关已通关（星级 ≥ 0）**的难度；仅"解锁未玩"的难度不算闯到；全部未通关回退普通
 - 验证：Unity 2022.3.41f1 官方程序集 + DOTween.dll + HighlightPlus2D（桩类型）+ UnityEngine.UI.dll + JSONSerializeModule 离线编译通过（0 错误 0 警告）
 
+### 修复（返回关卡选择后棋盘残留：关卡 2D 物体未随关卡结束消失）
+- 现象：通关/失败后点"返回"回到关卡选择，CardRoot 下的整副卡牌棋盘依然显示（CardRoot 在场景根、不在 GamePanel 下，PanelManager 隐藏 GamePanel 不影响它）
+- 根因：`CardGridLayout.CleanupLevel()` 只复位逻辑状态（`_levelActive`/待消除/倒计时/呼吸/提示），未清空棋盘——卡牌仍挂在 CardRoot 下可见
+- 修复（`Assets/Scripts/CardGridLayout.cs`）：`CleanupLevel()` 开头调用 `ClearGenerated()`——整副棋盘逐张 `ReleaseCardToPool` 回池（`SetActive(false)`、`InitCard` 复位光效/摇摆/旋转、**不销毁**，规避插件 OnDestroy 连坐材质问题），内部同时清空待消除列表并停止倒计时；并复位 `_gameOver = false`（双保险）。步数/分数/目标/道具数量由下次 `StartLevel → GenerateBoard` 全量重置（既有逻辑，无需改）
+- 验证：Unity 2022.3.41f1 官方程序集 + DOTween.dll + HighlightPlus2D（桩类型）+ UnityEngine.UI.dll + JSONSerializeModule 离线编译通过（0 错误 0 警告）
+
+### 修复（通关/失败面板"返回"未清理棋盘：OnBackClick 只切 Panel 不清场）
+- 现象：通关/失败后点"返回"回到关卡选择，CardRoot 下卡牌棋盘依然存在、与关卡选择 UI 重叠显示
+- 根因：通关/失败面板"返回"按钮绑定的是 `ResultPanel.OnBackClick()`——它只 `PanelManager.SwitchTo(levelChoosePanel)` 切面板，**从未调用 `GamePanel.BackToLevelChoose()`/`cardGrid.CleanupLevel()`**，因此上一轮加入的棋盘回池逻辑在这条路径上根本没被触发
+- 修复（`Assets/Scripts/ResultPanel.cs`）：`OnBackClick()` 优先走 `gamePanel.BackToLevelChoose()`（内部已包含 `cardGrid.CleanupLevel()`：棋盘全部回池、停止倒计时/呼吸、复位 `_levelActive`/`_gameOver`，再切换 Panel）；`gamePanel` 为空时保留原兜底切换
+- 验证：Unity 2022.3.41f1 官方程序集 + DOTween.dll + HighlightPlus2D（桩类型）+ UnityEngine.UI.dll + JSONSerializeModule 离线编译通过（0 错误 0 警告）
+
+### 新增（AudioManager：字符串播放音频 + AudioLibrary 映射表 + 独立音量/静音持久化）
+- 新增 `Assets/Scripts/Audio/AudioLibrary.cs`（ScriptableObject）：预先配置"字符串 ↔ AudioClip"映射（CreateAssetMenu → ChainClick/Audio Library 创建资产），`GetClip(key)` 未配置时 LogWarning 提示
+- 新增 `Assets/Scripts/Audio/AudioManager.cs`（单例，DontDestroyOnLoad）：
+  - 字符串播放：`PlayBGM("BGM_关卡")`（同曲不重播、循环）/ `StopBGM()` / `PlaySFX("卡牌点击")` / `PlaySFX(key, volumeScale, pitch)`
+  - BGM/SFX 分离：MusicSource（循环）+ SFX 轮转播放器（默认 4 个，常见音效不互相打断）
+  - **音乐音量/音乐静音、音效音量/音效静音独立控制**（无全局静音）；音乐静音用 AudioSource.mute（保留进度），音效静音时 PlaySFX 直接不播
+  - 音量/静音启动时从 DataManager 读取、修改时写回 DataManager 并落盘（符合"所有存档读写走 DataManager"规则，微信小游戏适配随存档）
+- 修改 `Assets/Scripts/DataManager.cs`：`SaveData` 新增 `musicVolume`(0.8)/`sfxVolume`(1)/`musicMuted`/`sfxMuted`（旧存档无字段时回退默认值，兼容）；新增 `MusicVolume/SfxVolume/MusicMuted/SfxMuted` 属性与 `SetAudioSettings(...)`（内部 SaveNow）
+- 使用：场景常驻物体挂 AudioManager → 拖入 AudioLibrary 资产（默认 BGM key 可选）；代码用字符串播放即可
+- 验证：Unity 2022.3.41f1 官方程序集（含 UnityEngine.AudioModule.dll）+ DOTween.dll + HighlightPlus2D（桩类型）+ UnityEngine.UI.dll + JSONSerializeModule 离线编译通过（0 错误 0 警告）
+
+### 更新（AudioManager 增加微信小游戏震动：轻/中/强三档）
+- 新增三个 public 方法：`VibrateLight()`（wx.vibrateShort type=light）、`VibrateMedium()`（type=medium）、`VibrateStrong()`（wx.vibrateLong，400ms 长震、全机型震感最强）
+- 实现：SDK（WX-WASM-SDK-V2）的 `WX.VibrateShort(VibrateShortOption)` 中 Option 类型在插件 dll 内，工程脚本不引入编译期依赖——在 `UNITY_WEBGL && !UNITY_EDITOR`（微信小游戏构建）下运行时**反射**查找 `WeChatWASM.WX` / `VibrateShortOption` / `VibrateLongOption` 并调用；编辑器/其他平台仅打日志模拟、不报错
+- 验证：Unity 2022.3.41f1 官方程序集（含 UnityEngine.AudioModule.dll）+ DOTween.dll + HighlightPlus2D（桩类型）+ UnityEngine.UI.dll + JSONSerializeModule 离线编译通过（0 错误 0 警告）
+
+### 更新（音频设置面板：三个 Toggle 数据驱动 + 震动开关持久化）
+- 新增 `Assets/Scripts/Audio/AudioSettingsPanel.cs`：`musicToggle`/`sfxToggle`/`vibrateToggle` 三个 Toggle
+  - **数据驱动**：OnEnable 每次显示时从 AudioManager（内部读 DataManager 存档）刷新 `isOn`——音乐/音效 Toggle 与"静音"取反（isOn=true 表示声音开启），震动 Toggle 直读开关；`_refreshing` 标志防止刷新反向触发写回
+  - **点击写入**：onValueChanged 自动绑定 → `SetMusicMuted(!isOn)` / `SetSfxMuted(!isOn)` / `SetVibrateEnabled(isOn)`，由 AudioManager 持久化到 DataManager
+- 修改 `Assets/Scripts/DataManager.cs`：`SaveData` 新增 `vibrateEnabled`（默认 true）；`SetAudioSettings` 增加 `vibrateEnabled` 参数；新增 `VibrateEnabled` 属性
+- 修改 `Assets/Scripts/Audio/AudioManager.cs`：新增 `_vibrateEnabled` 字段与 `VibrateEnabled` 属性、`SetVibrateEnabled(bool)`；`VibrateLight/Medium/Strong` 在震动开关关闭时直接 return 不震动
+- 验证：Unity 2022.3.41f1 官方程序集（含 UnityEngine.AudioModule.dll）+ DOTween.dll + HighlightPlus2D（桩类型）+ UnityEngine.UI.dll + JSONSerializeModule 离线编译通过（0 错误 0 警告）
+
 ### 更新（步数 Text / 目标分数 Text 关联显示）
 - `Assets/Scripts/CardGridLayout.cs`：
   - 新增字段 `stepsText`（显示 `步数：{remainingSteps}`）、`targetText`（显示 `目标：{targetScore}`），Inspector 拖入，未赋值自动跳过

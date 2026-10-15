@@ -23,6 +23,13 @@ public class DataManager : MonoBehaviour
         public int addStepsProps = 3;   // 步数+3 道具剩余
         public int hintProps = 3;       // 提示道具剩余
         public int shuffleProps = 3;    // 洗牌道具剩余
+
+        // 音频设置（音乐/音效 音量与静音独立；旧存档无这些字段时回退字段默认值）
+        public float musicVolume = 0.8f;   // 音乐音量（0~1）
+        public float sfxVolume = 1f;       // 音效音量（0~1）
+        public bool musicMuted;            // 音乐静音（独立，不设全局静音）
+        public bool sfxMuted;              // 音效静音
+        public bool vibrateEnabled = true; // 震动开关（微信小游戏震动总开关，关闭后不震动）
     }
 
     /// <summary>单章节存档：通关关卡数 + 每难度每关星级。</summary>
@@ -231,6 +238,25 @@ public class DataManager : MonoBehaviour
         Data.addStepsProps = Mathf.Max(0, addSteps);
         Data.hintProps = Mathf.Max(0, hint);
         Data.shuffleProps = Mathf.Max(0, shuffle);
+        SaveNow();
+    }
+
+    // ---------- 音频设置（音乐/音效 音量与静音独立） ----------
+
+    public float MusicVolume => Data.musicVolume;
+    public float SfxVolume => Data.sfxVolume;
+    public bool MusicMuted => Data.musicMuted;
+    public bool SfxMuted => Data.sfxMuted;
+    public bool VibrateEnabled => Data.vibrateEnabled;
+
+    /// <summary>保存音频设置（音乐/音效音量与静音、震动开关，独立控制，无全局静音）并落盘。</summary>
+    public void SetAudioSettings(float musicVolume, float sfxVolume, bool musicMuted, bool sfxMuted, bool vibrateEnabled)
+    {
+        Data.musicVolume = Mathf.Clamp01(musicVolume);
+        Data.sfxVolume = Mathf.Clamp01(sfxVolume);
+        Data.musicMuted = musicMuted;
+        Data.sfxMuted = sfxMuted;
+        Data.vibrateEnabled = vibrateEnabled;
         SaveNow();
     }
 }

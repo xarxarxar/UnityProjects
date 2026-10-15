@@ -44,10 +44,14 @@ public class ResultPanel : MonoBehaviour
         }
     }
 
-    /// <summary>返回关卡选择：PanelManager.SwitchTo(levelChoosePanel)（两个 Panel 的"返回"按钮绑定）。</summary>
+    /// <summary>返回关卡选择：先经 GamePanel.BackToLevelChoose 清理当前局现场（棋盘回池、停止倒计时/呼吸、复位状态）再切换 Panel（两个 Panel 的"返回"按钮绑定）。</summary>
     public void OnBackClick()
     {
-        if (panelManager != null && levelChoosePanel != null)
+        if (gamePanel != null)
+        {
+            gamePanel.BackToLevelChoose();
+        }
+        else if (panelManager != null && levelChoosePanel != null)
         {
             panelManager.SwitchTo(levelChoosePanel);
         }
